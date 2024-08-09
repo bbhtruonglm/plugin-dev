@@ -1,51 +1,59 @@
-import React, { useState } from "react";
+import React, { useState } from 'react'
 
-import ChatOption from "./HomeComponents/ChatOption";
-import Help from "./HomeComponents/Help";
-import Home from "./ChatScreen/Home";
-import IntroAI from "./HomeComponents/IntroAI";
-import SendMessage from "./HomeComponents/SendMessage";
-import home from "../assets/home.svg";
-import homeActive from "../assets/home-active.svg";
-import message from "../assets/message.svg";
-import news from "../assets/notification.svg";
-import support from "../assets/support.svg";
+import ChatOption from './HomeComponents/ChatOption'
+import Help from './HomeComponents/Help'
+import Home from './ChatScreen/Home'
+import IconApp from '../assets/logo.svg'
+import IntroAI from './HomeComponents/IntroAI'
+import SendMessage from './HomeComponents/SendMessage'
+import home from '../assets/home.svg'
+import homeActive from '../assets/home-active.svg'
+import message from '../assets/message.svg'
+import news from '../assets/notification.svg'
+import support from '../assets/support.svg'
 
 function ChatComponent() {
   const menuList = [
     {
-      name: "Trang chủ",
+      name: 'Trang chủ',
       src: homeActive,
-      value: "home",
+      value: 'home',
     },
     {
-      name: "Tin nhắn",
+      name: 'Tin nhắn',
       src: message,
-      value: "message",
+      value: 'message',
     },
     {
-      name: "Hỗ trợ",
+      name: 'Hỗ trợ',
       src: support,
-      value: "support",
+      value: 'support',
     },
     {
-      name: "Tin tức",
+      name: 'Tin tức',
       src: news,
-      value: "news",
+      value: 'news',
     },
-  ];
-  const [currentTab, setCurrentTab] = useState("home");
+  ]
+  const [currentTab, setCurrentTab] = useState('home')
   return (
     <div className="flex flex-col relative w-[400px] h-[600px] bg-gradient-to-r from-[#EEEDF3] to-[#DCDFFC] rounded-[20px] overflow-hidden shadow-md">
       {/* header */}
       <div className="flex justify-between p-5 bg-[#1E293B] text-white">
-        <div>Icon</div>
+        <div>
+          <img
+            src={IconApp}
+            alt="src"
+            width={36}
+            height={44}
+          />
+        </div>
         <div>Avatar</div>
       </div>
-      {/* body */}
+      {/* body check theo bien current tab de render data */}
 
       <div className="flex flex-col h-[468px] resize-none outline-none scrollbar-thin scrollbar-webkit overflow-y-auto">
-        {currentTab === "home" && <Home />}
+        {currentTab === 'home' && <Home />}
       </div>
 
       {/* menu */}
@@ -55,10 +63,15 @@ function ChatComponent() {
             className="flex flex-col w-full h-full justify-center items-center"
             onClick={() => setCurrentTab(item.value)}
           >
-            <img src={item.src} alt="src" width={24} height={24} />
+            <img
+              src={item.src}
+              alt="src"
+              width={24}
+              height={24}
+            />
             <p
               className={
-                currentTab === item.value ? "font-bold" : "text-md font-medium"
+                currentTab === item.value ? 'font-bold' : 'text-md font-medium'
               }
             >
               {item.name}
@@ -67,7 +80,7 @@ function ChatComponent() {
         ))}
       </div>
     </div>
-  );
+  )
 }
 
-export default ChatComponent;
+export default ChatComponent
