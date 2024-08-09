@@ -1,84 +1,139 @@
 import React, { useState } from 'react'
 
-import ChatOption from './HomeComponents/ChatOption'
-import Help from './HomeComponents/Help'
-import Home from './ChatScreen/Home'
+import ChatScreen from './Screens/Chat'
+import Home from './Screens/Home'
 import IconApp from '../assets/logo.svg'
-import IntroAI from './HomeComponents/IntroAI'
-import SendMessage from './HomeComponents/SendMessage'
+import avatar1 from '../assets/avatar1.png'
+import avatar2 from '../assets/avatar2.png'
+import avatar3 from '../assets/avatar3.png'
 import home from '../assets/home.svg'
 import homeActive from '../assets/home-active.svg'
 import message from '../assets/message.svg'
+import messageA from '../assets/messageA.svg'
 import news from '../assets/notification.svg'
+import newsA from '../assets/notificationA.svg'
 import support from '../assets/support.svg'
+import supportA from '../assets/supportA.svg'
 
 function ChatComponent() {
   const menuList = [
     {
       name: 'Trang chủ',
-      src: homeActive,
+      src: home,
       value: 'home',
+      srcA: homeActive,
     },
     {
       name: 'Tin nhắn',
       src: message,
       value: 'message',
+      srcA: messageA,
     },
     {
       name: 'Hỗ trợ',
       src: support,
+      srcA: supportA,
       value: 'support',
     },
     {
       name: 'Tin tức',
       src: news,
+      srcA: newsA,
       value: 'news',
     },
   ]
   const [currentTab, setCurrentTab] = useState('home')
+  const [chatPosition, setChatPosition] = useState('overview')
   return (
     <div className="flex flex-col relative w-[400px] h-[600px] bg-gradient-to-r from-[#EEEDF3] to-[#DCDFFC] rounded-[20px] overflow-hidden shadow-md">
       {/* header */}
-      <div className="flex justify-between p-5 bg-[#1E293B] text-white">
-        <div>
-          <img
-            src={IconApp}
-            alt="src"
-            width={36}
-            height={44}
-          />
+      {chatPosition === 'overview' && (
+        <div className={'flex justify-between p-3 bg-[#1E293B] text-white'}>
+          <div>
+            <img
+              src={IconApp}
+              alt="src"
+              width={36}
+              height={44}
+            />
+          </div>
+          <div className="flex items-center">
+            <img
+              src={avatar1}
+              className="mask is-squircle -mr-2 h-8 w-8"
+              alt=""
+            />
+            <img
+              src={avatar2}
+              className="mask is-squircle -mr-1 h-8 w-8"
+              alt=""
+            />
+            <img
+              src={avatar3}
+              className="mask is-squircle h-8 w-8"
+              alt=""
+            />
+          </div>
         </div>
-        <div>Avatar</div>
-      </div>
+      )}
       {/* body check theo bien current tab de render data */}
 
-      <div className="flex flex-col h-[468px] resize-none outline-none scrollbar-thin scrollbar-webkit overflow-y-auto">
+      <div
+        className={
+          'flex flex-col resize-none outline-none scrollbar-thin scrollbar-webkit overflow-y-auto' +
+          `${chatPosition === 'overview' ? ' h-[468px]' : ' h-[600px]'}`
+        }
+      >
         {currentTab === 'home' && <Home />}
+        {currentTab === 'message' && (
+          <ChatScreen
+            currentPosition={chatPosition}
+            setPosition={(e) => setChatPosition(e)}
+          />
+        )}
       </div>
 
       {/* menu */}
-      <div className="absolute bottom-0 w-full flex justify-evenly p-2 px-6 h-[64px] z-20 bg-gradient-to-r from-[#EEEDF3] to-[#DCDFFC]">
-        {menuList.map((item, index) => (
-          <div
-            className="flex flex-col w-full h-full justify-center items-center"
-            onClick={() => setCurrentTab(item.value)}
-          >
-            <img
-              src={item.src}
-              alt="src"
-              width={24}
-              height={24}
-            />
-            <p
-              className={
-                currentTab === item.value ? 'font-bold' : 'text-md font-medium'
-              }
+
+      {chatPosition === 'overview' && (
+        <div className="absolute bottom-0 w-full flex justify-evenly p-2 px-6 h-[64px] z-20 bg-gradient-to-r from-[#EEEDF3] to-[#DCDFFC]">
+          {menuList.map((item, index) => (
+            <div
+              className="flex flex-col w-full h-full justify-center items-center cursor-pointer"
+              onClick={() => {
+                setCurrentTab(item.value)
+                setChatPosition('overview')
+              }}
             >
-              {item.name}
-            </p>
-          </div>
-        ))}
-      </div>
+              {currentTab === item.value ? (
+                <img
+                  src={item.srcA}
+                  alt="src"
+                  width={24}
+                  height={24}
+                />
+              ) : (
+                <img
+                  src={item.src}
+                  alt="src"
+                  width={24}
+                  height={24}
+                />
+              )}
+
+              <p
+                className={
+                  currentTab === item.value
+                    ? 'font-bold'
+                    : 'text-md font-medium'
+                }
+              >
+                {item.name}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
