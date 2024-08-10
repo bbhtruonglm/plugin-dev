@@ -6,7 +6,7 @@ interface ChatScreenProps {
 }
 function ChatHeader({ onCancel }: ChatScreenProps) {
   return (
-    <div className="flex bg-[#1E293B] h-16 w-full items-center py-3 px-5 gap-2">
+    <div className="flex bg-[#1E293B] h-16 w-full items-center py-3 px-5 gap-2 absolute top-0">
       <img
         onClick={() => onCancel()}
         src={blackArrow}

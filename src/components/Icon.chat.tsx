@@ -65,7 +65,7 @@ function ChatComponent() {
             />
             <img
               src={avatar2}
-              className="mask is-squircle -mr-1 h-8 w-8"
+              className="mask -mr-1 h-8 w-8"
               alt=""
             />
             <img
@@ -80,8 +80,12 @@ function ChatComponent() {
 
       <div
         className={
-          'flex flex-col resize-none outline-none scrollbar-thin scrollbar-webkit overflow-y-auto' +
-          `${chatPosition === 'overview' ? ' h-[468px]' : ' h-[600px]'}`
+          'flex flex-col resize-none outline-none scrollbar-thin scrollbar-webkit ' +
+          `${
+            chatPosition === 'overview'
+              ? ' h-[468px] overflow-y-auto'
+              : ' h-[600px]'
+          }`
         }
       >
         {currentTab === 'home' && <Home />}

@@ -3,7 +3,7 @@ import IconSquare from '../../assets/square-slash.svg'
 import React from 'react'
 function InputChat() {
   return (
-    <div className="absolute bottom-4 flex justify-center items-center h-12 bg-transparent w-full  px-4">
+    <div className="absolute bottom-4 flex justify-center items-center h-12 bg-transparent w-full px-4">
       <div className="bg-white w-full flex justify-between gap-2 items-center h-full p-2 px-4 rounded-full">
         <div>
           <img
