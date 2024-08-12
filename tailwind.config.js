@@ -13,6 +13,24 @@ module.exports = {
         bgBtnLight: '#475569',
         textYellow: '#FEF08A',
       },
+      // animation: {
+      //   spinSlow: 'spin 3s linear infinite', // Adding a slower spin animation
+      // },
+      keyframes: {
+        bounce: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-15px)' },
+        },
+        scale: {
+          '0%, 100%': { transform: 'scale(1)' },
+          '50%': { transform: 'scale(1.5)' },
+        },
+      },
+      animation: {
+        spinSlow: 'spin 3s linear infinite', // Adding a slower spin animation
+        bounce: 'bounce 1s infinite',
+        scale: 'scale 1s infinite',
+      },
     },
   },
   plugins: [
