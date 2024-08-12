@@ -15,7 +15,10 @@ import newsA from '../assets/notificationA.svg'
 import support from '../assets/support.svg'
 import supportA from '../assets/supportA.svg'
 
-function ChatComponent() {
+interface ChatProps {
+  userName: string
+}
+function ChatComponent({ userName }: ChatProps) {
   const menuList = [
     {
       name: 'Trang chủ',
@@ -88,11 +91,12 @@ function ChatComponent() {
           }`
         }
       >
-        {currentTab === 'home' && <Home />}
+        {currentTab === 'home' && <Home userName={userName} />}
         {currentTab === 'message' && (
           <ChatScreen
             currentPosition={chatPosition}
             setPosition={(e) => setChatPosition(e)}
+            userName={userName}
           />
         )}
       </div>

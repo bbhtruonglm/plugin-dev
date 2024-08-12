@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import useWebSocket, { ReadyState } from 'react-use-websocket'
 
 import ChatHeader from './ChatHeader'
 import InputChat from './InputChat'
@@ -11,8 +12,15 @@ import blackArrow from '../../assets/white-arrow.svg'
 
 interface ChatScreenProps {
   onCancel: () => void
+  userId: string
 }
-function DetailChat({ onCancel }: ChatScreenProps) {
+type IProps = {
+  userId: string
+  message: string
+  timestamp: string
+}
+function DetailChat({ onCancel, userId }: ChatScreenProps) {
+  // Data mẫu, với role khác hàng và shop
   const initChatData = [
     {
       type: 'text',
@@ -44,36 +52,64 @@ function DetailChat({ onCancel }: ChatScreenProps) {
     role: 'user',
     content: { text: '' },
   })
+  const [message, setMessage] = useState('')
+  const [receivedMessages, setReceivedMessages] = useState([] as any)
   const [loading, setLoading] = useState(false)
+
+  const { sendJsonMessage, lastJsonMessage } = useWebSocket(
+    `ws://localhost:8000?userId=${userId}`
+  )
+
+  const timestamp = new Date().toLocaleString('en-US', { hour12: false })
+
+  const sendMessage = (message: any) => {
+    setReceivedMessages([...receivedMessages, { message, userId, timestamp }])
+    sendJsonMessage({ message, userId })
+  }
+
+  useEffect(() => {
+    if (lastJsonMessage) {
+      setReceivedMessages([...receivedMessages, lastJsonMessage])
+    }
+  }, [lastJsonMessage])
+
   return (
     <div className="flex flex-col w-full h-full absolute top-0">
       {/* header */}
       <ChatHeader onCancel={onCancel} />
       {/* body */}
       <div className="p-2 mt-16 overflow-y-auto mb-16 scrollbar-thin scrollbar-webkit flex flex-col relative">
-        {dataMessage.map((item) => (
+        {/* render nội dung tin nhắn từ list có sẵn */}
+        {receivedMessages.map((item: any) => (
           <div className="flex flex-col">
+            {/* Hiển thị avatar theo role user / shop */}
             <div
               className={`flex w-full pb-4 gap-1 ${
-                item.role === 'shop'
+                item.userId === 'Admin'
+                  ? ' justify-center items-end'
+                  : item.userId !== userId
                   ? ' justify-start items-end'
                   : ' justify-end items-end'
               }`}
             >
-              {item.role === 'shop' && (
+              {item.userId !== 'Admin' && item.userId !== userId && (
                 <div className="flex rounded-lg">
                   <img
-                    src={item.avatar}
+                    src={avatar1}
                     className="w-6 h-6"
                     alt=""
                   />
                 </div>
               )}
-              <MessageComponent data={item} />
-              {item.role !== 'shop' && (
+              {/* Phần nội dung tin nhắn được hiển thị */}
+              <MessageComponent
+                data={item}
+                userId={userId}
+              />
+              {item.userId !== 'Admin' && item.userId === userId && (
                 <div className="flex rounded-lg">
                   <img
-                    src={item.avatar}
+                    src={avatar2}
                     className="w-6 h-6"
                     alt=""
                   />
@@ -82,6 +118,7 @@ function DetailChat({ onCancel }: ChatScreenProps) {
             </div>
           </div>
         ))}
+        {/* Khi gửi tin nhắn sẽ hiển thị loading để call api */}
         {loading && (
           <div className="fixed bg-red-300 bottom-[25%] left-[50%] p-2 rounded-full text-xs z-50">
             {/* <Loading /> */}
@@ -90,11 +127,12 @@ function DetailChat({ onCancel }: ChatScreenProps) {
           </div>
         )}
       </div>
-      {/* o input */}
+      {/* o input  Khi có text trong input thì hiển thị thêm icon send */}
       <InputChat
         handleSend={(e) => {
           // console.log(e, 'detail, hehehe')
           setLoading(true)
+          // Thêm data mới nhập vào list có sẵn
           let updateData = [
             ...dataMessage,
             {
@@ -104,9 +142,13 @@ function DetailChat({ onCancel }: ChatScreenProps) {
               type: 'text',
             },
           ]
+
+          // giả sử loading // sau nó update lại data
+
           setTimeout(() => {
             setLoading(false)
-            setDataMessage(updateData)
+            // setDataMessage(updateData)
+            sendMessage(e)
           }, 1000)
         }}
         loading={loading}

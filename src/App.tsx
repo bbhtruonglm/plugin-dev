@@ -1,15 +1,19 @@
-import "./App.css";
+import './App.css'
 
-import ChatComponent from "./components/Icon.chat";
-import React from "react";
-import logo from "./logo.svg";
+import React, { useState } from 'react'
+
+import ChatComponent from './components/Icon.chat'
+import Login from './components/Login'
+import logo from './logo.svg'
 
 function App() {
+  const [userName, setUserName] = useState('')
   return (
-    <div className="flex justify-center items-center h-[100vh]">
-      <ChatComponent />
+    <div className="flex justify-center items-center h-[100vh] w-full">
+      {!userName && <Login setUserName={setUserName} />}
+      {userName && <ChatComponent userName={userName} />}
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

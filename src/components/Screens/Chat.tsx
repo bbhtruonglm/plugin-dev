@@ -5,8 +5,9 @@ import DetailChat from '../ChatComponents/DetailChat'
 interface ChatProps {
   currentPosition: string
   setPosition: (e: string) => void
+  userName: string
 }
-function ChatScreen({ currentPosition, setPosition }: ChatProps) {
+function ChatScreen({ currentPosition, setPosition, userName }: ChatProps) {
   const [position, setPos] = useState('overview')
   return (
     <div className="flex w-full h-full justify-center items-center flex-col">
@@ -27,6 +28,7 @@ function ChatScreen({ currentPosition, setPosition }: ChatProps) {
             setPos('overview')
             setPosition('overview')
           }}
+          userId={userName}
         />
       )}
     </div>

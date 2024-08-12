@@ -18,18 +18,26 @@ interface MessageProps {
       button?: string
     }
     avatar?: any
+    message?: any
+    timestamp?: any
+    userId?: any
   }
+  userId?: string
 }
-function MessageComponent({ data }: MessageProps) {
-  console.log(data, 'dtaaa')
+function MessageComponent({ data, userId }: MessageProps) {
+  console.log(data, 'dtaaa', userId)
 
   return (
     <div
       className={`flex p-2 flex-col gap-y-4 w-[60%] rounded-lg ${
-        data.role === 'shop' ? 'bg-white' : 'bg-messBg'
+        data.userId === 'Admin'
+          ? 'bg-transparent'
+          : data.userId === userId
+          ? 'bg-white'
+          : 'bg-messBg'
       }`}
     >
-      {data.content.image && (
+      {data?.content?.image && (
         <div className="flex rounded-lg">
           <img
             src={money}
@@ -38,7 +46,7 @@ function MessageComponent({ data }: MessageProps) {
           />
         </div>
       )}
-      {data.content.video && (
+      {data?.content?.video && (
         <div>
           <img
             src={photo}
@@ -47,18 +55,18 @@ function MessageComponent({ data }: MessageProps) {
           />
         </div>
       )}
-      {data.content.audio && <div>audio</div>}
-      {data.content.highlight && (
+      {data?.content?.audio && <div>audio</div>}
+      {data?.content?.highlight && (
         <div className="">
           <h4 className="font-semibold">Tiêu đề</h4>
         </div>
       )}
-      {data.content.text && (
+      {data?.message && (
         <div>
-          <p className="text-xs">{data.content.text}</p>
+          <p className="text-xs">{data.message}</p>
         </div>
       )}
-      {data.content.schedule && (
+      {data?.content?.schedule && (
         <div>
           <div className="flex bg-bgBtnBold text-textYellow cursor-pointer py-2 gap-1 rounded-lg justify-center items-center">
             Lập lịch
@@ -70,14 +78,14 @@ function MessageComponent({ data }: MessageProps) {
           </div>
         </div>
       )}
-      {data.content.button && (
+      {data?.content?.button && (
         <div>
           <div className="flex bg-bgBtnLight text-white cursor-pointer py-2 gap-1 rounded-lg justify-center items-center">
             Nút số 1
           </div>
         </div>
       )}
-      {data.content.button && (
+      {data?.content?.button && (
         <div>
           <div className="flex bg-bgBtnLight text-white cursor-pointer py-2 gap-1 rounded-lg justify-center items-center">
             Nút số 2
