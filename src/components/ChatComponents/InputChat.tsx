@@ -7,8 +7,9 @@ import IconSquare from '../../assets/square-slash.svg'
 interface InputProps {
   handleSend: (e: any) => void
   loading: boolean
+  onChangeText: (e: any) => void
 }
-function InputChat({ handleSend, loading }: InputProps) {
+function InputChat({ handleSend, loading, onChangeText }: InputProps) {
   const [value, setValue] = useState('')
   return (
     <div className="absolute bottom-4 flex justify-center items-center h-12 bg-transparent w-full px-4 gap-2">
@@ -23,6 +24,7 @@ function InputChat({ handleSend, loading }: InputProps) {
         <input
           onChange={(e) => {
             setValue(e.target.value)
+            onChangeText(e.target.value)
           }}
           value={value}
           type="text"

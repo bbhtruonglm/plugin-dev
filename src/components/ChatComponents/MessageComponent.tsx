@@ -63,7 +63,7 @@ function MessageComponent({ data, userId }: MessageProps) {
       )}
       {data?.message && (
         <div>
-          <p className="text-xs">{data.message}</p>
+          <p className="text-xs min-h-4">{data.message}</p>
         </div>
       )}
       {data?.content?.schedule && (

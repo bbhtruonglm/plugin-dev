@@ -10,8 +10,9 @@ function App() {
   const [userName, setUserName] = useState('')
   return (
     <div className="flex justify-center items-center h-[100vh] w-full">
-      {!userName && <Login setUserName={setUserName} />}
-      {userName && <ChatComponent userName={userName} />}
+      {/* {!userName && <Login setUserName={setUserName} />} */}
+      {/* {userName && <ChatComponent userName={userName} />} */}
+      {<ChatComponent userName={userName} />}
     </div>
   )
 }
