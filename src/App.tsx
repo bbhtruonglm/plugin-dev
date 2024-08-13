@@ -1,18 +1,36 @@
 import './App.css'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import ChatComponent from './components/Icon.chat'
 import Login from './components/Login'
 import logo from './logo.svg'
 
 function App() {
-  const [userName, setUserName] = useState('')
+  const [is_show, setShow] = useState(false)
+
+  const handleMessage = () => {
+    window.parent.postMessage(
+      {
+        from: 'BBH-EMBED-IFRAME',
+        is_show: !is_show,
+      },
+      '*'
+    )
+  }
+
   return (
-    <div className="flex justify-center items-center h-[100vh] w-full">
-      {/* {!userName && <Login setUserName={setUserName} />} */}
-      {/* {userName && <ChatComponent userName={userName} />} */}
-      {<ChatComponent userName={userName} />}
+    <div className="flex flex-col justify-center items-center ">
+      {
+        <ChatComponent
+          userName={''}
+          handleBtn={() => {
+            handleMessage()
+            setShow(!is_show)
+          }}
+          show={is_show}
+        />
+      }
     </div>
   )
 }

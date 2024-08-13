@@ -9,7 +9,7 @@ function Home({ userName }: any) {
     <div className="flex flex-col p-5 gap-y-4">
       {/* Greeting */}
       <div className="">
-        <h1 className="text-2xl font-semibold">Chào {userName},</h1>
+        <h1 className="text-2xl font-semibold">Chào Tùng,</h1>
         <h2 className="text-xl font-medium">
           Chúng tôi có thể hỗ trợ được gì bạn?
         </h2>
