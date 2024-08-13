@@ -9,13 +9,24 @@ interface ChatProps {
 }
 function ChatScreen({ currentPosition, setPosition, userName }: ChatProps) {
   const [position, setPos] = useState('overview')
-  const [clientId, setClientId] = useState('')
+  const [clientId, setClientId] = useState('679be5049cac4e2e9caadfee547ff7eb')
   const initGetClientId = async () => {
     try {
       const response = await fetch(
-        'https://dev-api.botbanhang.vn/v1/n7_public/embed/conversation/init_identify?page_id=3861367970af4b7cadacaec5d1443473'
+        'https://dev-api.botbanhang.vn/v1/n7_public/embed/conversation/init_identify?page_id=3861367970af4b7cadacaec5d1443473',
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
       )
-      console.log(response, 'reponse')
+
+      const result = await response.json()
+      // Test thi luu vao state
+      // sau khi test xong thi luu vao localStorage
+      setClientId(result.data)
+      console.log(result, 'json')
     } catch (err) {}
   }
   return (
@@ -41,7 +52,7 @@ function ChatScreen({ currentPosition, setPosition, userName }: ChatProps) {
             setPos('overview')
             setPosition('overview')
           }}
-          userId={userName}
+          userId={clientId}
         />
       )}
     </div>

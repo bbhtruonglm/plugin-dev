@@ -13,6 +13,7 @@ import LoadingDots from '../Loading/LoadingDot'
 import MessageComponent from './MessageComponent'
 import avatar1 from '../../assets/avatar1.png'
 import avatar2 from '../../assets/avatar2.png'
+import validateConversation from './validate'
 
 const keys = require('lodash')
 const size = require('lodash')
@@ -21,96 +22,93 @@ interface ChatScreenProps {
   userId: string
 }
 type Message = {
-  sender: string
-  content: string
-  userId: string | null
+  page_id: string
+  client_id: string
+  text: string
+}
+
+type MessageData = {
+  conversation?: ConversationInfo
+  /**dữ liệu tin nhắn mới */
+  message?: MessageInfo
+  /**dữ liệu nhân viên */
+  staff?: StaffSocket
+  /**tên sự kiện */
+  event?: SocketEvent
+  /**dữ liệu tin nhắn cần cập nhật */
+  update_message?: MessageInfo
 }
 /**kết nối socket đến server */
 function DetailChat({ onCancel, userId }: ChatScreenProps) {
-  const socketConnection = useRef<WebSocket | null>(null)
-
-  const [receivedMessages, setReceivedMessages] = useState([] as any)
+  const [newData, setNewData] = useState([] as any)
   const [loading, setLoading] = useState(false)
-  const [messages, setMessages] = useState<Message[]>([])
-
   const [input, setInput] = useState('')
+  const [triggerFetch, setTrigerFetch] = useState(false)
+  const [lastMessage, setLastMessage] = useState({} as any)
+  const [isForceCloseSocket, setIsForceCloseSocket] = useState(false)
   const ws = useRef<WebSocket | null>(null)
-  const [username, setUsername] = useState('')
-  const [userIdd, setUserId] = useState<string | null>(null)
+  // Ngăn kết nối mở lại
+  useEffect(() => {
+    return () => {
+      closeSocketConnect()
+    }
+  }, [])
+  // call api list tin nhan
+  useEffect(() => {
+    fetchMessage()
+  }, [triggerFetch, lastMessage])
 
-  const pageStore = {
-    selected_page_id_list: [],
+  function closeSocketConnect() {
+    // gắn cờ ngăn chặn kết nối mở lại
+    setIsForceCloseSocket(true)
+
+    ws.current?.close()
   }
-  const chatbotUserStore = {
-    chatbot_user: {
-      fb_staff_id: '123123',
-    },
+  // function goi list tin nhan
+  const fetchMessage = async () => {
+    setTrigerFetch(false)
+    const response = await fetch(
+      `https://dev-api.botbanhang.vn/v1/n7_public/embed/message/read_message?page_id=3861367970af4b7cadacaec5d1443473&client_id=${userId}`
+    )
+    const result = await response.json()
+    console.log(result.data, 'result')
+    setNewData(result.data.reverse())
   }
-  // kết nối với socket server
-  // const { sendJsonMessage, lastJsonMessage } = useWebSocket(
-  //   `ws://localhost:8000?userId=${userId}`
-  // )
-
-  // const timestamp = new Date().toLocaleString('en-US', { hour12: false })
-
-  // const sendMessage = (message: any) => {
-  //   setReceivedMessages([...receivedMessages, { message, userId, timestamp }])
-  //   sendJsonMessage({ message, userId })
-  // }
-
-  // useEffect(() => {
-  //   if (lastJsonMessage) {
-  //     setReceivedMessages([...receivedMessages, lastJsonMessage])
-  //   }
-  // }, [lastJsonMessage])
-
+  // goi api xac dinh danh tinh khi mo socket
+  const sendIdentifyMessage = () => {
+    //check dieu kien, neu k function se trong trang thai connecting
+    if (ws.current?.readyState === WebSocket.OPEN) {
+      ws.current?.send(
+        JSON.stringify({
+          page_id: '3861367970af4b7cadacaec5d1443473',
+          client_id: userId,
+          event: 'JOIN',
+        })
+      )
+    } else {
+      console.log('WebSocket is not open yet. Retrying...')
+      setTimeout(sendIdentifyMessage, 100) // Thử lại sau 100ms nếu chưa kết nối
+    }
+  }
   // Handle websocket
   function onSocketFromChatboxServer() {
     // Kết nối tới WebSocket server
-    ws.current = new WebSocket('')
+    ws.current = new WebSocket('wss://dev-api.botbanhang.vn/embed')
     // luu lai id vong lap ping
     let ping_interval_id: number | any
 
     ws.current.onopen = () => {
       // thong bao connect thanh cong
       console.log('WebSocket Connected')
-      ws.current?.send(
-        JSON.stringify({
-          list_page: keys(pageStore.selected_page_id_list),
-          fb_staff_id: chatbotUserStore.chatbot_user?.fb_staff_id,
-        })
-      )
-      // tu dong ping socket lien tuc 30s
-      ping_interval_id = setInterval(() => ws.current?.send('ping'), 1000 * 30)
+      sendIdentifyMessage()
+      if (ws.current?.readyState === WebSocket.OPEN) {
+        // tu dong ping socket lien tuc 30s
+        ping_interval_id = setInterval(
+          () => ws.current?.send('ping'),
+          1000 * 30
+        )
+      }
     }
-
-    // ws.current.onmessage = async (event) => {
-    //   let data: string
-
-    //   if (event.data instanceof Blob) {
-    //     data = await event.data.text()
-    //   } else {
-    //     data = event.data
-    //   }
-
-    //   try {
-    //     const messageData = JSON.parse(data)
-    //     if (messageData.type === 'WELCOME') {
-    //       // Lưu ID người dùng khi kết nối
-    //       setUserId(messageData.userId)
-    //     } else {
-    //       const newMessage: Message = {
-    //         ...messageData,
-    //         userId: messageData.userId,
-    //       }
-    //       setMessages((prevMessages) => [...prevMessages, newMessage])
-    //     }
-    //   } catch (err) {
-    //     console.error('Failed to parse message data:', err)
-    //   }
-    // }
-
-    //Khi có thông điệp từ socket gửi xuống
 
     ws.current.onmessage = ({ data }) => {
       if (!data || data === 'pong') return
@@ -134,36 +132,9 @@ function DetailChat({ onCancel, userId }: ChatScreenProps) {
       } catch (e) {}
 
       if (!size(socket_data)) return
-
-      let { conversation, message, update_message, event } = socket_data
-
-      // gửi thông điệp đến component xử lý danh sách hội thoại
-      // if (validateConversation(conversation, message))
-      //   window.dispatchEvent(
-      //     new CustomEvent('chatbox_socket_conversation', {
-      //       detail: {
-      //         conversation,
-      //         event,
-      //       },
-      //     })
-      //   )
-
-      // gửi thông điệp đến component xử lý hiển thị danh sách tin nhắn
-      if (size(message))
-        window.dispatchEvent(
-          new CustomEvent('chatbox_socket_message', { detail: message })
-        )
-
-      // gửi thông điệp cập nhật tin nhắn đã có
-      if (size(update_message))
-        window.dispatchEvent(
-          new CustomEvent('chatbox_socket_update_message', {
-            detail: update_message,
-          })
-        )
-
-      // thông báo cho người dùng nếu là tin nhắn của khách hàng gửi cho page
-      // if (message?.message_type === 'client') triggerAlert(conversation)
+      let { message } = socket_data
+      // luu tin nhan moi nhat vao state
+      setLastMessage(message)
     }
 
     // Khi kết nối bị đóng
@@ -174,7 +145,7 @@ function DetailChat({ onCancel, userId }: ChatScreenProps) {
 
       // nếu đóng hoàn toàn thì không cho kết nổi tự mở lại nữa
 
-      // if (is_force_close_socket.value) return
+      if (isForceCloseSocket) return
       setTimeout(() => onSocketFromChatboxServer(), 100)
     }
 
@@ -183,18 +154,32 @@ function DetailChat({ onCancel, userId }: ChatScreenProps) {
       ws.current?.close()
     }
   }
-
-  const sendMessage = (e: any) => {
-    if (ws.current) {
-      const message: Message = {
-        content: input,
-        sender: userId,
-        userId: userIdd,
-      }
-      ws.current.send(JSON.stringify(message))
-      setInput('')
+  // gui tin nhan di
+  const sendMessage = async (e: any) => {
+    const message: Message = {
+      page_id: '3861367970af4b7cadacaec5d1443473',
+      client_id: userId,
+      text: input,
     }
+    await fetch(
+      'https://dev-api.botbanhang.vn/v1/n7_public/embed/message/send_message',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // 'Authorization': 'Bearer YOUR_ACCESS_TOKEN', // Nếu cần token xác thực
+        },
+        body: JSON.stringify({
+          client_id: message.client_id,
+          page_id: message.page_id,
+          text: message.text,
+        }),
+      }
+    )
+    setTrigerFetch(true)
+    setInput('')
   }
+  // goi ham khoi tao socket
   useEffect(() => {
     onSocketFromChatboxServer()
   }, [])
@@ -207,30 +192,20 @@ function DetailChat({ onCancel, userId }: ChatScreenProps) {
       <div className="p-2 mt-16 overflow-y-auto mb-16 scrollbar-thin scrollbar-webkit flex flex-col relative">
         {/* render nội dung tin nhắn từ list có sẵn */}
 
-        <div className="chat-messages flex-1 overflow-y-auto p-2">
-          {messages.map((msg, index) => (
-            <div
-              key={index}
-              className="message mb-2"
-            >
-              <strong>{msg.sender}:</strong> {msg.content}
-            </div>
-          ))}
-        </div>
-
-        {receivedMessages.map((item: any) => (
-          <div className="flex flex-col">
+        {newData.map((item: any, index: number) => (
+          <div
+            className="flex flex-col"
+            key={index}
+          >
             {/* Hiển thị avatar theo role user / shop */}
             <div
               className={`flex w-full pb-4 gap-1 ${
-                item.userId === 'Admin'
-                  ? ' justify-center items-end'
-                  : item.userId !== userId
+                item.message_type === 'page'
                   ? ' justify-start items-end'
                   : ' justify-end items-end'
               }`}
             >
-              {item.userId !== 'Admin' && item.userId !== userId && (
+              {item.message_type === 'page' && (
                 <div className="flex rounded-lg">
                   <img
                     src={avatar1}
@@ -244,7 +219,7 @@ function DetailChat({ onCancel, userId }: ChatScreenProps) {
                 data={item}
                 userId={userId}
               />
-              {item.userId !== 'Admin' && item.userId === userId && (
+              {item.message_type === 'client' && (
                 <div className="flex rounded-lg">
                   <img
                     src={avatar2}

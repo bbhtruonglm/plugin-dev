@@ -21,20 +21,20 @@ interface MessageProps {
     message?: any
     timestamp?: any
     userId?: any
+
+    message_text?: string
+    message_type?: string
+    time?: string
   }
   userId?: string
 }
 function MessageComponent({ data, userId }: MessageProps) {
-  console.log(data, 'dtaaa', userId)
+  // console.log(data, 'dtaaa', userId)
 
   return (
     <div
       className={`flex p-2 flex-col gap-y-4 w-[60%] rounded-lg ${
-        data.userId === 'Admin'
-          ? 'bg-transparent'
-          : data.userId === userId
-          ? 'bg-white'
-          : 'bg-messBg'
+        data.message_type === 'page' ? 'bg-white' : 'bg-messBg'
       }`}
     >
       {data?.content?.image && (
@@ -61,9 +61,9 @@ function MessageComponent({ data, userId }: MessageProps) {
           <h4 className="font-semibold">Tiêu đề</h4>
         </div>
       )}
-      {data?.message && (
+      {data?.message_text && (
         <div>
-          <p className="text-xs min-h-4">{data.message}</p>
+          <p className="text-xs min-h-4">{data.message_text}</p>
         </div>
       )}
       {data?.content?.schedule && (

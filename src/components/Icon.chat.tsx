@@ -107,6 +107,7 @@ function ChatComponent({ userName }: ChatProps) {
         <div className="absolute bottom-0 w-full flex justify-evenly p-2 px-6 h-[64px] z-20 bg-gradient-to-r from-[#EEEDF3] to-[#DCDFFC]">
           {menuList.map((item, index) => (
             <div
+              key={index}
               className="flex flex-col w-full h-full justify-center items-center cursor-pointer"
               onClick={() => {
                 setCurrentTab(item.value)
