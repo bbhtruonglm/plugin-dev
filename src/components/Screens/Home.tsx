@@ -6,7 +6,7 @@ import SendMessage from '../HomeComponents/SendMessage'
 
 function Home({ userName }: any) {
   return (
-    <div className="flex flex-col p-5 gap-y-4">
+    <div className="flex flex-col px-5 py-3 gap-y-4">
       {/* Greeting */}
       <div className="">
         <h1 className="text-2xl font-semibold">Chào Tùng,</h1>

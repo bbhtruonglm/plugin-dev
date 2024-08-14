@@ -22,7 +22,7 @@ function ChatHeader({ onCancel }: ChatScreenProps) {
         <div>
           <h2 className="text-white text-sm font-medium">Hoàng Lan</h2>
           <h5 className="flex gap-1 items-center font-normal text-xs text-onlineColor">
-            <div className="w-4 h-4 rounded-full bg-onlineColor"></div> Đang
+            <div className="w-3 h-3 rounded-full bg-onlineColor"></div> Đang
             online
           </h5>
         </div>

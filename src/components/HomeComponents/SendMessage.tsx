@@ -6,7 +6,7 @@ function SendMessage() {
       <div>
         <h4 className="text-base font-semibold">Gửi tin nhắn đến chúng tôi</h4>
         <h5 className="flex gap-2 items-center text-sm text-onlineColor">
-          <div className="w-4 h-4 rounded-full bg-onlineColor"></div> Chúng tôi
+          <div className="w-3 h-3 rounded-full bg-onlineColor"></div> Chúng tôi
           đang online
         </h5>
       </div>

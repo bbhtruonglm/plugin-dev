@@ -12,14 +12,14 @@ function InputChat({ handleSend, loading, onChangeText }: InputProps) {
   const [value, setValue] = useState('')
 
   const handleKeyDown = (event: any) => {
-    if (event.key === 'Enter') {
+    if (event.key === 'Enter' && value) {
       event.preventDefault()
       handleSend(value)
       setValue('')
     }
   }
   return (
-    <div className="absolute bottom-4 flex justify-center items-center h-12 bg-transparent w-full px-4 gap-2">
+    <div className="absolute bottom-4 flex justify-center items-center h-12 bg-transparent w-full px-5 gap-2">
       <div className="bg-white w-full flex justify-between gap-2 items-center h-full p-2 px-4 rounded-full">
         <Upload />
         <input

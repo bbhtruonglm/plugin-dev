@@ -1,19 +1,20 @@
 import React, { useState } from 'react'
 
 import ChatScreen from './Screens/Chat'
+import { ReactComponent as Down } from '../assets/arrow.svg'
 import Home from './Screens/Home'
-import IconApp from '../assets/logo.svg'
+import { ReactComponent as IconApp } from '../assets/logo.svg'
+import { ReactComponent as activeHome } from '../assets/home-active.svg'
+import { ReactComponent as activeMessage } from '../assets/messageA.svg'
+import { ReactComponent as activeNew } from '../assets/Subtract.svg'
+import { ReactComponent as activeSupport } from '../assets/supportA.svg'
 import avatar1 from '../assets/avatar1.png'
 import avatar2 from '../assets/avatar2.png'
 import avatar3 from '../assets/avatar3.png'
-import home from '../assets/home.svg'
-import homeActive from '../assets/home-active.svg'
-import message from '../assets/message.svg'
-import messageA from '../assets/messageA.svg'
-import news from '../assets/notification.svg'
-import newsA from '../assets/notificationA.svg'
-import support from '../assets/support.svg'
-import supportA from '../assets/supportA.svg'
+import { ReactComponent as intiveHome } from '../assets/home.svg'
+import { ReactComponent as intiveMessage } from '../assets/message.svg'
+import { ReactComponent as intiveNews } from '../assets/notification.svg'
+import { ReactComponent as intiveSupport } from '../assets/support.svg'
 
 interface ChatProps {
   userName: string
@@ -24,26 +25,26 @@ function ChatComponent({ userName, handleBtn, show }: ChatProps) {
   const menuList = [
     {
       name: 'Trang chủ',
-      src: home,
+      src: intiveHome,
       value: 'home',
-      srcA: homeActive,
+      srcA: activeHome,
     },
     {
       name: 'Tin nhắn',
-      src: message,
+      src: intiveMessage,
       value: 'message',
-      srcA: messageA,
+      srcA: activeMessage,
     },
     {
       name: 'Hỗ trợ',
-      src: support,
-      srcA: supportA,
+      src: intiveSupport,
+      srcA: activeSupport,
       value: 'support',
     },
     {
       name: 'Tin tức',
-      src: news,
-      srcA: newsA,
+      src: intiveNews,
+      srcA: activeNew,
       value: 'news',
     },
   ]
@@ -63,17 +64,23 @@ function ChatComponent({ userName, handleBtn, show }: ChatProps) {
         {/* header */}
         {chatPosition === 'overview' && (
           <div
-            className={'flex justify-between px-5 py-3 bg-bgBtnBold text-white'}
+            className={
+              'flex justify-between items-center px-5 py-3 bg-bgBtnBold text-white'
+            }
           >
             <div>
-              <img
+              {/* <img
                 src={IconApp}
                 alt="src"
                 width={36}
                 height={44}
+              /> */}
+              <IconApp
+                width={36}
+                height={44}
               />
             </div>
-            <div className="flex items-center">
+            <div className="flex items-center h-8">
               <img
                 src={avatar1}
                 className="mask  -mr-2 h-8 w-8"
@@ -110,6 +117,11 @@ function ChatComponent({ userName, handleBtn, show }: ChatProps) {
               currentPosition={chatPosition}
               setPosition={(e) => setChatPosition(e)}
               userName={userName}
+              userLoggedIn={(e) => {
+                if (e) {
+                  setCurrentTab('home')
+                }
+              }}
             />
           )}
         </div>
@@ -118,49 +130,46 @@ function ChatComponent({ userName, handleBtn, show }: ChatProps) {
 
         {chatPosition === 'overview' && (
           <div className="absolute bottom-0 w-full flex justify-evenly p-2 px-6 h-[64px] z-20 bg-bg-gradient">
-            {menuList.map((item, index) => (
-              <div
-                key={index}
-                className="flex flex-col w-full h-full justify-center items-center cursor-pointer"
-                onClick={() => {
-                  setCurrentTab(item.value)
-                  setChatPosition('overview')
-                }}
-              >
-                {currentTab === item.value ? (
-                  <img
-                    src={item.srcA}
-                    alt="src"
-                    width={24}
-                    height={24}
-                  />
-                ) : (
-                  <img
-                    src={item.src}
-                    alt="src"
-                    width={24}
-                    height={24}
-                  />
-                )}
-
-                <p
-                  className={
-                    currentTab === item.value
-                      ? 'text-md font-medium'
-                      : 'text-md font-medium'
-                  }
+            {menuList.map(
+              (
+                { src: IconComponent, srcA: IconComponentA, value, name },
+                index
+              ) => (
+                <div
+                  key={index}
+                  className="flex flex-col w-full h-full justify-center items-center cursor-pointer"
+                  onClick={() => {
+                    setCurrentTab(value)
+                    setChatPosition('overview')
+                  }}
                 >
-                  {item.name}
-                </p>
-              </div>
-            ))}
+                  {currentTab === value ? (
+                    <IconComponentA />
+                  ) : (
+                    <IconComponent />
+                  )}
+
+                  <p
+                    className={
+                      currentTab === value
+                        ? 'text-md font-medium'
+                        : 'text-md font-medium'
+                    }
+                  >
+                    {name}
+                  </p>
+                </div>
+              )
+            )}
           </div>
         )}
       </div>
       <button
         onClick={handleBtn}
-        className="absolute flex h-12 w-12 border bg-red-100 rounded-full z-[999999] bottom-0 right-0"
-      ></button>
+        className="absolute flex justify-center items-center h-12 w-12 border bg-bgBtnBold rounded-full z-[999999] bottom-0 right-0"
+      >
+        <Down />
+      </button>
     </div>
   )
 }

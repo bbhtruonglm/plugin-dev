@@ -6,14 +6,21 @@ interface ChatProps {
   currentPosition: string
   setPosition: (e: string) => void
   userName: string
+  userLoggedIn: (e: any) => void
 }
-function ChatScreen({ currentPosition, setPosition, userName }: ChatProps) {
+function ChatScreen({
+  currentPosition,
+  setPosition,
+  userName,
+  userLoggedIn,
+}: ChatProps) {
   const [position, setPos] = useState('overview')
   // const [clientId, setClientId] = useState('679be5049cac4e2e9caadfee547ff7eb')
   const [pageId, setPageId] = useState('3861367970af4b7cadacaec5d1443473')
   const [clientId, setClientId] = useState(() => {
     // Lấy ID từ localStorage khi component được tạo
     return localStorage.getItem(`client_id_<${pageId}>`) || ''
+    // return ''
   })
 
   useEffect(() => {
@@ -67,6 +74,7 @@ function ChatScreen({ currentPosition, setPosition, userName }: ChatProps) {
           onCancel={() => {
             setPos('overview')
             setPosition('overview')
+            userLoggedIn(clientId)
           }}
           userId={clientId}
         />

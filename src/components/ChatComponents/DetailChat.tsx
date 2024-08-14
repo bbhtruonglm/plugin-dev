@@ -1,17 +1,11 @@
-import {
-  ConversationInfo,
-  MessageInfo,
-  SocketEvent,
-  StaffSocket,
-} from '../../utils/type'
-import React, { useEffect, useRef, useState } from 'react'
-import useWebSocket, { ReadyState } from 'react-use-websocket'
+import { useEffect, useRef, useState } from 'react'
 
 import ChatHeader from './ChatHeader'
 import InputChat from './InputChat'
 import Loading from '../Loading/Loading'
 import LoadingDots from '../Loading/LoadingDot'
 import MessageComponent from './MessageComponent'
+import { MessageInfo } from '../../utils/type'
 import avatar1 from '../../assets/avatar1.png'
 import avatar2 from '../../assets/avatar2.png'
 
@@ -24,6 +18,10 @@ type Message = {
   page_id: string
   client_id: string
   text: string
+}
+type Temp_Message = {
+  message_text: string
+  message_mid: string
 }
 
 /**kết nối socket đến server */
@@ -38,6 +36,7 @@ function DetailChat({ onCancel, userId }: ChatScreenProps) {
   const [limit, setLimit] = useState(20)
   const [loadingMore, setLoadingMore] = useState(false)
   const [hasMore, setHasMore] = useState(true)
+  const [tempData, setTempData] = useState<Temp_Message | any>([])
   //Bắt các event scroll
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
   const messagesContainerRef = useRef<HTMLDivElement | null>(null)
@@ -84,12 +83,31 @@ function DetailChat({ onCancel, userId }: ChatScreenProps) {
   }, [])
 
   useEffect(() => {
-    setNewData([...newData, lastMessage])
+    const dataaa = [...newData, lastMessage]
+    console.log(dataaa, 'hello')
+    setNewData(dataaa)
+    // const tempFilter = tempData.filter((tempItem: any) => {
+    //   return !dataaa.some(
+    //     (aItem: any) => aItem.message_mid === tempItem.message_mid
+    //   )
+    // })
+    // console.log(tempFilter, 'temppp')
+    // setTempData(tempFilter)
+    // filterTemp(dataaa)
   }, [lastMessage])
 
-  useEffect(() => {
-    console.log(newData, 'newData')
-  }, [newData])
+  // const filterTemp = (data: any) => {
+  //   setTempData((prevTemp: any) =>
+  //     prevTemp.filter((tempItem: any) => {
+  //       return !data.some(
+  //         (aItem: any) => aItem.message_mid === tempItem.message_mid
+  //       )
+  //     })
+  //   )
+  // }
+  // useEffect(() => {
+  //   console.log(tempData, 'hhahahahahh')
+  // }, [tempData])
 
   function closeSocketConnect() {
     // gắn cờ ngăn chặn kết nối mở lại
@@ -230,13 +248,14 @@ function DetailChat({ onCancel, userId }: ChatScreenProps) {
   }
   // gui tin nhan di
   const sendMessage = async (e: any) => {
-    const message: Message = {
-      page_id: '3861367970af4b7cadacaec5d1443473',
-      client_id: userId,
-      text: input,
-    }
+    if (input.trim() === '') return
     try {
-      await fetch(
+      const message: Message = {
+        page_id: '3861367970af4b7cadacaec5d1443473',
+        client_id: userId,
+        text: input,
+      }
+      const response = await fetch(
         'https://dev-api.botbanhang.vn/v1/n7_public/embed/message/send_message',
         {
           method: 'POST',
@@ -251,7 +270,16 @@ function DetailChat({ onCancel, userId }: ChatScreenProps) {
           }),
         }
       )
+
+      const result = await response.json()
       // setTriggerFetch(true)
+      console.log(result, 'result')
+      let data = {
+        message_text: input,
+        message_mid: result.data,
+        message_type: 'client',
+      }
+      setTempData([...tempData, data])
       setInput('')
     } catch (error) {
     } finally {
@@ -270,7 +298,7 @@ function DetailChat({ onCancel, userId }: ChatScreenProps) {
       {/* body */}
       <div
         ref={messagesContainerRef}
-        className="p-2 mt-16 overflow-y-auto mb-16 scrollbar-thin scrollbar-webkit flex flex-col relative"
+        className="p-5  mt-16 overflow-y-auto mb-16 scrollbar-thin scrollbar-webkit flex flex-col relative"
       >
         {loadingMore && <Loading />}
         {/* render nội dung tin nhắn từ list có sẵn */}
@@ -313,6 +341,17 @@ function DetailChat({ onCancel, userId }: ChatScreenProps) {
             </div>
           </div>
         ))}
+        {/* {tempData.map((item: any, index: any) => (
+          <div
+            className="flex justify-end"
+            key={index}
+          >
+            <MessageComponent
+              data={item}
+              userId={userId}
+            />
+          </div>
+        ))} */}
         <div ref={messagesEndRef} />
         {/* Khi gửi tin nhắn sẽ hiển thị loading để call api */}
         {loading && (
