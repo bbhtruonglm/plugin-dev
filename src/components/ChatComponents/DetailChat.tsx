@@ -9,13 +9,12 @@ import useWebSocket, { ReadyState } from 'react-use-websocket'
 
 import ChatHeader from './ChatHeader'
 import InputChat from './InputChat'
+import Loading from '../Loading/Loading'
 import LoadingDots from '../Loading/LoadingDot'
 import MessageComponent from './MessageComponent'
 import avatar1 from '../../assets/avatar1.png'
 import avatar2 from '../../assets/avatar2.png'
-import validateConversation from './validate'
 
-const keys = require('lodash')
 const size = require('lodash')
 interface ChatScreenProps {
   onCancel: () => void
@@ -27,26 +26,52 @@ type Message = {
   text: string
 }
 
-type MessageData = {
-  conversation?: ConversationInfo
-  /**dữ liệu tin nhắn mới */
-  message?: MessageInfo
-  /**dữ liệu nhân viên */
-  staff?: StaffSocket
-  /**tên sự kiện */
-  event?: SocketEvent
-  /**dữ liệu tin nhắn cần cập nhật */
-  update_message?: MessageInfo
-}
 /**kết nối socket đến server */
 function DetailChat({ onCancel, userId }: ChatScreenProps) {
   const [newData, setNewData] = useState([] as any)
   const [loading, setLoading] = useState(false)
   const [input, setInput] = useState('')
-  const [triggerFetch, setTrigerFetch] = useState(false)
   const [lastMessage, setLastMessage] = useState({} as any)
   const [isForceCloseSocket, setIsForceCloseSocket] = useState(false)
   const ws = useRef<WebSocket | null>(null)
+  const [skip, setSkip] = useState(0)
+  const [limit, setLimit] = useState(20)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [hasMore, setHasMore] = useState(true)
+  //Bắt các event scroll
+  const messagesEndRef = useRef<HTMLDivElement | null>(null)
+  const messagesContainerRef = useRef<HTMLDivElement | null>(null)
+
+  //Function kéo xuống dưới cùng
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  const handleScroll = () => {
+    const container = messagesContainerRef.current
+    if (!container) return
+
+    // Kiểm tra nếu cuộn đến gần cuối
+    if (container.scrollTop === 0 && !loadingMore) {
+      fetchMessage()
+    }
+  }
+
+  useEffect(() => {
+    const container = messagesContainerRef.current
+
+    if (container) {
+      container.addEventListener('scroll', handleScroll)
+      return () => {
+        container.removeEventListener('scroll', handleScroll)
+      }
+    }
+  }, [loadingMore, hasMore])
+
+  useEffect(() => {
+    // Cuộn xuống cuối mỗi khi danh sách tin nhắn thay đổi
+    scrollToBottom()
+  }, [newData])
   // Ngăn kết nối mở lại
   useEffect(() => {
     return () => {
@@ -56,7 +81,15 @@ function DetailChat({ onCancel, userId }: ChatScreenProps) {
   // call api list tin nhan
   useEffect(() => {
     fetchMessage()
-  }, [triggerFetch, lastMessage])
+  }, [])
+
+  useEffect(() => {
+    setNewData([...newData, lastMessage])
+  }, [lastMessage])
+
+  useEffect(() => {
+    console.log(newData, 'newData')
+  }, [newData])
 
   function closeSocketConnect() {
     // gắn cờ ngăn chặn kết nối mở lại
@@ -66,13 +99,56 @@ function DetailChat({ onCancel, userId }: ChatScreenProps) {
   }
   // function goi list tin nhan
   const fetchMessage = async () => {
-    setTrigerFetch(false)
-    const response = await fetch(
-      `https://dev-api.botbanhang.vn/v1/n7_public/embed/message/read_message?page_id=3861367970af4b7cadacaec5d1443473&client_id=${userId}`
-    )
-    const result = await response.json()
-    console.log(result.data, 'result')
-    setNewData(result.data.reverse())
+    // đang loading hoặc không có thêm bản ghi sẽ không fetch data nữa
+    if (loadingMore || !hasMore) return
+    // Lấy vị trí scroll hiện tại, nếu k có thì return
+    const container = messagesContainerRef.current
+    if (!container) return
+    const scrollPosition = container.scrollHeight - container.scrollTop
+
+    // set loadingMore = true de k call lien tuc
+    setLoadingMore(true)
+
+    try {
+      const url = new URL(
+        'https://dev-api.botbanhang.vn/v1/n7_public/embed/message/read_message'
+      )
+
+      //setup params
+      const params = {
+        page_id: '3861367970af4b7cadacaec5d1443473',
+        client_id: userId,
+        limit: limit.toString(),
+        skip: skip.toString(),
+      }
+      url.search = new URLSearchParams(params).toString()
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          // 'Authorization': 'Bearer YOUR_ACCESS_TOKEN', // Nếu cần token xác thực
+        },
+      })
+      const result = await response.json()
+      // set call api se skip bn ban ghi
+      setSkip(skip + result.data.length)
+      //lưu data về phía trước do data đã bị reverse
+      setNewData([...result.data.reverse(), ...newData])
+      setTimeout(() => {
+        if (container) {
+          // Kiểm tra lại container trước khi sử dụng
+          container.scrollTop = container.scrollHeight - scrollPosition
+        }
+      }, 0)
+      // Neu data trả về k nhiều  = limit thì đã hết tin nhắn cũ
+      if (result.data.length !== limit) {
+        // k còn data nữa
+        setHasMore(false)
+      }
+    } catch (error) {
+    } finally {
+      setLoadingMore(false)
+    }
   }
   // goi api xac dinh danh tinh khi mo socket
   const sendIdentifyMessage = () => {
@@ -90,7 +166,7 @@ function DetailChat({ onCancel, userId }: ChatScreenProps) {
       setTimeout(sendIdentifyMessage, 100) // Thử lại sau 100ms nếu chưa kết nối
     }
   }
-  const autoPing = () => {}
+
   // Handle websocket
   function onSocketFromChatboxServer() {
     // Kết nối tới WebSocket server
@@ -102,16 +178,10 @@ function DetailChat({ onCancel, userId }: ChatScreenProps) {
       // thong bao connect thanh cong
       console.log('WebSocket Connectedddd')
       sendIdentifyMessage()
-      console.log(ws.current?.onopen, 'open')
-      console.log(
-        ws.current?.readyState,
-        'ready',
-        WebSocket.OPEN,
-        'websocket Open'
-      )
+
       if (ws.current?.readyState === WebSocket.OPEN) {
         // tu dong ping socket lien tuc 30s
-        console.log(ping_interval_id, 'wtf')
+
         ping_interval_id = setInterval(
           () => ws.current?.send('ping'),
           1000 * 25
@@ -165,23 +235,28 @@ function DetailChat({ onCancel, userId }: ChatScreenProps) {
       client_id: userId,
       text: input,
     }
-    await fetch(
-      'https://dev-api.botbanhang.vn/v1/n7_public/embed/message/send_message',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          // 'Authorization': 'Bearer YOUR_ACCESS_TOKEN', // Nếu cần token xác thực
-        },
-        body: JSON.stringify({
-          client_id: message.client_id,
-          page_id: message.page_id,
-          text: message.text,
-        }),
-      }
-    )
-    setTrigerFetch(true)
-    setInput('')
+    try {
+      await fetch(
+        'https://dev-api.botbanhang.vn/v1/n7_public/embed/message/send_message',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            // 'Authorization': 'Bearer YOUR_ACCESS_TOKEN', // Nếu cần token xác thực
+          },
+          body: JSON.stringify({
+            client_id: message.client_id,
+            page_id: message.page_id,
+            text: message.text,
+          }),
+        }
+      )
+      // setTriggerFetch(true)
+      setInput('')
+    } catch (error) {
+    } finally {
+      setLoading(false)
+    }
   }
   // goi ham khoi tao socket
   useEffect(() => {
@@ -193,9 +268,12 @@ function DetailChat({ onCancel, userId }: ChatScreenProps) {
       {/* header */}
       <ChatHeader onCancel={onCancel} />
       {/* body */}
-      <div className="p-2 mt-16 overflow-y-auto mb-16 scrollbar-thin scrollbar-webkit flex flex-col relative">
+      <div
+        ref={messagesContainerRef}
+        className="p-2 mt-16 overflow-y-auto mb-16 scrollbar-thin scrollbar-webkit flex flex-col relative"
+      >
+        {loadingMore && <Loading />}
         {/* render nội dung tin nhắn từ list có sẵn */}
-
         {newData.map((item: any, index: number) => (
           <div
             className="flex flex-col"
@@ -235,9 +313,10 @@ function DetailChat({ onCancel, userId }: ChatScreenProps) {
             </div>
           </div>
         ))}
+        <div ref={messagesEndRef} />
         {/* Khi gửi tin nhắn sẽ hiển thị loading để call api */}
         {loading && (
-          <div className="fixed bg-red-300 bottom-[25%] left-[48%] p-2 rounded-full text-xs z-50">
+          <div className="fixed bg-red-300 bottom-[42%] left-[48%] p-2 rounded-full text-xs z-50">
             <LoadingDots />
           </div>
         )}
@@ -247,15 +326,7 @@ function DetailChat({ onCancel, userId }: ChatScreenProps) {
         handleSend={(e) => {
           setLoading(true)
           // Thêm data mới nhập vào list có sẵn
-
-          // giả sử loading // sau nó update lại data
-
-          // setInput(e)
-          setTimeout(() => {
-            setLoading(false)
-            // setDataMessage(updateData)
-            sendMessage(e)
-          }, 1000)
+          sendMessage(e)
         }}
         loading={loading}
         onChangeText={(e) => {

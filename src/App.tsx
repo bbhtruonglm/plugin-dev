@@ -7,7 +7,7 @@ import Login from './components/Login'
 import logo from './logo.svg'
 
 function App() {
-  const [is_show, setShow] = useState(false)
+  const [is_show, setShow] = useState(true)
 
   const handleMessage = () => {
     window.parent.postMessage(

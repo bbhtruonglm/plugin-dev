@@ -1,9 +1,7 @@
-import React, { useState } from 'react'
-
-import IconExtract from '../../assets/extract.svg'
-import IconSend from '../../assets/send.svg'
 import IconSquare from '../../assets/square-slash.svg'
+import { ReactComponent as SendingIcon } from '../../assets/send.svg'
 import Upload from './Upload'
+import { useState } from 'react'
 
 interface InputProps {
   handleSend: (e: any) => void
@@ -12,16 +10,17 @@ interface InputProps {
 }
 function InputChat({ handleSend, loading, onChangeText }: InputProps) {
   const [value, setValue] = useState('')
+
+  const handleKeyDown = (event: any) => {
+    if (event.key === 'Enter') {
+      event.preventDefault()
+      handleSend(value)
+      setValue('')
+    }
+  }
   return (
     <div className="absolute bottom-4 flex justify-center items-center h-12 bg-transparent w-full px-4 gap-2">
       <div className="bg-white w-full flex justify-between gap-2 items-center h-full p-2 px-4 rounded-full">
-        {/* <div>
-          <img
-            src={IconExtract}
-            className="h-6 w-6 cursor-pointer"
-            alt=""
-          />
-        </div> */}
         <Upload />
         <input
           onChange={(e) => {
@@ -29,6 +28,9 @@ function InputChat({ handleSend, loading, onChangeText }: InputProps) {
             onChangeText(e.target.value)
           }}
           value={value}
+          onKeyDown={(e) => {
+            handleKeyDown(e)
+          }}
           type="text"
           placeholder="Gửi tin nhắn đến Bot Ban Hang"
           className="bg-transparent outline-none flex-grow placeholder:text-colorOpacity text-sm font-medium"
@@ -50,11 +52,7 @@ function InputChat({ handleSend, loading, onChangeText }: InputProps) {
             }
           }}
         >
-          <img
-            src={IconSend}
-            className="h-6 w-6 cursor-pointer"
-            alt=""
-          />
+          <SendingIcon />
         </div>
       )}
     </div>
