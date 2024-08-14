@@ -90,6 +90,7 @@ function DetailChat({ onCancel, userId }: ChatScreenProps) {
       setTimeout(sendIdentifyMessage, 100) // Thử lại sau 100ms nếu chưa kết nối
     }
   }
+  const autoPing = () => {}
   // Handle websocket
   function onSocketFromChatboxServer() {
     // Kết nối tới WebSocket server
@@ -99,14 +100,25 @@ function DetailChat({ onCancel, userId }: ChatScreenProps) {
 
     ws.current.onopen = () => {
       // thong bao connect thanh cong
-      console.log('WebSocket Connected')
+      console.log('WebSocket Connectedddd')
       sendIdentifyMessage()
+      console.log(ws.current?.onopen, 'open')
+      console.log(
+        ws.current?.readyState,
+        'ready',
+        WebSocket.OPEN,
+        'websocket Open'
+      )
       if (ws.current?.readyState === WebSocket.OPEN) {
         // tu dong ping socket lien tuc 30s
+        console.log(ping_interval_id, 'wtf')
         ping_interval_id = setInterval(
           () => ws.current?.send('ping'),
-          1000 * 30
+          1000 * 25
         )
+      } else {
+        console.log('WebSocket is not open yet. Retrying...')
+        setTimeout(sendIdentifyMessage, 100) // Thử lại sau 100ms nếu chưa kết nối
       }
     }
 
@@ -114,16 +126,8 @@ function DetailChat({ onCancel, userId }: ChatScreenProps) {
       if (!data || data === 'pong') return
       /**dữ liệu socket nhận được */
       let socket_data: {
-        /**dữ liệu của khách hàng */
-        conversation?: ConversationInfo
         /**dữ liệu tin nhắn mới */
         message?: MessageInfo
-        /**dữ liệu nhân viên */
-        staff?: StaffSocket
-        /**tên sự kiện */
-        event?: SocketEvent
-        /**dữ liệu tin nhắn cần cập nhật */
-        update_message?: MessageInfo
       } = {}
 
       // cố gắng giải mã dữ liệu

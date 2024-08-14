@@ -6,7 +6,7 @@ interface ChatScreenProps {
 }
 function ChatHeader({ onCancel }: ChatScreenProps) {
   return (
-    <div className="flex bg-[#1E293B] h-16 w-full items-center py-3 px-5 gap-2 absolute top-0">
+    <div className="flex bg-bgBtnBold h-16 w-full items-center py-3 px-5 gap-2 absolute top-0">
       <img
         onClick={() => onCancel()}
         src={blackArrow}
@@ -21,8 +21,8 @@ function ChatHeader({ onCancel }: ChatScreenProps) {
         />
         <div>
           <h2 className="text-white text-sm font-medium">Hoàng Lan</h2>
-          <h5 className="flex gap-1 items-center font-normal text-xs text-[#16A34A]">
-            <div className="w-4 h-4 rounded-full bg-[#16A34A]"></div> Đang
+          <h5 className="flex gap-1 items-center font-normal text-xs text-onlineColor">
+            <div className="w-4 h-4 rounded-full bg-onlineColor"></div> Đang
             online
           </h5>
         </div>

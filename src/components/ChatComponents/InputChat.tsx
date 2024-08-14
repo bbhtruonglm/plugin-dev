@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import IconExtract from '../../assets/extract.svg'
 import IconSend from '../../assets/send.svg'
 import IconSquare from '../../assets/square-slash.svg'
+import Upload from './Upload'
 
 interface InputProps {
   handleSend: (e: any) => void
@@ -14,13 +15,14 @@ function InputChat({ handleSend, loading, onChangeText }: InputProps) {
   return (
     <div className="absolute bottom-4 flex justify-center items-center h-12 bg-transparent w-full px-4 gap-2">
       <div className="bg-white w-full flex justify-between gap-2 items-center h-full p-2 px-4 rounded-full">
-        <div>
+        {/* <div>
           <img
             src={IconExtract}
             className="h-6 w-6 cursor-pointer"
             alt=""
           />
-        </div>
+        </div> */}
+        <Upload />
         <input
           onChange={(e) => {
             setValue(e.target.value)

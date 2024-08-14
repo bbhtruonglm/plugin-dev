@@ -58,11 +58,13 @@ function ChatComponent({ userName, handleBtn, show }: ChatProps) {
       <div
         className={` ${
           show ? 'flex' : 'hidden'
-        }  flex-col relative w-[400px] h-[600px] bg-gradient-to-r from-[#EEEDF3] to-[#DCDFFC] rounded-[20px] overflow-hidden shadow-md`}
+        }  flex-col relative w-[400px] h-[600px] bg-bg-gradient rounded-[20px] overflow-hidden shadow-md`}
       >
         {/* header */}
         {chatPosition === 'overview' && (
-          <div className={'flex justify-between p-3 bg-[#1E293B] text-white'}>
+          <div
+            className={'flex justify-between px-5 py-3 bg-bgBtnBold text-white'}
+          >
             <div>
               <img
                 src={IconApp}
@@ -74,7 +76,7 @@ function ChatComponent({ userName, handleBtn, show }: ChatProps) {
             <div className="flex items-center">
               <img
                 src={avatar1}
-                className="mask is-squircle -mr-2 h-8 w-8"
+                className="mask  -mr-2 h-8 w-8"
                 alt=""
               />
               <img
@@ -84,7 +86,7 @@ function ChatComponent({ userName, handleBtn, show }: ChatProps) {
               />
               <img
                 src={avatar3}
-                className="mask is-squircle h-8 w-8"
+                className="mask  h-8 w-8"
                 alt=""
               />
             </div>
@@ -115,7 +117,7 @@ function ChatComponent({ userName, handleBtn, show }: ChatProps) {
         {/* menu */}
 
         {chatPosition === 'overview' && (
-          <div className="absolute bottom-0 w-full flex justify-evenly p-2 px-6 h-[64px] z-20 bg-gradient-to-r from-[#EEEDF3] to-[#DCDFFC]">
+          <div className="absolute bottom-0 w-full flex justify-evenly p-2 px-6 h-[64px] z-20 bg-bg-gradient">
             {menuList.map((item, index) => (
               <div
                 key={index}
@@ -144,7 +146,7 @@ function ChatComponent({ userName, handleBtn, show }: ChatProps) {
                 <p
                   className={
                     currentTab === item.value
-                      ? 'font-bold'
+                      ? 'text-md font-medium'
                       : 'text-md font-medium'
                   }
                 >
