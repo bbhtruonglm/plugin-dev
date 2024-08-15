@@ -33,7 +33,7 @@ function MessageComponent({ data, userId }: MessageProps) {
 
   return (
     <div
-      className={`flex p-2 flex-col gap-y-4 w-[60%] rounded-lg ${
+      className={`flex p-2 flex-col gap-y-4 max-w-[60%] rounded-lg ${
         data.message_type === 'page' ? 'bg-white' : 'bg-messBg'
       }`}
     >
@@ -63,7 +63,9 @@ function MessageComponent({ data, userId }: MessageProps) {
       )}
       {data?.message_text && (
         <div>
-          <p className="text-xs min-h-4">{data.message_text}</p>
+          <p className="text-xs min-h-4 whitespace-pre-line">
+            {data.message_text}
+          </p>
         </div>
       )}
       {data?.content?.schedule && (

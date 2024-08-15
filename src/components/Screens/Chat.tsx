@@ -16,8 +16,8 @@ function ChatScreen({
   userLoggedIn,
 }: ChatProps) {
   const [position, setPos] = useState('detail')
-  // const [clientId, setClientId] = useState('679be5049cac4e2e9caadfee547ff7eb')
   const [pageId, setPageId] = useState('3861367970af4b7cadacaec5d1443473')
+
   const [clientId, setClientId] = useState(() => {
     // Lấy ID từ localStorage khi component được tạo
     return localStorage.getItem(`client_id_<${pageId}>`) || ''
@@ -25,15 +25,6 @@ function ChatScreen({
   })
   const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    // Lưu ID vào localStorage khi nó thay đổi
-    if (clientId) {
-      localStorage.setItem(`client_id_<${pageId}>`, clientId)
-      // localStorage.setItem(`client_id_<${pageId}>`, '')
-      setPos('detail')
-      setPosition('detail')
-    }
-  }, [clientId])
   const initGetClientId = async (e: any) => {
     console.log(e, 'eeeee')
     try {
@@ -54,11 +45,12 @@ function ChatScreen({
       const result = await response.json()
       // luu vao localStorage
       setClientId(result.data)
-      console.log(result, 'json')
+      // console.log(result, 'json')
+      localStorage.setItem(`client_id_<${pageId}>`, result.data)
     } catch (err) {
     } finally {
-      console.log('finally')
       setTimeout(() => {
+        // Tắt loading init client
         setLoading(false)
       }, 1000)
     }
@@ -66,28 +58,9 @@ function ChatScreen({
 
   return (
     <div className="flex w-full h-full justify-center items-center flex-col">
-      {/* {position === 'overview' && !clientId && (
-        <div
-          onClick={() => {
-            // call api init client
-            if (!clientId) {
-              initGetClientId()
-            } else {
-              setPos('detail')
-              setPosition('detail')
-            }
-          }}
-          className="cursor-pointer flex justify-center items-center border-2 p-4 bg-red-50 rounded-md"
-        >
-          Start to Chat
-        </div>
-      )} */}
-      {/* <InitClient /> */}
       {position === 'detail' && (
         <DetailChat
           onCancel={() => {
-            // setPos('overview')
-            // setPosition('overview')
             userLoggedIn(clientId)
           }}
           userId={clientId}

@@ -4,6 +4,7 @@ import ChatScreen from './Screens/Chat'
 import { ReactComponent as Down } from '../assets/arrow.svg'
 import Home from './Screens/Home'
 import { ReactComponent as IconApp } from '../assets/logo.svg'
+import { ReactComponent as Up } from '../assets/arrow-up-right-square.svg'
 import { ReactComponent as activeHome } from '../assets/home-active.svg'
 import { ReactComponent as activeMessage } from '../assets/messageA.svg'
 import { ReactComponent as activeNew } from '../assets/Subtract.svg'
@@ -21,7 +22,7 @@ interface ChatProps {
   handleBtn: () => void
   show: boolean
 }
-function ChatComponent({ userName, handleBtn, show }: ChatProps) {
+const ChatComponent: React.FC<ChatProps> = ({ userName, handleBtn, show }) => {
   const menuList = [
     {
       name: 'Trang chủ',
@@ -69,12 +70,6 @@ function ChatComponent({ userName, handleBtn, show }: ChatProps) {
             }
           >
             <div>
-              {/* <img
-                src={IconApp}
-                alt="src"
-                width={36}
-                height={44}
-              /> */}
               <IconApp
                 width={36}
                 height={44}
@@ -174,7 +169,9 @@ function ChatComponent({ userName, handleBtn, show }: ChatProps) {
       </div>
       <button
         onClick={handleBtn}
-        className="absolute flex justify-center items-center h-12 w-12 border bg-bgBtnBold rounded-full z-[999999] bottom-0 right-0"
+        className={`absolute flex justify-center items-center h-12 w-12 border bg-bgBtnBold rounded-full z-[999999] bottom-0 right-0 transform ${
+          show ? '' : '-scale-y-100'
+        }`}
       >
         <Down />
       </button>

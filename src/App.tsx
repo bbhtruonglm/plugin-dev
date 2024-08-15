@@ -1,10 +1,9 @@
 import './App.css'
 
-import React, { useEffect, useState } from 'react'
+import React, { FC, useEffect, useState } from 'react'
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 
 import ChatComponent from './components/Icon.chat'
-import Login from './components/Login'
-import logo from './logo.svg'
 
 function App() {
   const [is_show, setShow] = useState(true)
@@ -21,16 +20,21 @@ function App() {
 
   return (
     <div className="flex flex-col justify-center items-center ">
-      {
-        <ChatComponent
-          userName={''}
-          handleBtn={() => {
-            handleMessage()
-            setShow(!is_show)
-          }}
-          show={is_show}
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <ChatComponent
+              userName={''}
+              handleBtn={() => {
+                handleMessage()
+                setShow(!is_show)
+              }}
+              show={is_show}
+            />
+          }
         />
-      }
+      </Routes>
     </div>
   )
 }

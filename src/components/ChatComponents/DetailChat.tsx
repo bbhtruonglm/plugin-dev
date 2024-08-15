@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 
 import ChatHeader from './ChatHeader'
+import { ReactComponent as Down } from '../../assets/arrow.svg'
 import InitClient from './InitClient'
 import InputChat from './InputChat'
 import Loading from '../Loading/Loading'
@@ -47,7 +48,8 @@ function DetailChat({
   const [loadingMore, setLoadingMore] = useState(false)
   const [hasMore, setHasMore] = useState(true)
   const [tempData, setTempData] = useState<Temp_Message | any>([])
-
+  const [scrollAtBottom, setScrollAtBottom] = useState(true)
+  const [showJumpButton, setShowJumpButton] = useState(false)
   // Thông tin user khi khởi tạo chat
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
@@ -65,10 +67,22 @@ function DetailChat({
     const container = messagesContainerRef.current
     if (!container) return
 
-    // Kiểm tra nếu cuộn đến gần cuối
-    if (container.scrollTop === 0 && !loadingMore) {
+    const scrollThreshold = container.scrollHeight * 0.3 // 15% chiều cao
+
+    // Den khoang 15% tren top thi load more tin nhan cu
+    if (container.scrollTop <= scrollThreshold && !loadingMore) {
       fetchMessage()
     }
+
+    const atBottom =
+      container.scrollTop + container.clientHeight >= container.scrollHeight - 1
+    setScrollAtBottom(atBottom)
+
+    // Hiển thị nút "Nhảy về cuối" khi người dùng cuộn lên trên
+    setShowJumpButton(!atBottom)
+    // setScrollAtBottom(
+    //   container.scrollTop + container.clientHeight >= container.scrollHeight - 1
+    // )
   }
 
   useEffect(() => {
@@ -84,8 +98,10 @@ function DetailChat({
 
   useEffect(() => {
     // Cuộn xuống cuối mỗi khi danh sách tin nhắn thay đổi
-    scrollToBottom()
-  }, [newData])
+    if (scrollAtBottom) {
+      scrollToBottom()
+    }
+  }, [newData, scrollAtBottom])
   // Ngăn kết nối mở lại
   useEffect(() => {
     return () => {
@@ -97,21 +113,24 @@ function DetailChat({
     //Nếu có clientId thì mới fetch api
     if (userId) {
       fetchMessage()
+      onSocketFromChatboxServer()
     }
   }, [userId])
 
   useEffect(() => {
-    const dataaa = [...newData, lastMessage]
-    console.log(dataaa, 'hello')
-    setNewData(dataaa)
-    // const tempFilter = tempData.filter((tempItem: any) => {
-    //   return !dataaa.some(
-    //     (aItem: any) => aItem.message_mid === tempItem.message_mid
-    //   )
-    // })
-    // console.log(tempFilter, 'temppp')
-    // setTempData(tempFilter)
-    // filterTemp(dataaa)
+    if (Object.keys(lastMessage).length !== 0) {
+      const dataaa = [...newData, lastMessage]
+
+      setNewData(dataaa)
+      // const tempFilter = tempData.filter((tempItem: any) => {
+      //   return !dataaa.some(
+      //     (aItem: any) => aItem.message_mid === tempItem.message_mid
+      //   )
+      // })
+      // console.log(tempFilter, 'temppp')
+      // setTempData(tempFilter)
+      // filterTemp(dataaa)
+    }
   }, [lastMessage])
 
   // const filterTemp = (data: any) => {
@@ -276,6 +295,7 @@ function DetailChat({
         client_id: userId,
         text: input,
       }
+      console.log(message, 'messageeee')
       const response = await fetch(
         'https://dev-api.botbanhang.vn/v1/n7_public/embed/message/send_message',
         {
@@ -300,17 +320,13 @@ function DetailChat({
         message_mid: result.data,
         message_type: 'client',
       }
-      setTempData([...tempData, data])
+      // setTempData([...tempData, data])
       setInput('')
     } catch (error) {
     } finally {
       setLoading(false)
     }
   }
-  // goi ham khoi tao socket
-  useEffect(() => {
-    onSocketFromChatboxServer()
-  }, [])
 
   return (
     <div className="flex flex-col w-full h-full absolute top-0">
@@ -322,7 +338,7 @@ function DetailChat({
       {/* body */}
       <div
         ref={messagesContainerRef}
-        className={`p-5  overflow-y-auto mb-16 scrollbar-thin scrollbar-webkit flex flex-col relative ${
+        className={`p-5 gap-4 overflow-y-auto mb-16 scrollbar-thin scrollbar-webkit flex flex-col relative ${
           userId ? 'mt-16' : 'mt-[174px]'
         }`}
       >
@@ -350,9 +366,9 @@ function DetailChat({
             >
               {/* Hiển thị avatar theo role user / shop */}
               <div
-                className={`flex w-full pb-4 gap-1 ${
+                className={`flex w-full py-2 gap-1 ${
                   item.message_type === 'page'
-                    ? ' justify-start items-end'
+                    ? ' justify-start items-start'
                     : ' justify-end items-end'
                 }`}
               >
@@ -396,7 +412,7 @@ function DetailChat({
         <div ref={messagesEndRef} />
         {/* Khi gửi tin nhắn sẽ hiển thị loading để call api */}
         {loading && (
-          <div className="fixed bg-red-300 bottom-[42%] left-[48%] p-2 rounded-full text-xs z-50">
+          <div className="fixed bg-blue-300 bottom-[42%] left-[48%] p-2 rounded-full text-xs z-50">
             <LoadingDots />
           </div>
         )}
@@ -406,6 +422,18 @@ function DetailChat({
           </div>
         )}
       </div>
+      {showJumpButton && (
+        <button
+          onClick={scrollToBottom}
+          className="absolute flex justify-center items-center h-[30px] w-[30px] shadow-md bg-white rounded-full z-[999999] bottom-[13%] right-[45%]"
+        >
+          <Down
+            width={10}
+            height={5}
+            stroke="#000000"
+          />
+        </button>
+      )}
       {/* o input  Khi có text trong input thì hiển thị thêm icon send */}
       <InputChat
         handleSend={(e) => {
@@ -419,6 +447,7 @@ function DetailChat({
               page_id: '3861367970af4b7cadacaec5d1443473',
             })
           } else {
+            console.log('sendmessage')
             // có clientId thì gửi tin nhắn như bình thường
             sendMessage(e)
             setLoading(true)
