@@ -50,6 +50,7 @@ function DetailChat({
   const [tempData, setTempData] = useState<Temp_Message | any>([])
   const [scrollAtBottom, setScrollAtBottom] = useState(true)
   const [showJumpButton, setShowJumpButton] = useState(false)
+  const [initMessage, setInitMessage] = useState('')
   // Thông tin user khi khởi tạo chat
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
@@ -111,13 +112,16 @@ function DetailChat({
   // call api list tin nhan
   useEffect(() => {
     //Nếu có clientId thì mới fetch api
+    console.log(userId, ' khi co usser Id')
     if (userId) {
-      fetchMessage()
       onSocketFromChatboxServer()
+      fetchMessage()
+      sendMessage(initMessage)
     }
   }, [userId])
 
   useEffect(() => {
+    console.log(lastMessage, 'last message')
     if (Object.keys(lastMessage).length !== 0) {
       const dataaa = [...newData, lastMessage]
 
@@ -287,7 +291,7 @@ function DetailChat({
     }
   }
   // gui tin nhan di
-  const sendMessage = async (e: any) => {
+  const sendMessage = async (input: any) => {
     if (input.trim() === '') return
     try {
       const message: Message = {
@@ -315,13 +319,14 @@ function DetailChat({
       const result = await response.json()
       // setTriggerFetch(true)
       console.log(result, 'result')
-      let data = {
-        message_text: input,
-        message_mid: result.data,
-        message_type: 'client',
-      }
+      // let data = {
+      //   message_text: input,
+      //   message_mid: result.data,
+      //   message_type: 'client',
+      // }
       // setTempData([...tempData, data])
       setInput('')
+      setInitMessage('')
     } catch (error) {
     } finally {
       setLoading(false)
@@ -446,6 +451,8 @@ function DetailChat({
               name,
               page_id: '3861367970af4b7cadacaec5d1443473',
             })
+            console.log(e, ' eeeee')
+            setInitMessage(e)
           } else {
             console.log('sendmessage')
             // có clientId thì gửi tin nhắn như bình thường

@@ -16,6 +16,7 @@ import { ReactComponent as intiveHome } from '../assets/home.svg'
 import { ReactComponent as intiveMessage } from '../assets/message.svg'
 import { ReactComponent as intiveNews } from '../assets/notification.svg'
 import { ReactComponent as intiveSupport } from '../assets/support.svg'
+import { useNavigate } from 'react-router-dom'
 
 interface ChatProps {
   userName: string
@@ -23,6 +24,7 @@ interface ChatProps {
   show: boolean
 }
 const ChatComponent: React.FC<ChatProps> = ({ userName, handleBtn, show }) => {
+  const navigate = useNavigate()
   const menuList = [
     {
       name: 'Trang chủ',
@@ -115,6 +117,7 @@ const ChatComponent: React.FC<ChatProps> = ({ userName, handleBtn, show }) => {
               userLoggedIn={(e) => {
                 // settab hien tai thanh home
                 setCurrentTab('home')
+                navigate('/')
                 // set thanh overview de hien thi tab menu
                 setChatPosition('overview')
               }}
@@ -141,6 +144,7 @@ const ChatComponent: React.FC<ChatProps> = ({ userName, handleBtn, show }) => {
                       setChatPosition('overview')
                     } else {
                       // ẩn menu
+                      navigate('/?page_id=3861367970af4b7cadacaec5d1443473')
                       setChatPosition('detail')
                     }
                   }}
