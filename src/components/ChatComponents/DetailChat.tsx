@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 
 import ChatHeader from './ChatHeader'
+import InitClient from './InitClient'
 import InputChat from './InputChat'
 import Loading from '../Loading/Loading'
 import LoadingDots from '../Loading/LoadingDot'
@@ -13,6 +14,9 @@ const size = require('lodash')
 interface ChatScreenProps {
   onCancel: () => void
   userId: string
+  onInitClient: (e: any) => void
+  loadingInit: boolean
+  setLoadingInit: (e: any) => void
 }
 type Message = {
   page_id: string
@@ -25,7 +29,13 @@ type Temp_Message = {
 }
 
 /**kết nối socket đến server */
-function DetailChat({ onCancel, userId }: ChatScreenProps) {
+function DetailChat({
+  onCancel,
+  userId,
+  onInitClient,
+  loadingInit,
+  setLoadingInit,
+}: ChatScreenProps) {
   const [newData, setNewData] = useState([] as any)
   const [loading, setLoading] = useState(false)
   const [input, setInput] = useState('')
@@ -37,6 +47,11 @@ function DetailChat({ onCancel, userId }: ChatScreenProps) {
   const [loadingMore, setLoadingMore] = useState(false)
   const [hasMore, setHasMore] = useState(true)
   const [tempData, setTempData] = useState<Temp_Message | any>([])
+
+  // Thông tin user khi khởi tạo chat
+  const [name, setName] = useState('')
+  const [phone, setPhone] = useState('')
+  const [email, setEmail] = useState('')
   //Bắt các event scroll
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
   const messagesContainerRef = useRef<HTMLDivElement | null>(null)
@@ -79,8 +94,11 @@ function DetailChat({ onCancel, userId }: ChatScreenProps) {
   }, [])
   // call api list tin nhan
   useEffect(() => {
-    fetchMessage()
-  }, [])
+    //Nếu có clientId thì mới fetch api
+    if (userId) {
+      fetchMessage()
+    }
+  }, [userId])
 
   useEffect(() => {
     const dataaa = [...newData, lastMessage]
@@ -147,9 +165,11 @@ function DetailChat({ onCancel, userId }: ChatScreenProps) {
           // 'Authorization': 'Bearer YOUR_ACCESS_TOKEN', // Nếu cần token xác thực
         },
       })
+
       const result = await response.json()
       // set call api se skip bn ban ghi
       setSkip(skip + result.data.length)
+      console.log(result, 'resulllllllt')
       //lưu data về phía trước do data đã bị reverse
       setNewData([...result.data.reverse(), ...newData])
       setTimeout(() => {
@@ -225,6 +245,7 @@ function DetailChat({ onCancel, userId }: ChatScreenProps) {
 
       if (!size(socket_data)) return
       let { message } = socket_data
+      console.log(message, '????????')
       // luu tin nhan moi nhat vao state
       setLastMessage(message)
     }
@@ -294,53 +315,73 @@ function DetailChat({ onCancel, userId }: ChatScreenProps) {
   return (
     <div className="flex flex-col w-full h-full absolute top-0">
       {/* header */}
-      <ChatHeader onCancel={onCancel} />
+      <ChatHeader
+        onCancel={onCancel}
+        userId={userId}
+      />
       {/* body */}
       <div
         ref={messagesContainerRef}
-        className="p-5  mt-16 overflow-y-auto mb-16 scrollbar-thin scrollbar-webkit flex flex-col relative"
+        className={`p-5  overflow-y-auto mb-16 scrollbar-thin scrollbar-webkit flex flex-col relative ${
+          userId ? 'mt-16' : 'mt-[174px]'
+        }`}
       >
-        {loadingMore && <Loading />}
+        {userId && loadingMore && <Loading />}
+        {!userId && (
+          <InitClient
+            setUsername={(e) => {
+              setName(e)
+            }}
+            setUserEmail={(e) => {
+              setEmail(e)
+            }}
+            setUserPhone={(e) => {
+              setPhone(e)
+            }}
+          />
+        )}
+
         {/* render nội dung tin nhắn từ list có sẵn */}
-        {newData.map((item: any, index: number) => (
-          <div
-            className="flex flex-col"
-            key={index}
-          >
-            {/* Hiển thị avatar theo role user / shop */}
+        {userId &&
+          newData.map((item: any, index: number) => (
             <div
-              className={`flex w-full pb-4 gap-1 ${
-                item.message_type === 'page'
-                  ? ' justify-start items-end'
-                  : ' justify-end items-end'
-              }`}
+              className="flex flex-col"
+              key={index}
             >
-              {item.message_type === 'page' && (
-                <div className="flex rounded-lg">
-                  <img
-                    src={avatar1}
-                    className="w-6 h-6"
-                    alt=""
-                  />
-                </div>
-              )}
-              {/* Phần nội dung tin nhắn được hiển thị */}
-              <MessageComponent
-                data={item}
-                userId={userId}
-              />
-              {item.message_type === 'client' && (
-                <div className="flex rounded-lg">
-                  <img
-                    src={avatar2}
-                    className="w-6 h-6"
-                    alt=""
-                  />
-                </div>
-              )}
+              {/* Hiển thị avatar theo role user / shop */}
+              <div
+                className={`flex w-full pb-4 gap-1 ${
+                  item.message_type === 'page'
+                    ? ' justify-start items-end'
+                    : ' justify-end items-end'
+                }`}
+              >
+                {item.message_type === 'page' && (
+                  <div className="flex rounded-lg">
+                    <img
+                      src={avatar1}
+                      className="w-6 h-6"
+                      alt=""
+                    />
+                  </div>
+                )}
+                {/* Phần nội dung tin nhắn được hiển thị */}
+                <MessageComponent
+                  data={item}
+                  userId={userId}
+                />
+                {item.message_type === 'client' && (
+                  <div className="flex rounded-lg">
+                    <img
+                      src={avatar2}
+                      className="w-6 h-6"
+                      alt=""
+                    />
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
         {/* {tempData.map((item: any, index: any) => (
           <div
             className="flex justify-end"
@@ -359,13 +400,29 @@ function DetailChat({ onCancel, userId }: ChatScreenProps) {
             <LoadingDots />
           </div>
         )}
+        {loadingInit && (
+          <div className="fixed bg-red-300 bottom-[42%] left-[48%] p-2 rounded-full text-xs z-50">
+            <LoadingDots />
+          </div>
+        )}
       </div>
       {/* o input  Khi có text trong input thì hiển thị thêm icon send */}
       <InputChat
         handleSend={(e) => {
-          setLoading(true)
-          // Thêm data mới nhập vào list có sẵn
-          sendMessage(e)
+          // Khi chua co clientId Call function Khởi tạo
+          if (!userId) {
+            setLoadingInit(true)
+            onInitClient({
+              phone,
+              email,
+              name,
+              page_id: '3861367970af4b7cadacaec5d1443473',
+            })
+          } else {
+            // có clientId thì gửi tin nhắn như bình thường
+            sendMessage(e)
+            setLoading(true)
+          }
         }}
         loading={loading}
         onChangeText={(e) => {

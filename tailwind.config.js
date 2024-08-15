@@ -17,6 +17,7 @@ module.exports = {
         bgBtnLight: '#475569',
         textYellow: '#FEF08A',
         onlineColor: '#22C55E',
+        inputBg: '#F3F4F7',
       },
       // animation: {
       //   spinSlow: 'spin 3s linear infinite', // Adding a slower spin animation

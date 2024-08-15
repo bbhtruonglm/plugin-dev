@@ -118,16 +118,17 @@ function ChatComponent({ userName, handleBtn, show }: ChatProps) {
               setPosition={(e) => setChatPosition(e)}
               userName={userName}
               userLoggedIn={(e) => {
-                if (e) {
-                  setCurrentTab('home')
-                }
+                // settab hien tai thanh home
+                setCurrentTab('home')
+                // set thanh overview de hien thi tab menu
+                setChatPosition('overview')
               }}
             />
           )}
         </div>
 
         {/* menu */}
-
+        {/* Nếu trạng thái là overview thì mới hiển thị menu */}
         {chatPosition === 'overview' && (
           <div className="absolute bottom-0 w-full flex justify-evenly p-2 px-6 h-[64px] z-20 bg-bg-gradient">
             {menuList.map(
@@ -140,9 +141,16 @@ function ChatComponent({ userName, handleBtn, show }: ChatProps) {
                   className="flex flex-col w-full h-full justify-center items-center cursor-pointer"
                   onClick={() => {
                     setCurrentTab(value)
-                    setChatPosition('overview')
+                    if (value !== 'message') {
+                      // tab !== 'message' thì overview để hiển thị menu
+                      setChatPosition('overview')
+                    } else {
+                      // ẩn menu
+                      setChatPosition('detail')
+                    }
                   }}
                 >
+                  {/* active menu tab */}
                   {currentTab === value ? (
                     <IconComponentA />
                   ) : (
