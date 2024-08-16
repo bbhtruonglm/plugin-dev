@@ -68,9 +68,9 @@ function DetailChat({
     const container = messagesContainerRef.current
     if (!container) return
 
-    const scrollThreshold = container.scrollHeight * 0.3 // 15% chiều cao
+    const scrollThreshold = container.scrollHeight * 0.3 // 30% chiều cao
 
-    // Den khoang 15% tren top thi load more tin nhan cu
+    // Den khoang 30% tren top thi load more tin nhan cu
     if (container.scrollTop <= scrollThreshold && !loadingMore) {
       fetchMessage()
     }
@@ -112,17 +112,23 @@ function DetailChat({
   // call api list tin nhan
   useEffect(() => {
     //Nếu có clientId thì mới fetch api
-    console.log(userId, ' khi co usser Id')
+
     if (userId) {
       onSocketFromChatboxServer()
-      fetchMessage()
+
+      // check có user Id sẽ send init message
       sendMessage(initMessage)
+      fetchMessage()
     }
   }, [userId])
 
   useEffect(() => {
-    console.log(lastMessage, 'last message')
-    if (Object.keys(lastMessage).length !== 0) {
+    // Khi socket trả về last message sẽ read message 1 lần
+    if (Object.keys(lastMessage).length !== 0 && initMessage) {
+      fetchMessage()
+      setInitMessage('')
+    }
+    if (Object.keys(lastMessage).length !== 0 && !initMessage) {
       const dataaa = [...newData, lastMessage]
 
       setNewData(dataaa)
@@ -135,7 +141,7 @@ function DetailChat({
       // setTempData(tempFilter)
       // filterTemp(dataaa)
     }
-  }, [lastMessage])
+  }, [lastMessage, initMessage])
 
   // const filterTemp = (data: any) => {
   //   setTempData((prevTemp: any) =>
@@ -159,9 +165,12 @@ function DetailChat({
   // function goi list tin nhan
   const fetchMessage = async () => {
     // đang loading hoặc không có thêm bản ghi sẽ không fetch data nữa
+
     if (loadingMore || !hasMore) return
+
     // Lấy vị trí scroll hiện tại, nếu k có thì return
     const container = messagesContainerRef.current
+
     if (!container) return
     const scrollPosition = container.scrollHeight - container.scrollTop
 
@@ -192,9 +201,11 @@ function DetailChat({
       const result = await response.json()
       // set call api se skip bn ban ghi
       setSkip(skip + result.data.length)
+
       console.log(result, 'resulllllllt')
       //lưu data về phía trước do data đã bị reverse
       setNewData([...result.data.reverse(), ...newData])
+
       setTimeout(() => {
         if (container) {
           // Kiểm tra lại container trước khi sử dụng
@@ -202,7 +213,8 @@ function DetailChat({
         }
       }, 0)
       // Neu data trả về k nhiều  = limit thì đã hết tin nhắn cũ
-      if (result.data.length !== limit) {
+      // Nếu load trên limit bản ghi thì hasmore == false
+      if (result.data.length !== limit && skip !== 0) {
         // k còn data nữa
         setHasMore(false)
       }
@@ -268,7 +280,6 @@ function DetailChat({
 
       if (!size(socket_data)) return
       let { message } = socket_data
-      console.log(message, '????????')
       // luu tin nhan moi nhat vao state
       setLastMessage(message)
     }
@@ -299,7 +310,7 @@ function DetailChat({
         client_id: userId,
         text: input,
       }
-      console.log(message, 'messageeee')
+
       const response = await fetch(
         'https://dev-api.botbanhang.vn/v1/n7_public/embed/message/send_message',
         {
@@ -326,7 +337,8 @@ function DetailChat({
       // }
       // setTempData([...tempData, data])
       setInput('')
-      setInitMessage('')
+      // setInitMessage('')
+      // setHasMore(false)
     } catch (error) {
     } finally {
       setLoading(false)
@@ -451,10 +463,12 @@ function DetailChat({
               name,
               page_id: '3861367970af4b7cadacaec5d1443473',
             })
-            console.log(e, ' eeeee')
+            // console.log(e, ' eeeee')
             setInitMessage(e)
+            // hasmore = true để fetch api 1 lần
+            setHasMore(true)
           } else {
-            console.log('sendmessage')
+            // console.log('sendmessage')
             // có clientId thì gửi tin nhắn như bình thường
             sendMessage(e)
             setLoading(true)

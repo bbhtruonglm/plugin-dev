@@ -31,7 +31,7 @@ function ChatScreen({
 
   useEffect(() => {
     // Cập nhật URL với client_id
-    console.log(clientId, 'mmmmmmmmmm')
+    // console.log(clientId, 'mmmmmmmmmm')
     if (clientId) {
       // Lấy ra URL
       const newUrl = new URL(window.location.href)
@@ -65,6 +65,7 @@ function ChatScreen({
       setClientId(result.data)
       // console.log(result, 'json')
       localStorage.setItem(`client_id_<${pageId}>`, result.data)
+      // localStorage.setItem(`client_id_<${pageId}>`, '')
     } catch (err) {
     } finally {
       setTimeout(() => {
