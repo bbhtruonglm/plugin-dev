@@ -211,9 +211,9 @@ function DetailChat({
       console.log(result, 'resulllllllt')
       //lưu data về phía trước do data đã bị reverse
 
-      console.log(newData, 'nreData')
-      console.log(result, 'rsulttt')
-      console.log(firstTime, 'first time')
+      // console.log(newData, 'nreData')
+      // console.log(result, 'rsulttt')
+      // console.log(firstTime, 'first time')
       // if (firstTime) {
       //   const filteredArray = result.data.filter(
       //     (item1: any) => !newData.some((item2: any) => item2._id === item1._id)
@@ -242,7 +242,7 @@ function DetailChat({
       }, 0)
       // Neu data trả về k nhiều  = limit thì đã hết tin nhắn cũ
       // Nếu load trên limit bản ghi thì hasmore == false
-      if (result.data.length !== limit && skip !== 0) {
+      if (result.data.length !== limit) {
         // k còn data nữa
         setHasMore(false)
       }
