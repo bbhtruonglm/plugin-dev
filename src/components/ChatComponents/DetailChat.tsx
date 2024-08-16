@@ -211,27 +211,6 @@ function DetailChat({
       console.log(result, 'resulllllllt')
       //lưu data về phía trước do data đã bị reverse
 
-      // console.log(newData, 'nreData')
-      // console.log(result, 'rsulttt')
-      // console.log(firstTime, 'first time')
-      // if (firstTime) {
-      //   const filteredArray = result.data.filter(
-      //     (item1: any) => !newData.some((item2: any) => item2._id === item1._id)
-      //   )
-      //   console.log(filteredArray, 'hehehe')
-      //   if (
-      //     filteredArray.length < result.data.length &&
-      //     result.data.length > 0
-      //   ) {
-      //     console.log('filter1')
-      //     setNewData([...newData, ...filteredArray.reverse()])
-      //   } else {
-      //     console.log('filter2')
-      //     setFirstTime(false)
-      //     setNewData(filteredArray.reverse())
-      //   }
-      // } else {
-      // }
       setNewData([...result.data.reverse(), ...newData])
 
       setTimeout(() => {
@@ -487,7 +466,6 @@ function DetailChat({
           // Khi chua co clientId Call function Khởi tạo
           if (!userId) {
             setLoadingInit(true)
-            setFirstTime(true)
             onInitClient({
               phone,
               email,
