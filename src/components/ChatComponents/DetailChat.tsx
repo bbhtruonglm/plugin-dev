@@ -53,6 +53,7 @@ function DetailChat({
   const [scrollAtBottom, setScrollAtBottom] = useState(true)
   const [showJumpButton, setShowJumpButton] = useState(false)
   const [initMessage, setInitMessage] = useState('')
+  const [firstTime, setFirstTime] = useState(false)
   // Thông tin user khi khởi tạo chat
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
@@ -126,6 +127,7 @@ function DetailChat({
   useEffect(() => {
     // Khi socket trả về last message sẽ read message 1 lần
     if (Object.keys(lastMessage).length !== 0 && initMessage) {
+      console.log('running fetch')
       fetchMessage()
       setInitMessage('')
     }
@@ -201,11 +203,35 @@ function DetailChat({
       })
 
       const result = await response.json()
-      // set call api se skip bn ban ghi
-      setSkip(skip + result.data.length)
+      if (result.data.length === limit) {
+        // set call api se skip bn ban ghi
+        setSkip(skip + result.data.length)
+      }
 
       console.log(result, 'resulllllllt')
       //lưu data về phía trước do data đã bị reverse
+
+      console.log(newData, 'nreData')
+      console.log(result, 'rsulttt')
+      console.log(firstTime, 'first time')
+      // if (firstTime) {
+      //   const filteredArray = result.data.filter(
+      //     (item1: any) => !newData.some((item2: any) => item2._id === item1._id)
+      //   )
+      //   console.log(filteredArray, 'hehehe')
+      //   if (
+      //     filteredArray.length < result.data.length &&
+      //     result.data.length > 0
+      //   ) {
+      //     console.log('filter1')
+      //     setNewData([...newData, ...filteredArray.reverse()])
+      //   } else {
+      //     console.log('filter2')
+      //     setFirstTime(false)
+      //     setNewData(filteredArray.reverse())
+      //   }
+      // } else {
+      // }
       setNewData([...result.data.reverse(), ...newData])
 
       setTimeout(() => {
@@ -461,6 +487,7 @@ function DetailChat({
           // Khi chua co clientId Call function Khởi tạo
           if (!userId) {
             setLoadingInit(true)
+            setFirstTime(true)
             onInitClient({
               phone,
               email,
@@ -469,6 +496,7 @@ function DetailChat({
               page_id: pageId,
             })
             // console.log(e, ' eeeee')
+
             setInitMessage(e)
             // hasmore = true để fetch api 1 lần
             setHasMore(true)

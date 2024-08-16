@@ -195,8 +195,8 @@ const ChatComponent: React.FC<ChatProps> = ({ userName, handleBtn, show }) => {
                   <p
                     className={
                       currentTab === value
-                        ? 'text-md font-medium'
-                        : 'text-md font-medium'
+                        ? 'text-sm font-medium'
+                        : 'text-sm font-medium'
                     }
                   >
                     {name}

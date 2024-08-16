@@ -25,7 +25,7 @@ function ChatScreen({
     const page_id = queryParams.get('page_id')
 
     setPageId(page_id)
-    // localStorage.setItem(`client_id_<${pageId}>`, '')
+    // localStorage.setItem(`client_id_<${page_id}>`, '')
     const client_id = localStorage.getItem(`client_id_<${page_id}>`)
     setClientId(client_id)
   }, [])
@@ -69,10 +69,10 @@ function ChatScreen({
       // localStorage.setItem(`client_id_<${pageId}>`, '')
     } catch (err) {
     } finally {
-      setTimeout(() => {
-        // Tắt loading init client
-        setLoading(false)
-      }, 1000)
+      // setTimeout(() => {
+      // }, 1000)
+      // Tắt loading init client
+      setLoading(false)
     }
   }
 
