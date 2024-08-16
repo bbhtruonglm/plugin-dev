@@ -25,9 +25,9 @@ function ChatScreen({
     const page_id = queryParams.get('page_id')
 
     setPageId(page_id)
-    localStorage.setItem(`client_id_<${pageId}>`, '')
-    // const client_id = localStorage.getItem(`client_id_<${page_id}>`)
-    // setClientId(client_id)
+    // localStorage.setItem(`client_id_<${pageId}>`, '')
+    const client_id = localStorage.getItem(`client_id_<${page_id}>`)
+    setClientId(client_id)
   }, [])
 
   useEffect(() => {
