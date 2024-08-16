@@ -25,8 +25,9 @@ function ChatScreen({
     const page_id = queryParams.get('page_id')
 
     setPageId(page_id)
-    const client_id = localStorage.getItem(`client_id_<${page_id}>`)
-    setClientId(client_id)
+    localStorage.setItem(`client_id_<${pageId}>`, '')
+    // const client_id = localStorage.getItem(`client_id_<${page_id}>`)
+    // setClientId(client_id)
   }, [])
 
   useEffect(() => {
@@ -37,6 +38,7 @@ function ChatScreen({
       const newUrl = new URL(window.location.href)
       // Thêm client_id vào params
       newUrl.searchParams.set('client_id', clientId)
+
       // add url mới
       navigate(`/${newUrl.search}`)
     }
@@ -44,7 +46,6 @@ function ChatScreen({
   const [loading, setLoading] = useState(false)
 
   const initGetClientId = async (e: any) => {
-    console.log(e, 'eeeee')
     try {
       const url = new URL(
         'https://dev-api.botbanhang.vn/v1/n7_public/embed/conversation/init_identify'
@@ -86,6 +87,7 @@ function ChatScreen({
           onInitClient={(e) => initGetClientId(e)}
           loadingInit={loading}
           setLoadingInit={(e) => setLoading(e)}
+          pageId={pageId}
         />
       )}
     </div>

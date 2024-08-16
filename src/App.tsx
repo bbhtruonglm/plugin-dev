@@ -17,29 +17,20 @@ function App() {
       '*'
     )
   }
-  useEffect(() => {
-    // const handleMessage = (event: any) => {
-    //   console.log(event, 'event')
-    //   // if (event.origin !== 'http://localhost:5173/') {
-    //   //   return
-    //   // }
 
-    //   const { from, page_id } = event.data
-    //   console.log(from, page_id, 'page_id')
-    //   if (from === 'BBH-EMBED-IFRAME' && page_id) {
-    //     console.log('Received page_id:', page_id)
-    //     // Bạn có thể sử dụng page_id này trong logic của ứng dụng con
-    //   }
-    // }
+  // useEffect(() => {
+  //   const handleMessage = (event: MessageEvent) => {
+  //     console.log(event)
+  //   }
 
-    window.addEventListener('message', (e) => {
-      console.log(e, 'childdddd')
-    })
+  //   // Adding the event listener
+  //   window.addEventListener('message', handleMessage)
 
-    // return () => {
-    //   window.removeEventListener('message', handleMessage)
-    // }
-  }, [])
+  //   // Clean up the event listener on component unmount
+  //   return () => {
+  //     window.removeEventListener('message', handleMessage)
+  //   }
+  // }, [])
 
   return (
     <div className="flex flex-col justify-center items-center ">

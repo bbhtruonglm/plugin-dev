@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import ChatScreen from './Screens/Chat'
 import { ReactComponent as Down } from '../assets/arrow.svg'
@@ -16,7 +17,6 @@ import { ReactComponent as intiveHome } from '../assets/home.svg'
 import { ReactComponent as intiveMessage } from '../assets/message.svg'
 import { ReactComponent as intiveNews } from '../assets/notification.svg'
 import { ReactComponent as intiveSupport } from '../assets/support.svg'
-import { useNavigate } from 'react-router-dom'
 
 interface ChatProps {
   userName: string
@@ -25,6 +25,41 @@ interface ChatProps {
 }
 const ChatComponent: React.FC<ChatProps> = ({ userName, handleBtn, show }) => {
   const navigate = useNavigate()
+  const [page_id, setPageId] = useState<String | null>('')
+
+  const [params, setParams] = useState({})
+  const location = useLocation()
+  const [searchParams] = useSearchParams()
+
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      // Kiểm tra nguồn gốc của tin nhắn
+      // if (event.origin !== 'http://localhost:5173') {
+      //   // Thay đổi theo nguồn gốc của ứng dụng cha
+      //   return
+      // }
+      // const receivedUrl = event.data
+      // console.log(event, 'eventttt')
+      // if (receivedUrl && typeof receivedUrl === 'string') {
+      //   const url = new URL(receivedUrl)
+      //   const id = url.searchParams.get('page_id')
+      //   setPageId(id)
+      // }
+      // Cập nhật trạng thái với dữ liệu nhận được
+      // setParams(event.data)
+    }
+    // Fix cứng page_id
+    setPageId('3861367970af4b7cadacaec5d1443473')
+
+    // Thêm sự kiện listener
+    window.addEventListener('message', handleMessage)
+
+    // Xóa sự kiện listener khi component bị unmount
+    return () => {
+      window.removeEventListener('message', handleMessage)
+    }
+  }, [])
+
   const menuList = [
     {
       name: 'Trang chủ',
@@ -144,7 +179,8 @@ const ChatComponent: React.FC<ChatProps> = ({ userName, handleBtn, show }) => {
                       setChatPosition('overview')
                     } else {
                       // ẩn menu
-                      navigate('/?page_id=3861367970af4b7cadacaec5d1443473')
+                      // navigate('/?page_id=3861367970af4b7cadacaec5d1443473')
+                      navigate(`/?page_id=${page_id}`)
                       setChatPosition('detail')
                     }
                   }}

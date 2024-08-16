@@ -18,9 +18,10 @@ interface ChatScreenProps {
   onInitClient: (e: any) => void
   loadingInit: boolean
   setLoadingInit: (e: any) => void
+  pageId: String | null
 }
 type Message = {
-  page_id: string
+  page_id: String | null
   client_id: string
   text: string
 }
@@ -36,6 +37,7 @@ function DetailChat({
   onInitClient,
   loadingInit,
   setLoadingInit,
+  pageId,
 }: ChatScreenProps) {
   const [newData, setNewData] = useState([] as any)
   const [loading, setLoading] = useState(false)
@@ -115,7 +117,6 @@ function DetailChat({
 
     if (userId) {
       onSocketFromChatboxServer()
-
       // check có user Id sẽ send init message
       sendMessage(initMessage)
       fetchMessage()
@@ -184,12 +185,13 @@ function DetailChat({
 
       //setup params
       const params = {
-        page_id: '3861367970af4b7cadacaec5d1443473',
+        // page_id: '3861367970af4b7cadacaec5d1443473',
+        page_id: pageId,
         client_id: userId,
         limit: limit.toString(),
         skip: skip.toString(),
       }
-      url.search = new URLSearchParams(params).toString()
+      url.search = new URLSearchParams(params as any).toString()
       const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -229,7 +231,8 @@ function DetailChat({
     if (ws.current?.readyState === WebSocket.OPEN) {
       ws.current?.send(
         JSON.stringify({
-          page_id: '3861367970af4b7cadacaec5d1443473',
+          // page_id: '3861367970af4b7cadacaec5d1443473',
+          page_id: pageId,
           client_id: userId,
           event: 'JOIN',
         })
@@ -306,7 +309,8 @@ function DetailChat({
     if (input.trim() === '') return
     try {
       const message: Message = {
-        page_id: '3861367970af4b7cadacaec5d1443473',
+        // page_id: '3861367970af4b7cadacaec5d1443473',
+        page_id: pageId,
         client_id: userId,
         text: input,
       }
@@ -344,7 +348,7 @@ function DetailChat({
       setLoading(false)
     }
   }
-
+  console.log(userId, 'userId')
   return (
     <div className="flex flex-col w-full h-full absolute top-0">
       {/* header */}
@@ -461,7 +465,8 @@ function DetailChat({
               phone,
               email,
               name,
-              page_id: '3861367970af4b7cadacaec5d1443473',
+              // page_id: '3861367970af4b7cadacaec5d1443473',
+              page_id: pageId,
             })
             // console.log(e, ' eeeee')
             setInitMessage(e)
