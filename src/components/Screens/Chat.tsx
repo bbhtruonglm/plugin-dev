@@ -19,20 +19,21 @@ function ChatScreen({
   const [pageId, setPageId] = useState<String | null>('')
   const navigate = useNavigate()
   const [clientId, setClientId] = useState<String | null | any>('')
+  const [invalidPageId, setInvalidPageId] = useState(false)
   useEffect(() => {
     // Lấy các tham số từ URL
     const queryParams = new URLSearchParams(window.location.search)
     const page_id = queryParams.get('page_id')
-
     setPageId(page_id)
     // localStorage.setItem(`client_id_<${page_id}>`, '')
     const client_id = localStorage.getItem(`client_id_<${page_id}>`)
     setClientId(client_id)
+    // console.log(client_id, 'client Id')
   }, [])
 
   useEffect(() => {
     // Cập nhật URL với client_id
-    // console.log(clientId, 'mmmmmmmmmm')
+
     if (clientId) {
       // Lấy ra URL
       const newUrl = new URL(window.location.href)
@@ -64,7 +65,11 @@ function ChatScreen({
       const result = await response.json()
       // luu vao localStorage
       setClientId(result.data)
-      // console.log(result, 'json')
+
+      if (result.code === 403) {
+        localStorage.setItem(`client_id_<${pageId}>`, '')
+        setInvalidPageId(true)
+      }
       localStorage.setItem(`client_id_<${pageId}>`, result.data)
       // localStorage.setItem(`client_id_<${pageId}>`, '')
     } catch (err) {
@@ -86,6 +91,8 @@ function ChatScreen({
           loadingInit={loading}
           setLoadingInit={(e) => setLoading(e)}
           pageId={pageId}
+          invalidPageId={invalidPageId}
+          onResetInput={() => setInvalidPageId(false)}
         />
       )}
     </div>

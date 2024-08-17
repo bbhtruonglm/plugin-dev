@@ -27,37 +27,40 @@ const ChatComponent: React.FC<ChatProps> = ({ userName, handleBtn, show }) => {
   const navigate = useNavigate()
   const [page_id, setPageId] = useState<String | null>('')
 
-  const [params, setParams] = useState({})
-  const location = useLocation()
-  const [searchParams] = useSearchParams()
-
   useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      // Kiểm tra nguồn gốc của tin nhắn
-      // if (event.origin !== 'http://localhost:5173') {
-      //   // Thay đổi theo nguồn gốc của ứng dụng cha
-      //   return
-      // }
-      // const receivedUrl = event.data
-      // console.log(event, 'eventttt')
-      // if (receivedUrl && typeof receivedUrl === 'string') {
-      //   const url = new URL(receivedUrl)
-      //   const id = url.searchParams.get('page_id')
-      //   setPageId(id)
-      // }
-      // Cập nhật trạng thái với dữ liệu nhận được
-      // setParams(event.data)
-    }
+    const fullSrc = window.location.href
+    console.log(fullSrc, 'fulscr')
+    const url = new URL(fullSrc)
+    const id = url.searchParams.get('page_id')
+    setPageId(id)
+
+    // setPageId('3861367970af4b7cadacaec5d1443473')
+    // const handleMessage = (event: MessageEvent) => {
+    //   console.log(event, 'event')
+    //   // Kiểm tra nguồn gốc của tin nhắn
+    //   // if (event.origin !== 'http://localhost:5173') {
+    //   //   // Thay đổi theo nguồn gốc của ứng dụng cha
+    //   //   return
+    //   // }
+    //   // const receivedUrl = event.data
+    //   // console.log(event, 'eventttt')
+    //   // if (receivedUrl && typeof receivedUrl === 'string') {
+    //   //   const url = new URL(receivedUrl)
+    //   //   const id = url.searchParams.get('page_id')
+    //   //   setPageId(id)
+    //   // }
+    //   // Cập nhật trạng thái với dữ liệu nhận được
+    //   // setParams(event.data)
+    // }
     // Fix cứng page_id
-    setPageId('3861367970af4b7cadacaec5d1443473')
 
     // Thêm sự kiện listener
-    window.addEventListener('message', handleMessage)
+    // window.addEventListener('message', handleMessage)
 
-    // Xóa sự kiện listener khi component bị unmount
-    return () => {
-      window.removeEventListener('message', handleMessage)
-    }
+    // // Xóa sự kiện listener khi component bị unmount
+    // return () => {
+    //   window.removeEventListener('message', handleMessage)
+    // }
   }, [])
 
   const menuList = [

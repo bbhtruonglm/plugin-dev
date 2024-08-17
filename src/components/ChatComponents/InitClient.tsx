@@ -1,17 +1,26 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 interface InitClientProps {
   setUsername: (e: any) => void
   setUserPhone: (e: any) => void
   setUserEmail: (e: any) => void
+  resetData: boolean
 }
 function InitClient({
   setUsername,
   setUserPhone,
   setUserEmail,
+  resetData,
 }: InitClientProps) {
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
+  useEffect(() => {
+    if (resetData) {
+      setEmail('')
+      setName('')
+      setPhone('')
+    }
+  }, [resetData])
   return (
     <div className="flex flex-col gap-4 w-full h-full justify-center items-center">
       <div className="flex flex-col gap-4 bg-white w-full py-4 justify-center items-center px-4 rounded-md">

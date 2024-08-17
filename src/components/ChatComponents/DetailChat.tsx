@@ -19,6 +19,8 @@ interface ChatScreenProps {
   loadingInit: boolean
   setLoadingInit: (e: any) => void
   pageId: String | null
+  invalidPageId: boolean
+  onResetInput: () => void
 }
 type Message = {
   page_id: String | null
@@ -38,6 +40,8 @@ function DetailChat({
   loadingInit,
   setLoadingInit,
   pageId,
+  invalidPageId,
+  onResetInput,
 }: ChatScreenProps) {
   const [newData, setNewData] = useState([] as any)
   const [loading, setLoading] = useState(false)
@@ -53,7 +57,7 @@ function DetailChat({
   const [scrollAtBottom, setScrollAtBottom] = useState(true)
   const [showJumpButton, setShowJumpButton] = useState(false)
   const [initMessage, setInitMessage] = useState('')
-  const [firstTime, setFirstTime] = useState(false)
+
   // Thông tin user khi khởi tạo chat
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
@@ -125,10 +129,15 @@ function DetailChat({
   }, [userId])
 
   useEffect(() => {
+    setEmail('')
+    setName('')
+    setPhone('')
+  }, [invalidPageId])
+
+  useEffect(() => {
     // Khi socket trả về last message sẽ read message 1 lần
     if (Object.keys(lastMessage).length !== 0 && initMessage) {
-      console.log('running fetch')
-      fetchMessage()
+      fetchMessageInit()
       setInitMessage('')
     }
     if (Object.keys(lastMessage).length !== 0 && !initMessage) {
@@ -208,11 +217,70 @@ function DetailChat({
         setSkip(skip + result.data.length)
       }
 
-      console.log(result, 'resulllllllt')
+      // console.log(result, 'resulllllllt')
       //lưu data về phía trước do data đã bị reverse
 
       setNewData([...result.data.reverse(), ...newData])
 
+      setTimeout(() => {
+        if (container) {
+          // Kiểm tra lại container trước khi sử dụng
+          container.scrollTop = container.scrollHeight - scrollPosition
+        }
+      }, 0)
+      // Neu data trả về k nhiều  = limit thì đã hết tin nhắn cũ
+      // Nếu load trên limit bản ghi thì hasmore == false
+      if (result.data.length !== limit) {
+        // k còn data nữa
+        setHasMore(false)
+      }
+    } catch (error) {
+    } finally {
+      setLoadingMore(false)
+    }
+  }
+
+  // Tạo ra function chỉ để call lần đầu
+  const fetchMessageInit = async () => {
+    // Lấy vị trí scroll hiện tại, nếu k có thì return
+    const container = messagesContainerRef.current
+
+    if (!container) return
+    const scrollPosition = container.scrollHeight - container.scrollTop
+
+    // set loadingMore = true de k call lien tuc
+    setLoadingMore(true)
+
+    try {
+      const url = new URL(
+        'https://dev-api.botbanhang.vn/v1/n7_public/embed/message/read_message'
+      )
+
+      //setup params
+      const params = {
+        // page_id: '3861367970af4b7cadacaec5d1443473',
+        page_id: pageId,
+        client_id: userId,
+        limit: limit.toString(),
+        skip: skip.toString(),
+      }
+      url.search = new URLSearchParams(params as any).toString()
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          // 'Authorization': 'Bearer YOUR_ACCESS_TOKEN', // Nếu cần token xác thực
+        },
+      })
+
+      const result = await response.json()
+      if (result.data.length === limit) {
+        // set call api se skip bn ban ghi
+        setSkip(skip + result.data.length)
+      }
+
+      //lưu data về phía trước do data đã bị reverse
+      setNewData([...result.data.reverse(), ...newData])
       setTimeout(() => {
         if (container) {
           // Kiểm tra lại container trước khi sử dụng
@@ -336,9 +404,9 @@ function DetailChat({
         }
       )
 
-      const result = await response.json()
+      // const result = await response.json()
       // setTriggerFetch(true)
-      console.log(result, 'result')
+      // console.log(result, 'result')
       // let data = {
       //   message_text: input,
       //   message_mid: result.data,
@@ -370,17 +438,28 @@ function DetailChat({
       >
         {userId && loadingMore && <Loading />}
         {!userId && (
-          <InitClient
-            setUsername={(e) => {
-              setName(e)
-            }}
-            setUserEmail={(e) => {
-              setEmail(e)
-            }}
-            setUserPhone={(e) => {
-              setPhone(e)
-            }}
-          />
+          <div className="flex flex-col gap-2 ">
+            <InitClient
+              setUsername={(e) => {
+                setName(e)
+                onResetInput()
+              }}
+              setUserEmail={(e) => {
+                setEmail(e)
+                onResetInput()
+              }}
+              setUserPhone={(e) => {
+                setPhone(e)
+                onResetInput()
+              }}
+              resetData={invalidPageId}
+            />
+            {invalidPageId && (
+              <h4 className="flex justify-center font-semibold text-red-600">
+                Thông tin Page không đúng
+              </h4>
+            )}
+          </div>
         )}
 
         {/* render nội dung tin nhắn từ list có sẵn */}
