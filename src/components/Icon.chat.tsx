@@ -76,18 +76,18 @@ const ChatComponent: React.FC<ChatProps> = ({ userName, handleBtn, show }) => {
       value: 'message',
       srcA: activeMessage,
     },
-    {
-      name: 'Hỗ trợ',
-      src: intiveSupport,
-      srcA: activeSupport,
-      value: 'support',
-    },
-    {
-      name: 'Tin tức',
-      src: intiveNews,
-      srcA: activeNew,
-      value: 'news',
-    },
+    // {
+    //   name: 'Hỗ trợ',
+    //   src: intiveSupport,
+    //   srcA: activeSupport,
+    //   value: 'support',
+    // },
+    // {
+    //   name: 'Tin tức',
+    //   src: intiveNews,
+    //   srcA: activeNew,
+    //   value: 'news',
+    // },
   ]
   const [currentTab, setCurrentTab] = useState('home')
   const [chatPosition, setChatPosition] = useState('overview')
@@ -99,14 +99,14 @@ const ChatComponent: React.FC<ChatProps> = ({ userName, handleBtn, show }) => {
     >
       <div
         className={` ${
-          show ? 'flex' : 'hidden'
+          show ? 'flex animate-zoomInBottomRight' : 'hidden'
         }  flex-col relative w-[400px] h-[600px] bg-bg-gradient rounded-[20px] overflow-hidden shadow-md`}
       >
         {/* header */}
         {chatPosition === 'overview' && (
           <div
             className={
-              'flex justify-between items-center px-5 py-3 bg-bgBtnBold text-white'
+              'flex justify-between items-center px-5 py-3 bg-slate-800 text-white'
             }
           >
             <div>
@@ -146,7 +146,15 @@ const ChatComponent: React.FC<ChatProps> = ({ userName, handleBtn, show }) => {
             }`
           }
         >
-          {currentTab === 'home' && <Home userName={userName} />}
+          {currentTab === 'home' && (
+            <Home
+              page_id={page_id}
+              onNavigate={() => {
+                setCurrentTab('message')
+                setChatPosition('detail')
+              }}
+            />
+          )}
           {currentTab === 'message' && (
             <ChatScreen
               currentPosition={chatPosition}
@@ -212,7 +220,7 @@ const ChatComponent: React.FC<ChatProps> = ({ userName, handleBtn, show }) => {
       </div>
       <button
         onClick={handleBtn}
-        className={`absolute flex justify-center items-center h-12 w-12 border bg-bgBtnBold rounded-full z-[999999] bottom-0 right-0 transform ${
+        className={`absolute flex justify-center items-center h-12 w-12 border bg-slate-800 rounded-full z-[999999] bottom-0 right-0 transform ${
           show ? '' : '-scale-y-100'
         }`}
       >

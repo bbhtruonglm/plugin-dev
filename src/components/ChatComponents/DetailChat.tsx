@@ -432,7 +432,7 @@ function DetailChat({
       {/* body */}
       <div
         ref={messagesContainerRef}
-        className={`p-5 gap-4 overflow-y-auto mb-16 scrollbar-thin scrollbar-webkit flex flex-col relative ${
+        className={`px-5 py-3 gap-4 overflow-y-auto mb-16 scrollbar-thin scrollbar-webkit flex flex-col relative ${
           userId ? 'mt-16' : 'mt-[174px]'
         }`}
       >

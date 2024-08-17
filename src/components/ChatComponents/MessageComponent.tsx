@@ -63,7 +63,7 @@ function MessageComponent({ data, userId }: MessageProps) {
       )}
       {data?.message_text && (
         <div>
-          <p className="text-xs min-h-4 whitespace-pre-line">
+          <p className="text-sm min-h-4 whitespace-pre-line">
             {data.message_text}
           </p>
         </div>

@@ -12,7 +12,7 @@ interface ChatScreenProps {
 function ChatHeader({ onCancel, userId }: ChatScreenProps) {
   return (
     <div
-      className={`flex bg-bgBtnBold  w-full py-3 px-5 gap-2 absolute top-0 ${
+      className={`flex bg-slate-800  w-full py-3 px-5 gap-2 absolute top-0 ${
         userId ? 'h-16 items-center' : 'h-[174px]'
       }`}
     >
@@ -69,7 +69,7 @@ function ChatHeader({ onCancel, userId }: ChatScreenProps) {
               <div className="w-3 h-3 rounded-full bg-onlineColor"></div> Chúng
               tôi đang Online
             </h4>
-            <h5 className="flex items-center font-normal text-xs h-4  text-white">
+            <h5 className="flex items-center font-normal text-xs h-4  text-slate-300">
               Bạn có thể đặt câu hỏi hoặc phản ánh chất lượng dịch vụ.
             </h5>
           </div>

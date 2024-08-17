@@ -31,11 +31,21 @@ module.exports = {
           '0%, 100%': { transform: 'scale(1)' },
           '50%': { transform: 'scale(1.5)' },
         },
+        zoomIn: {
+          '0%': { transform: 'scale(0)' },
+          '100%': { transform: 'scale(1)' },
+        },
+        zoomInBottomRight: {
+          '0%': { transform: 'scale(0)', transformOrigin: 'bottom right' },
+          '100%': { transform: 'scale(1)', transformOrigin: 'bottom right' },
+        },
       },
       animation: {
         spinSlow: 'spin 3s linear infinite', // Adding a slower spin animation
         bounce: 'bounce 1s infinite',
         scale: 'scale 1s infinite',
+        zoomIn: 'zoomIn 0.5s ease-in-out forwards',
+        zoomInBottomRight: 'zoomInBottomRight 0.5s ease-in-out forwards',
       },
     },
   },

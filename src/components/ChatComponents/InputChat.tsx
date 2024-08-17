@@ -1,4 +1,5 @@
-import IconSquare from '../../assets/square-slash.svg'
+import { ReactComponent as Arrow } from '../../assets/Icon_up_circle.svg'
+import { ReactComponent as IconSquare } from '../../assets/square-slash.svg'
 import { ReactComponent as SendingIcon } from '../../assets/send.svg'
 import Upload from './Upload'
 import { useState } from 'react'
@@ -36,25 +37,23 @@ function InputChat({ handleSend, loading, onChangeText }: InputProps) {
           className="bg-transparent outline-none flex-grow placeholder:text-colorOpacity text-sm font-medium"
         />
         <div>
-          <img
-            src={IconSquare}
-            className="h-6 w-6 cursor-pointer"
-            alt=""
-          />
+          {value ? (
+            <div
+              className="cursor-pointer"
+              onClick={() => {
+                if (!loading) {
+                  handleSend(value)
+                  setValue('')
+                }
+              }}
+            >
+              <Arrow />
+            </div>
+          ) : (
+            <IconSquare />
+          )}
         </div>
       </div>
-      {value && (
-        <div
-          onClick={() => {
-            if (!loading) {
-              handleSend(value)
-              setValue('')
-            }
-          }}
-        >
-          <SendingIcon />
-        </div>
-      )}
     </div>
   )
 }
