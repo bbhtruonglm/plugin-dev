@@ -35,7 +35,7 @@ const ChatComponent: React.FC<ChatProps> = ({ userName, handleBtn, show }) => {
     setPageId(id)
     // setPageId('11111')
 
-    // setPageId('3861367970af4b7cadacaec5d1443473')
+    setPageId('3861367970af4b7cadacaec5d1443473')
     // const handleMessage = (event: MessageEvent) => {
     //   console.log(event, 'event')
     //   // Kiểm tra nguồn gốc của tin nhắn
@@ -94,14 +94,14 @@ const ChatComponent: React.FC<ChatProps> = ({ userName, handleBtn, show }) => {
   const [chatPosition, setChatPosition] = useState('overview')
   return (
     <div
-      className={` ${
-        show ? ' w-[400px] h-[658px]' : 'w-12 h-12'
-      } flex relative `}
+      className={`flex relative w-[100vw] h-[100vh]  ${
+        show ? ' md:w-[400px] md:h-[658px]' : ' md:w-12 md:h-12'
+      }  `}
     >
       <div
         className={` ${
           show ? 'flex animate-zoomInBottomRight' : 'hidden'
-        }  flex-col relative w-[400px] h-[600px] bg-bg-gradient rounded-[20px] overflow-hidden shadow-md`}
+        }  flex-col relative w-full md:w-[400px] md:h-[600px] bg-bg-gradient rounded-[20px] overflow-hidden shadow-md`}
       >
         {/* header */}
         {chatPosition === 'overview' && (
@@ -258,7 +258,7 @@ const ChatComponent: React.FC<ChatProps> = ({ userName, handleBtn, show }) => {
           handleBtn()
           setErrorMessage('')
         }}
-        className={`absolute flex justify-center items-center h-12 w-12 border bg-slate-800 rounded-full z-[999999] bottom-0 right-0 transform ${
+        className={`flex absolute justify-center items-center h-12 w-12 border bg-slate-800 rounded-full z-[999999] bottom-0 right-0 transform ${
           show ? '' : '-scale-y-100'
         }`}
       >
