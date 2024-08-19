@@ -27,7 +27,8 @@ function Upload({ finalUrl }: UploadProps) {
   ) => {
     const selectedFile = event.target.files?.[0]
     if (selectedFile) {
-      await uploadFile(selectedFile)
+      console.log(selectedFile, 'selected File')
+      // await uploadFile(selectedFile)
     }
   }
   const uploadFile = async (file: any) => {

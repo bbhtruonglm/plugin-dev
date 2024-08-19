@@ -8,12 +8,16 @@ interface ChatProps {
   setPosition: (e: string) => void
   userName: string
   userLoggedIn: (e: any) => void
+  errorMessage: String | null
+  onError: () => void
 }
 function ChatScreen({
   currentPosition,
   setPosition,
   userName,
   userLoggedIn,
+  errorMessage,
+  onError,
 }: ChatProps) {
   const [position, setPos] = useState('detail')
   const [pageId, setPageId] = useState<String | null>('')
@@ -24,11 +28,17 @@ function ChatScreen({
     // Lấy các tham số từ URL
     const queryParams = new URLSearchParams(window.location.search)
     const page_id = queryParams.get('page_id')
-    setPageId(page_id)
-    // localStorage.setItem(`client_id_<${page_id}>`, '')
-    const client_id = localStorage.getItem(`client_id_<${page_id}>`)
-    setClientId(client_id)
-    // console.log(client_id, 'client Id')
+    // console.log(page_id, 'page_id')
+    if (page_id) {
+      setPageId(page_id)
+      // localStorage.setItem(`client_id_<${page_id}>`, '')
+      const client_id = localStorage.getItem(`client_id_<${page_id}>`)
+      // console.log(client_id, 'client_id')
+      if (client_id && client_id !== 'undefined') {
+        setClientId(client_id)
+      }
+      // console.log(client_id, 'client Id')
+    }
   }, [])
 
   useEffect(() => {
@@ -93,6 +103,8 @@ function ChatScreen({
           pageId={pageId}
           invalidPageId={invalidPageId}
           onResetInput={() => setInvalidPageId(false)}
+          errorMessage={errorMessage}
+          onError={onError}
         />
       )}
     </div>

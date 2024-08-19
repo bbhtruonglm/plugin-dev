@@ -4,15 +4,20 @@ import { useNavigate } from 'react-router-dom'
 interface SendMessageProps {
   page_id: String | null
   onNavigate: () => void
+  onError: () => void
 }
-function SendMessage({ page_id, onNavigate }: SendMessageProps) {
+function SendMessage({ page_id, onNavigate, onError }: SendMessageProps) {
   const navigate = useNavigate()
 
   return (
     <div
       onClick={() => {
-        navigate(`/?page_id=${page_id}`)
-        onNavigate()
+        if (page_id && page_id !== null) {
+          navigate(`/?page_id=${page_id}`)
+          onNavigate()
+        } else {
+          onError()
+        }
       }}
       className="bg-white p-3 rounded-xl flex justify-between px-6 items-center shadow-md cursor-pointer"
     >

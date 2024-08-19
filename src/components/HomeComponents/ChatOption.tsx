@@ -1,27 +1,27 @@
-import React from "react";
-import facebook from "../../assets/facebook.svg";
-import instagram from "../../assets/instagram.svg";
-import whatsapp from "../../assets/whatsapp.svg";
-import zalo from "../../assets/zalo.svg";
+import React from 'react'
+import facebook from '../../assets/facebook.svg'
+import instagram from '../../assets/instagram.svg'
+import whatsapp from '../../assets/whatsapp.svg'
+import zalo from '../../assets/zalo.svg'
 function ChatOption() {
   const chatList = [
     {
-      name: "@botbanhang.fb",
+      name: '@botbanhang.fb',
       icon: facebook,
     },
     {
-      name: "@botbanhang.ig",
+      name: '@botbanhang.ig',
       icon: instagram,
     },
     {
-      name: "@botbanhang.oa",
+      name: '@botbanhang.oa',
       icon: zalo,
     },
     {
-      name: "1900.9999.70",
+      name: '1900.9999.70',
       icon: whatsapp,
     },
-  ];
+  ]
   return (
     <div className="bg-white p-3 rounded-xl flex justify-between px-6 items-center shadow-md">
       <div>
@@ -30,9 +30,16 @@ function ChatOption() {
         </h4>
         <div className="grid grid-cols-2 gap-4 mt-2">
           {chatList.map((item, index) => (
-            <div className="flex gap-1 items-center p-1" key={index}>
+            <div
+              className="flex gap-1 items-center p-1"
+              key={index}
+            >
               <div className="bg-gray-100 p-2 rounded-full">
-                <img src={item.icon} alt="" width={16} height={16} />
+                <img
+                  src={item.icon}
+                  alt=""
+                  className="w-4 h-4"
+                />
               </div>
               <p className="text-xs font-medium">{item.name}</p>
             </div>
@@ -40,7 +47,7 @@ function ChatOption() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default ChatOption;
+export default ChatOption

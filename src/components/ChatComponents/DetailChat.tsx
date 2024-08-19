@@ -21,6 +21,8 @@ interface ChatScreenProps {
   pageId: String | null
   invalidPageId: boolean
   onResetInput: () => void
+  errorMessage: String | null
+  onError: () => void
 }
 type Message = {
   page_id: String | null
@@ -42,6 +44,8 @@ function DetailChat({
   pageId,
   invalidPageId,
   onResetInput,
+  errorMessage,
+  onError,
 }: ChatScreenProps) {
   const [newData, setNewData] = useState([] as any)
   const [loading, setLoading] = useState(false)
@@ -57,6 +61,7 @@ function DetailChat({
   const [scrollAtBottom, setScrollAtBottom] = useState(true)
   const [showJumpButton, setShowJumpButton] = useState(false)
   const [initMessage, setInitMessage] = useState('')
+  const [errorInit, setErrorInit] = useState(false)
 
   // Thông tin user khi khởi tạo chat
   const [name, setName] = useState('')
@@ -437,7 +442,13 @@ function DetailChat({
         }`}
       >
         {userId && loadingMore && <Loading />}
-        {!userId && (
+        {/* Không có page Id sẽ báo lỗi k kết nối với hệ thống */}
+        {!userId && errorMessage && (
+          <h4 className="flex justify-center font-semibold text-red-600 whitespace-pre-line">
+            {errorMessage}
+          </h4>
+        )}
+        {!userId && !errorMessage && (
           <div className="flex flex-col gap-2 ">
             <InitClient
               setUsername={(e) => {
@@ -453,6 +464,10 @@ function DetailChat({
                 onResetInput()
               }}
               resetData={invalidPageId}
+              onError={(e) => {
+                // bao gồm sai định dạng email và sdt
+                setErrorInit(e)
+              }}
             />
             {invalidPageId && (
               <h4 className="flex justify-center font-semibold text-red-600">
@@ -541,22 +556,25 @@ function DetailChat({
       )}
       {/* o input  Khi có text trong input thì hiển thị thêm icon send */}
       <InputChat
+        errorMessage={errorMessage}
         handleSend={(e) => {
           // Khi chua co clientId Call function Khởi tạo
           if (!userId) {
-            setLoadingInit(true)
-            onInitClient({
-              phone,
-              email,
-              name,
-              // page_id: '3861367970af4b7cadacaec5d1443473',
-              page_id: pageId,
-            })
-            // console.log(e, ' eeeee')
-
-            setInitMessage(e)
-            // hasmore = true để fetch api 1 lần
-            setHasMore(true)
+            //  Nếu không có lỗi khi khởi tạo tin nhắn thì thực hiện hành động sau
+            if (!errorInit) {
+              setLoadingInit(true)
+              onInitClient({
+                phone,
+                email,
+                name,
+                // page_id: '3861367970af4b7cadacaec5d1443473',
+                page_id: pageId,
+              })
+              // console.log(e, ' eeeee')
+              setInitMessage(e)
+              // hasmore = true để fetch api 1 lần
+              setHasMore(true)
+            }
           } else {
             // console.log('sendmessage')
             // có clientId thì gửi tin nhắn như bình thường

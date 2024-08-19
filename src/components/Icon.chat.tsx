@@ -26,13 +26,14 @@ interface ChatProps {
 const ChatComponent: React.FC<ChatProps> = ({ userName, handleBtn, show }) => {
   const navigate = useNavigate()
   const [page_id, setPageId] = useState<String | null>('')
-
+  const [errorMessage, setErrorMessage] = useState<String | null>('')
   useEffect(() => {
     const fullSrc = window.location.href
-    console.log(fullSrc, 'fulscr')
+    console.log(fullSrc, 'fullsrc')
     const url = new URL(fullSrc)
     const id = url.searchParams.get('page_id')
     setPageId(id)
+    // setPageId('11111')
 
     // setPageId('3861367970af4b7cadacaec5d1443473')
     // const handleMessage = (event: MessageEvent) => {
@@ -153,6 +154,14 @@ const ChatComponent: React.FC<ChatProps> = ({ userName, handleBtn, show }) => {
                 setCurrentTab('message')
                 setChatPosition('detail')
               }}
+              onError={() => {
+                setErrorMessage(
+                  'Hệ thống chưa được liên kết.\n Vui lòng liên hệ quản trị viên để được hỗ trợ!'
+                )
+                setCurrentTab('message')
+                setChatPosition('detail')
+              }}
+              errorMessage={errorMessage}
             />
           )}
           {currentTab === 'message' && (
@@ -167,6 +176,8 @@ const ChatComponent: React.FC<ChatProps> = ({ userName, handleBtn, show }) => {
                 // set thanh overview de hien thi tab menu
                 setChatPosition('overview')
               }}
+              errorMessage={errorMessage}
+              onError={() => setErrorMessage('')}
             />
           )}
         </div>
@@ -174,52 +185,79 @@ const ChatComponent: React.FC<ChatProps> = ({ userName, handleBtn, show }) => {
         {/* menu */}
         {/* Nếu trạng thái là overview thì mới hiển thị menu */}
         {chatPosition === 'overview' && (
-          <div className="absolute bottom-0 w-full flex justify-evenly p-2 px-6 h-[64px] z-20 bg-bg-gradient">
-            {menuList.map(
-              (
-                { src: IconComponent, srcA: IconComponentA, value, name },
-                index
-              ) => (
-                <div
-                  key={index}
-                  className="flex flex-col w-full h-full justify-center items-center cursor-pointer"
-                  onClick={() => {
-                    setCurrentTab(value)
-                    if (value !== 'message') {
-                      // tab !== 'message' thì overview để hiển thị menu
-                      setChatPosition('overview')
-                    } else {
-                      // ẩn menu
-                      // navigate('/?page_id=3861367970af4b7cadacaec5d1443473')
-                      navigate(`/?page_id=${page_id}`)
-                      setChatPosition('detail')
-                    }
-                  }}
-                >
-                  {/* active menu tab */}
-                  {currentTab === value ? (
-                    <IconComponentA />
-                  ) : (
-                    <IconComponent />
-                  )}
-
-                  <p
-                    className={
-                      currentTab === value
-                        ? 'text-sm font-medium'
-                        : 'text-sm font-medium'
-                    }
+          <div className="absolute bottom-0 w-full flex flex-col justify-evenly p-2 px-6 h-16 z-20  bg-bg-gradient">
+            <div className="flex">
+              {menuList.map(
+                (
+                  { src: IconComponent, srcA: IconComponentA, value, name },
+                  index
+                ) => (
+                  <div
+                    key={index}
+                    className="flex flex-col w-full h-full justify-center items-center cursor-pointer"
+                    onClick={() => {
+                      if (value !== 'message') {
+                        // tab !== 'message' thì overview để hiển thị menu
+                        setCurrentTab(value)
+                        setChatPosition('overview')
+                      } else {
+                        // ẩn menu
+                        // navigate('/?page_id=3861367970af4b7cadacaec5d1443473')
+                        // console.log(page_id, 'page_idddd')
+                        if (page_id !== null) {
+                          navigate(`/?page_id=${page_id}`)
+                          setChatPosition('detail')
+                          setCurrentTab(value)
+                        } else {
+                          // console.log(
+                          //   'Hệ thống chưa được liên kết. Vui lòng liên hệ quản trị viên để được hỗ trợ!'
+                          // )
+                          setErrorMessage(
+                            'Hệ thống chưa được liên kết.\n Vui lòng liên hệ quản trị viên để được hỗ trợ!'
+                          )
+                          setCurrentTab(value)
+                          setChatPosition('detail')
+                        }
+                      }
+                    }}
                   >
-                    {name}
-                  </p>
-                </div>
-              )
-            )}
+                    {/* active menu tab */}
+                    {currentTab === value ? (
+                      <IconComponentA />
+                    ) : (
+                      <IconComponent />
+                    )}
+
+                    <p
+                      className={
+                        currentTab === value
+                          ? 'text-sm font-medium'
+                          : 'text-sm font-medium'
+                      }
+                    >
+                      {name}
+                    </p>
+                  </div>
+                )
+              )}
+            </div>
+            {/* <h4 className="text-[10px] text-center text-slate-700">
+              power by{' '}
+              <a
+                href="/#"
+                className="underline"
+              >
+                Bot Ban Hang
+              </a>
+            </h4> */}
           </div>
         )}
       </div>
       <button
-        onClick={handleBtn}
+        onClick={() => {
+          handleBtn()
+          setErrorMessage('')
+        }}
         className={`absolute flex justify-center items-center h-12 w-12 border bg-slate-800 rounded-full z-[999999] bottom-0 right-0 transform ${
           show ? '' : '-scale-y-100'
         }`}

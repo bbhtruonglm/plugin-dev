@@ -8,8 +8,14 @@ interface InputProps {
   handleSend: (e: any) => void
   loading: boolean
   onChangeText: (e: any) => void
+  errorMessage: String | null
 }
-function InputChat({ handleSend, loading, onChangeText }: InputProps) {
+function InputChat({
+  handleSend,
+  loading,
+  onChangeText,
+  errorMessage,
+}: InputProps) {
   const [value, setValue] = useState('')
 
   const handleKeyDown = (event: any) => {
@@ -30,7 +36,9 @@ function InputChat({ handleSend, loading, onChangeText }: InputProps) {
           }}
           value={value}
           onKeyDown={(e) => {
-            handleKeyDown(e)
+            if (!errorMessage) {
+              handleKeyDown(e)
+            }
           }}
           type="text"
           placeholder="Gửi tin nhắn đến Bot Ban Hang"
@@ -41,7 +49,7 @@ function InputChat({ handleSend, loading, onChangeText }: InputProps) {
             <div
               className="cursor-pointer"
               onClick={() => {
-                if (!loading) {
+                if (!loading && !errorMessage) {
                   handleSend(value)
                   setValue('')
                 }
@@ -50,7 +58,8 @@ function InputChat({ handleSend, loading, onChangeText }: InputProps) {
               <Arrow />
             </div>
           ) : (
-            <IconSquare />
+            // <IconSquare />
+            <></>
           )}
         </div>
       </div>
