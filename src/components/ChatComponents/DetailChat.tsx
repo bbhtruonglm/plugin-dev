@@ -147,7 +147,6 @@ function DetailChat({
     }
     if (Object.keys(lastMessage).length !== 0 && !initMessage) {
       const dataaa = [...newData, lastMessage]
-
       setNewData(dataaa)
       // const tempFilter = tempData.filter((tempItem: any) => {
       //   return !dataaa.some(
@@ -247,14 +246,14 @@ function DetailChat({
 
   // Tạo ra function chỉ để call lần đầu
   const fetchMessageInit = async () => {
-    // Lấy vị trí scroll hiện tại, nếu k có thì return
-    const container = messagesContainerRef.current
+    // // Lấy vị trí scroll hiện tại, nếu k có thì return
+    // const container = messagesContainerRef.current
 
-    if (!container) return
-    const scrollPosition = container.scrollHeight - container.scrollTop
+    // if (!container) return
+    // const scrollPosition = container.scrollHeight - container.scrollTop
 
-    // set loadingMore = true de k call lien tuc
-    setLoadingMore(true)
+    // // set loadingMore = true de k call lien tuc
+    // setLoadingMore(true)
 
     try {
       const url = new URL(
@@ -286,21 +285,21 @@ function DetailChat({
 
       //lưu data về phía trước do data đã bị reverse
       setNewData([...result.data.reverse(), ...newData])
-      setTimeout(() => {
-        if (container) {
-          // Kiểm tra lại container trước khi sử dụng
-          container.scrollTop = container.scrollHeight - scrollPosition
-        }
-      }, 0)
+      // setTimeout(() => {
+      //   if (container) {
+      //     // Kiểm tra lại container trước khi sử dụng
+      //     container.scrollTop = container.scrollHeight - scrollPosition
+      //   }
+      // }, 0)
       // Neu data trả về k nhiều  = limit thì đã hết tin nhắn cũ
       // Nếu load trên limit bản ghi thì hasmore == false
-      if (result.data.length !== limit) {
-        // k còn data nữa
-        setHasMore(false)
-      }
+      // if (result.data.length !== limit) {
+      //   // k còn data nữa
+      //   setHasMore(false)
+      // }
     } catch (error) {
     } finally {
-      setLoadingMore(false)
+      // setLoadingMore(false)
     }
   }
   // goi api xac dinh danh tinh khi mo socket

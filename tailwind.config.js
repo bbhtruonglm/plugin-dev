@@ -39,6 +39,10 @@ module.exports = {
           '0%': { transform: 'scale(0)', transformOrigin: 'bottom right' },
           '100%': { transform: 'scale(1)', transformOrigin: 'bottom right' },
         },
+        zoomOutTopLeft: {
+          '0%': { transform: 'scale(1)', transformOrigin: 'top left' },
+          '100%': { transform: 'scale(0)', transformOrigin: 'top left' },
+        },
       },
       animation: {
         spinSlow: 'spin 3s linear infinite', // Adding a slower spin animation
@@ -46,6 +50,7 @@ module.exports = {
         scale: 'scale 1s infinite',
         zoomIn: 'zoomIn 0.5s ease-in-out forwards',
         zoomInBottomRight: 'zoomInBottomRight 0.5s ease-in-out forwards',
+        zoomOutTopLeft: 'zoomOutTopLeft 0.5s ease-in-out forwards',
       },
     },
   },
