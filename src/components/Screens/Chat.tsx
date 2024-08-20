@@ -10,6 +10,8 @@ interface ChatProps {
   userLoggedIn: (e: any) => void
   errorMessage: String | null
   onError: () => void
+  setHide?: () => void
+  currentW: Number | null
 }
 function ChatScreen({
   currentPosition,
@@ -18,12 +20,15 @@ function ChatScreen({
   userLoggedIn,
   errorMessage,
   onError,
+  setHide,
+  currentW,
 }: ChatProps) {
   const [position, setPos] = useState('detail')
   const [pageId, setPageId] = useState<String | null>('')
   const navigate = useNavigate()
   const [clientId, setClientId] = useState<String | null | any>('')
   const [invalidPageId, setInvalidPageId] = useState(false)
+
   useEffect(() => {
     // Lấy các tham số từ URL
     const queryParams = new URLSearchParams(window.location.search)
@@ -35,7 +40,7 @@ function ChatScreen({
       const client_id = localStorage.getItem(`client_id_<${page_id}>`)
       // console.log(client_id, 'client_id')
       if (client_id && client_id !== 'undefined') {
-        setClientId(client_id)
+        // setClientId(client_id)
       }
       // console.log(client_id, 'client Id')
     }
@@ -105,6 +110,8 @@ function ChatScreen({
           onResetInput={() => setInvalidPageId(false)}
           errorMessage={errorMessage}
           onError={onError}
+          setHide={setHide}
+          currentW={currentW}
         />
       )}
     </div>

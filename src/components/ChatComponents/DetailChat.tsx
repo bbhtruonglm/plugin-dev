@@ -23,6 +23,8 @@ interface ChatScreenProps {
   onResetInput: () => void
   errorMessage: String | null
   onError: () => void
+  setHide?: () => void
+  currentW: Number | null
 }
 type Message = {
   page_id: String | null
@@ -46,6 +48,8 @@ function DetailChat({
   onResetInput,
   errorMessage,
   onError,
+  setHide,
+  currentW,
 }: ChatScreenProps) {
   const [newData, setNewData] = useState([] as any)
   const [loading, setLoading] = useState(false)
@@ -432,6 +436,8 @@ function DetailChat({
       <ChatHeader
         onCancel={onCancel}
         userId={userId}
+        setHide={setHide}
+        currentW={currentW}
       />
       {/* body */}
       <div

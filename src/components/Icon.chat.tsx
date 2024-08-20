@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import ChatScreen from './Screens/Chat'
+import { ReactComponent as Close } from '../assets/close.svg'
 import { ReactComponent as Down } from '../assets/arrow.svg'
 import Home from './Screens/Home'
 import { ReactComponent as IconApp } from '../assets/logo.svg'
@@ -13,43 +14,60 @@ import { ReactComponent as activeSupport } from '../assets/supportA.svg'
 import avatar1 from '../assets/avatar1.png'
 import avatar2 from '../assets/avatar2.png'
 import avatar3 from '../assets/avatar3.png'
-import { ReactComponent as intiveHome } from '../assets/home.svg'
-import { ReactComponent as intiveMessage } from '../assets/message.svg'
-import { ReactComponent as intiveNews } from '../assets/notification.svg'
-import { ReactComponent as intiveSupport } from '../assets/support.svg'
+import { ReactComponent as inactiveHome } from '../assets/home.svg'
+import { ReactComponent as inactiveMessage } from '../assets/message.svg'
+import { ReactComponent as inactiveNews } from '../assets/notification.svg'
+import { ReactComponent as inactiveSupport } from '../assets/support.svg'
 
 interface ChatProps {
   userName: string
   handleBtn: () => void
   show: boolean
+  setHide?: () => void
 }
-const ChatComponent: React.FC<ChatProps> = ({ userName, handleBtn, show }) => {
+const ChatComponent: React.FC<ChatProps> = ({
+  userName,
+  handleBtn,
+  show,
+  setHide,
+}) => {
   const navigate = useNavigate()
   const [page_id, setPageId] = useState<String | null>('')
   const [errorMessage, setErrorMessage] = useState<String | null>('')
+  const [currentW, setCurrentW] = useState<any>(400)
+
   useEffect(() => {
     const fullSrc = window.location.href
-    console.log(fullSrc, 'fullsrc')
+    // console.log(fullSrc, 'fullsrc')
     const url = new URL(fullSrc)
     const id = url.searchParams.get('page_id')
+    const widthP = url.searchParams.get('parentWidth')
+
+    // console.log(widthP)
+    if (widthP) {
+      setCurrentW(widthP)
+    }
     setPageId(id)
     // setPageId('11111')
 
-    setPageId('3861367970af4b7cadacaec5d1443473')
+    // setPageId('3861367970af4b7cadacaec5d1443473')
     // const handleMessage = (event: MessageEvent) => {
-    //   console.log(event, 'event')
+    //   // console.log(event, 'event')
     //   // Kiểm tra nguồn gốc của tin nhắn
     //   // if (event.origin !== 'http://localhost:5173') {
     //   //   // Thay đổi theo nguồn gốc của ứng dụng cha
     //   //   return
     //   // }
-    //   // const receivedUrl = event.data
-    //   // console.log(event, 'eventttt')
-    //   // if (receivedUrl && typeof receivedUrl === 'string') {
-    //   //   const url = new URL(receivedUrl)
-    //   //   const id = url.searchParams.get('page_id')
-    //   //   setPageId(id)
-    //   // }
+
+    //   const receivedUrl = event.data
+    //   console.log(event, 'eventttt')
+    //   if (receivedUrl?.width) {
+    //     // const url = new URL(receivedUrl)
+    //     // const id = url.searchParams.get('page_id')
+    //     // setPageId(id)
+    //     console.log(receivedUrl?.width, 'whhehwh')
+    //     setCurrentW(receivedUrl?.width)
+    //   }
     //   // Cập nhật trạng thái với dữ liệu nhận được
     //   // setParams(event.data)
     // }
@@ -58,7 +76,7 @@ const ChatComponent: React.FC<ChatProps> = ({ userName, handleBtn, show }) => {
     // Thêm sự kiện listener
     // window.addEventListener('message', handleMessage)
 
-    // // Xóa sự kiện listener khi component bị unmount
+    // Xóa sự kiện listener khi component bị unmount
     // return () => {
     //   window.removeEventListener('message', handleMessage)
     // }
@@ -67,25 +85,25 @@ const ChatComponent: React.FC<ChatProps> = ({ userName, handleBtn, show }) => {
   const menuList = [
     {
       name: 'Trang chủ',
-      src: intiveHome,
+      src: inactiveHome,
       value: 'home',
       srcA: activeHome,
     },
     {
       name: 'Tin nhắn',
-      src: intiveMessage,
+      src: inactiveMessage,
       value: 'message',
       srcA: activeMessage,
     },
     // {
     //   name: 'Hỗ trợ',
-    //   src: intiveSupport,
+    //   src: inactiveSupport,
     //   srcA: activeSupport,
     //   value: 'support',
     // },
     // {
     //   name: 'Tin tức',
-    //   src: intiveNews,
+    //   src: inactiveNews,
     //   srcA: activeNew,
     //   value: 'news',
     // },
@@ -94,14 +112,16 @@ const ChatComponent: React.FC<ChatProps> = ({ userName, handleBtn, show }) => {
   const [chatPosition, setChatPosition] = useState('overview')
   return (
     <div
-      className={`flex relative w-[100vw] h-[100vh]  ${
-        show ? ' md:w-[400px] md:h-[658px]' : ' md:w-12 md:h-12'
+      className={`flex ${
+        currentW < 450 ? ' w-[100vw] h-[100vh] ' : ' w-[400px] h-[658px] '
       }  `}
     >
       <div
-        className={` ${
-          show ? 'flex animate-zoomInBottomRight' : 'hidden'
-        }  flex-col relative w-full md:w-[400px] md:h-[600px] bg-bg-gradient rounded-[20px] overflow-hidden shadow-md`}
+        className={`relative  ${
+          currentW < 450 ? ' w-[100vw] h-[100vh] ' : ' w-[400px] h-[600px] '
+        } bg-bg-gradient rounded-[20px] overflow-hidden shadow-md ${
+          !show ? ' hidden' : ' flex flex-col animate-zoomInBottomRight '
+        }  `}
       >
         {/* header */}
         {chatPosition === 'overview' && (
@@ -132,6 +152,14 @@ const ChatComponent: React.FC<ChatProps> = ({ userName, handleBtn, show }) => {
                 className="mask  h-8 w-8"
                 alt=""
               />
+            </div>
+            <div
+              onClick={setHide}
+              className={` cursor-pointer ${
+                currentW < 450 ? ' flex' : ' hidden'
+              }`}
+            >
+              <Close />
             </div>
           </div>
         )}
@@ -178,6 +206,8 @@ const ChatComponent: React.FC<ChatProps> = ({ userName, handleBtn, show }) => {
               }}
               errorMessage={errorMessage}
               onError={() => setErrorMessage('')}
+              setHide={setHide}
+              currentW={currentW}
             />
           )}
         </div>
@@ -258,8 +288,8 @@ const ChatComponent: React.FC<ChatProps> = ({ userName, handleBtn, show }) => {
           handleBtn()
           setErrorMessage('')
         }}
-        className={`flex absolute justify-center items-center h-12 w-12 border bg-slate-800 rounded-full z-[999999] bottom-0 right-0 transform ${
-          show ? '' : '-scale-y-100'
+        className={`absolute justify-center items-center h-12 w-12 border bg-slate-800 rounded-full z-[999999] bottom-0 right-0 transform ${
+          currentW < 450 && show ? 'hidden ' : 'flex -scale-y-100'
         }`}
       >
         <Down />

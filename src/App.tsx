@@ -17,23 +17,18 @@ function App() {
       '*'
     )
   }
-
-  // useEffect(() => {
-  //   const handleMessage = (event: MessageEvent) => {
-  //     console.log(event)
-  //   }
-
-  //   // Adding the event listener
-  //   window.addEventListener('message', handleMessage)
-
-  //   // Clean up the event listener on component unmount
-  //   return () => {
-  //     window.removeEventListener('message', handleMessage)
-  //   }
-  // }, [])
+  const handleOff = () => {
+    window.parent.postMessage(
+      {
+        from: 'BBH-EMBED-IFRAME',
+        is_show: false,
+      },
+      '*'
+    )
+  }
 
   return (
-    <div className="flex flex-col justify-center items-center w-full h-full ">
+    <div className="flex flex-col justify-center items-center">
       <Routes>
         <Route
           path="/"
@@ -45,6 +40,10 @@ function App() {
                 setShow(!is_show)
               }}
               show={is_show}
+              setHide={() => {
+                setShow(false)
+                handleOff()
+              }}
             />
           }
         />

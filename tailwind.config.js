@@ -3,6 +3,12 @@ module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
   theme: {
     extend: {
+      screens: {
+        xxs: '320px', // Custom extra extra small breakpoint
+        xs: '450px', // Custom extra small breakpoint
+        mds: '400px',
+        '2xl': '1440px', // Custom extra large breakpoint
+      },
       backgroundImage: {
         'bg-gradient':
           'linear-gradient(to right,  #EEEDF3 0%, #EFEEF4 7%,   #EFECF3 14%,   #F0EDF4 21%,   #F2ECF4 29%,   #EFECF3 36%,   #EEEBF6 43%,   #EBEAF9 50%,   #E8E8F8 57%,   #E6E7F8 64%,   #E4E5F9 71%,   #E3E4F8 79%,   #E2E3F8 86%,   #E0E0FC 93%,   #DCDFFC 100%);',
@@ -36,12 +42,28 @@ module.exports = {
           '100%': { transform: 'scale(1)' },
         },
         zoomInBottomRight: {
-          '0%': { transform: 'scale(0)', transformOrigin: 'bottom right' },
-          '100%': { transform: 'scale(1)', transformOrigin: 'bottom right' },
+          '0%': {
+            transform: 'scale(0)',
+            transformOrigin: 'bottom right',
+            opacity: '0',
+          },
+          '100%': {
+            transform: 'scale(1)',
+            transformOrigin: 'bottom right',
+            opacity: '1',
+          },
         },
         zoomOutTopLeft: {
-          '0%': { transform: 'scale(1)', transformOrigin: 'top left' },
-          '100%': { transform: 'scale(0)', transformOrigin: 'top left' },
+          '0%': {
+            transform: 'scale(1)',
+            opacity: '1',
+            transformOrigin: 'bottom right',
+          },
+          '100%': {
+            transform: 'scale(0)',
+            opacity: '0',
+            transformOrigin: 'bottom right',
+          },
         },
       },
       animation: {
