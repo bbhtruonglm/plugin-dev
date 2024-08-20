@@ -80,12 +80,13 @@ function ChatScreen({
       const result = await response.json()
       // luu vao localStorage
       setClientId(result.data)
-
+      // console.log(result, 'data')
       if (result.code === 403) {
         localStorage.setItem(`client_id_<${pageId}>`, '')
         setInvalidPageId(true)
+      } else {
+        localStorage.setItem(`client_id_<${pageId}>`, result.data)
       }
-      localStorage.setItem(`client_id_<${pageId}>`, result.data)
       // localStorage.setItem(`client_id_<${pageId}>`, '')
     } catch (err) {
     } finally {

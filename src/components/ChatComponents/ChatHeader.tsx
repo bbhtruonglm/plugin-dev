@@ -38,7 +38,11 @@ function ChatHeader({ onCancel, userId, setHide, currentW }: ChatScreenProps) {
               </h5>
             </div>
           </div>
-          <div onClick={setHide}>
+
+          <div
+            onClick={setHide}
+            className={`${currentW < 450 ? ' flex' : ' hidden'}`}
+          >
             <Close />
           </div>
         </div>

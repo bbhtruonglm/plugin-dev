@@ -47,10 +47,11 @@ const ChatComponent: React.FC<ChatProps> = ({
     if (widthP) {
       setCurrentW(widthP)
     }
+    // console.log(widthP, 'withp')
     setPageId(id)
-    // setPageId('11111')
 
-    // setPageId('3861367970af4b7cadacaec5d1443473')
+    // setPageId('3861367970af4b7cadacaec5d144347d3')
+
     // const handleMessage = (event: MessageEvent) => {
     //   // console.log(event, 'event')
     //   // Kiểm tra nguồn gốc của tin nhắn
