@@ -34,7 +34,7 @@ const ChatComponent: React.FC<ChatProps> = ({
   const navigate = useNavigate()
   const [page_id, setPageId] = useState<String | null>('')
   const [errorMessage, setErrorMessage] = useState<String | null>('')
-  const [currentW, setCurrentW] = useState<any>(400)
+  const [currentW, setCurrentW] = useState<any>(450)
 
   useEffect(() => {
     const fullSrc = window.location.href
@@ -50,7 +50,7 @@ const ChatComponent: React.FC<ChatProps> = ({
     setPageId(id)
     // setPageId('11111')
 
-    // setPageId('3861367970af4b7cadacaec5d1443473')
+    setPageId('3861367970af4b7cadacaec5d1443473')
     // const handleMessage = (event: MessageEvent) => {
     //   // console.log(event, 'event')
     //   // Kiểm tra nguồn gốc của tin nhắn
@@ -288,8 +288,12 @@ const ChatComponent: React.FC<ChatProps> = ({
           handleBtn()
           setErrorMessage('')
         }}
-        className={`absolute justify-center items-center h-12 w-12 border bg-slate-800 rounded-full z-[999999] bottom-0 right-0 transform ${
-          currentW < 450 && show ? 'hidden ' : 'flex -scale-y-100'
+        className={` absolute justify-center items-center h-12 w-12 border bg-slate-800 rounded-full z-[999999] bottom-0 right-0  ${
+          !show
+            ? ' flex transform -scale-y-100 '
+            : currentW < 450
+            ? ' hidden '
+            : ' flex '
         }`}
       >
         <Down />

@@ -115,9 +115,10 @@ function DetailChat({
 
   useEffect(() => {
     // Cuộn xuống cuối mỗi khi danh sách tin nhắn thay đổi
-    if (scrollAtBottom) {
-      scrollToBottom()
-    }
+    // Không check event khi đang scroll lên nữa, khi có tin nhắn mới auto scroll
+    // if (scrollAtBottom) {
+    scrollToBottom()
+    // }
   }, [newData, scrollAtBottom])
   // Ngăn kết nối mở lại
   useEffect(() => {
@@ -250,15 +251,6 @@ function DetailChat({
 
   // Tạo ra function chỉ để call lần đầu
   const fetchMessageInit = async () => {
-    // // Lấy vị trí scroll hiện tại, nếu k có thì return
-    // const container = messagesContainerRef.current
-
-    // if (!container) return
-    // const scrollPosition = container.scrollHeight - container.scrollTop
-
-    // // set loadingMore = true de k call lien tuc
-    // setLoadingMore(true)
-
     try {
       const url = new URL(
         'https://dev-api.botbanhang.vn/v1/n7_public/embed/message/read_message'
@@ -288,19 +280,7 @@ function DetailChat({
       }
 
       //lưu data về phía trước do data đã bị reverse
-      setNewData([...result.data.reverse(), ...newData])
-      // setTimeout(() => {
-      //   if (container) {
-      //     // Kiểm tra lại container trước khi sử dụng
-      //     container.scrollTop = container.scrollHeight - scrollPosition
-      //   }
-      // }, 0)
-      // Neu data trả về k nhiều  = limit thì đã hết tin nhắn cũ
-      // Nếu load trên limit bản ghi thì hasmore == false
-      // if (result.data.length !== limit) {
-      //   // k còn data nữa
-      //   setHasMore(false)
-      // }
+      setNewData([...result.data.reverse()])
     } catch (error) {
     } finally {
       // setLoadingMore(false)
