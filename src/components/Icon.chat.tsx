@@ -50,7 +50,7 @@ const ChatComponent: React.FC<ChatProps> = ({
     setPageId(id)
     // setPageId('11111')
 
-    setPageId('3861367970af4b7cadacaec5d1443473')
+    // setPageId('3861367970af4b7cadacaec5d1443473')
     // const handleMessage = (event: MessageEvent) => {
     //   // console.log(event, 'event')
     //   // Kiểm tra nguồn gốc của tin nhắn

@@ -40,7 +40,7 @@ function ChatScreen({
       const client_id = localStorage.getItem(`client_id_<${page_id}>`)
       // console.log(client_id, 'client_id')
       if (client_id && client_id !== 'undefined') {
-        // setClientId(client_id)
+        setClientId(client_id)
       }
       // console.log(client_id, 'client Id')
     }
