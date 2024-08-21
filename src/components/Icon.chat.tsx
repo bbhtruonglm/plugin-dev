@@ -47,7 +47,7 @@ const ChatComponent: React.FC<ChatProps> = ({
     if (widthP) {
       setCurrentW(widthP)
     }
-    // console.log(widthP, 'withp')
+    console.log(widthP, 'withp')
     setPageId(id)
 
     // setPageId('3861367970af4b7cadacaec5d144347d3')

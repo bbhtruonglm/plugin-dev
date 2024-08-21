@@ -146,7 +146,9 @@ function DetailChat({
 
   useEffect(() => {
     // Khi socket trả về last message sẽ read message 1 lần
+    console.log('last message', lastMessage)
     if (Object.keys(lastMessage).length !== 0 && initMessage) {
+      console.log(initMessage, 'firstMessage')
       fetchMessageInit()
       setInitMessage('')
     }
@@ -251,6 +253,7 @@ function DetailChat({
 
   // Tạo ra function chỉ để call lần đầu
   const fetchMessageInit = async () => {
+    console.log('fetchMessageInit')
     try {
       const url = new URL(
         'https://dev-api.botbanhang.vn/v1/n7_public/embed/message/read_message'
@@ -274,6 +277,7 @@ function DetailChat({
       })
 
       const result = await response.json()
+      console.log(result, 'resulllllllt')
       if (result.data.length === limit) {
         // set call api se skip bn ban ghi
         setSkip(skip + result.data.length)
@@ -284,6 +288,7 @@ function DetailChat({
     } catch (error) {
     } finally {
       // setLoadingMore(false)
+      console.log('finally')
     }
   }
   // goi api xac dinh danh tinh khi mo socket
