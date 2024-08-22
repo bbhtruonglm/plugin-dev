@@ -156,7 +156,7 @@ const ChatComponent: React.FC<ChatProps> = ({
             </div>
             <div
               onClick={setHide}
-              className={` cursor-pointer ${
+              className={` cursor-pointer w-10 h-10 flex justify-center items-center  ${
                 currentW < 450 ? ' flex' : ' hidden'
               }`}
             >
