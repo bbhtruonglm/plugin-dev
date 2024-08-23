@@ -32,7 +32,7 @@ function ChatHeader({
             />
             <img
               src={avatar1}
-              className="mask is-squircle h-8 w-8"
+              className="mask h-8 w-8"
               alt=""
             />
             <div>

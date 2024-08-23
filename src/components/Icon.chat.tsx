@@ -113,8 +113,12 @@ const ChatComponent: React.FC<ChatProps> = ({
   const [chatPosition, setChatPosition] = useState('overview')
   return (
     <div
-      className={`flex ${
-        currentW < 450 ? ' w-[100vw] h-[100vh] ' : ' w-[400px] h-[658px] '
+      className={`flex relative bg-red-400 ${
+        !show
+          ? 'w-12 h-12'
+          : currentW < 450
+          ? ' w-[100vw] h-[100vh] '
+          : ' w-[400px] h-[658px] '
       }  `}
     >
       <div
