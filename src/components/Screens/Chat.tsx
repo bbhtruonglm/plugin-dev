@@ -78,6 +78,7 @@ function ChatScreen({
         },
       })
       const result = await response.json()
+
       // luu vao localStorage
       setClientId(result.data)
       // console.log(result, 'data')
