@@ -144,7 +144,7 @@ function DetailChat({
     if (userId) {
       onSocketFromChatboxServer()
       // check có user Id sẽ send init message
-      // sendMessage(initMessage)
+      sendMessage(initMessage)
       fetchMessage()
     }
   }, [userId])
