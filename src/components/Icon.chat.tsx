@@ -54,7 +54,6 @@ const ChatComponent: React.FC<ChatProps> = ({
     // lưu page_id với state
     setPageId(id)
   }, [])
-  console.log(currentW, 'currentW')
 
   // Tạo menuList
   const menuList = [

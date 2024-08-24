@@ -3,6 +3,7 @@ import { replace, useNavigate } from 'react-router-dom'
 
 import DetailChat from '../ChatComponents/DetailChat'
 
+const INIT_CLIENT = process.env.REACT_APP_INIT_CLIENT_URL
 interface ChatProps {
   currentPosition: string
   setPosition: (e: string) => void
@@ -62,10 +63,9 @@ function ChatScreen({
   const [loading, setLoading] = useState(false)
 
   const initGetClientId = async (e: any) => {
+    console.log('init client ', INIT_CLIENT)
     try {
-      const url = new URL(
-        'https://dev-api.botbanhang.vn/v1/n7_public/embed/conversation/init_identify'
-      )
+      const url = new URL(INIT_CLIENT ?? '')
 
       //setup params
       const params = e

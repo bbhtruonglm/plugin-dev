@@ -11,6 +11,10 @@ import { MessageInfo } from '../../utils/type'
 import avatar1 from '../../assets/avatar1.png'
 import avatar2 from '../../assets/avatar2.png'
 
+const SOCKET_URL = process.env.REACT_APP_SOCKET_URL
+const READ_MESSAGE_URL = process.env.REACT_APP_READ_MESSAGE_URL
+const SEND_MESSAGE_URL = process.env.REACT_APP_SEND_MESSAGE_URL
+
 const size = require('lodash')
 interface ChatScreenProps {
   onCancel: () => void
@@ -181,9 +185,7 @@ function DetailChat({
     setLoadingMore(true)
 
     try {
-      const url = new URL(
-        'https://dev-api.botbanhang.vn/v1/n7_public/embed/message/read_message'
-      )
+      const url = new URL(READ_MESSAGE_URL ?? '')
 
       //setup params
       const params = {
@@ -233,9 +235,7 @@ function DetailChat({
   // Tạo ra function chỉ để call lần đầu
   const fetchMessageInit = async () => {
     try {
-      const url = new URL(
-        'https://dev-api.botbanhang.vn/v1/n7_public/embed/message/read_message'
-      )
+      const url = new URL(READ_MESSAGE_URL ?? '')
 
       //setup params
       const params = {
@@ -293,7 +293,8 @@ function DetailChat({
   /**  Cấu hình websocket */
   function onSocketFromChatboxServer() {
     // Kết nối tới WebSocket server
-    ws.current = new WebSocket('wss://dev-api.botbanhang.vn/embed')
+    ws.current = new WebSocket(SOCKET_URL ?? '')
+    console.log(SOCKET_URL, 'socket url')
     // luu lai id vong lap ping
     let ping_interval_id: number | any
 
@@ -363,21 +364,18 @@ function DetailChat({
         text: input,
       }
 
-      await fetch(
-        'https://dev-api.botbanhang.vn/v1/n7_public/embed/message/send_message',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            // 'Authorization': 'Bearer YOUR_ACCESS_TOKEN', // Nếu cần token xác thực
-          },
-          body: JSON.stringify({
-            client_id: message.client_id,
-            page_id: message.page_id,
-            text: message.text,
-          }),
-        }
-      )
+      await fetch(SEND_MESSAGE_URL ?? '', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // 'Authorization': 'Bearer YOUR_ACCESS_TOKEN', // Nếu cần token xác thực
+        },
+        body: JSON.stringify({
+          client_id: message.client_id,
+          page_id: message.page_id,
+          text: message.text,
+        }),
+      })
 
       //Gửi tin nhắn thành công, scroll xuống cuối trang
       scrollToBottom()
