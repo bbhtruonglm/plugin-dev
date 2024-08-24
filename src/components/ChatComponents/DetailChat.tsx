@@ -53,7 +53,7 @@ function DetailChat({
 }: ChatScreenProps) {
   const [newData, setNewData] = useState([] as any)
   const [loading, setLoading] = useState(false)
-  const [input, setInput] = useState('')
+
   const [lastMessage, setLastMessage] = useState({} as any)
   const [isForceCloseSocket, setIsForceCloseSocket] = useState(false)
   const ws = useRef<WebSocket | null>(null)
@@ -75,6 +75,7 @@ function DetailChat({
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
   const messagesContainerRef = useRef<HTMLDivElement | null>(null)
 
+  // Debounce để xu lý scroll
   const debounce = (func: Function, delay: number) => {
     let debounceTimer: ReturnType<typeof setTimeout>
     return (...args: any[]) => {
@@ -86,21 +87,27 @@ function DetailChat({
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
-
+  // Fuction thực thi khi có hành động scroll
   const handleScroll = useCallback(() => {
+    // Tạo ref nhận event trong message
     const container = messagesContainerRef.current
+    //không có ref thì bỏ qua
     if (!container) return
 
+    // Tính toàn vị trí top
     const scrollThreshold = container.scrollHeight * 0.3 // 30% chiều cao
 
+    // Scroll lên top ( Theo vị trí tính toán) thì load thêm data cũ
     if (container.scrollTop <= scrollThreshold && !loadingMore) {
       fetchMessage()
     }
 
+    // vị trí bottom
     const atBottom =
       container.scrollTop + container.clientHeight >= container.scrollHeight - 1
-
+    // Lưu vị trí bottom
     setScrollAtBottom(atBottom)
+    // Set Hiển thị nút btn jump
     setShowJumpButton(!atBottom)
   }, [loadingMore, hasMore])
 
@@ -126,11 +133,6 @@ function DetailChat({
     }
   }, [scrollAtBottom])
 
-  // useEffect(() => {
-  //   if (scrollAtBottom) {
-  //     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  //   }
-  // }, [messages, scrollAtBottom]);
   // Ngăn kết nối mở lại
   useEffect(() => {
     return () => {
@@ -149,12 +151,14 @@ function DetailChat({
     }
   }, [userId])
 
+  // Check khi đã có pageId nhưng bị sai, reset ô input của người dùng
   useEffect(() => {
     setEmail('')
     setName('')
     setPhone('')
   }, [invalidPageId])
 
+  //Đóng kết nối socket
   function closeSocketConnect() {
     // gắn cờ ngăn chặn kết nối mở lại
     setIsForceCloseSocket(true)
@@ -265,27 +269,28 @@ function DetailChat({
       console.log('finally')
     }
   }
-  // goi api xac dinh danh tinh khi mo socket
+
+  /** Gọi api xác định danh tính khi mở WebSocket */
   const sendIdentifyMessage = () => {
-    //check dieu kien, neu k function se trong trang thai connecting
+    // Check điều kiện khi nào websocket đang readyState === websocket.OPEN thì mới gửi tin nhắn
     if (ws.current?.readyState === WebSocket.OPEN) {
       ws.current?.send(
         JSON.stringify({
-          // page_id: '3861367970af4b7cadacaec5d1443473',
           page_id: pageId,
           client_id: userId,
           event: 'JOIN',
         })
       )
-
+      // Khi kết nối thành công thì mới trigger để gọi tin nhắn khởi tạo
       setIdentitySent(true)
     } else {
+      // Nếu chưa kết nối mở lại gọi lai tin nhắn
       console.log('WebSocket is not open yet. Retrying...')
       setTimeout(sendIdentifyMessage, 100) // Thử lại sau 100ms nếu chưa kết nối
     }
   }
 
-  // Handle websocket
+  /**  Cấu hình websocket */
   function onSocketFromChatboxServer() {
     // Kết nối tới WebSocket server
     ws.current = new WebSocket('wss://dev-api.botbanhang.vn/embed')
@@ -293,8 +298,9 @@ function DetailChat({
     let ping_interval_id: number | any
 
     ws.current.onopen = () => {
-      // thong bao connect thanh cong
+      // Thông báo connect thành công
       console.log('WebSocket Connectedddd')
+      // Gửi tin nhắn khởi tạo socket
       sendIdentifyMessage()
 
       if (ws.current?.readyState === WebSocket.OPEN) {
@@ -375,7 +381,6 @@ function DetailChat({
 
       //Gửi tin nhắn thành công, scroll xuống cuối trang
       scrollToBottom()
-      setInput('')
     } catch (error) {
     } finally {
       setLoading(false)
@@ -385,13 +390,14 @@ function DetailChat({
   useEffect(() => {
     // Khi socket trả về last message sẽ read message 1 lần
 
-    // if (Object.keys(lastMessage).length !== 0 && initMessage) {
+    // có tin nhắn khởi tạo + userId + websocket được kết nối (Khởi tạo lần đầu)
     if (identitySent && initMessage && userId) {
       fetchMessageInit()
       setInitMessage('')
       setLoadingMore(false)
       setIdentitySent(false)
     }
+    // có tin tin nhắn từ socket (Lưu vào lastmessage)
     if (Object.keys(lastMessage).length !== 0 && !initMessage) {
       const dataaa = [...newData, lastMessage]
       setNewData(dataaa)
@@ -495,17 +501,7 @@ function DetailChat({
               </div>
             </div>
           ))}
-        {/* {tempData.map((item: any, index: any) => (
-          <div
-            className="flex justify-end"
-            key={index}
-          >
-            <MessageComponent
-              data={item}
-              userId={userId}
-            />
-          </div>
-        ))} */}
+
         <div ref={messagesEndRef} />
         {/* Khi gửi tin nhắn sẽ hiển thị loading để call api */}
         {loading && (
@@ -513,12 +509,15 @@ function DetailChat({
             <LoadingDots />
           </div>
         )}
+
+        {/* Khi khởi tạo sẽ hiển thị loading này */}
         {loadingInit && (
           <div className="fixed bg-red-300 bottom-[22%] left-[48%] p-2 rounded-full text-xs z-50">
             <LoadingDots />
           </div>
         )}
       </div>
+      {/* Hiển thị nút nhảy về cuối trang */}
       {showJumpButton && (
         <button
           onClick={scrollToBottom}
@@ -531,32 +530,7 @@ function DetailChat({
           />
         </button>
       )}
-      {/* {showJumpButton && (
-        <button
-          style={{
-            position: 'absolute',
-            bottom: '60px',
-            right: '20px',
-            padding: '10px 20px',
-            backgroundColor: '#007bff',
-            color: 'white',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer',
-          }}
-          onClick={() => {
-            setScrollAtBottom(true)
-            messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-          }}
-        >
-          <Down
-            width={10}
-            height={5}
-            stroke="#000000"
-          />
-        </button> 
-      )}
-        */}
+
       {/* o input  Khi có text trong input thì hiển thị thêm icon send */}
       <InputChat
         errorMessage={errorMessage}
@@ -584,9 +558,7 @@ function DetailChat({
           }
         }}
         loading={loading}
-        onChangeText={(e) => {
-          setInput(e)
-        }}
+        onChangeText={(e) => {}}
       />
     </div>
   )

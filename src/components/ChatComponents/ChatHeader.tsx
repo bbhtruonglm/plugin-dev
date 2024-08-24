@@ -1,6 +1,5 @@
 import { ReactComponent as BackArrow } from '../../assets/white-arrow.svg'
 import { ReactComponent as Close } from '../../assets/close.svg'
-import React from 'react'
 import avatar1 from '../../assets/avatar1.png'
 import avatar2 from '../../assets/avatar2.png'
 import avatar3 from '../../assets/avatar3.png'
@@ -11,12 +10,7 @@ interface ChatScreenProps {
   setHide?: () => void
   currentW: Number | null | any
 }
-function ChatHeader({
-  onCancel,
-  userId = '12212',
-  setHide,
-  currentW,
-}: ChatScreenProps) {
+function ChatHeader({ onCancel, userId, setHide, currentW }: ChatScreenProps) {
   return (
     <div
       className={`flex bg-slate-800  w-full py-3 px-5 gap-2 absolute top-0 ${
@@ -47,7 +41,7 @@ function ChatHeader({
           <div
             onClick={setHide}
             className={`${
-              currentW < 450
+              currentW < 768 && currentW !== 0
                 ? ' flex w-9 h-9 items-center justify-center'
                 : ' hidden'
             }`}
@@ -63,7 +57,7 @@ function ChatHeader({
               onClick={() => onCancel()}
             />
             <h2 className="text-lg font-medium text-white">Bót Bán Hàng</h2>
-            {currentW < 450 ? (
+            {currentW < 768 && currentW !== 0 ? (
               <div
                 onClick={setHide}
                 className="w-8 h-8  flex justify-center items-center cursor-pointer"

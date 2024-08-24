@@ -1,13 +1,14 @@
 import './App.css'
 
-import React, { FC, useEffect, useState } from 'react'
-import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 
 import ChatComponent from './components/Icon.chat'
+import { useState } from 'react'
 
 function App() {
   const [is_show, setShow] = useState(false)
 
+  /** Function tắt bật của popup dạng PC */
   const handleToggle = () => {
     window.parent.postMessage(
       {
@@ -17,6 +18,8 @@ function App() {
       '*'
     )
   }
+
+  /** Function tắt báo popup dạng Mobile*/
   const handleOff = () => {
     window.parent.postMessage(
       {

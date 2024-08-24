@@ -34,55 +34,29 @@ const ChatComponent: React.FC<ChatProps> = ({
   const navigate = useNavigate()
   const [page_id, setPageId] = useState<String | null>('')
   const [errorMessage, setErrorMessage] = useState<String | null>('')
-  const [currentW, setCurrentW] = useState<any>(450)
+  const [currentW, setCurrentW] = useState<any>(0)
 
   useEffect(() => {
+    // Lấy url của page cha
     const fullSrc = window.location.href
-    // console.log(fullSrc, 'fullsrc')
+    // Tạo url
     const url = new URL(fullSrc)
+    // lấy params page_id
     const id = url.searchParams.get('page_id')
+    // Lấy width của page cha
     const widthP = url.searchParams.get('parentWidth')
 
-    // console.log(widthP)
     if (widthP) {
+      // nếu có truyền width thì lưu vào state
+
       setCurrentW(widthP)
     }
-    console.log(widthP, 'withp')
+    // lưu page_id với state
     setPageId(id)
-
-    // setPageId('3861367970af4b7cadacaec5d144347d3')
-
-    // const handleMessage = (event: MessageEvent) => {
-    //   // console.log(event, 'event')
-    //   // Kiểm tra nguồn gốc của tin nhắn
-    //   // if (event.origin !== 'http://localhost:5173') {
-    //   //   // Thay đổi theo nguồn gốc của ứng dụng cha
-    //   //   return
-    //   // }
-
-    //   const receivedUrl = event.data
-    //   console.log(event, 'eventttt')
-    //   if (receivedUrl?.width) {
-    //     // const url = new URL(receivedUrl)
-    //     // const id = url.searchParams.get('page_id')
-    //     // setPageId(id)
-    //     console.log(receivedUrl?.width, 'whhehwh')
-    //     setCurrentW(receivedUrl?.width)
-    //   }
-    //   // Cập nhật trạng thái với dữ liệu nhận được
-    //   // setParams(event.data)
-    // }
-    // Fix cứng page_id
-
-    // Thêm sự kiện listener
-    // window.addEventListener('message', handleMessage)
-
-    // Xóa sự kiện listener khi component bị unmount
-    // return () => {
-    //   window.removeEventListener('message', handleMessage)
-    // }
   }, [])
+  console.log(currentW, 'currentW')
 
+  // Tạo menuList
   const menuList = [
     {
       name: 'Trang chủ',
@@ -109,21 +83,26 @@ const ChatComponent: React.FC<ChatProps> = ({
     //   value: 'news',
     // },
   ]
+
+  // Tạo tab hiện tại là HOME
   const [currentTab, setCurrentTab] = useState('home')
+  // Vị trí là OVER_VIEW
   const [chatPosition, setChatPosition] = useState('overview')
   return (
     <div
       className={`flex relative  ${
         !show
           ? 'w-12 h-12'
-          : currentW < 450
+          : currentW < 768 && currentW !== 0
           ? ' w-[100vw] h-[100vh] '
           : ' w-[400px] h-[658px] '
       }  `}
     >
       <div
         className={`relative  ${
-          currentW < 450 ? ' w-[100vw] h-[100vh] ' : ' w-[400px] h-[600px] '
+          currentW < 768 && currentW !== 0
+            ? ' w-[100vw] h-[100vh] '
+            : ' w-[400px] h-[600px] '
         } bg-bg-gradient rounded-[20px] overflow-hidden shadow-md ${
           !show ? ' hidden' : ' flex flex-col animate-zoomInBottomRight '
         }  `}
@@ -161,7 +140,7 @@ const ChatComponent: React.FC<ChatProps> = ({
             <div
               onClick={setHide}
               className={` cursor-pointer w-10 h-10 flex justify-center items-center  ${
-                currentW < 450 ? ' flex' : ' hidden'
+                currentW < 768 && currentW !== 0 ? ' flex' : ' hidden'
               }`}
             >
               <Close />
@@ -296,7 +275,7 @@ const ChatComponent: React.FC<ChatProps> = ({
         className={` absolute justify-center items-center h-12 w-12 border bg-slate-800 rounded-full z-[999999] bottom-0 right-0  ${
           !show
             ? ' flex transform -scale-y-100 '
-            : currentW < 450
+            : currentW < 768 && currentW !== 0
             ? ' hidden '
             : ' flex '
         }`}

@@ -118,21 +118,6 @@ function InitClient({
           )}
         </div>
       </div>
-
-      {/* <div
-        onClick={() => {
-          // call api init client
-          // if (!clientId) {
-          //   initGetClientId()
-          // } else {
-          //   setPos('detail')
-          //   setPosition('detail')
-          // }
-        }}
-        className="cursor-pointer flex justify-center items-center p-2 bg-white w-full rounded-md font-semibold"
-      >
-        Xác nhận
-      </div> */}
     </div>
   )
 }
