@@ -5,7 +5,8 @@ import {
 } from './apis/staging'
 
 export const useAPI = () => {
-  if (process.env.REACT_APP_ENV === 'production') {
+  let env = process.env.REACT_APP_ENV || 'production'
+  if (env === 'production') {
     const SOCKET_API = REACT_APP_SOCKET_HOST
     const READ_MESSAGE_API = REACT_APP_BE_HOST + '/embed/message/read_message'
     const SEND_MESSAGE_API = REACT_APP_BE_HOST + '/embed/message/send_message'
@@ -23,10 +24,3 @@ export const useAPI = () => {
     return { SOCKET_API, READ_MESSAGE_API, SEND_MESSAGE_API, INIT_CLIENT_API }
   }
 }
-// export const SOCKET_API = process.env.REACT_APP_SOCKET_HOST
-// export const READ_MESSAGE_API =
-//   process.env.REACT_APP_BE_HOST + '/embed/message/read_message'
-// export const SEND_MESSAGE_API =
-//   process.env.REACT_APP_BE_HOST + '/embed/message/send_message'
-// export const INIT_CLIENT_API =
-//   process.env.REACT_APP_BE_HOST + '/embed/conversation/init_identify'
