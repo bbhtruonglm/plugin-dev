@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { replace, useNavigate } from 'react-router-dom'
 
 import DetailChat from '../ChatComponents/DetailChat'
+import { INIT_CLIENT_API } from '../../utils/api'
 
 const INIT_CLIENT = process.env.REACT_APP_INIT_CLIENT_URL
 interface ChatProps {
@@ -63,9 +64,9 @@ function ChatScreen({
   const [loading, setLoading] = useState(false)
 
   const initGetClientId = async (e: any) => {
-    console.log('init client ', INIT_CLIENT)
+    // console.log('init client ', INIT_CLIENT_API)
     try {
-      const url = new URL(INIT_CLIENT ?? '')
+      const url = new URL(INIT_CLIENT_API ?? '')
 
       //setup params
       const params = e

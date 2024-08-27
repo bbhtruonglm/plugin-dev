@@ -1,3 +1,4 @@
+import { READ_MESSAGE_API, SEND_MESSAGE_API, SOCKET_API } from '../../utils/api'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import ChatHeader from './ChatHeader'
@@ -185,7 +186,7 @@ function DetailChat({
     setLoadingMore(true)
 
     try {
-      const url = new URL(READ_MESSAGE_URL ?? '')
+      const url = new URL(READ_MESSAGE_API ?? '')
 
       //setup params
       const params = {
@@ -235,7 +236,7 @@ function DetailChat({
   // Tạo ra function chỉ để call lần đầu
   const fetchMessageInit = async () => {
     try {
-      const url = new URL(READ_MESSAGE_URL ?? '')
+      const url = new URL(READ_MESSAGE_API ?? '')
 
       //setup params
       const params = {
@@ -293,8 +294,8 @@ function DetailChat({
   /**  Cấu hình websocket */
   function onSocketFromChatboxServer() {
     // Kết nối tới WebSocket server
-    ws.current = new WebSocket(SOCKET_URL ?? '')
-    console.log(SOCKET_URL, 'socket url')
+    ws.current = new WebSocket(SOCKET_API ?? '')
+    // console.log(SOCKET_API, 'socket url')
     // luu lai id vong lap ping
     let ping_interval_id: number | any
 
@@ -364,7 +365,7 @@ function DetailChat({
         text: input,
       }
 
-      await fetch(SEND_MESSAGE_URL ?? '', {
+      await fetch(SEND_MESSAGE_API ?? '', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

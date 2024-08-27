@@ -29,7 +29,7 @@ function App() {
       '*'
     )
   }
-
+  console.log(process.env, 'process.env')
   return (
     <div className="flex flex-col justify-center items-center">
       <Routes>
