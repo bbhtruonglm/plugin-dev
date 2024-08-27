@@ -1,4 +1,3 @@
-import { READ_MESSAGE_API, SEND_MESSAGE_API, SOCKET_API } from '../../utils/api'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import ChatHeader from './ChatHeader'
@@ -11,10 +10,7 @@ import MessageComponent from './MessageComponent'
 import { MessageInfo } from '../../utils/type'
 import avatar1 from '../../assets/avatar1.png'
 import avatar2 from '../../assets/avatar2.png'
-
-const SOCKET_URL = process.env.REACT_APP_SOCKET_URL
-const READ_MESSAGE_URL = process.env.REACT_APP_READ_MESSAGE_URL
-const SEND_MESSAGE_URL = process.env.REACT_APP_SEND_MESSAGE_URL
+import { useAPI } from '../../utils/api'
 
 const size = require('lodash')
 interface ChatScreenProps {
@@ -79,6 +75,7 @@ function DetailChat({
   //Bắt các event scroll
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
   const messagesContainerRef = useRef<HTMLDivElement | null>(null)
+  const { SOCKET_API, READ_MESSAGE_API, SEND_MESSAGE_API } = useAPI()
 
   // Debounce để xu lý scroll
   const debounce = (func: Function, delay: number) => {

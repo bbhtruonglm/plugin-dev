@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { replace, useNavigate } from 'react-router-dom'
 
 import DetailChat from '../ChatComponents/DetailChat'
-import { INIT_CLIENT_API } from '../../utils/api'
+import { useAPI } from '../../utils/api'
 
-const INIT_CLIENT = process.env.REACT_APP_INIT_CLIENT_URL
+// import { INIT_CLIENT_API } from '../../utils/api'
+
 interface ChatProps {
   currentPosition: string
   setPosition: (e: string) => void
@@ -30,7 +31,7 @@ function ChatScreen({
   const navigate = useNavigate()
   const [clientId, setClientId] = useState<String | null | any>('')
   const [invalidPageId, setInvalidPageId] = useState(false)
-
+  const { INIT_CLIENT_API } = useAPI()
   useEffect(() => {
     // Lấy các tham số từ URL
     const queryParams = new URLSearchParams(window.location.search)
