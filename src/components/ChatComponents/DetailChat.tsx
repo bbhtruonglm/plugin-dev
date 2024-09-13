@@ -1,16 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import ChatHeader from './ChatHeader'
-import { ReactComponent as Down } from '../../assets/arrow.svg'
+import { ReactComponent as Down } from 'assets/arrow.svg'
 import InitClient from './InitClient'
 import InputChat from './InputChat'
 import Loading from '../Loading/Loading'
 import LoadingDots from '../Loading/LoadingDot'
 import MessageComponent from './MessageComponent'
-import { MessageInfo } from '../../utils/type'
-import avatar1 from '../../assets/avatar1.png'
-import avatar2 from '../../assets/avatar2.png'
-import { useAPI } from '../../utils/api'
+import { MessageInfo } from 'utils/type'
+import avatar1 from 'assets/avatar1.png'
+import avatar2 from 'assets/avatar2.png'
+import { useAPI } from 'utils/api'
 
 const size = require('lodash')
 interface ChatScreenProps {
@@ -32,10 +32,6 @@ type Message = {
   client_id: string
   text: string
 }
-type Temp_Message = {
-  message_text: string
-  message_mid: string
-}
 
 /**kết nối socket đến server */
 function DetailChat({
@@ -54,7 +50,6 @@ function DetailChat({
 }: ChatScreenProps) {
   const [newData, setNewData] = useState([] as any)
   const [loading, setLoading] = useState(false)
-
   const [lastMessage, setLastMessage] = useState({} as any)
   const [isForceCloseSocket, setIsForceCloseSocket] = useState(false)
   const ws = useRef<WebSocket | null>(null)
@@ -72,9 +67,11 @@ function DetailChat({
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
+
   //Bắt các event scroll
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
   const messagesContainerRef = useRef<HTMLDivElement | null>(null)
+
   const { SOCKET_API, READ_MESSAGE_API, SEND_MESSAGE_API } = useAPI()
 
   // Debounce để xu lý scroll
@@ -92,21 +89,21 @@ function DetailChat({
   // Fuction thực thi khi có hành động scroll
   const handleScroll = useCallback(() => {
     // Tạo ref nhận event trong message
-    const container = messagesContainerRef.current
+    const CONTAINER = messagesContainerRef.current
     //không có ref thì bỏ qua
-    if (!container) return
+    if (!CONTAINER) return
 
     // Tính toàn vị trí top
-    const scrollThreshold = container.scrollHeight * 0.3 // 30% chiều cao
+    const SCROLL_THRESH_HOLD = CONTAINER.scrollHeight * 0.3 // 30% chiều cao
 
     // Scroll lên top ( Theo vị trí tính toán) thì load thêm data cũ
-    if (container.scrollTop <= scrollThreshold && !loadingMore) {
+    if (CONTAINER.scrollTop <= SCROLL_THRESH_HOLD && !loadingMore) {
       fetchMessage()
     }
 
     // vị trí bottom
     const atBottom =
-      container.scrollTop + container.clientHeight >= container.scrollHeight - 1
+      CONTAINER.scrollTop + CONTAINER.clientHeight >= CONTAINER.scrollHeight - 1
     // Lưu vị trí bottom
     setScrollAtBottom(atBottom)
     // Set Hiển thị nút btn jump
@@ -144,7 +141,6 @@ function DetailChat({
   // call api list tin nhan
   useEffect(() => {
     //Nếu có clientId thì mới fetch api
-
     if (userId) {
       onSocketFromChatboxServer()
       // check có user Id sẽ send init message
@@ -160,17 +156,15 @@ function DetailChat({
     setPhone('')
   }, [invalidPageId])
 
-  //Đóng kết nối socket
+  /** Đóng kết nối socket */
   function closeSocketConnect() {
     // gắn cờ ngăn chặn kết nối mở lại
     setIsForceCloseSocket(true)
-
     ws.current?.close()
   }
-  // function goi list tin nhan
+  /** Hàm gọi API để lấy tin nhắn */
   const fetchMessage = async () => {
-    // đang loading hoặc không có thêm bản ghi sẽ không fetch data nữa
-
+    // Đang loading hoặc không có thêm bản ghi sẽ không fetch data nữa
     if (loadingMore || !hasMore) return
 
     // Lấy vị trí scroll hiện tại, nếu k có thì return
@@ -183,7 +177,7 @@ function DetailChat({
     setLoadingMore(true)
 
     try {
-      const url = new URL(READ_MESSAGE_API ?? '')
+      const URL_READ = new URL(READ_MESSAGE_API ?? '')
 
       //setup params
       const params = {
@@ -193,24 +187,23 @@ function DetailChat({
         limit: limit.toString(),
         skip: skip.toString(),
       }
-      url.search = new URLSearchParams(params as any).toString()
-      const response = await fetch(url, {
+      URL_READ.search = new URLSearchParams(params as any).toString()
+      const res = await fetch(URL_READ, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          // 'Authorization': 'Bearer YOUR_ACCESS_TOKEN', // Nếu cần token xác thực
         },
       })
 
-      const result = await response.json()
-      if (result.data.length === limit) {
+      const RESULT = await res.json()
+      if (RESULT.data.length === limit) {
         // set call api se skip bn ban ghi
-        setSkip(skip + result.data.length)
+        setSkip(skip + RESULT.data.length)
       }
 
       //lưu data về phía trước do data đã bị reverse
 
-      setNewData([...result.data.reverse(), ...newData])
+      setNewData([...RESULT.data.reverse(), ...newData])
 
       setTimeout(() => {
         if (container) {
@@ -220,7 +213,7 @@ function DetailChat({
       }, 10)
       // Neu data trả về k nhiều  = limit thì đã hết tin nhắn cũ
       // Nếu load trên limit bản ghi thì hasmore == false
-      if (result.data.length !== limit) {
+      if (RESULT.data.length !== limit) {
         // k còn data nữa
         setHasMore(false)
       }
@@ -233,7 +226,7 @@ function DetailChat({
   // Tạo ra function chỉ để call lần đầu
   const fetchMessageInit = async () => {
     try {
-      const url = new URL(READ_MESSAGE_API ?? '')
+      const URL_READ = new URL(READ_MESSAGE_API ?? '')
 
       //setup params
       const params = {
@@ -243,8 +236,8 @@ function DetailChat({
         limit: limit.toString(),
         skip: skip.toString(),
       }
-      url.search = new URLSearchParams(params as any).toString()
-      const response = await fetch(url, {
+      URL_READ.search = new URLSearchParams(params as any).toString()
+      const response = await fetch(URL_READ, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -252,15 +245,15 @@ function DetailChat({
         },
       })
 
-      const result = await response.json()
+      const RESULT = await response.json()
 
-      if (result.data.length === limit) {
+      if (RESULT.data.length === limit) {
         // set call api se skip bn ban ghi
-        setSkip(skip + result.data.length)
+        setSkip(skip + RESULT.data.length)
       }
 
       //lưu data về phía trước do data đã bị reverse
-      setNewData([...result.data.reverse()])
+      setNewData([...RESULT.data.reverse()])
     } catch (error) {
     } finally {
       // setLoadingMore(false)
@@ -292,7 +285,7 @@ function DetailChat({
   function onSocketFromChatboxServer() {
     // Kết nối tới WebSocket server
     ws.current = new WebSocket(SOCKET_API ?? '')
-    // console.log(SOCKET_API, 'socket url')
+    // console.log(SOCKET_API, 'socket URL_READ')
     // luu lai id vong lap ping
     let ping_interval_id: number | any
 
@@ -352,9 +345,12 @@ function DetailChat({
       ws.current?.close()
     }
   }
-  // gui tin nhan di
+  /** Hàm Xử lý gửi tin nhắn */
   const sendMessage = async (input: any) => {
+    // Nhắn toàn khoảng trắng không cho gửi đi
+
     if (input.trim() === '') return
+    // Tiến hày gọi api
     try {
       const message: Message = {
         page_id: pageId,
@@ -366,7 +362,6 @@ function DetailChat({
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          // 'Authorization': 'Bearer YOUR_ACCESS_TOKEN', // Nếu cần token xác thực
         },
         body: JSON.stringify({
           client_id: message.client_id,
