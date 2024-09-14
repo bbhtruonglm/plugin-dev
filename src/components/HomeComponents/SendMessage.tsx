@@ -3,10 +3,10 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 interface SendMessageProps {
   page_id: String | null
-  onNavigate: () => void
+  on_navigate: () => void
   onError: () => void
 }
-function SendMessage({ page_id, onNavigate, onError }: SendMessageProps) {
+function SendMessage({ page_id, on_navigate, onError }: SendMessageProps) {
   const navigate = useNavigate()
 
   return (
@@ -14,7 +14,7 @@ function SendMessage({ page_id, onNavigate, onError }: SendMessageProps) {
       onClick={() => {
         if (page_id && page_id !== null) {
           navigate(`/?page_id=${page_id}`)
-          onNavigate()
+          on_navigate()
         } else {
           onError()
         }

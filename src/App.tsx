@@ -2,7 +2,7 @@ import './App.css'
 
 import { Route, Routes } from 'react-router-dom'
 
-import ChatComponent from './components/Icon.chat'
+import ChatApp from './screens/ChatApp'
 import { useState } from 'react'
 
 function App() {
@@ -29,14 +29,14 @@ function App() {
       '*'
     )
   }
-  console.log(process.env, 'process.env')
+
   return (
     <div className="flex flex-col justify-center items-center">
       <Routes>
         <Route
           path="/"
           element={
-            <ChatComponent
+            <ChatApp
               userName={''}
               handleBtn={() => {
                 handleToggle()

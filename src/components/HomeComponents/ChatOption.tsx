@@ -1,24 +1,28 @@
-import React from 'react'
 import facebook from '../../assets/facebook.svg'
 import instagram from '../../assets/instagram.svg'
 import whatsapp from '../../assets/whatsapp.svg'
 import zalo from '../../assets/zalo.svg'
 function ChatOption() {
+  /** Tạo list chat với các phương thức liên hệ đến bbh */
   const chatList = [
     {
       name: '@botbanhang.fb',
+      url: 'https://m.me/100179064765476',
       icon: facebook,
     },
     {
       name: '@botbanhang.ig',
+      url: '',
       icon: instagram,
     },
     {
       name: '@botbanhang.oa',
+      url: 'https://zalo.me/1591257820328477563',
       icon: zalo,
     },
     {
       name: '1900.9999.70',
+      url: '',
       icon: whatsapp,
     },
   ]
@@ -30,9 +34,12 @@ function ChatOption() {
         </h4>
         <div className="grid grid-cols-2 gap-4 mt-2">
           {chatList.map((item, index) => (
-            <div
-              className="flex gap-1 items-center p-1"
+            <a
+              className="flex gap-1 items-center p-1 cursor-pointer"
               key={index}
+              href={item.url}
+              target="_blank"
+              rel="noreferrer"
             >
               <div className="bg-gray-100 p-2 rounded-full">
                 <img
@@ -42,7 +49,7 @@ function ChatOption() {
                 />
               </div>
               <p className="text-xs font-medium">{item.name}</p>
-            </div>
+            </a>
           ))}
         </div>
       </div>

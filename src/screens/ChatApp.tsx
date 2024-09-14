@@ -1,23 +1,18 @@
 import React, { useEffect, useState } from 'react'
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
-import ChatScreen from './Screens/Chat'
-import { ReactComponent as Close } from '../assets/close.svg'
-import { ReactComponent as Down } from '../assets/arrow.svg'
-import Home from './Screens/Home'
-import { ReactComponent as IconApp } from '../assets/logo.svg'
-import { ReactComponent as Up } from '../assets/arrow-up-right-square.svg'
-import { ReactComponent as activeHome } from '../assets/home-active.svg'
-import { ReactComponent as activeMessage } from '../assets/messageA.svg'
-import { ReactComponent as activeNew } from '../assets/Subtract.svg'
-import { ReactComponent as activeSupport } from '../assets/supportA.svg'
-import avatar1 from '../assets/avatar1.png'
-import avatar2 from '../assets/avatar2.png'
-import avatar3 from '../assets/avatar3.png'
-import { ReactComponent as inactiveHome } from '../assets/home.svg'
-import { ReactComponent as inactiveMessage } from '../assets/message.svg'
-import { ReactComponent as inactiveNews } from '../assets/notification.svg'
-import { ReactComponent as inactiveSupport } from '../assets/support.svg'
+import ChatScreen from 'screens/Chat'
+import { ReactComponent as Close } from 'assets/close.svg'
+import { ReactComponent as Down } from 'assets/arrow.svg'
+import Home from 'screens/Home'
+import { ReactComponent as IconApp } from 'assets/logo.svg'
+import { ReactComponent as activeHome } from 'assets/home-active.svg'
+import { ReactComponent as activeMessage } from 'assets/messageA.svg'
+import avatar1 from 'assets/avatar1.png'
+import avatar2 from 'assets/avatar2.png'
+import avatar3 from 'assets/avatar3.png'
+import { ReactComponent as inactiveHome } from 'assets/home.svg'
+import { ReactComponent as inactiveMessage } from 'assets/message.svg'
+import { useNavigate } from 'react-router-dom'
 
 interface ChatProps {
   userName: string
@@ -25,7 +20,7 @@ interface ChatProps {
   show: boolean
   setHide?: () => void
 }
-const ChatComponent: React.FC<ChatProps> = ({
+const ChatApp: React.FC<ChatProps> = ({
   userName,
   handleBtn,
   show,
@@ -33,29 +28,31 @@ const ChatComponent: React.FC<ChatProps> = ({
 }) => {
   const navigate = useNavigate()
   const [page_id, setPageId] = useState<String | null>('')
-  const [errorMessage, setErrorMessage] = useState<String | null>('')
-  const [currentW, setCurrentW] = useState<any>(0)
+  const [error_message, setErrorMessage] = useState<String | null>('')
+  const [current_width, setCurrentW] = useState<any>(0)
 
   useEffect(() => {
     // Lấy url của page cha
-    const fullSrc = window.location.href
+    const FULL_SRC = window.location.href
+
     // Tạo url
-    const url = new URL(fullSrc)
+    const URL_PARENT = new URL(FULL_SRC)
+
     // lấy params page_id
-    const id = url.searchParams.get('page_id')
+    const PAGE_ID = URL_PARENT.searchParams.get('page_id')
+
     // Lấy width của page cha
-    const widthP = url.searchParams.get('parentWidth')
+    const WIDTH_PARENT = URL_PARENT.searchParams.get('parentWidth')
 
-    if (widthP) {
+    if (WIDTH_PARENT) {
       // nếu có truyền width thì lưu vào state
-
-      setCurrentW(widthP)
+      setCurrentW(WIDTH_PARENT)
     }
     // lưu page_id với state
-    setPageId(id)
+    setPageId(PAGE_ID)
   }, [])
 
-  // Tạo menuList
+  // Tạo tab menu
   const menuList = [
     {
       name: 'Trang chủ',
@@ -87,19 +84,20 @@ const ChatComponent: React.FC<ChatProps> = ({
   const [currentTab, setCurrentTab] = useState('home')
   // Vị trí là OVER_VIEW
   const [chatPosition, setChatPosition] = useState('overview')
+
   return (
     <div
       className={`flex relative  ${
         !show
           ? 'w-12 h-12'
-          : currentW < 768 && currentW !== 0
+          : current_width < 768 && current_width !== 0
           ? ' w-[100vw] h-[100vh] '
           : ' w-[400px] h-[658px] '
       }  `}
     >
       <div
         className={`relative  ${
-          currentW < 768 && currentW !== 0
+          current_width < 768 && current_width !== 0
             ? ' w-[100vw] h-[100vh] '
             : ' w-[400px] h-[600px] '
         } bg-bg-gradient rounded-[20px] overflow-hidden shadow-md ${
@@ -139,7 +137,7 @@ const ChatComponent: React.FC<ChatProps> = ({
             <div
               onClick={setHide}
               className={` cursor-pointer w-10 h-10 flex justify-center items-center  ${
-                currentW < 768 && currentW !== 0 ? ' flex' : ' hidden'
+                current_width < 768 && current_width !== 0 ? ' flex' : ' hidden'
               }`}
             >
               <Close />
@@ -161,7 +159,7 @@ const ChatComponent: React.FC<ChatProps> = ({
           {currentTab === 'home' && (
             <Home
               page_id={page_id}
-              onNavigate={() => {
+              on_navigate={() => {
                 setCurrentTab('message')
                 setChatPosition('detail')
               }}
@@ -172,7 +170,6 @@ const ChatComponent: React.FC<ChatProps> = ({
                 setCurrentTab('message')
                 setChatPosition('detail')
               }}
-              errorMessage={errorMessage}
             />
           )}
           {currentTab === 'message' && (
@@ -187,10 +184,10 @@ const ChatComponent: React.FC<ChatProps> = ({
                 // set thanh overview de hien thi tab menu
                 setChatPosition('overview')
               }}
-              errorMessage={errorMessage}
+              errorMessage={error_message}
               onError={() => setErrorMessage('')}
               setHide={setHide}
-              currentW={currentW}
+              currentW={current_width}
             />
           )}
         </div>
@@ -216,15 +213,12 @@ const ChatComponent: React.FC<ChatProps> = ({
                       } else {
                         // ẩn menu
                         // navigate('/?page_id=3861367970af4b7cadacaec5d1443473')
-                        // console.log(page_id, 'page_idddd')
+
                         if (page_id !== null) {
                           navigate(`/?page_id=${page_id}`)
                           setChatPosition('detail')
                           setCurrentTab(value)
                         } else {
-                          // console.log(
-                          //   'Hệ thống chưa được liên kết. Vui lòng liên hệ quản trị viên để được hỗ trợ!'
-                          // )
                           setErrorMessage(
                             'Hệ thống chưa được liên kết.\n Vui lòng liên hệ quản trị viên để được hỗ trợ!'
                           )
@@ -254,7 +248,7 @@ const ChatComponent: React.FC<ChatProps> = ({
                 )
               )}
             </div>
-            {/* <h4 className="text-[10px] text-center text-slate-700">
+            <h4 className="text-[10px] text-center text-slate-700">
               power by{' '}
               <a
                 href="/#"
@@ -262,7 +256,7 @@ const ChatComponent: React.FC<ChatProps> = ({
               >
                 Bot Ban Hang
               </a>
-            </h4> */}
+            </h4>
           </div>
         )}
       </div>
@@ -274,7 +268,7 @@ const ChatComponent: React.FC<ChatProps> = ({
         className={` absolute justify-center items-center h-12 w-12 border bg-slate-800 rounded-full z-[999999] bottom-0 right-0  ${
           !show
             ? ' flex transform -scale-y-100 '
-            : currentW < 768 && currentW !== 0
+            : current_width < 768 && current_width !== 0
             ? ' hidden '
             : ' flex '
         }`}
@@ -285,4 +279,4 @@ const ChatComponent: React.FC<ChatProps> = ({
   )
 }
 
-export default ChatComponent
+export default ChatApp
