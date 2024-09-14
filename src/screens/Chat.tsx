@@ -1,7 +1,7 @@
+import { fetchAPI, useAPI } from '@/api/api'
 import { useEffect, useState } from 'react'
 
 import DetailChat from '@/components/ChatComponents/DetailChat'
-import { useAPI } from '@/utils/api'
 import { useNavigate } from 'react-router-dom'
 
 interface ChatProps {
@@ -22,7 +22,7 @@ function ChatScreen({
   const [clientId, setClientId] = useState<String | null | any>('')
   const [invalidPageId, setInvalidPageId] = useState(false)
   const [loading, setLoading] = useState(false)
-  const { INIT_CLIENT_API } = useAPI()
+  const { INIT_CLIENT_API, READ_PAGE_INFO, READ_CLIENT_INFO } = useAPI()
 
   useEffect(() => {
     /**
@@ -43,6 +43,8 @@ function ChatScreen({
     // Nếu có page_id thì mới xử lý tiếp
     if (PAGE_ID) {
       setPageId(PAGE_ID)
+      console.log(PAGE_ID, 'check')
+      fetchPageData(PAGE_ID)
       // Tạo client Id = page_id từ cha
       const CLIENT_ID = localStorage.getItem(`client_id_<${PAGE_ID}>`)
       // Có CLIENT_ID mới set vào state
@@ -60,7 +62,7 @@ function ChatScreen({
       const newUrl = new URL(window.location.href)
       // Thêm client_id vào params
       newUrl.searchParams.set('client_id', clientId)
-
+      fetchClientData(pageId, clientId)
       // add url mới
       navigate(`/${newUrl.search}`)
     }
@@ -113,6 +115,30 @@ function ChatScreen({
       // Tắt loading init client
       setLoading(false)
     }
+  }
+  /** Hàm đọc dữ liệu trang */
+  const fetchPageData = async (page_id: string) => {
+    const URL_READ = new URL(READ_PAGE_INFO ?? '')
+
+    const BODY = {
+      page_id: page_id,
+    }
+    URL_READ.search = new URLSearchParams(BODY as any).toString()
+    const RES = await fetchAPI(URL_READ.toString(), 'GET')
+    console.log(RES, 'RES')
+  }
+
+  /** Hàm đọc data khách hàng */
+  const fetchClientData = async (client_id: String | null, page_id: string) => {
+    const BODY = {
+      client_id: client_id,
+      page_id: page_id,
+    }
+    const URL_READ = new URL(READ_CLIENT_INFO ?? '')
+
+    URL_READ.search = new URLSearchParams(BODY as any).toString()
+    const RES = await fetchAPI(URL_READ.toString(), 'GET')
+    console.log(RES, 'RES')
   }
 
   return (

@@ -1,5 +1,5 @@
 import _, { size } from 'lodash'
-import { fetchAPI, useAPI } from '@/utils/api'
+import { fetchAPI, useAPI } from '@/api/api'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import ChatHeader from './ChatHeader'
