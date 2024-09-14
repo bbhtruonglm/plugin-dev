@@ -7,7 +7,7 @@ import ChatApp from './screens/ChatApp'
 import { useState } from 'react'
 
 function App() {
-  const [is_show, setShow] = useState(true)
+  const [is_show, setShow] = useState(false)
 
   /** Function tắt bật của popup dạng PC */
   const handleToggle = () => {
