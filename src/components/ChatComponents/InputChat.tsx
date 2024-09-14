@@ -7,15 +7,9 @@ import { useState } from 'react'
 interface InputProps {
   handleSend: (e: any) => void
   loading: boolean
-  onChangeText: (e: any) => void
   errorMessage: String | null
 }
-function InputChat({
-  handleSend,
-  loading,
-  onChangeText,
-  errorMessage,
-}: InputProps) {
+function InputChat({ handleSend, loading, errorMessage }: InputProps) {
   const [value, setValue] = useState('')
 
   const handleKeyDown = (event: any) => {
@@ -27,12 +21,12 @@ function InputChat({
   }
   return (
     <div className="absolute bottom-4 flex justify-center items-center h-12 bg-transparent w-full px-5 gap-2">
-      <div className="bg-white w-full flex justify-between gap-2 items-center h-full p-2 px-4 rounded-full">
+      <div className="bg-white w-full flex justify-between gap-2 items-center h-full py-2 px-4 rounded-full">
         <Upload />
         <input
           onChange={(e) => {
             setValue(e.target.value)
-            onChangeText(e.target.value)
+            // onChangeText(e.target.value)
           }}
           value={value}
           onKeyDown={(e) => {
@@ -42,7 +36,7 @@ function InputChat({
           }}
           type="text"
           placeholder="Gửi tin nhắn đến Bot Ban Hang"
-          className="bg-transparent outline-none flex-grow placeholder:text-colorOpacity text-sm font-medium"
+          className="bg-transparent outline-none flex-grow placeholder:text-slate-500 text-sm font-medium"
         />
         <div>
           {value ? (
@@ -58,7 +52,6 @@ function InputChat({
               <Arrow />
             </div>
           ) : (
-            // <IconSquare />
             <></>
           )}
         </div>

@@ -15,16 +15,14 @@ import { ReactComponent as inactiveMessage } from 'assets/message.svg'
 import { useNavigate } from 'react-router-dom'
 
 interface ChatProps {
-  userName: string
   handleBtn: () => void
   show: boolean
-  setHide?: () => void
+  setHideForMobile?: () => void
 }
 const ChatApp: React.FC<ChatProps> = ({
-  userName,
   handleBtn,
   show,
-  setHide,
+  setHideForMobile,
 }) => {
   const navigate = useNavigate()
   const [page_id, setPageId] = useState<String | null>('')
@@ -32,16 +30,20 @@ const ChatApp: React.FC<ChatProps> = ({
   const [current_width, setCurrentW] = useState<any>(0)
 
   useEffect(() => {
-    // Lấy url của page cha
+    /** @type {string} Lấy url của page cha */
     const FULL_SRC = window.location.href
 
-    // Tạo url
+    /**
+     * Chuyển từ chuỗi URL thành một đối tượng URL.
+     * @param {string} FULL_SRC - Chuỗi chứa URL đầy đủ
+     * @returns {URL} Đối tượng URL được tạo ra từ chuỗi đầu vào
+     */
     const URL_PARENT = new URL(FULL_SRC)
 
-    // lấy params page_id
+    /** page_id từ URL page cha */
     const PAGE_ID = URL_PARENT.searchParams.get('page_id')
 
-    // Lấy width của page cha
+    /** Độ rộng của màn hình trong page cha, truyền qua URL */
     const WIDTH_PARENT = URL_PARENT.searchParams.get('parentWidth')
 
     if (WIDTH_PARENT) {
@@ -50,9 +52,29 @@ const ChatApp: React.FC<ChatProps> = ({
     }
     // lưu page_id với state
     setPageId(PAGE_ID)
+    // setPageId('bf425487afbe403895116dd9b585537b')
   }, [])
 
-  // Tạo tab menu
+  /**
+   * Tab menu với các mục chính gồm:
+   * - Home
+   * - Message
+   * - Support (đã bị ẩn)
+   * - News (đã bị ẩn)
+   *
+   * @type {Array<Object>}
+   * @property {string} name - Tên của tab (hiển thị cho người dùng)
+   * @property {string} src - Đường dẫn đến icon không hoạt động (inactive)
+   * @property {string} value - Giá trị định danh của tab
+   * @property {string} srcA - Đường dẫn đến icon hoạt động (active)
+   *
+   * @example
+   * const menuList = [
+   *   { name: 'Trang chủ', src: inactiveHome, value: 'home', srcA: activeHome },
+   *   { name: 'Tin nhắn', src: inactiveMessage, value: 'message', srcA: activeMessage },
+   *   // Các tab Support và News đang bị ẩn trong đoạn mã
+   * ];
+   */
   const menuList = [
     {
       name: 'Trang chủ',
@@ -82,30 +104,33 @@ const ChatApp: React.FC<ChatProps> = ({
 
   // Tạo tab hiện tại là HOME
   const [currentTab, setCurrentTab] = useState('home')
-  // Vị trí là OVER_VIEW
-  const [chatPosition, setChatPosition] = useState('overview')
 
   return (
     <div
       className={`flex relative  ${
+        // Nếu không show, thì hiện icon bong bóng chat
         !show
           ? 'w-12 h-12'
-          : current_width < 768 && current_width !== 0
-          ? ' w-[100vw] h-[100vh] '
-          : ' w-[400px] h-[658px] '
+          : // Nếu kích thước điện thoại thì hiện full screen
+          current_width < 768 && current_width !== 0
+          ? ' w-screen h-screen '
+          : // Nếu màn PC thì hiện thành 1 tab nhỏ
+            ' w-[400px] h-[658px] '
       }  `}
     >
       <div
         className={`relative  ${
+          // Phần chính của bong bóng chat
           current_width < 768 && current_width !== 0
-            ? ' w-[100vw] h-[100vh] '
+            ? ' w-screen h-screen '
             : ' w-[400px] h-[600px] '
         } bg-bg-gradient rounded-[20px] overflow-hidden shadow-md ${
+          // mặc định sẽ ẩn/ Khi kich hoạt sẽ mở kèm animation
           !show ? ' hidden' : ' flex flex-col animate-zoomInBottomRight '
         }  `}
       >
         {/* header */}
-        {chatPosition === 'overview' && (
+        {currentTab !== 'message' && (
           <div
             className={
               'flex justify-between items-center px-5 py-3 bg-slate-800 text-white'
@@ -135,7 +160,7 @@ const ChatApp: React.FC<ChatProps> = ({
               />
             </div>
             <div
-              onClick={setHide}
+              onClick={setHideForMobile}
               className={` cursor-pointer w-10 h-10 flex justify-center items-center  ${
                 current_width < 768 && current_width !== 0 ? ' flex' : ' hidden'
               }`}
@@ -150,7 +175,7 @@ const ChatApp: React.FC<ChatProps> = ({
           className={
             'flex flex-col resize-none outline-none scrollbar-thin scrollbar-webkit ' +
             `${
-              chatPosition === 'overview'
+              currentTab !== 'home'
                 ? ' h-[468px] overflow-y-auto'
                 : ' h-[600px]'
             }`
@@ -159,42 +184,35 @@ const ChatApp: React.FC<ChatProps> = ({
           {currentTab === 'home' && (
             <Home
               page_id={page_id}
-              on_navigate={() => {
+              onNavigate={() => {
                 setCurrentTab('message')
-                setChatPosition('detail')
               }}
               onError={() => {
                 setErrorMessage(
                   'Hệ thống chưa được liên kết.\n Vui lòng liên hệ quản trị viên để được hỗ trợ!'
                 )
                 setCurrentTab('message')
-                setChatPosition('detail')
               }}
             />
           )}
           {currentTab === 'message' && (
             <ChatScreen
-              currentPosition={chatPosition}
-              setPosition={(e) => setChatPosition(e)}
-              userName={userName}
-              userLoggedIn={(e) => {
-                // settab hien tai thanh home
+              userOutChat={() => {
+                // Khi back ra thì về trang Home
                 setCurrentTab('home')
                 navigate('/')
-                // set thanh overview de hien thi tab menu
-                setChatPosition('overview')
               }}
-              errorMessage={error_message}
+              error_message={error_message}
               onError={() => setErrorMessage('')}
-              setHide={setHide}
-              currentW={current_width}
+              setHideForMobile={setHideForMobile}
+              current_width={current_width}
             />
           )}
         </div>
 
-        {/* menu */}
-        {/* Nếu trạng thái là overview thì mới hiển thị menu */}
-        {chatPosition === 'overview' && (
+        {/* Hiển thị Menu */}
+        {/* Nếu tab hiện tại không phải chat thì hiển thị menu */}
+        {currentTab !== 'message' && (
           <div className="absolute bottom-0 w-full flex flex-col justify-evenly p-2 px-6 h-16 z-20  bg-bg-gradient">
             <div className="flex">
               {menuList.map(
@@ -209,21 +227,22 @@ const ChatApp: React.FC<ChatProps> = ({
                       if (value !== 'message') {
                         // tab !== 'message' thì overview để hiển thị menu
                         setCurrentTab(value)
-                        setChatPosition('overview')
                       } else {
                         // ẩn menu
                         // navigate('/?page_id=3861367970af4b7cadacaec5d1443473')
 
+                        setCurrentTab(value)
                         if (page_id !== null) {
+                          // có page_id thì thêm page_id vào url
                           navigate(`/?page_id=${page_id}`)
-                          setChatPosition('detail')
-                          setCurrentTab(value)
+                          // navigate(
+                          //   `/?page_id=${'3861367970af4b7cadacaec5d1443473'}`
+                          // )
                         } else {
+                          // Không có page_id thì tạo message Lỗi
                           setErrorMessage(
                             'Hệ thống chưa được liên kết.\n Vui lòng liên hệ quản trị viên để được hỗ trợ!'
                           )
-                          setCurrentTab(value)
-                          setChatPosition('detail')
                         }
                       }
                     }}
@@ -235,21 +254,14 @@ const ChatApp: React.FC<ChatProps> = ({
                       <IconComponent />
                     )}
 
-                    <p
-                      className={
-                        currentTab === value
-                          ? 'text-sm font-medium'
-                          : 'text-sm font-medium'
-                      }
-                    >
-                      {name}
-                    </p>
+                    <p className={'text-sm font-medium'}>{name}</p>
                   </div>
                 )
               )}
             </div>
-            <h4 className="text-[10px] text-center text-slate-700">
-              power by{' '}
+            {/* Thông tin đơn vị phát triển */}
+            <h4 className="text-xs text-center text-slate-700">
+              powered by{' '}
               <a
                 href="/#"
                 className="underline"
@@ -260,12 +272,13 @@ const ChatApp: React.FC<ChatProps> = ({
           </div>
         )}
       </div>
+      {/*  Nút trigger hiện thị bong bóng chat */}
       <button
         onClick={() => {
           handleBtn()
           setErrorMessage('')
         }}
-        className={` absolute justify-center items-center h-12 w-12 border bg-slate-800 rounded-full z-[999999] bottom-0 right-0  ${
+        className={`absolute justify-center items-center h-12 w-12 border bg-slate-800 rounded-full z-[999999] bottom-0 right-0  ${
           !show
             ? ' flex transform -scale-y-100 '
             : current_width < 768 && current_width !== 0

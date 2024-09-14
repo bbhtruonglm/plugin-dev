@@ -6,18 +6,23 @@ import avatar3 from '../../assets/avatar3.png'
 
 interface ChatScreenProps {
   onCancel: () => void
-  userId: string
-  setHide?: () => void
-  currentW: Number | null | any
+  user_id: string
+  setHideForMobile?: () => void
+  current_width: Number | null | any
 }
-function ChatHeader({ onCancel, userId, setHide, currentW }: ChatScreenProps) {
+function ChatHeader({
+  onCancel,
+  user_id,
+  setHideForMobile,
+  current_width,
+}: ChatScreenProps) {
   return (
     <div
       className={`flex bg-slate-800  w-full py-3 px-5 gap-2 absolute top-0 ${
-        userId ? 'h-16 items-center' : 'h-[174px]'
+        user_id ? 'h-16 items-center' : 'h-44'
       }`}
     >
-      {userId ? (
+      {user_id ? (
         <div className="flex justify-between items-center w-full">
           <div className="flex gap-2">
             <BackArrow
@@ -39,9 +44,9 @@ function ChatHeader({ onCancel, userId, setHide, currentW }: ChatScreenProps) {
           </div>
 
           <div
-            onClick={setHide}
+            onClick={setHideForMobile}
             className={`${
-              currentW < 768 && currentW !== 0
+              current_width < 768 && current_width !== 0
                 ? ' flex w-9 h-9 items-center justify-center'
                 : ' hidden'
             }`}
@@ -57,9 +62,9 @@ function ChatHeader({ onCancel, userId, setHide, currentW }: ChatScreenProps) {
               onClick={() => onCancel()}
             />
             <h2 className="text-lg font-medium text-white">Bót Bán Hàng</h2>
-            {currentW < 768 && currentW !== 0 ? (
+            {current_width < 768 && current_width !== 0 ? (
               <div
-                onClick={setHide}
+                onClick={setHideForMobile}
                 className="w-8 h-8  flex justify-center items-center cursor-pointer"
               >
                 <Close className="flex cursor-pointer " />

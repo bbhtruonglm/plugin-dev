@@ -3,10 +3,10 @@ import SendMessage from 'components/HomeComponents/SendMessage'
 
 interface HomeProps {
   page_id: String | null
-  on_navigate: () => void
+  onNavigate: () => void
   onError: () => void
 }
-function Home({ page_id, on_navigate, onError }: HomeProps) {
+function Home({ page_id, onNavigate, onError }: HomeProps) {
   return (
     <div className="flex flex-col px-5 py-3 gap-y-4">
       {/* Greeting */}
@@ -19,7 +19,7 @@ function Home({ page_id, on_navigate, onError }: HomeProps) {
       {/* Send message */}
       <SendMessage
         page_id={page_id}
-        on_navigate={on_navigate}
+        onNavigate={onNavigate}
         onError={onError}
       />
 
