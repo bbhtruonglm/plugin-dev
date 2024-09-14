@@ -1,4 +1,5 @@
-import { ReactComponent as IconSend } from 'assets/send.svg'
+import { ReactComponent as IconSend } from '@/assets/send.svg'
+import { t } from 'i18next'
 import { useNavigate } from 'react-router-dom'
 interface SendMessageProps {
   page_id: String | null
@@ -23,10 +24,10 @@ function SendMessage({ page_id, onNavigate, onError }: SendMessageProps) {
       className="bg-white py-3 rounded-xl flex justify-between px-6 items-center shadow-md cursor-pointer"
     >
       <div>
-        <h4 className="text-base font-semibold">Gửi tin nhắn đến chúng tôi</h4>
+        <h4 className="text-base font-semibold">{t('sendUs')}</h4>
         <h5 className="flex gap-2 items-center text-sm text-onlineColor">
-          <div className="w-3 h-3 rounded-full bg-onlineColor"></div> Chúng tôi
-          đang online
+          <div className="w-3 h-3 rounded-full bg-onlineColor"></div>
+          {t('we_are_online')}
         </h5>
       </div>
       <div>

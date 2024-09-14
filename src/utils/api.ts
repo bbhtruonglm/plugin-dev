@@ -5,7 +5,7 @@ import {
 } from './apis/staging'
 
 export const useAPI = () => {
-  let env = process.env.REACT_APP_ENV || 'production'
+  let env = import.meta.env.VITE_APP_ENV || 'production'
   if (env === 'production') {
     const SOCKET_API = REACT_APP_SOCKET_HOST
     const READ_MESSAGE_API = REACT_APP_BE_HOST + '/embed/message/read_message'

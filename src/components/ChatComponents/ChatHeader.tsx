@@ -1,8 +1,9 @@
-import { ReactComponent as BackArrow } from '../../assets/white-arrow.svg'
-import { ReactComponent as Close } from '../../assets/close.svg'
-import avatar1 from '../../assets/avatar1.png'
-import avatar2 from '../../assets/avatar2.png'
-import avatar3 from '../../assets/avatar3.png'
+import { ReactComponent as BackArrow } from '@/assets/white-arrow.svg'
+import { ReactComponent as Close } from '@/assets/close.svg'
+import avatar1 from '@/assets/avatar1.png'
+import avatar2 from '@/assets/avatar2.png'
+import avatar3 from '@/assets/avatar3.png'
+import { t } from 'i18next'
 
 interface ChatScreenProps {
   onCancel: () => void
@@ -35,10 +36,12 @@ function ChatHeader({
               alt=""
             />
             <div>
-              <h2 className="text-white text-sm font-medium">Hoàng Lan</h2>
+              <h2 className="text-white text-sm font-medium">
+                {t('org_name')}
+              </h2>
               <h5 className="flex gap-1 items-center font-normal text-xs text-onlineColor">
-                <div className="w-3 h-3 rounded-full bg-onlineColor"></div> Đang
-                online
+                <div className="w-3 h-3 rounded-full bg-onlineColor"></div>
+                {t('online')}
               </h5>
             </div>
           </div>
@@ -61,7 +64,7 @@ function ChatHeader({
               className="w-7 h-7 cursor-pointer"
               onClick={() => onCancel()}
             />
-            <h2 className="text-lg font-medium text-white">Bót Bán Hàng</h2>
+            <h2 className="text-lg font-medium text-white">{t('org_name')}</h2>
             {current_width < 768 && current_width !== 0 ? (
               <div
                 onClick={setHideForMobile}
@@ -94,11 +97,11 @@ function ChatHeader({
           </div>
           <div className="flex flex-col justify-center items-center h-10 gap-1">
             <h4 className="flex gap-2 items-center font-normal text-sm h-5 text-onlineColor">
-              <div className="w-3 h-3 rounded-full bg-onlineColor"></div> Chúng
-              tôi đang Online
+              <div className="w-3 h-3 rounded-full bg-onlineColor"></div>
+              {t('we_are_online')}
             </h4>
             <h5 className="flex items-center font-normal text-xs h-4  text-slate-300">
-              Bạn có thể đặt câu hỏi hoặc phản ánh chất lượng dịch vụ.
+              {t('your_options')}
             </h5>
           </div>
         </div>

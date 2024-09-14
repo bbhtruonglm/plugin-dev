@@ -1,7 +1,8 @@
-import facebook from '../../assets/facebook.svg'
-import instagram from '../../assets/instagram.svg'
-import whatsapp from '../../assets/whatsapp.svg'
-import zalo from '../../assets/zalo.svg'
+import { ReactComponent as facebook } from '@/assets/facebook.svg'
+import { ReactComponent as instagram } from '@/assets/instagram.svg'
+import { t } from 'i18next'
+import { ReactComponent as whatsapp } from '@/assets/whatsapp.svg'
+import { ReactComponent as zalo } from '@/assets/zalo.svg'
 function ChatOption() {
   /** Tạo list chat với các phương thức liên hệ đến bbh */
   const chatList = [
@@ -29,26 +30,20 @@ function ChatOption() {
   return (
     <div className="bg-white p-3 rounded-xl flex justify-between px-6 items-center shadow-md">
       <div>
-        <h4 className="text-xs font-medium">
-          hoặc chat với chúng tôi qua kênh mà bạn thích:
-        </h4>
+        <h4 className="text-xs font-medium">{t('chatWithUs')}</h4>
         <div className="grid grid-cols-2 gap-4 mt-2">
-          {chatList.map((item, index) => (
+          {chatList.map(({ name, url, icon: Icon }, index) => (
             <a
               className="flex gap-1 items-center p-1 cursor-pointer"
               key={index}
-              href={item.url}
+              href={url}
               target="_blank"
               rel="noreferrer"
             >
               <div className="bg-gray-100 p-2 rounded-full">
-                <img
-                  src={item.icon}
-                  alt=""
-                  className="w-4 h-4"
-                />
+                <Icon />
               </div>
-              <p className="text-xs font-medium">{item.name}</p>
+              <p className="text-xs font-medium">{name}</p>
             </a>
           ))}
         </div>

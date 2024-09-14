@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 
-import DetailChat from 'components/ChatComponents/DetailChat'
-import { useAPI } from 'utils/api'
+import DetailChat from '@/components/ChatComponents/DetailChat'
+import { useAPI } from '@/utils/api'
 import { useNavigate } from 'react-router-dom'
 
 interface ChatProps {

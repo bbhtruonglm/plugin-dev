@@ -1,4 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
+
+import { t } from 'i18next'
+
 interface InitClientProps {
   setUsername: (e: any) => void
   setUserPhone: (e: any) => void
@@ -49,7 +52,7 @@ function InitClient({
     if (!value || emailRegex.test(value)) {
       setEmailError('')
     } else {
-      setEmailError('Sai định dạng email')
+      setEmailError(t('invalid_format_email'))
     }
   }
 
@@ -64,7 +67,7 @@ function InitClient({
     ) {
       setPhoneError('')
     } else {
-      setPhoneError('Sai định dạng số điện thoại')
+      setPhoneError(t('invalid_format_phone'))
     }
   }
 
@@ -79,7 +82,7 @@ function InitClient({
           value={name}
           onKeyDown={(e) => {}}
           type="text"
-          placeholder="Tên của bạn"
+          placeholder={t('your_name')}
           className="bg-inputBg outline-none w-full flex-grow p-3 rounded-md placeholder:text-colorOpacity text-sm font-medium"
         />
         <div className="w-full">
@@ -91,7 +94,7 @@ function InitClient({
             value={phone}
             onKeyDown={(e) => {}}
             type="text"
-            placeholder="Số điện thoại của bạn"
+            placeholder={t('your_phone')}
             className={`bg-inputBg w-full flex-grow p-3 rounded-md placeholder:text-colorOpacity text-sm font-medium 
             ${phoneError ? ' border-red-600 border' : ' outline-none '}  `}
           />
@@ -109,7 +112,7 @@ function InitClient({
             value={email}
             onKeyDown={(e) => {}}
             type="text"
-            placeholder="Email của bạn"
+            placeholder={t('your_email')}
             className={`bg-inputBg w-full flex-grow p-3 rounded-md placeholder:text-colorOpacity text-sm font-medium 
             ${emailError ? ' border-red-600 border' : ' outline-none '}  `}
           />
