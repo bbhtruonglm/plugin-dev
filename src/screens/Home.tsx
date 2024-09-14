@@ -1,5 +1,6 @@
-import ChatOption from 'components/HomeComponents/ChatOption'
-import SendMessage from 'components/HomeComponents/SendMessage'
+import ChatOption from '@/components/HomeComponents/ChatOption'
+import SendMessage from '@/components/HomeComponents/SendMessage'
+import { t } from 'i18next'
 
 interface HomeProps {
   page_id: String | null
@@ -11,10 +12,8 @@ function Home({ page_id, onNavigate, onError }: HomeProps) {
     <div className="flex flex-col px-5 py-3 gap-y-4">
       {/* Greeting */}
       <div className="">
-        <h1 className="text-2xl font-semibold">Xin chào,</h1>
-        <h2 className="text-xl font-medium">
-          Chúng tôi có thể hỗ trợ được gì bạn?
-        </h2>
+        <h1 className="text-2xl font-semibold">{t('welcome')}</h1>
+        <h2 className="text-xl font-medium">{t('welcomeMessage')}</h2>
       </div>
       {/* Send message */}
       <SendMessage

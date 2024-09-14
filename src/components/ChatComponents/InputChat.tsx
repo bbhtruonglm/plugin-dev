@@ -1,7 +1,6 @@
 import { ReactComponent as Arrow } from '../../assets/Icon_up_circle.svg'
-import { ReactComponent as IconSquare } from '../../assets/square-slash.svg'
-import { ReactComponent as SendingIcon } from '../../assets/send.svg'
 import Upload from './Upload'
+import { t } from 'i18next'
 import { useState } from 'react'
 
 interface InputProps {
@@ -35,7 +34,7 @@ function InputChat({ handleSend, loading, errorMessage }: InputProps) {
             }
           }}
           type="text"
-          placeholder="Gửi tin nhắn đến Bot Ban Hang"
+          placeholder={t('send_message_to_us')}
           className="bg-transparent outline-none flex-grow placeholder:text-slate-500 text-sm font-medium"
         />
         <div>

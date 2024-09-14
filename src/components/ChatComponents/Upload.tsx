@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react'
 
-import IconExtract from '../../assets/extract.svg'
+import { ReactComponent as IconExtract } from '@/assets/extract.svg'
 
 interface UploadProps {
   finalUrl?: string
@@ -54,11 +54,7 @@ function Upload({ finalUrl }: UploadProps) {
   return (
     <div>
       <div onClick={handleIconClick}>
-        <img
-          src={IconExtract}
-          className="h-6 w-6 cursor-pointer"
-          alt=""
-        />
+        <IconExtract />
       </div>
       {/* <input
         type="file"

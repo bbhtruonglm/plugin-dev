@@ -1,6 +1,6 @@
-import IconArrow from '../../assets/arrow-up-right-square.svg'
-import money from '../../assets/money.png'
-import photo from '../../assets/photo.png'
+import { ReactComponent as IconArrow } from '@/assets/arrow-up-right-square.svg'
+import money from '@/assets/money.png'
+import photo from '@/assets/photo.png'
 
 interface MessageProps {
   data: {
@@ -79,11 +79,7 @@ function MessageComponent({ data }: MessageProps) {
         <div>
           <div className="flex bg-bgBtnBold text-textYellow cursor-pointer py-2 gap-1 rounded-lg justify-center items-center">
             Lập lịch
-            <img
-              src={IconArrow}
-              className="h-6 w-6 cursor-pointer"
-              alt=""
-            />
+            <IconArrow />
           </div>
         </div>
       )}

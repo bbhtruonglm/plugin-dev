@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from 'react'
 
-import ChatScreen from 'screens/Chat'
-import { ReactComponent as Close } from 'assets/close.svg'
-import { ReactComponent as Down } from 'assets/arrow.svg'
-import Home from 'screens/Home'
-import { ReactComponent as IconApp } from 'assets/logo.svg'
-import { ReactComponent as activeHome } from 'assets/home-active.svg'
-import { ReactComponent as activeMessage } from 'assets/messageA.svg'
-import avatar1 from 'assets/avatar1.png'
-import avatar2 from 'assets/avatar2.png'
-import avatar3 from 'assets/avatar3.png'
-import { ReactComponent as inactiveHome } from 'assets/home.svg'
-import { ReactComponent as inactiveMessage } from 'assets/message.svg'
+import ChatScreen from '@/screens/Chat'
+import { ReactComponent as Close } from '@/assets/close.svg'
+import { ReactComponent as Down } from '@/assets/arrow.svg'
+import Home from '@/screens/Home'
+import { ReactComponent as IconApp } from '@/assets/logo.svg'
+import { ReactComponent as activeHome } from '@/assets/home-active.svg'
+import { ReactComponent as activeMessage } from '@/assets/messageA.svg'
+import avatar1 from '@/assets/avatar1.png'
+import avatar2 from '@/assets/avatar2.png'
+import avatar3 from '@/assets/avatar3.png'
+import { ReactComponent as inactiveHome } from '@/assets/home.svg'
+import { ReactComponent as inactiveMessage } from '@/assets/message.svg'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 interface ChatProps {
   handleBtn: () => void
@@ -24,6 +25,9 @@ const ChatApp: React.FC<ChatProps> = ({
   show,
   setHideForMobile,
 }) => {
+  const { t, i18n } = useTranslation()
+  const locale = i18n.language // Lấy locale hiện tại từ i18next
+
   const navigate = useNavigate()
   const [page_id, setPageId] = useState<String | null>('')
   const [error_message, setErrorMessage] = useState<String | null>('')
@@ -77,13 +81,13 @@ const ChatApp: React.FC<ChatProps> = ({
    */
   const menuList = [
     {
-      name: 'Trang chủ',
+      name: t('home'),
       src: inactiveHome,
       value: 'home',
       srcA: activeHome,
     },
     {
-      name: 'Tin nhắn',
+      name: t('message'),
       src: inactiveMessage,
       value: 'message',
       srcA: activeMessage,
@@ -102,6 +106,9 @@ const ChatApp: React.FC<ChatProps> = ({
     // },
   ]
 
+  const changeLanguage = (lng: any) => {
+    i18n.changeLanguage(lng)
+  }
   // Tạo tab hiện tại là HOME
   const [currentTab, setCurrentTab] = useState('home')
 
@@ -142,6 +149,9 @@ const ChatApp: React.FC<ChatProps> = ({
                 height={44}
               />
             </div>
+            {/* <button onClick={() => changeLanguage('en')}>English</button>
+            <button onClick={() => changeLanguage('vi')}>Tiếng Việt</button> */}
+
             <div className="flex items-center h-8">
               <img
                 src={avatar1}
@@ -188,9 +198,10 @@ const ChatApp: React.FC<ChatProps> = ({
                 setCurrentTab('message')
               }}
               onError={() => {
-                setErrorMessage(
-                  'Hệ thống chưa được liên kết.\n Vui lòng liên hệ quản trị viên để được hỗ trợ!'
-                )
+                // setErrorMessage(
+                //   'Hệ thống chưa được liên kết.\n Vui lòng liên hệ quản trị viên để được hỗ trợ!'
+                // )
+                setErrorMessage(t('errorMessage'))
                 setCurrentTab('message')
               }}
             />
@@ -224,6 +235,7 @@ const ChatApp: React.FC<ChatProps> = ({
                     key={index}
                     className="flex flex-col w-full h-full justify-center items-center cursor-pointer"
                     onClick={() => {
+                      console.log(name)
                       if (value !== 'message') {
                         // tab !== 'message' thì overview để hiển thị menu
                         setCurrentTab(value)
@@ -240,9 +252,7 @@ const ChatApp: React.FC<ChatProps> = ({
                           // )
                         } else {
                           // Không có page_id thì tạo message Lỗi
-                          setErrorMessage(
-                            'Hệ thống chưa được liên kết.\n Vui lòng liên hệ quản trị viên để được hỗ trợ!'
-                          )
+                          setErrorMessage(t('errorMessage'))
                         }
                       }
                     }}

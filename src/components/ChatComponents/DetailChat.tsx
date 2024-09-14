@@ -1,19 +1,19 @@
-import { fetchAPI, useAPI } from 'utils/api'
+import _, { size } from 'lodash'
+import { fetchAPI, useAPI } from '@/api/api'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import ChatHeader from './ChatHeader'
-import { ReactComponent as Down } from 'assets/arrow.svg'
+import { ReactComponent as Down } from '@/assets/arrow.svg'
 import InitClient from './InitClient'
 import InputChat from './InputChat'
 import Loading from '../Loading/Loading'
 import LoadingDots from '../Loading/LoadingDot'
 import MessageComponent from './MessageComponent'
-import { MessageInfo } from 'utils/type'
-import _ from 'lodash'
-import avatar1 from 'assets/avatar1.png'
-import avatar2 from 'assets/avatar2.png'
+import { MessageInfo } from '@/utils/type'
+import avatar1 from '@/assets/avatar1.png'
+import avatar2 from '@/assets/avatar2.png'
+import { t } from 'i18next'
 
-const size = require('lodash')
 interface ChatScreenProps {
   onCancel: () => void
   user_id: string
@@ -447,7 +447,7 @@ function DetailChat({
             />
             {invalid_page_id && (
               <h4 className="flex justify-center font-semibold text-red-600">
-                Thông tin Page không đúng
+                {t('invalid_page_id')}
               </h4>
             )}
           </div>
