@@ -1,25 +1,26 @@
-import IconSend from '../../assets/send.svg'
-import React from 'react'
+import { ReactComponent as IconSend } from 'assets/send.svg'
 import { useNavigate } from 'react-router-dom'
 interface SendMessageProps {
   page_id: String | null
-  on_navigate: () => void
+  onNavigate: () => void
   onError: () => void
 }
-function SendMessage({ page_id, on_navigate, onError }: SendMessageProps) {
+function SendMessage({ page_id, onNavigate, onError }: SendMessageProps) {
   const navigate = useNavigate()
 
   return (
     <div
       onClick={() => {
+        // Có page_id thì thêm page_id và url, sau đó chuyển trang
         if (page_id && page_id !== null) {
           navigate(`/?page_id=${page_id}`)
-          on_navigate()
+          onNavigate()
         } else {
+          // Không có page_id thì báo lỗi
           onError()
         }
       }}
-      className="bg-white p-3 rounded-xl flex justify-between px-6 items-center shadow-md cursor-pointer"
+      className="bg-white py-3 rounded-xl flex justify-between px-6 items-center shadow-md cursor-pointer"
     >
       <div>
         <h4 className="text-base font-semibold">Gửi tin nhắn đến chúng tôi</h4>
@@ -29,10 +30,7 @@ function SendMessage({ page_id, on_navigate, onError }: SendMessageProps) {
         </h5>
       </div>
       <div>
-        <img
-          src={IconSend}
-          alt=""
-        />
+        <IconSend />
       </div>
     </div>
   )

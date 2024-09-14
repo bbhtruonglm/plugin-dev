@@ -24,3 +24,19 @@ export const useAPI = () => {
     return { SOCKET_API, READ_MESSAGE_API, SEND_MESSAGE_API, INIT_CLIENT_API }
   }
 }
+/**
+ * - Hàm xử lý gọi api:
+ * @param url - Đường dẫn API
+ * @param method - Phương thức gọi API
+ * @param body - Đồi tượng dữ liệu gọi API
+ */
+export const fetchAPI = async (url: string, method: string, body?: any) => {
+  const response = await fetch(url, {
+    method: method,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  })
+  return response.json()
+}

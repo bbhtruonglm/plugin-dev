@@ -9,6 +9,9 @@ module.exports = {
         mds: '400px',
         '2xl': '1440px', // Custom extra large breakpoint
       },
+      fontSize: {
+        xs: '10px',
+      },
       backgroundImage: {
         'bg-gradient':
           'linear-gradient(to right,  #EEEDF3 0%, #EFEEF4 7%,   #EFECF3 14%,   #F0EDF4 21%,   #F2ECF4 29%,   #EFECF3 36%,   #EEEBF6 43%,   #EBEAF9 50%,   #E8E8F8 57%,   #E6E7F8 64%,   #E4E5F9 71%,   #E3E4F8 79%,   #E2E3F8 86%,   #E0E0FC 93%,   #DCDFFC 100%);',
@@ -80,8 +83,8 @@ module.exports = {
     function ({ addUtilities }) {
       const newUtilities = {
         '.scrollbar-thin': {
-          // scrollbarWidth: "thin",
-          scrollbarColor: '#7217bd3f',
+          scrollbarWidth: 'thin',
+          scrollbarColor: '#7217bd3f transparent',
         },
         '.scrollbar-webkit': {
           '&::-webkit-scrollbar': {

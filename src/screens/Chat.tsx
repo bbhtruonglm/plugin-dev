@@ -4,26 +4,19 @@ import DetailChat from 'components/ChatComponents/DetailChat'
 import { useAPI } from 'utils/api'
 import { useNavigate } from 'react-router-dom'
 
-// import { INIT_CLIENT_API } from '../../utils/api'
-
 interface ChatProps {
-  currentPosition: string
-  setPosition: (e: string) => void
-  userName: string
-  userLoggedIn: (e: any) => void
-  errorMessage: String | null
+  userOutChat: (e?: any) => void
+  error_message: String | null
   onError: () => void
-  setHide?: () => void
-  currentW: Number | null
+  setHideForMobile?: () => void
+  current_width: Number | null
 }
 function ChatScreen({
-  userLoggedIn,
-  errorMessage,
-  onError,
-  setHide,
-  currentW,
+  userOutChat,
+  error_message,
+  setHideForMobile,
+  current_width,
 }: ChatProps) {
-  const [position, setPos] = useState('detail')
   const [pageId, setPageId] = useState<String | null>('')
   const navigate = useNavigate()
   const [clientId, setClientId] = useState<String | null | any>('')
@@ -32,10 +25,22 @@ function ChatScreen({
   const { INIT_CLIENT_API } = useAPI()
 
   useEffect(() => {
-    // Lấy các tham số từ URL
+    /**
+     * Lấy các tham số truy vấn từ URL hiện tại.
+     * Sử dụng đối tượng `URLSearchParams` để phân tích các tham số trong chuỗi truy vấn của URL.
+     * @type {URLSearchParams}
+     *
+     * @example
+     * // Giả sử URL là: https://example.com?page=1&sort=asc
+     * const QUERY_PARAMS = new URLSearchParams(window.location.search);
+     * console.log(QUERY_PARAMS.get('page')); // Outputs: '1'
+     * console.log(QUERY_PARAMS.get('sort')); // Outputs: 'asc'
+     */
     const QUERY_PARAMS = new URLSearchParams(window.location.search)
+
+    /** page_id được lấy từ params */
     const PAGE_ID = QUERY_PARAMS.get('page_id')
-    // console.log(page_id, 'page_id')
+    // Nếu có page_id thì mới xử lý tiếp
     if (PAGE_ID) {
       setPageId(PAGE_ID)
       // Tạo client Id = page_id từ cha
@@ -62,14 +67,28 @@ function ChatScreen({
   }, [clientId])
 
   /** hàm khởi tạo client id */
-  const initGetClientId = async (e: any) => {
+  const initGetClientId = async (value: any) => {
     try {
-      // Tạo url
+      /** Tạo đối tượng URL từ chuỗi init URL client */
       const URL_CLIENT = new URL(INIT_CLIENT_API ?? '')
 
-      //setup params
-      const PARAM = e
-      URL_CLIENT.search = new URLSearchParams(PARAM).toString()
+      /**
+       * Lấy các tham số từ một đối tượng property và gán chúng vào URL.
+       * Chuyển đổi `PARAMS` thành chuỗi truy vấn và thêm vào `URL_CLIENT`.
+       *
+       * @param {Object} value - Đối tượng chứa các tham số cần chuyển đổi thành chuỗi query string
+       * @type {string} URL_CLIENT.search - Chuỗi query string mới được gán vào `URL_CLIENT.search`
+       *
+       * @example
+       * const value = { page: 1, sort: 'asc' };
+       * const PARAMS = value;
+       * URL_CLIENT.search = new URLSearchParams(PARAMS).toString();
+       * // URL_CLIENT.search sẽ là "page=1&sort=asc"
+       */
+      const PARAMS = value
+
+      URL_CLIENT.search = new URLSearchParams(PARAMS).toString()
+      // Lấy client_ID
       const res = await fetch(URL_CLIENT, {
         method: 'GET',
         headers: {
@@ -100,19 +119,18 @@ function ChatScreen({
     <div className="flex flex-col w-full h-full justify-center items-center ">
       <DetailChat
         onCancel={() => {
-          userLoggedIn(clientId)
+          userOutChat(clientId)
         }}
-        userId={clientId}
+        user_id={clientId}
         onInitClient={(e) => initGetClientId(e)}
-        loadingInit={loading}
+        loading_init={loading}
         setLoadingInit={(e) => setLoading(e)}
-        pageId={pageId}
-        invalidPageId={invalidPageId}
+        page_id={pageId}
+        invalid_page_id={invalidPageId}
         onResetInput={() => setInvalidPageId(false)}
-        errorMessage={errorMessage}
-        onError={onError}
-        setHide={setHide}
-        currentW={currentW}
+        error_message={error_message}
+        setHideForMobile={setHideForMobile}
+        current_width={current_width}
       />
     </div>
   )

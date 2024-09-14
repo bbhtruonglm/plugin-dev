@@ -37,13 +37,12 @@ function App() {
           path="/"
           element={
             <ChatApp
-              userName={''}
               handleBtn={() => {
                 handleToggle()
                 setShow(!is_show)
               }}
               show={is_show}
-              setHide={() => {
+              setHideForMobile={() => {
                 setShow(false)
                 handleOff()
               }}
