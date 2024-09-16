@@ -1,5 +1,8 @@
 import { ReactComponent as BackArrow } from '@/assets/white-arrow.svg'
 import { ReactComponent as Close } from '@/assets/close.svg'
+import Loading from '../Loading/Loading'
+import LoadingDots from '../Loading/LoadingDot'
+import { apiImage } from '@/api/api'
 import avatar1 from '@/assets/avatar1.png'
 import avatar2 from '@/assets/avatar2.png'
 import avatar3 from '@/assets/avatar3.png'
@@ -10,7 +13,10 @@ interface ChatScreenProps {
   user_id: string
   setHideForMobile?: () => void
   current_width: Number | null | any
-  page_name: String | null
+  page_name: String | null | undefined
+  staff_avatar?: String | null
+  staff_name?: String | null
+  loading_staff?: boolean
 }
 function ChatHeader({
   onCancel,
@@ -18,6 +24,9 @@ function ChatHeader({
   setHideForMobile,
   current_width,
   page_name,
+  staff_avatar,
+  staff_name,
+  loading_staff,
 }: ChatScreenProps) {
   return (
     <div
@@ -32,16 +41,30 @@ function ChatHeader({
               className="w-7 h-7 cursor-pointer"
               onClick={() => onCancel()}
             />
-            <img
-              src={avatar1}
-              className="mask h-8 w-8"
-              alt=""
-            />
             <div>
-              <h2 className="text-white text-sm font-medium">
-                {/* {t('org_name')} */}
-                {page_name}
-              </h2>
+              {loading_staff ? (
+                <div className="h-5 flex items-center">
+                  <Loading />
+                </div>
+              ) : (
+                <img
+                  src={staff_avatar ?? avatar1}
+                  className="mask h-8 w-8 object-cover rounded-lg"
+                  alt=""
+                />
+              )}
+            </div>
+            <div>
+              {loading_staff ? (
+                <div className="h-5 flex items-center">
+                  <LoadingDots />
+                </div>
+              ) : (
+                <h2 className="text-white text-sm font-medium">
+                  {/* {t('org_name')} */}
+                  {staff_name}
+                </h2>
+              )}
               <h5 className="flex gap-1 items-center font-normal text-xs text-onlineColor">
                 <div className="w-3 h-3 rounded-full bg-onlineColor"></div>
                 {t('online')}
@@ -67,7 +90,7 @@ function ChatHeader({
               className="w-7 h-7 cursor-pointer"
               onClick={() => onCancel()}
             />
-            <h2 className="text-lg font-medium text-white">{t('org_name')}</h2>
+            <h2 className="text-lg font-medium text-white">{page_name}</h2>
             {current_width < 768 && current_width !== 0 ? (
               <div
                 onClick={setHideForMobile}
@@ -81,7 +104,7 @@ function ChatHeader({
           </div>
           <div className="flex items-center py-3 justify-center h-[72px] w-full">
             <div className="flex h-12 justify-center">
-              <img
+              {/* <img
                 src={avatar1}
                 className="mask -mr-2 h-12 w-12"
                 alt=""
@@ -95,6 +118,11 @@ function ChatHeader({
                 src={avatar3}
                 className="mask  h-12 w-12"
                 alt=""
+                /> */}
+              <img
+                className="mask  h-12 w-12"
+                src={'./images/earth.svg'}
+                alt="page_logo"
               />
             </div>
           </div>

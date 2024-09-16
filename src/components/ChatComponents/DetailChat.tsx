@@ -26,8 +26,10 @@ interface ChatScreenProps {
   error_message: String | null
   setHideForMobile?: () => void
   current_width: Number | null
-  page_name: String | null
-  page_avatar?: String | null
+  page_name: String | null | undefined
+  staff_avatar?: String | null
+  staff_name?: String | null
+  loading_staff?: boolean
 }
 type Message = {
   page_id: String | null
@@ -49,7 +51,9 @@ function DetailChat({
   setHideForMobile,
   current_width,
   page_name,
-  page_avatar,
+  staff_avatar,
+  staff_name,
+  loading_staff,
 }: ChatScreenProps) {
   const [new_data, setNewData] = useState([] as any)
   const [loading, setLoading] = useState(false)
@@ -414,6 +418,9 @@ function DetailChat({
         setHideForMobile={setHideForMobile}
         current_width={current_width}
         page_name={page_name}
+        staff_avatar={staff_avatar}
+        staff_name={staff_name}
+        loading_staff={loading_staff}
       />
       {/* body */}
       <div
@@ -476,8 +483,8 @@ function DetailChat({
                 {item.message_type === 'page' && (
                   <div className="flex rounded-lg">
                     <img
-                      src={avatar1}
-                      className="w-6 h-6"
+                      src={staff_avatar ?? avatar1}
+                      className="w-6 h-6 rounded-lg"
                       alt=""
                     />
                   </div>
@@ -491,7 +498,7 @@ function DetailChat({
                   <div className="flex rounded-lg">
                     <img
                       src={avatar2}
-                      className="w-6 h-6"
+                      className="w-6 h-6 rounded-lg"
                       alt=""
                     />
                   </div>

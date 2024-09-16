@@ -10,7 +10,7 @@ module.exports = {
         '2xl': '1440px', // Custom extra large breakpoint
       },
       fontSize: {
-        xs: '10px',
+        xxs: '10px',
       },
       backgroundImage: {
         'bg-gradient':

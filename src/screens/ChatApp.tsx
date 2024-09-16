@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { detectLocaleFromURL, getLocaleFromURL } from '@/utils'
 import { fetchAPI, useAPI } from '@/api/api'
 import { useNavigate, useParams } from 'react-router-dom'
 
@@ -7,8 +6,8 @@ import ChatScreen from '@/screens/Chat'
 import { ReactComponent as Close } from '@/assets/close.svg'
 import { ReactComponent as Down } from '@/assets/arrow.svg'
 import Home from '@/screens/Home'
-import { ReactComponent as IconApp } from '@/assets/logo.svg'
 import { ReactComponent as Logo } from '@/assets/logo-retion.svg'
+import { ReactComponent as RetionLogo } from '@/assets/retion-logo.svg'
 import { ReactComponent as activeHome } from '@/assets/home-active.svg'
 import { ReactComponent as activeMessage } from '@/assets/messageA.svg'
 import avatar1 from '@/assets/avatar1.png'
@@ -75,7 +74,7 @@ const ChatApp: React.FC<ChatProps> = ({
     }
     // lưu page_id với state
     setPageId(PAGE_ID)
-    setPageId('bf425487afbe403895116dd9b585537b')
+    // setPageId('bf425487afbe403895116dd9b585537b')
   }, [])
 
   /**
@@ -134,16 +133,20 @@ const ChatApp: React.FC<ChatProps> = ({
   /** Hàm đọc dữ liệu trang */
   const fetchPageData = async (page_id: String) => {
     const URL_READ = new URL(READ_PAGE_INFO ?? '')
-
     const BODY = {
       page_id: page_id,
     }
     URL_READ.search = new URLSearchParams(BODY as any).toString()
+
+    /** Thông tin page từ api */
     const RES = await fetchAPI(URL_READ.toString(), 'GET')
-    setPageName(RES.data.name)
-    setSocialLink(RES.data.config.sosial_platform)
-    i18n.changeLanguage(RES.data.config.locale)
     console.log(RES, 'RES page')
+    // lưu tên page vào state
+    setPageName(RES.data.name)
+    // Lưu liên hệ với các kênh mạng xã hội
+    setSocialLink(RES.data.config.sosial_platform)
+    // lưu ngôn ngữ hiện tại
+    i18n.changeLanguage(RES.data.config.locale)
   }
   useEffect(() => {
     // Nếu có page_id thì mới xử lý tiếp
@@ -170,7 +173,7 @@ const ChatApp: React.FC<ChatProps> = ({
         className={`relative  ${
           // Phần chính của bong bóng chat
           current_width < 768 && current_width !== 0
-            ? ' w-screen h-screen '
+            ? ' w-screen h-screen rounded-none '
             : ' w-[400px] h-[600px] '
         } bg-bg-gradient rounded-[20px] overflow-hidden shadow-md ${
           // mặc định sẽ ẩn/ Khi kich hoạt sẽ mở kèm animation
@@ -185,16 +188,16 @@ const ChatApp: React.FC<ChatProps> = ({
             }
           >
             <div>
-              <IconApp
-                width={36}
-                height={44}
+              <RetionLogo
+              // width={36}
+              // height={44}
               />
             </div>
             {/* <button onClick={() => changeLanguage('en')}>English</button>
             <button onClick={() => changeLanguage('vi')}>Tiếng Việt</button> */}
 
             <div className="flex items-center h-8">
-              <img
+              {/* <img
                 src={avatar1}
                 className="mask  -mr-2 h-8 w-8"
                 alt=""
@@ -208,6 +211,11 @@ const ChatApp: React.FC<ChatProps> = ({
                 src={avatar3}
                 className="mask  h-8 w-8"
                 alt=""
+              /> */}
+              <img
+                className="mask  h-8 w-8"
+                src={'./images/earth.svg'}
+                alt="page_logo"
               />
             </div>
             <div
@@ -339,7 +347,16 @@ const ChatApp: React.FC<ChatProps> = ({
             : ' flex '
         }`}
       >
-        <div>{show ? <Down /> : <Logo />}</div>
+        <div>
+          {show ? (
+            <Down />
+          ) : (
+            <Logo
+              width={30}
+              height={30}
+            />
+          )}
+        </div>
       </button>
     </div>
   )

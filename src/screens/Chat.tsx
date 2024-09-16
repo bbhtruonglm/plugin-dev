@@ -1,4 +1,4 @@
-import { fetchAPI, useAPI } from '@/api/api'
+import { apiImage, fetchAPI, useAPI } from '@/api/api'
 import { useEffect, useState } from 'react'
 
 import DetailChat from '@/components/ChatComponents/DetailChat'
@@ -25,6 +25,9 @@ function ChatScreen({
   const [invalidPageId, setInvalidPageId] = useState(false)
   const [loading, setLoading] = useState(false)
   const { INIT_CLIENT_API, READ_PAGE_INFO, READ_CLIENT_INFO } = useAPI()
+  const [staff_avatar, setStaffAvatar] = useState(null as any)
+  const [staff_name, setStaffName] = useState(null as any)
+  const [loading_staff, setLoadingStaff] = useState(false)
 
   useEffect(() => {
     /**
@@ -136,6 +139,7 @@ function ChatScreen({
     client_id: String | null,
     page_id: String | null
   ) => {
+    setLoadingStaff(true)
     const BODY = {
       client_id: client_id,
       page_id: page_id,
@@ -143,7 +147,22 @@ function ChatScreen({
     const URL_READ = new URL(READ_CLIENT_INFO ?? '')
 
     URL_READ.search = new URLSearchParams(BODY as any).toString()
+
     const RES = await fetchAPI(URL_READ.toString(), 'GET')
+    if (RES.data.fb_staff_id) {
+      const LINK_AVATAR = apiImage(
+        `/app/facebook/avatar/${RES.data.fb_staff_id}?width=64&height=64`
+      )
+      console.log(LINK_AVATAR, 'LINK_AVATAR')
+
+      setStaffAvatar(LINK_AVATAR)
+      setLoadingStaff(false)
+    }
+    if (RES.data.snap_staff.name) {
+      setStaffName(RES.data.snap_staff.name)
+      setLoadingStaff(false)
+    }
+
     console.log(RES, 'RES client')
   }
 
@@ -164,6 +183,9 @@ function ChatScreen({
         setHideForMobile={setHideForMobile}
         current_width={current_width}
         page_name={page_name}
+        staff_avatar={staff_avatar}
+        staff_name={staff_name}
+        loading_staff={loading_staff}
       />
     </div>
   )

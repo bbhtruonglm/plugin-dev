@@ -12,6 +12,7 @@ const apiEndpoints = {
     INIT_CLIENT_API: `${VITE_APP_BE_HOST}/embed/conversation/init_identify`,
     READ_PAGE_INFO: `${VITE_APP_BE_HOST}/embed/page/read_page`,
     READ_CLIENT_INFO: `${VITE_APP_BE_HOST}/embed/conversation/read_client`,
+    IMAGE: `https://chatbox-static-v3.botbanhang.vn`,
   },
   staging: {
     SOCKET_API: VITE_APP_SOCKET_HOST_STAGING,
@@ -20,6 +21,7 @@ const apiEndpoints = {
     INIT_CLIENT_API: `${VITE_APP_BE_HOST_STAGING}/embed/conversation/init_identify`,
     READ_PAGE_INFO: `${VITE_APP_BE_HOST_STAGING}/embed/page/read_page`, // sử dụng BE_HOST của production
     READ_CLIENT_INFO: `${VITE_APP_BE_HOST_STAGING}/embed/conversation/read_client`, // sử dụng BE_HOST của production
+    IMAGE: `https://chatbox-static-v3.botbanhang.vn`,
   },
 }
 
@@ -44,4 +46,11 @@ export const fetchAPI = async (url: string, method: string, body?: any) => {
   })
 
   return response.json()
+}
+/** api chung cho các api liên quan đến lấy ảnh */
+export function apiImage(end_point: any) {
+  const env = import.meta.env.VITE_APP_ENV || 'production'
+  const URI = `${apiEndpoints[env]['IMAGE']}${end_point}`
+
+  return URI
 }

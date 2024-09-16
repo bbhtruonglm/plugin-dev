@@ -7,7 +7,6 @@ function ChatOption({ social_link }: any) {
   // if (!social_link) return null
 
   /** Tạo list chat với các phương thức liên hệ đến bbh */
-  console.log(social_link, 'social_link')
   const chatList = [
     {
       name: '@botbanhang.fb',
@@ -54,29 +53,30 @@ function ChatOption({ social_link }: any) {
           ))}
         </div> */}
         <div className="flex w-full gap-6 mt-2">
-          {social_link.map((item: any, index: number) => (
-            <a
-              className="flex gap-1 items-center p-1 cursor-pointer"
-              key={index}
-              href={item.url}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <div className="bg-gray-100 p-2 rounded-full flex items-center justify-center">
-                {item.type === 'FACEBOOK' && (
-                  <Facebook className=" text-blue-700" />
-                )}
-                {item.type === 'ZALO' && <Zalo className=" text-blue-600" />}
-                {item.type === 'WHATSAPP' && (
-                  <Whatsapp className=" text-green-600" />
-                )}
-                {item.type === 'INSTAGRAM' && (
-                  <Instagram className=" text-pink-600" />
-                )}
-              </div>
-              <p className="text-xs font-medium truncate">{item.title}</p>
-            </a>
-          ))}
+          {!!social_link?.length &&
+            social_link.map((item: any, index: number) => (
+              <a
+                className="flex gap-1 items-center p-1 cursor-pointer"
+                key={index}
+                href={item.url}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <div className="bg-gray-100 p-2 rounded-full flex items-center justify-center">
+                  {item.type === 'FACEBOOK' && (
+                    <Facebook className=" text-blue-700" />
+                  )}
+                  {item.type === 'ZALO' && <Zalo className=" text-blue-600" />}
+                  {item.type === 'WHATSAPP' && (
+                    <Whatsapp className=" text-green-600" />
+                  )}
+                  {item.type === 'INSTAGRAM' && (
+                    <Instagram className=" text-pink-600" />
+                  )}
+                </div>
+                <p className="text-xs font-medium truncate">{item.title}</p>
+              </a>
+            ))}
         </div>
       </div>
     </div>
