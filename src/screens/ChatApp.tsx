@@ -188,43 +188,42 @@ const ChatApp: React.FC<ChatProps> = ({
             }
           >
             <div>
-              <RetionLogo
-              // width={36}
-              // height={44}
-              />
+              <RetionLogo />
             </div>
-            {/* <button onClick={() => changeLanguage('en')}>English</button>
-            <button onClick={() => changeLanguage('vi')}>Tiếng Việt</button> */}
 
-            <div className="flex items-center h-8">
-              {/* <img
-                src={avatar1}
-                className="mask  -mr-2 h-8 w-8"
-                alt=""
-              />
-              <img
-                src={avatar2}
-                className="mask -mr-1 h-8 w-8"
-                alt=""
-              />
-              <img
-                src={avatar3}
-                className="mask  h-8 w-8"
-                alt=""
-              /> */}
-              <img
-                className="mask  h-8 w-8"
+            <div className="flex items-center gap-x-5">
+              <div className="flex items-center h-8">
+                <img
+                  src={avatar1}
+                  className="mask  -mr-2 h-8 w-8"
+                  alt=""
+                />
+                <img
+                  src={avatar2}
+                  className="mask -mr-1 h-8 w-8"
+                  alt=""
+                />
+                <img
+                  src={avatar3}
+                  className="mask  h-8 w-8"
+                  alt=""
+                />
+                {/* <img
+                className="mask h-8 w-8"
                 src={'./images/earth.svg'}
                 alt="page_logo"
-              />
-            </div>
-            <div
-              onClick={setHideForMobile}
-              className={` cursor-pointer w-10 h-10 flex justify-center items-center  ${
-                current_width < 768 && current_width !== 0 ? ' flex' : ' hidden'
-              }`}
-            >
-              <Close />
+              /> */}
+              </div>
+              <div
+                onClick={setHideForMobile}
+                className={` cursor-pointer w-10 h-10 flex justify-center items-center  ${
+                  current_width < 768 && current_width !== 0
+                    ? ' flex'
+                    : ' hidden'
+                }`}
+              >
+                <Close />
+              </div>
             </div>
           </div>
         )}

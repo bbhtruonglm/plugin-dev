@@ -104,7 +104,7 @@ function ChatHeader({
           </div>
           <div className="flex items-center py-3 justify-center h-[72px] w-full">
             <div className="flex h-12 justify-center">
-              {/* <img
+              <img
                 src={avatar1}
                 className="mask -mr-2 h-12 w-12"
                 alt=""
@@ -118,12 +118,12 @@ function ChatHeader({
                 src={avatar3}
                 className="mask  h-12 w-12"
                 alt=""
-                /> */}
-              <img
+              />
+              {/* <img
                 className="mask  h-12 w-12"
                 src={'./images/earth.svg'}
                 alt="page_logo"
-              />
+              /> */}
             </div>
           </div>
           <div className="flex flex-col justify-center items-center h-10 gap-1">
