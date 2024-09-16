@@ -6,8 +6,9 @@ interface HomeProps {
   page_id: String | null
   onNavigate: () => void
   onError: () => void
+  social_link?: Array<any> | null
 }
-function Home({ page_id, onNavigate, onError }: HomeProps) {
+function Home({ page_id, onNavigate, onError, social_link }: HomeProps) {
   return (
     <div className="flex flex-col px-5 py-3 gap-y-4">
       {/* Greeting */}
@@ -23,7 +24,7 @@ function Home({ page_id, onNavigate, onError }: HomeProps) {
       />
 
       {/* Lựa chọn kênh liên lạc */}
-      <ChatOption />
+      <ChatOption social_link={social_link} />
       {/* Giới thiệu AI */}
       {/* <IntroAI /> */}
       {/* Tìm kiếm trợ giúp */}

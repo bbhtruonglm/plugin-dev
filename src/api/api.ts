@@ -42,6 +42,6 @@ export const fetchAPI = async (url: string, method: string, body?: any) => {
     },
     body: JSON.stringify(body),
   })
-  console.log(response, 'response')
+
   return response.json()
 }

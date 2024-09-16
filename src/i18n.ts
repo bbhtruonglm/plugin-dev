@@ -16,7 +16,7 @@ i18n
       vi: vn,
     }, // Cung cấp tài nguyên dịch
     // lng: 'en', // Ngôn ngữ mặc định
-    fallbackLng: 'en', // Ngôn ngữ fallback
+    fallbackLng: 'vn', // Ngôn ngữ fallback
     interpolation: {
       escapeValue: false, // React đã xử lý vấn đề bảo mật này
     },

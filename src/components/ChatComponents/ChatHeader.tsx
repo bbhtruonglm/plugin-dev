@@ -10,12 +10,14 @@ interface ChatScreenProps {
   user_id: string
   setHideForMobile?: () => void
   current_width: Number | null | any
+  page_name: String | null
 }
 function ChatHeader({
   onCancel,
   user_id,
   setHideForMobile,
   current_width,
+  page_name,
 }: ChatScreenProps) {
   return (
     <div
@@ -37,7 +39,8 @@ function ChatHeader({
             />
             <div>
               <h2 className="text-white text-sm font-medium">
-                {t('org_name')}
+                {/* {t('org_name')} */}
+                {page_name}
               </h2>
               <h5 className="flex gap-1 items-center font-normal text-xs text-onlineColor">
                 <div className="w-3 h-3 rounded-full bg-onlineColor"></div>

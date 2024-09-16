@@ -10,12 +10,14 @@ interface ChatProps {
   onError: () => void
   setHideForMobile?: () => void
   current_width: Number | null
+  page_name?: String | null
 }
 function ChatScreen({
   userOutChat,
   error_message,
   setHideForMobile,
   current_width,
+  page_name,
 }: ChatProps) {
   const [pageId, setPageId] = useState<String | null>('')
   const navigate = useNavigate()
@@ -43,8 +45,8 @@ function ChatScreen({
     // Nếu có page_id thì mới xử lý tiếp
     if (PAGE_ID) {
       setPageId(PAGE_ID)
-      console.log(PAGE_ID, 'check')
-      fetchPageData(PAGE_ID)
+      // console.log(PAGE_ID, 'check')
+      // fetchPageData(PAGE_ID)
       // Tạo client Id = page_id từ cha
       const CLIENT_ID = localStorage.getItem(`client_id_<${PAGE_ID}>`)
       // Có CLIENT_ID mới set vào state
@@ -62,7 +64,7 @@ function ChatScreen({
       const newUrl = new URL(window.location.href)
       // Thêm client_id vào params
       newUrl.searchParams.set('client_id', clientId)
-      fetchClientData(pageId, clientId)
+      fetchClientData(clientId, pageId)
       // add url mới
       navigate(`/${newUrl.search}`)
     }
@@ -116,20 +118,24 @@ function ChatScreen({
       setLoading(false)
     }
   }
-  /** Hàm đọc dữ liệu trang */
-  const fetchPageData = async (page_id: string) => {
-    const URL_READ = new URL(READ_PAGE_INFO ?? '')
+  // /** Hàm đọc dữ liệu trang */
+  // const fetchPageData = async (page_id: string) => {
+  //   const URL_READ = new URL(READ_PAGE_INFO ?? '')
 
-    const BODY = {
-      page_id: page_id,
-    }
-    URL_READ.search = new URLSearchParams(BODY as any).toString()
-    const RES = await fetchAPI(URL_READ.toString(), 'GET')
-    console.log(RES, 'RES')
-  }
+  //   const BODY = {
+  //     page_id: page_id,
+  //   }
+  //   URL_READ.search = new URLSearchParams(BODY as any).toString()
+  //   const RES = await fetchAPI(URL_READ.toString(), 'GET')
+
+  //   console.log(RES, 'RES page')
+  // }
 
   /** Hàm đọc data khách hàng */
-  const fetchClientData = async (client_id: String | null, page_id: string) => {
+  const fetchClientData = async (
+    client_id: String | null,
+    page_id: String | null
+  ) => {
     const BODY = {
       client_id: client_id,
       page_id: page_id,
@@ -138,7 +144,7 @@ function ChatScreen({
 
     URL_READ.search = new URLSearchParams(BODY as any).toString()
     const RES = await fetchAPI(URL_READ.toString(), 'GET')
-    console.log(RES, 'RES')
+    console.log(RES, 'RES client')
   }
 
   return (
@@ -157,6 +163,7 @@ function ChatScreen({
         error_message={error_message}
         setHideForMobile={setHideForMobile}
         current_width={current_width}
+        page_name={page_name}
       />
     </div>
   )

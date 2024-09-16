@@ -73,9 +73,9 @@ module.exports = {
         spinSlow: 'spin 3s linear infinite', // Adding a slower spin animation
         bounce: 'bounce 1s infinite',
         scale: 'scale 1s infinite',
-        zoomIn: 'zoomIn 0.5s ease-in-out forwards',
-        zoomInBottomRight: 'zoomInBottomRight 0.5s ease-in-out forwards',
-        zoomOutTopLeft: 'zoomOutTopLeft 0.5s ease-in-out forwards',
+        zoomIn: 'zoomIn 0.2s ease-in-out forwards',
+        zoomInBottomRight: 'zoomInBottomRight 0.2s ease-in-out forwards',
+        zoomOutTopLeft: 'zoomOutTopLeft 0.2s ease-in-out forwards',
       },
     },
   },

@@ -1,18 +1,22 @@
 import React, { useEffect, useState } from 'react'
+import { detectLocaleFromURL, getLocaleFromURL } from '@/utils'
+import { fetchAPI, useAPI } from '@/api/api'
+import { useNavigate, useParams } from 'react-router-dom'
 
 import ChatScreen from '@/screens/Chat'
 import { ReactComponent as Close } from '@/assets/close.svg'
 import { ReactComponent as Down } from '@/assets/arrow.svg'
 import Home from '@/screens/Home'
 import { ReactComponent as IconApp } from '@/assets/logo.svg'
+import { ReactComponent as Logo } from '@/assets/logo-retion.svg'
 import { ReactComponent as activeHome } from '@/assets/home-active.svg'
 import { ReactComponent as activeMessage } from '@/assets/messageA.svg'
 import avatar1 from '@/assets/avatar1.png'
 import avatar2 from '@/assets/avatar2.png'
 import avatar3 from '@/assets/avatar3.png'
+import i18next from 'i18next'
 import { ReactComponent as inactiveHome } from '@/assets/home.svg'
 import { ReactComponent as inactiveMessage } from '@/assets/message.svg'
-import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 interface ChatProps {
@@ -26,13 +30,16 @@ const ChatApp: React.FC<ChatProps> = ({
   setHideForMobile,
 }) => {
   const { t, i18n } = useTranslation()
-  const locale = i18n.language // Lấy locale hiện tại từ i18next
+  // const locale = i18n.language // Lấy locale hiện tại từ i18next
+  const { locale } = useParams()
 
+  const { READ_PAGE_INFO } = useAPI()
   const navigate = useNavigate()
   const [page_id, setPageId] = useState<String | null>('')
   const [error_message, setErrorMessage] = useState<String | null>('')
   const [current_width, setCurrentW] = useState<any>(0)
-
+  const [page_name, setPageName] = useState<String | null>('')
+  const [social_link, setSocialLink] = useState<Array<any> | null>([])
   useEffect(() => {
     /** @type {string} Lấy url của page cha */
     const FULL_SRC = window.location.href
@@ -43,7 +50,19 @@ const ChatApp: React.FC<ChatProps> = ({
      * @returns {URL} Đối tượng URL được tạo ra từ chuỗi đầu vào
      */
     const URL_PARENT = new URL(FULL_SRC)
+    // Lấy giá trị locale từ URL
+    const urlParams = new URLSearchParams(window.location.search)
+    const LOCALE = urlParams.get('locale') || 'vn' // Mặc định là 'vn' nếu không có locale
 
+    // Thay đổi ngôn ngữ của SDK dựa trên locale từ URL
+    i18next
+      .changeLanguage(LOCALE)
+      .then(() => {
+        console.log('Language changed to:', LOCALE)
+      })
+      .catch((error) => {
+        console.error('Error changing language:', error)
+      })
     /** page_id từ URL page cha */
     const PAGE_ID = URL_PARENT.searchParams.get('page_id')
 
@@ -56,7 +75,7 @@ const ChatApp: React.FC<ChatProps> = ({
     }
     // lưu page_id với state
     setPageId(PAGE_ID)
-    // setPageId('bf425487afbe403895116dd9b585537b')
+    setPageId('bf425487afbe403895116dd9b585537b')
   }, [])
 
   /**
@@ -112,6 +131,28 @@ const ChatApp: React.FC<ChatProps> = ({
   // Tạo tab hiện tại là HOME
   const [currentTab, setCurrentTab] = useState('home')
 
+  /** Hàm đọc dữ liệu trang */
+  const fetchPageData = async (page_id: String) => {
+    const URL_READ = new URL(READ_PAGE_INFO ?? '')
+
+    const BODY = {
+      page_id: page_id,
+    }
+    URL_READ.search = new URLSearchParams(BODY as any).toString()
+    const RES = await fetchAPI(URL_READ.toString(), 'GET')
+    setPageName(RES.data.name)
+    setSocialLink(RES.data.config.sosial_platform)
+    i18n.changeLanguage(RES.data.config.locale)
+    console.log(RES, 'RES page')
+  }
+  useEffect(() => {
+    // Nếu có page_id thì mới xử lý tiếp
+    if (page_id) {
+      setPageId(page_id)
+      // console.log(page_id, 'check')
+      fetchPageData(page_id)
+    }
+  }, [page_id])
   return (
     <div
       className={`flex relative  ${
@@ -204,6 +245,7 @@ const ChatApp: React.FC<ChatProps> = ({
                 setErrorMessage(t('errorMessage'))
                 setCurrentTab('message')
               }}
+              social_link={social_link}
             />
           )}
           {currentTab === 'message' && (
@@ -217,6 +259,7 @@ const ChatApp: React.FC<ChatProps> = ({
               onError={() => setErrorMessage('')}
               setHideForMobile={setHideForMobile}
               current_width={current_width}
+              page_name={page_name}
             />
           )}
         </div>
@@ -276,7 +319,7 @@ const ChatApp: React.FC<ChatProps> = ({
                 href="/#"
                 className="underline"
               >
-                Bot Ban Hang
+                Retion.ai
               </a>
             </h4>
           </div>
@@ -288,15 +331,15 @@ const ChatApp: React.FC<ChatProps> = ({
           handleBtn()
           setErrorMessage('')
         }}
-        className={`absolute justify-center items-center h-12 w-12 border bg-slate-800 rounded-full z-[999999] bottom-0 right-0  ${
+        className={`absolute justify-center items-center h-12 w-12 bg-white shadow-lg rounded-full z-[999999] bottom-0 right-0  ${
           !show
-            ? ' flex transform -scale-y-100 '
+            ? ' flex  '
             : current_width < 768 && current_width !== 0
             ? ' hidden '
             : ' flex '
         }`}
       >
-        <Down />
+        <div>{show ? <Down /> : <Logo />}</div>
       </button>
     </div>
   )

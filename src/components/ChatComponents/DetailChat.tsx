@@ -26,6 +26,8 @@ interface ChatScreenProps {
   error_message: String | null
   setHideForMobile?: () => void
   current_width: Number | null
+  page_name: String | null
+  page_avatar?: String | null
 }
 type Message = {
   page_id: String | null
@@ -46,6 +48,8 @@ function DetailChat({
   error_message,
   setHideForMobile,
   current_width,
+  page_name,
+  page_avatar,
 }: ChatScreenProps) {
   const [new_data, setNewData] = useState([] as any)
   const [loading, setLoading] = useState(false)
@@ -409,6 +413,7 @@ function DetailChat({
         user_id={user_id}
         setHideForMobile={setHideForMobile}
         current_width={current_width}
+        page_name={page_name}
       />
       {/* body */}
       <div
