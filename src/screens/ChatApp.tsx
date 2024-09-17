@@ -29,7 +29,8 @@ const ChatApp: React.FC<ChatProps> = ({
   setHideForMobile,
 }) => {
   const { t, i18n } = useTranslation()
-  // const locale = i18n.language // Lấy locale hiện tại từ i18next
+
+  // Lấy locale hiện tại từ i18next
   const { locale } = useParams()
 
   const { READ_PAGE_INFO } = useAPI()
@@ -37,8 +38,12 @@ const ChatApp: React.FC<ChatProps> = ({
   const [page_id, setPageId] = useState<String | null>('')
   const [error_message, setErrorMessage] = useState<String | null>('')
   const [current_width, setCurrentW] = useState<any>(0)
-  const [page_name, setPageName] = useState<String | null>('')
+  const [page_name, setPageName] = useState<string>('')
   const [social_link, setSocialLink] = useState<Array<any> | null>([])
+
+  // Tạo tab hiện tại là HOME
+  const [current_tab, setCurrentTab] = useState('home')
+
   useEffect(() => {
     /** @type {string} Lấy url của page cha */
     const FULL_SRC = window.location.href
@@ -49,9 +54,10 @@ const ChatApp: React.FC<ChatProps> = ({
      * @returns {URL} Đối tượng URL được tạo ra từ chuỗi đầu vào
      */
     const URL_PARENT = new URL(FULL_SRC)
+    const URL_PARAMS = new URLSearchParams(window.location.search)
     // Lấy giá trị locale từ URL
-    const urlParams = new URLSearchParams(window.location.search)
-    const LOCALE = urlParams.get('locale') || 'vn' // Mặc định là 'vn' nếu không có locale
+    // Mặc định là 'vn' nếu không có locale
+    const LOCALE = URL_PARAMS.get('locale') || 'vn'
 
     // Thay đổi ngôn ngữ của SDK dựa trên locale từ URL
     i18next
@@ -74,7 +80,7 @@ const ChatApp: React.FC<ChatProps> = ({
     }
     // lưu page_id với state
     setPageId(PAGE_ID)
-    // setPageId('bf425487afbe403895116dd9b585537b')
+    setPageId('bf425487afbe403895116dd9b585537b')
   }, [])
 
   /**
@@ -91,13 +97,13 @@ const ChatApp: React.FC<ChatProps> = ({
    * @property {string} srcA - Đường dẫn đến icon hoạt động (active)
    *
    * @example
-   * const menuList = [
+   * const MENU_LIST = [
    *   { name: 'Trang chủ', src: inactiveHome, value: 'home', srcA: activeHome },
    *   { name: 'Tin nhắn', src: inactiveMessage, value: 'message', srcA: activeMessage },
    *   // Các tab Support và News đang bị ẩn trong đoạn mã
    * ];
    */
-  const menuList = [
+  const MENU_LIST = [
     {
       name: t('home'),
       src: inactiveHome,
@@ -124,15 +130,9 @@ const ChatApp: React.FC<ChatProps> = ({
     // },
   ]
 
-  const changeLanguage = (lng: any) => {
-    i18n.changeLanguage(lng)
-  }
-  // Tạo tab hiện tại là HOME
-  const [currentTab, setCurrentTab] = useState('home')
-
   /** Hàm đọc dữ liệu trang */
   const fetchPageData = async (page_id: String) => {
-    const URL_READ = new URL(READ_PAGE_INFO ?? '')
+    const URL_READ = new URL(READ_PAGE_INFO)
     const BODY = {
       page_id: page_id,
     }
@@ -140,13 +140,14 @@ const ChatApp: React.FC<ChatProps> = ({
 
     /** Thông tin page từ api */
     const RES = await fetchAPI(URL_READ.toString(), 'GET')
+
     console.log(RES, 'RES page')
     // lưu tên page vào state
-    setPageName(RES.data.name)
+    setPageName(RES?.data?.name)
     // Lưu liên hệ với các kênh mạng xã hội
-    setSocialLink(RES.data.config.sosial_platform)
+    setSocialLink(RES?.data?.config?.sosial_platform)
     // lưu ngôn ngữ hiện tại
-    i18n.changeLanguage(RES.data.config.locale)
+    i18n.changeLanguage(RES?.data.config.locale)
   }
   useEffect(() => {
     // Nếu có page_id thì mới xử lý tiếp
@@ -181,7 +182,7 @@ const ChatApp: React.FC<ChatProps> = ({
         }  `}
       >
         {/* header */}
-        {currentTab !== 'message' && (
+        {current_tab !== 'message' && (
           <div
             className={
               'flex justify-between items-center px-5 py-3 bg-slate-800 text-white'
@@ -194,17 +195,17 @@ const ChatApp: React.FC<ChatProps> = ({
             <div className="flex items-center gap-x-5">
               <div className="flex items-center h-8">
                 <img
-                  src={avatar1}
+                  src={'https://avatar.iran.liara.run/public/1'}
                   className="mask  -mr-2 h-8 w-8"
                   alt=""
                 />
                 <img
-                  src={avatar2}
+                  src={'https://avatar.iran.liara.run/public/2'}
                   className="mask -mr-1 h-8 w-8"
                   alt=""
                 />
                 <img
-                  src={avatar3}
+                  src={'https://avatar.iran.liara.run/public/3'}
                   className="mask  h-8 w-8"
                   alt=""
                 />
@@ -233,13 +234,13 @@ const ChatApp: React.FC<ChatProps> = ({
           className={
             'flex flex-col resize-none outline-none scrollbar-thin scrollbar-webkit ' +
             `${
-              currentTab !== 'home'
+              current_tab !== 'home'
                 ? ' h-[468px] overflow-y-auto'
                 : ' h-[600px]'
             }`
           }
         >
-          {currentTab === 'home' && (
+          {current_tab === 'home' && (
             <Home
               page_id={page_id}
               onNavigate={() => {
@@ -255,7 +256,7 @@ const ChatApp: React.FC<ChatProps> = ({
               social_link={social_link}
             />
           )}
-          {currentTab === 'message' && (
+          {current_tab === 'message' && (
             <ChatScreen
               userOutChat={() => {
                 // Khi back ra thì về trang Home
@@ -273,10 +274,10 @@ const ChatApp: React.FC<ChatProps> = ({
 
         {/* Hiển thị Menu */}
         {/* Nếu tab hiện tại không phải chat thì hiển thị menu */}
-        {currentTab !== 'message' && (
+        {current_tab !== 'message' && (
           <div className="absolute bottom-0 w-full flex flex-col justify-evenly p-2 px-6 h-16 z-20  bg-bg-gradient">
             <div className="flex">
-              {menuList.map(
+              {MENU_LIST.map(
                 (
                   { src: IconComponent, srcA: IconComponentA, value, name },
                   index
@@ -308,7 +309,7 @@ const ChatApp: React.FC<ChatProps> = ({
                     }}
                   >
                     {/* active menu tab */}
-                    {currentTab === value ? (
+                    {current_tab === value ? (
                       <IconComponentA />
                     ) : (
                       <IconComponent />
@@ -323,8 +324,9 @@ const ChatApp: React.FC<ChatProps> = ({
             <h4 className="text-xs text-center text-slate-700">
               powered by{' '}
               <a
-                href="/#"
+                href="https://beta-bbh-vn-lac.vercel.app/vn"
                 className="underline"
+                target="_blank"
               >
                 Retion.ai
               </a>

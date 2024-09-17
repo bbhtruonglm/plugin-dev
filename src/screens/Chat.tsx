@@ -9,8 +9,8 @@ interface ChatProps {
   error_message: String | null
   onError: () => void
   setHideForMobile?: () => void
-  current_width: Number | null
-  page_name?: String | null
+  current_width: number
+  page_name?: string
 }
 function ChatScreen({
   userOutChat,
@@ -19,15 +19,16 @@ function ChatScreen({
   current_width,
   page_name,
 }: ChatProps) {
-  const [pageId, setPageId] = useState<String | null>('')
   const navigate = useNavigate()
-  const [clientId, setClientId] = useState<String | null | any>('')
-  const [invalidPageId, setInvalidPageId] = useState(false)
+  const [page_id, setPageId] = useState<string>('')
+  const [client_id, setClientId] = useState<String | null | any>('')
+  const [invalid_page_id, setInvalidPageId] = useState(false)
   const [loading, setLoading] = useState(false)
   const { INIT_CLIENT_API, READ_PAGE_INFO, READ_CLIENT_INFO } = useAPI()
   const [staff_avatar, setStaffAvatar] = useState(null as any)
   const [staff_name, setStaffName] = useState(null as any)
   const [loading_staff, setLoadingStaff] = useState(false)
+  const [client_name, setClientName] = useState(null as any)
 
   useEffect(() => {
     /**
@@ -62,22 +63,22 @@ function ChatScreen({
   useEffect(() => {
     // Cập nhật URL với client_id
 
-    if (clientId) {
+    if (client_id) {
       // Lấy ra URL
       const newUrl = new URL(window.location.href)
       // Thêm client_id vào params
-      newUrl.searchParams.set('client_id', clientId)
-      fetchClientData(clientId, pageId)
+      newUrl.searchParams.set('client_id', client_id)
+      fetchClientData(client_id, page_id)
       // add url mới
       navigate(`/${newUrl.search}`)
     }
-  }, [clientId])
+  }, [client_id])
 
   /** hàm khởi tạo client id */
   const initGetClientId = async (value: any) => {
     try {
       /** Tạo đối tượng URL từ chuỗi init URL client */
-      const URL_CLIENT = new URL(INIT_CLIENT_API ?? '')
+      const URL_CLIENT = new URL(INIT_CLIENT_API)
 
       /**
        * Lấy các tham số từ một đối tượng property và gán chúng vào URL.
@@ -109,11 +110,11 @@ function ChatScreen({
 
       if (RESULT.code === 403) {
         // Nếu lỗi thì lưu lại chuỗi rỗng
-        localStorage.setItem(`client_id_<${pageId}>`, '')
+        localStorage.setItem(`client_id_<${page_id}>`, '')
         setInvalidPageId(true)
       } else {
         // Có data thì lưu vào local storage
-        localStorage.setItem(`client_id_<${pageId}>`, RESULT.data)
+        localStorage.setItem(`client_id_<${page_id}>`, RESULT.data)
       }
     } catch (err) {
     } finally {
@@ -121,35 +122,21 @@ function ChatScreen({
       setLoading(false)
     }
   }
-  // /** Hàm đọc dữ liệu trang */
-  // const fetchPageData = async (page_id: string) => {
-  //   const URL_READ = new URL(READ_PAGE_INFO ?? '')
-
-  //   const BODY = {
-  //     page_id: page_id,
-  //   }
-  //   URL_READ.search = new URLSearchParams(BODY as any).toString()
-  //   const RES = await fetchAPI(URL_READ.toString(), 'GET')
-
-  //   console.log(RES, 'RES page')
-  // }
 
   /** Hàm đọc data khách hàng */
-  const fetchClientData = async (
-    client_id: String | null,
-    page_id: String | null
-  ) => {
+  const fetchClientData = async (client_id: string, page_id: string) => {
     setLoadingStaff(true)
     const BODY = {
       client_id: client_id,
       page_id: page_id,
     }
-    const URL_READ = new URL(READ_CLIENT_INFO ?? '')
+    const URL_READ = new URL(READ_CLIENT_INFO)
 
     URL_READ.search = new URLSearchParams(BODY as any).toString()
 
     const RES = await fetchAPI(URL_READ.toString(), 'GET')
-    if (RES.data.fb_staff_id) {
+    setClientName(RES?.data?.client_name)
+    if (RES?.data?.fb_staff_id) {
       const LINK_AVATAR = apiImage(
         `/app/facebook/avatar/${RES.data.fb_staff_id}?width=64&height=64`
       )
@@ -158,11 +145,11 @@ function ChatScreen({
       setStaffAvatar(LINK_AVATAR)
       setLoadingStaff(false)
     }
-    if (RES.data.snap_staff.name) {
+    if (RES?.data?.snap_staff?.name) {
       setStaffName(RES.data.snap_staff.name)
       setLoadingStaff(false)
     }
-
+    setLoadingStaff(false)
     console.log(RES, 'RES client')
   }
 
@@ -170,14 +157,14 @@ function ChatScreen({
     <div className="flex flex-col w-full h-full justify-center items-center ">
       <DetailChat
         onCancel={() => {
-          userOutChat(clientId)
+          userOutChat(client_id)
         }}
-        user_id={clientId}
+        user_id={client_id}
         onInitClient={(e) => initGetClientId(e)}
         loading_init={loading}
         setLoadingInit={(e) => setLoading(e)}
-        page_id={pageId}
-        invalid_page_id={invalidPageId}
+        page_id={page_id}
+        invalid_page_id={invalid_page_id}
         onResetInput={() => setInvalidPageId(false)}
         error_message={error_message}
         setHideForMobile={setHideForMobile}
@@ -186,6 +173,7 @@ function ChatScreen({
         staff_avatar={staff_avatar}
         staff_name={staff_name}
         loading_staff={loading_staff}
+        client_name={client_name}
       />
     </div>
   )

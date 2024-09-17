@@ -1,5 +1,6 @@
 import _, { size } from 'lodash'
 import { fetchAPI, useAPI } from '@/api/api'
+import { letterToColorCode, nameToLetter } from '@/utils'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import ChatHeader from './ChatHeader'
@@ -11,7 +12,6 @@ import LoadingDots from '../Loading/LoadingDot'
 import MessageComponent from './MessageComponent'
 import { MessageInfo } from '@/utils/type'
 import avatar1 from '@/assets/avatar1.png'
-import avatar2 from '@/assets/avatar2.png'
 import { t } from 'i18next'
 
 interface ChatScreenProps {
@@ -25,11 +25,12 @@ interface ChatScreenProps {
   onResetInput: () => void
   error_message: String | null
   setHideForMobile?: () => void
-  current_width: Number | null
-  page_name: String | null | undefined
-  staff_avatar?: String | null
-  staff_name?: String | null
+  current_width: number
+  page_name?: string
+  staff_avatar?: string
+  staff_name?: string
   loading_staff?: boolean
+  client_name?: string
 }
 type Message = {
   page_id: String | null
@@ -54,6 +55,7 @@ function DetailChat({
   staff_avatar,
   staff_name,
   loading_staff,
+  client_name,
 }: ChatScreenProps) {
   const [new_data, setNewData] = useState([] as any)
   const [loading, setLoading] = useState(false)
@@ -61,7 +63,7 @@ function DetailChat({
   const [is_force_close_socket, setIsForceCloseSocket] = useState(false)
   const WS = useRef<WebSocket | null>(null)
   const [skip, setSkip] = useState(0)
-  let limit = 20
+  let LIMIT = 20
   const [loading_more, setLoadingMore] = useState(false)
   const [has_more, setHasMore] = useState(true)
   const [scroll_at_bottom, setScrollAtBottom] = useState(true)
@@ -184,33 +186,27 @@ function DetailChat({
     setLoadingMore(true)
 
     try {
-      const URL_READ = new URL(READ_MESSAGE_API ?? '')
+      const URL_READ = new URL(READ_MESSAGE_API)
 
       //setup params
       const PARAMS = {
         // page_id: '3861367970af4b7cadacaec5d1443473',
         page_id: page_id,
         client_id: user_id,
-        limit: limit.toString(),
+        limit: LIMIT.toString(),
         skip: skip.toString(),
       }
       URL_READ.search = new URLSearchParams(PARAMS as any).toString()
-      // const res = await fetch(URL_READ, {
-      //   method: 'GET',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      // })
+
       const RES = await fetchAPI(URL_READ.toString(), 'GET')
 
       const RESULT = await RES
-      if (RESULT.data.length === limit) {
+      if (RESULT.data.length === LIMIT) {
         // set call api se skip bn ban ghi
         setSkip(skip + RESULT.data.length)
       }
 
       //lưu data về phía trước do data đã bị reverse
-
       setNewData([...RESULT.data.reverse(), ...new_data])
 
       setTimeout(() => {
@@ -221,7 +217,7 @@ function DetailChat({
       }, 10)
       // Neu data trả về k nhiều  = limit thì đã hết tin nhắn cũ
       // Nếu load trên limit bản ghi thì hasmore == false
-      if (RESULT.data.length !== limit) {
+      if (RESULT.data.length !== LIMIT) {
         // k còn data nữa
         setHasMore(false)
       }
@@ -234,29 +230,23 @@ function DetailChat({
   // Tạo ra function chỉ để call lần đầu
   const fetchMessageInit = async () => {
     try {
-      const URL_READ = new URL(READ_MESSAGE_API ?? '')
+      const URL_READ = new URL(READ_MESSAGE_API)
 
       //setup params
       const params = {
         // page_id: '3861367970af4b7cadacaec5d1443473',
         page_id: page_id,
         client_id: user_id,
-        limit: limit.toString(),
+        limit: LIMIT.toString(),
         skip: skip.toString(),
       }
       URL_READ.search = new URLSearchParams(params as any).toString()
-      // const response = await fetch(URL_READ, {
-      //   method: 'GET',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     // 'Authorization': 'Bearer YOUR_ACCESS_TOKEN', // Nếu cần token xác thực
-      //   },
-      // })
+
       const RES = await fetchAPI(URL_READ.toString(), 'GET')
 
       const RESULT = await RES
 
-      if (RESULT.data.length === limit) {
+      if (RESULT.data.length === LIMIT) {
         // set call api se skip bn ban ghi
         setSkip(skip + RESULT.data.length)
       }
@@ -293,7 +283,7 @@ function DetailChat({
   /**  Cấu hình websocket */
   function onSocketFromChatboxServer() {
     // Kết nối tới WebSocket server
-    WS.current = new WebSocket(SOCKET_API ?? '')
+    WS.current = new WebSocket(SOCKET_API || '')
     // console.log(SOCKET_API, 'socket URL_READ')
     // luu lai id vong lap ping
     let ping_interval_id: number | any
@@ -367,17 +357,6 @@ function DetailChat({
         text: input,
       }
 
-      // await fetch(SEND_MESSAGE_API ?? '', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify({
-      //     client_id: message.client_id,
-      //     page_id: message.page_id,
-      //     text: message.text,
-      //   }),
-      // })
       await fetchAPI(SEND_MESSAGE_API, 'POST', message)
 
       //Gửi tin nhắn thành công, scroll xuống cuối trang
@@ -483,7 +462,7 @@ function DetailChat({
                 {item.message_type === 'page' && (
                   <div className="flex rounded-lg">
                     <img
-                      src={staff_avatar ?? avatar1}
+                      src={staff_avatar || './images/earth.svg'}
                       className="w-6 h-6 rounded-lg"
                       alt=""
                     />
@@ -495,12 +474,11 @@ function DetailChat({
                   userId={user_id}
                 />
                 {item.message_type === 'client' && (
-                  <div className="flex rounded-lg">
-                    <img
-                      src={avatar2}
-                      className="w-6 h-6 rounded-lg"
-                      alt=""
-                    />
+                  <div
+                    className="flex rounded-lg text-white text-sm items-center justify-center w-6 h-6"
+                    style={{ background: letterToColorCode(client_name) }}
+                  >
+                    {nameToLetter(client_name)}
                   </div>
                 )}
               </div>

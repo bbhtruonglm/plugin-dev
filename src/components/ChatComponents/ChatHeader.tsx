@@ -2,20 +2,17 @@ import { ReactComponent as BackArrow } from '@/assets/white-arrow.svg'
 import { ReactComponent as Close } from '@/assets/close.svg'
 import Loading from '../Loading/Loading'
 import LoadingDots from '../Loading/LoadingDot'
-import { apiImage } from '@/api/api'
-import avatar1 from '@/assets/avatar1.png'
-import avatar2 from '@/assets/avatar2.png'
-import avatar3 from '@/assets/avatar3.png'
+import pageImg from '@/assets/earth.svg'
 import { t } from 'i18next'
 
 interface ChatScreenProps {
   onCancel: () => void
   user_id: string
   setHideForMobile?: () => void
-  current_width: Number | null | any
-  page_name: String | null | undefined
-  staff_avatar?: String | null
-  staff_name?: String | null
+  current_width: number
+  page_name?: string
+  staff_avatar?: string
+  staff_name?: string
   loading_staff?: boolean
 }
 function ChatHeader({
@@ -36,7 +33,7 @@ function ChatHeader({
     >
       {user_id ? (
         <div className="flex justify-between items-center w-full">
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             <BackArrow
               className="w-7 h-7 cursor-pointer"
               onClick={() => onCancel()}
@@ -48,7 +45,7 @@ function ChatHeader({
                 </div>
               ) : (
                 <img
-                  src={staff_avatar ?? avatar1}
+                  src={staff_avatar || './images/earth.svg'}
                   className="mask h-8 w-8 object-cover rounded-lg"
                   alt=""
                 />
@@ -61,8 +58,7 @@ function ChatHeader({
                 </div>
               ) : (
                 <h2 className="text-white text-sm font-medium">
-                  {/* {t('org_name')} */}
-                  {staff_name}
+                  {staff_name || page_name}
                 </h2>
               )}
               <h5 className="flex gap-1 items-center font-normal text-xs text-onlineColor">
@@ -105,17 +101,17 @@ function ChatHeader({
           <div className="flex items-center py-3 justify-center h-[72px] w-full">
             <div className="flex h-12 justify-center">
               <img
-                src={avatar1}
+                src={'https://avatar.iran.liara.run/public/1'}
                 className="mask -mr-2 h-12 w-12"
                 alt=""
               />
               <img
-                src={avatar2}
+                src={'https://avatar.iran.liara.run/public/2'}
                 className="mask -mr-1 h-12 w-12"
                 alt=""
               />
               <img
-                src={avatar3}
+                src={'https://avatar.iran.liara.run/public/3'}
                 className="mask  h-12 w-12"
                 alt=""
               />

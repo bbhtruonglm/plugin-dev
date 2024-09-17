@@ -38,3 +38,42 @@ export function getLocaleFromURL(path: any) {
   // Trả về ngôn ngữ mặc định nếu không tìm thấy locale hợp lệ
   return 'vn' // 'en' là fallback
 }
+
+/**tạo bg dựa trên chữ cái */
+export function letterToColorCode(client_name?: string) {
+  let character = client_name
+
+  // lấy chữ cái đầu tiên và Chuyển ký tự thành chữ thường
+  const INPUT = character?.charAt(0).toLowerCase()
+
+  // Chuyển đổi ký tự thành mã màu, Lấy mã Unicode và trừ đi mã 'a' (97)
+  let char_code = (INPUT?.charCodeAt(0) || 0) - 97
+
+  // Chuyển đổi số nguyên thành giá trị RGB
+  var red = (char_code * 30) % 256
+  var green = (char_code * 20) % 256
+  var blue = (char_code * 10) % 256
+
+  return 'rgb(' + red + ', ' + green + ', ' + blue + ')'
+}
+
+/**cắt ra 2 ký tự đầu và cuối trong tên */
+export const nameToLetter = (name?: string) => {
+  // Xử lý xoá dấu tiếng việt và lấy ký tự đầu cuối trong tên
+  return removeVietnameseTones(name)
+    .match(/(\b\S)?/g)
+    ?.join('')
+    .match(/(^\S|\S$)?/g)
+    ?.join('')
+    .toUpperCase()
+}
+/** Xoá dấu tiếng việt */
+export const removeVietnameseTones = (str?: string) => {
+  if (!str) return ''
+  return str
+    .normalize('NFD') // Tách các ký tự tiếng Việt thành dạng cơ bản
+    .replace(/[\u0300-\u036f]/g, '') // Loại bỏ các dấu
+    .replace(/đ/g, 'd') // Thay thế chữ "đ" thành "d"
+    .replace(/Đ/g, 'D') // Thay thế chữ "Đ" thành "D"
+    .toLowerCase() // Chuyển thành chữ thường để dễ so sánh
+}

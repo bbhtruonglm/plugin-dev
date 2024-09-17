@@ -26,9 +26,9 @@ const apiEndpoints = {
 }
 
 export const useAPI = () => {
-  const env = import.meta.env.VITE_APP_ENV || 'production'
+  const ENV = import.meta.env.VITE_APP_ENV || 'production'
 
-  return apiEndpoints[env] || apiEndpoints.production // mặc định là production nếu môi trường không hợp lệ
+  return apiEndpoints[ENV] || apiEndpoints.production // mặc định là production nếu môi trường không hợp lệ
 }
 /**
  * - Hàm xử lý gọi api:
@@ -37,7 +37,7 @@ export const useAPI = () => {
  * @param body - Đồi tượng dữ liệu gọi API
  */
 export const fetchAPI = async (url: string, method: string, body?: any) => {
-  const response = await fetch(url, {
+  const RES = await fetch(url, {
     method: method,
     headers: {
       'Content-Type': 'application/json',
@@ -45,12 +45,12 @@ export const fetchAPI = async (url: string, method: string, body?: any) => {
     body: JSON.stringify(body),
   })
 
-  return response.json()
+  return RES.json()
 }
 /** api chung cho các api liên quan đến lấy ảnh */
 export function apiImage(end_point: any) {
-  const env = import.meta.env.VITE_APP_ENV || 'production'
-  const URI = `${apiEndpoints[env]['IMAGE']}${end_point}`
+  const ENV = import.meta.env.VITE_APP_ENV || 'production'
+  const URI = `${apiEndpoints[ENV]['IMAGE']}${end_point}`
 
   return URI
 }
