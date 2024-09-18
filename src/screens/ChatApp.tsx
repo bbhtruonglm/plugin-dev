@@ -10,9 +10,6 @@ import { ReactComponent as Logo } from '@/assets/logo-retion.svg'
 import { ReactComponent as RetionLogo } from '@/assets/retion-logo.svg'
 import { ReactComponent as activeHome } from '@/assets/home-active.svg'
 import { ReactComponent as activeMessage } from '@/assets/messageA.svg'
-import avatar1 from '@/assets/avatar1.png'
-import avatar2 from '@/assets/avatar2.png'
-import avatar3 from '@/assets/avatar3.png'
 import i18next from 'i18next'
 import { ReactComponent as inactiveHome } from '@/assets/home.svg'
 import { ReactComponent as inactiveMessage } from '@/assets/message.svg'
@@ -80,7 +77,7 @@ const ChatApp: React.FC<ChatProps> = ({
     }
     // lưu page_id với state
     setPageId(PAGE_ID)
-    setPageId('bf425487afbe403895116dd9b585537b')
+    // setPageId('bf425487afbe403895116dd9b585537b')
   }, [])
 
   /**
@@ -132,10 +129,13 @@ const ChatApp: React.FC<ChatProps> = ({
 
   /** Hàm đọc dữ liệu trang */
   const fetchPageData = async (page_id: String) => {
+    // Tạo đối tượng URL từ string
     const URL_READ = new URL(READ_PAGE_INFO)
+    // body gồm page_id
     const BODY = {
       page_id: page_id,
     }
+    // Đẩy params lên URL
     URL_READ.search = new URLSearchParams(BODY as any).toString()
 
     /** Thông tin page từ api */
@@ -196,19 +196,20 @@ const ChatApp: React.FC<ChatProps> = ({
               <div className="flex items-center h-8">
                 <img
                   src={'https://avatar.iran.liara.run/public/1'}
-                  className="mask  -mr-2 h-8 w-8"
+                  className="-mr-2 h-8 w-8 rounded-lg"
                   alt=""
                 />
                 <img
                   src={'https://avatar.iran.liara.run/public/2'}
-                  className="mask -mr-1 h-8 w-8"
+                  className=" -mr-1 h-8 w-8 rounded-lg"
                   alt=""
                 />
                 <img
                   src={'https://avatar.iran.liara.run/public/3'}
-                  className="mask  h-8 w-8"
+                  className="h-8 w-8 rounded-lg"
                   alt=""
                 />
+
                 {/* <img
                 className="mask h-8 w-8"
                 src={'./images/earth.svg'}

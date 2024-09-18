@@ -46,7 +46,7 @@ function ChatHeader({
               ) : (
                 <img
                   src={staff_avatar || './images/earth.svg'}
-                  className="mask h-8 w-8 object-cover rounded-lg"
+                  className="h-8 w-8 object-cover rounded-lg"
                   alt=""
                 />
               )}

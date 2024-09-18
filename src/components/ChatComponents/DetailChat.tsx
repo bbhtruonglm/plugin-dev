@@ -11,7 +11,6 @@ import Loading from '../Loading/Loading'
 import LoadingDots from '../Loading/LoadingDot'
 import MessageComponent from './MessageComponent'
 import { MessageInfo } from '@/utils/type'
-import avatar1 from '@/assets/avatar1.png'
 import { t } from 'i18next'
 
 interface ChatScreenProps {
@@ -63,7 +62,7 @@ function DetailChat({
   const [is_force_close_socket, setIsForceCloseSocket] = useState(false)
   const WS = useRef<WebSocket | null>(null)
   const [skip, setSkip] = useState(0)
-  let LIMIT = 20
+  const LIMIT = 20
   const [loading_more, setLoadingMore] = useState(false)
   const [has_more, setHasMore] = useState(true)
   const [scroll_at_bottom, setScrollAtBottom] = useState(true)
@@ -463,7 +462,7 @@ function DetailChat({
                   <div className="flex rounded-lg">
                     <img
                       src={staff_avatar || './images/earth.svg'}
-                      className="w-6 h-6 rounded-lg"
+                      className="w-6 h-6 rounded-lg "
                       alt=""
                     />
                   </div>

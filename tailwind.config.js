@@ -103,6 +103,18 @@ module.exports = {
             borderRadius: '6px',
           },
         },
+        '.rounded-oval': {
+          '-webkit-mask-position': 'center',
+          'mask-position': 'center',
+          '-webkit-mask-repeat': 'no-repeat',
+          'mask-repeat': 'no-repeat',
+          '-webkit-mask-size': 'contain',
+          'mask-size': 'contain',
+          '-webkit-mask-image':
+            "url(data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' fill='none'%3E%3Cpath fill='%23000' d='M100 0C20 0 0 20 0 100s20 100 100 100 100-20 100-100S180 0 100 0z'/%3E%3C/svg%3E)",
+          'mask-image':
+            "url(data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' fill='none'%3E%3Cpath fill='%23000' d='M100 0C20 0 0 20 0 100s20 100 100 100 100-20 100-100S180 0 100 0z'/%3E%3C/svg%3E)",
+        },
       }
       addUtilities(newUtilities, ['responsive', 'hover'])
     },
