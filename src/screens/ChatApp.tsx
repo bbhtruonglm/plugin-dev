@@ -54,7 +54,7 @@ const ChatApp: React.FC<ChatProps> = ({
     const URL_PARAMS = new URLSearchParams(window.location.search)
     // Lấy giá trị locale từ URL
     // Mặc định là 'vn' nếu không có locale
-    const LOCALE = URL_PARAMS.get('locale') || 'vn'
+    const LOCALE = URL_PARAMS.get('locale') || 'en'
 
     // Thay đổi ngôn ngữ của SDK dựa trên locale từ URL
     i18next

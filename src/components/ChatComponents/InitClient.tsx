@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 
+import Input from './Input'
 import { t } from 'i18next'
 
 interface InitClientProps {
@@ -8,6 +9,7 @@ interface InitClientProps {
   setUserEmail: (e: any) => void
   resetData: boolean
   onError: (e: boolean) => void
+  onInitClient: (e?: any) => void
 }
 function InitClient({
   setUsername,
@@ -15,112 +17,142 @@ function InitClient({
   setUserEmail,
   resetData,
   onError,
+  onInitClient,
 }: InitClientProps) {
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
+  const [email_error, setEmailError] = useState('')
+  const [phone_error, setPhoneError] = useState('')
+  const [name_error, setNameError] = useState('')
+
   useEffect(() => {
     if (resetData) {
       setEmail('')
       setName('')
       setPhone('')
+      setEmailError('')
+      setPhoneError('')
+      setNameError('')
     }
   }, [resetData])
-  const [emailError, setEmailError] = useState('')
-  const [phoneError, setPhoneError] = useState('')
+
   useEffect(() => {
-    if (!emailError && !phoneError) {
+    if (!email_error && !phone_error && !name_error) {
       onError(false)
     } else {
       onError(true)
     }
-  }, [emailError, phoneError])
+  }, [email_error, phone_error, name_error])
+  /** Kiếm tra regex email */
+  const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 
-  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-  // const vietnamesePhoneRegex = /^(?:\+84|84|0)(?:3|5|7|8|9)([0-9]{8,9})$/
-  // const ukPhoneRegex = /^(?:\+44|44|0)(?:7\d{3}|\d{4})\d{6}$/
-
-  const vietnamesePhoneRegex =
+  /** Kiếm tra regex sđt vn */
+  const VN_PHONE_REGEX =
     /^(?:\+84|84|0)(3[2-9]|5[6|8|9]|7[0|6-9]|8[1-6|8|9]|9[0-9])\d{7}$/
-  const ukPhoneRegex = /^(?:\+44|44|0)7\d{9}$/
+  /** Kiếm tra regex sđt uk */
+  const UK_PHONE_REGEX = /^(?:\+44|44|0)7\d{9}$/
 
+  /** Hàm xử lý thay đổi email */
   const handleEmailChange = (e: any) => {
     const value = e.target.value
     setEmail(value)
-
     setUserEmail(value)
-    if (!value || emailRegex.test(value)) {
+    if (!value || EMAIL_REGEX.test(value)) {
       setEmailError('')
     } else {
       setEmailError(t('invalid_format_email'))
     }
   }
-
+  /** Hàm xử lý thay đổi sdt */
   const handlePhoneChange = (e: any) => {
     const value = e.target.value
     setPhone(value)
     setUserPhone(value)
-    if (
-      !value ||
-      vietnamesePhoneRegex.test(value) ||
-      ukPhoneRegex.test(value)
-    ) {
+    if (!value) {
+      setPhoneError(t('input_data')) // Thông báo bắt buộc nhập số điện thoại
+    } else if (VN_PHONE_REGEX.test(value) || UK_PHONE_REGEX.test(value)) {
       setPhoneError('')
     } else {
       setPhoneError(t('invalid_format_phone'))
     }
   }
+  /** Hàm xử lý thay đổi tên */
+  const handleNameChange = (e: any) => {
+    const value = e.target.value
+    setName(value)
+    setUsername(value)
+    if (!value) {
+      setNameError(t('input_data')) // Thông báo bắt buộc nhập tên
+    } else {
+      setNameError('')
+    }
+  }
+  /**  Hàm kiểm tra còn lỗi không */
+  const isButtonDisabled = () => {
+    return !name || !phone || phone_error || name_error || email_error
+  }
 
   return (
     <div className="flex flex-col gap-4 w-full h-full justify-center items-center">
       <div className="flex flex-col gap-4 bg-white w-full py-4 justify-center items-center px-4 rounded-md">
-        <input
-          onChange={(e) => {
-            setName(e.target.value)
-            setUsername(e.target.value)
-          }}
-          value={name}
-          onKeyDown={(e) => {}}
-          type="text"
-          placeholder={t('your_name')}
-          className="bg-inputBg outline-none w-full flex-grow p-3 rounded-md placeholder:text-colorOpacity text-sm font-medium"
-        />
         <div className="w-full">
-          <input
-            onChange={(e) => {
-              // setPhone(e.target.value)
-              handlePhoneChange(e)
-            }}
-            value={phone}
-            onKeyDown={(e) => {}}
+          <Input
+            title={t('your_name')}
+            placeholder={t('input_your_name')}
+            required
             type="text"
-            placeholder={t('your_phone')}
-            className={`bg-inputBg w-full flex-grow p-3 rounded-md placeholder:text-colorOpacity text-sm font-medium 
-            ${phoneError ? ' border-red-600 border' : ' outline-none '}  `}
+            onChange={handleNameChange}
           />
-          {phoneError && (
-            <span className="text-xs text-red-600">{phoneError}</span>
+          {name_error && (
+            <span className="text-xs text-red-600">{name_error}</span>
           )}
         </div>
+
         <div className="w-full">
-          <input
-            onChange={(e) => {
-              // setEmail(e.target.value)
-              setUserEmail(e.target.value)
-              handleEmailChange(e)
-            }}
-            value={email}
-            onKeyDown={(e) => {}}
-            type="text"
-            placeholder={t('your_email')}
-            className={`bg-inputBg w-full flex-grow p-3 rounded-md placeholder:text-colorOpacity text-sm font-medium 
-            ${emailError ? ' border-red-600 border' : ' outline-none '}  `}
+          <Input
+            title={t('your_phone')}
+            placeholder={t('input_your_phone')}
+            required
+            type="number"
+            onChange={handlePhoneChange}
           />
-          {emailError && (
-            <span className="text-xs text-red-600">{emailError}</span>
+          {phone_error && (
+            <span className="text-xs text-red-600">{phone_error}</span>
+          )}
+        </div>
+
+        <div className="w-full">
+          <Input
+            title={'Email'}
+            placeholder={t('input_your_email')}
+            required={false}
+            type="email"
+            onChange={handleEmailChange}
+          />
+          {email_error && (
+            <span className="text-xs text-red-600">{email_error}</span>
           )}
         </div>
       </div>
+
+      <button
+        className={`text-white ${
+          isButtonDisabled() ? 'bg-slate-400' : ' bg-black'
+        } rounded-md px-4 py-2 text-sm font-medium`}
+        // disabled={isButtonDisabled()}
+        onClick={() => {
+          if (!isButtonDisabled()) {
+            onInitClient({
+              name,
+              phone,
+              email,
+            })
+          }
+        }}
+      >
+        {t('start_to_chat')}
+      </button>
     </div>
   )
 }

@@ -434,6 +434,11 @@ function DetailChat({
                 // bao gồm sai định dạng email và sdt
                 setErrorInit(e)
               }}
+              onInitClient={(e) => {
+                setLoadingInit(true)
+                console.log(e)
+                onInitClient({ ...e, page_id })
+              }}
             />
             {invalid_page_id && (
               <h4 className="flex justify-center font-semibold text-red-600">
@@ -514,33 +519,18 @@ function DetailChat({
       )}
 
       {/* ô input  Khi có text trong input thì hiển thị thêm icon send */}
-      <InputChat
-        errorMessage={error_message}
-        handleSend={(e) => {
-          // Khi chua co clientId Call function Khởi tạo
-          if (!user_id) {
-            //  Nếu không có lỗi khi khởi tạo tin nhắn thì thực hiện hành động sau
-            if (!error_init) {
-              setLoadingInit(true)
-              onInitClient({
-                phone,
-                email,
-                name,
-                page_id: page_id,
-              })
-              setLoadingMore(true)
-              setInitMessage(e)
-              // hasmore = true để fetch api 1 lần
-              setHasMore(true)
-            }
-          } else {
-            // có clientId thì gửi tin nhắn như bình thường
+
+      {user_id && (
+        <InputChat
+          errorMessage={error_message}
+          handleSend={(e) => {
             sendMessage(e)
             setLoading(true)
-          }
-        }}
-        loading={loading}
-      />
+          }}
+          loading={loading}
+          page_name={page_name}
+        />
+      )}
     </div>
   )
 }
