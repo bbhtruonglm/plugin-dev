@@ -92,7 +92,7 @@ const ChatApp: React.FC<ChatProps> = ({
     }
     // lưu page_id với state
     setPageId(PAGE_ID)
-    setPageId('bf425487afbe403895116dd9b585537b')
+    // setPageId('bf425487afbe403895116dd9b585537b')
   }, [])
 
   /**
