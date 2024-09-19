@@ -14,6 +14,7 @@ export const vn = {
     welcomeMessage: 'Chúng tôi có thể hỗ trợ được gì bạn?',
     sendUs: 'Gửi tin nhắn đến chúng tôi',
     we_are_online: 'Chúng tôi đang online',
+    we_will_reply_soon: 'Chúng tôi sẽ phản hồi từ 8h00 - 18h00',
     chatWithUs: 'hoặc chat với chúng tôi qua kênh mà bạn thích:',
 
     // Message:

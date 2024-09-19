@@ -2,7 +2,7 @@ import { ReactComponent as BackArrow } from '@/assets/white-arrow.svg'
 import { ReactComponent as Close } from '@/assets/close.svg'
 import Loading from '../Loading/Loading'
 import LoadingDots from '../Loading/LoadingDot'
-import pageImg from '@/assets/earth.svg'
+import OnlineStaff from '../Container/OnlineStaff'
 import { t } from 'i18next'
 
 interface ChatScreenProps {
@@ -14,6 +14,7 @@ interface ChatScreenProps {
   staff_avatar?: string
   staff_name?: string
   loading_staff?: boolean
+  employee_list?: { fb_staff_id: string; is_online: boolean }[]
 }
 function ChatHeader({
   onCancel,
@@ -24,7 +25,10 @@ function ChatHeader({
   staff_avatar,
   staff_name,
   loading_staff,
+  employee_list,
 }: ChatScreenProps) {
+  /** Check list nhân viên có ai online không */
+  const ANY_ONLINE = employee_list?.some((employee) => employee.is_online)
   return (
     <div
       className={`flex bg-slate-800  w-full py-3 px-5 gap-2 absolute top-0 ${
@@ -100,36 +104,34 @@ function ChatHeader({
           </div>
           <div className="flex items-center py-3 justify-center h-[72px] w-full">
             <div className="flex h-12 justify-center">
-              <img
-                src={'https://avatar.iran.liara.run/public/1'}
-                className="mask -mr-2 h-12 w-12"
-                alt=""
+              <OnlineStaff
+                data={employee_list}
+                size="medium"
               />
-              <img
-                src={'https://avatar.iran.liara.run/public/2'}
-                className="mask -mr-1 h-12 w-12"
-                alt=""
-              />
-              <img
-                src={'https://avatar.iran.liara.run/public/3'}
-                className="mask  h-12 w-12"
-                alt=""
-              />
-              {/* <img
-                className="mask  h-12 w-12"
-                src={'./images/earth.svg'}
-                alt="page_logo"
-              /> */}
             </div>
           </div>
           <div className="flex flex-col justify-center items-center h-10 gap-1">
-            <h4 className="flex gap-2 items-center font-normal text-sm h-5 text-onlineColor">
-              <div className="w-3 h-3 rounded-full bg-onlineColor"></div>
-              {t('we_are_online')}
-            </h4>
-            <h5 className="flex items-center font-normal text-xs h-4  text-slate-300">
-              {t('your_options')}
-            </h5>
+            {ANY_ONLINE ? (
+              <>
+                <h4 className="flex gap-2 items-center font-normal text-sm h-5 text-onlineColor">
+                  <div className="w-3 h-3 rounded-full bg-onlineColor"></div>
+                  {t('we_are_online')}
+                </h4>
+                <h5 className="flex items-center font-normal text-xs h-4 text-slate-300">
+                  {t('your_options')}
+                </h5>
+              </>
+            ) : (
+              <>
+                <h4 className="flex gap-2 items-center font-normal text-sm h-5 text-slate-300">
+                  <div className="w-3 h-3 rounded-full bg-slate-300"></div>
+                  {t('we_will_reply_soon')}
+                </h4>
+                <h5 className="flex items-center font-normal text-xs h-4 text-slate-300">
+                  {t('your_options')}
+                </h5>
+              </>
+            )}
           </div>
         </div>
       )}

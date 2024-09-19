@@ -1,3 +1,5 @@
+import { apiImage } from '@/api/api'
+
 /** Hàm tìm locale từ URL */
 export function detectLocaleFromURL() {
   const pathSegments = window.location.pathname.split('/').filter(Boolean) // Lấy tất cả các phần của URL
@@ -76,4 +78,10 @@ export const removeVietnameseTones = (str?: string) => {
     .replace(/đ/g, 'd') // Thay thế chữ "đ" thành "d"
     .replace(/Đ/g, 'D') // Thay thế chữ "Đ" thành "D"
     .toLowerCase() // Chuyển thành chữ thường để dễ so sánh
+}
+/** Trả về link avatar */
+export const renderAvatar = (id: string) => {
+  const LINK_AVATAR = apiImage(`/app/facebook/avatar/${id}?width=64&height=64`)
+
+  return LINK_AVATAR
 }

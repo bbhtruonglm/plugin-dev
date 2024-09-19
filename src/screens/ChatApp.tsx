@@ -7,7 +7,9 @@ import { ReactComponent as Close } from '@/assets/close.svg'
 import { ReactComponent as Down } from '@/assets/arrow.svg'
 import Home from '@/screens/Home'
 import { ReactComponent as Logo } from '@/assets/logo-retion.svg'
+import OnlineStaff from '@/components/Container/OnlineStaff'
 import { ReactComponent as RetionLogo } from '@/assets/retion-logo.svg'
+import _ from 'lodash'
 import { ReactComponent as activeHome } from '@/assets/home-active.svg'
 import { ReactComponent as activeMessage } from '@/assets/messageA.svg'
 import i18next from 'i18next'
@@ -19,6 +21,18 @@ interface ChatProps {
   handleBtn: () => void
   show: boolean
   setHideForMobile?: () => void
+}
+
+// Định nghĩa kiểu dữ liệu cho nhân viên
+interface Employee {
+  fb_staff_id: string
+  name: string
+  is_online: boolean
+}
+
+// Định nghĩa kiểu dữ liệu cho danh sách nhân viên
+interface EmployeeList {
+  [key: string]: Employee
 }
 const ChatApp: React.FC<ChatProps> = ({
   handleBtn,
@@ -37,6 +51,7 @@ const ChatApp: React.FC<ChatProps> = ({
   const [current_width, setCurrentW] = useState<any>(0)
   const [page_name, setPageName] = useState<string>('')
   const [social_link, setSocialLink] = useState<Array<any> | null>([])
+  const [staff_list, setStaffList] = useState<EmployeeList>({})
 
   // Tạo tab hiện tại là HOME
   const [current_tab, setCurrentTab] = useState('home')
@@ -54,7 +69,7 @@ const ChatApp: React.FC<ChatProps> = ({
     const URL_PARAMS = new URLSearchParams(window.location.search)
     // Lấy giá trị locale từ URL
     // Mặc định là 'vn' nếu không có locale
-    const LOCALE = URL_PARAMS.get('locale') || 'en'
+    const LOCALE = URL_PARAMS.get('locale') || 'vn'
 
     // Thay đổi ngôn ngữ của SDK dựa trên locale từ URL
     i18next
@@ -77,7 +92,7 @@ const ChatApp: React.FC<ChatProps> = ({
     }
     // lưu page_id với state
     setPageId(PAGE_ID)
-    // setPageId('bf425487afbe403895116dd9b585537b')
+    setPageId('bf425487afbe403895116dd9b585537b')
   }, [])
 
   /**
@@ -148,6 +163,8 @@ const ChatApp: React.FC<ChatProps> = ({
     setSocialLink(RES?.data?.config?.sosial_platform)
     // lưu ngôn ngữ hiện tại
     i18n.changeLanguage(RES?.data.config.locale)
+    // Lưu danh sách nhân viên
+    setStaffList(RES?.data?.staffs)
   }
   useEffect(() => {
     // Nếu có page_id thì mới xử lý tiếp
@@ -157,6 +174,15 @@ const ChatApp: React.FC<ChatProps> = ({
       fetchPageData(page_id)
     }
   }, [page_id])
+  // Chuyển đổi thành mảng và lấy fb_staff_id và is_online
+  const EMPLOYEE_LIST: { fb_staff_id: string; is_online: boolean }[] = _.map(
+    _.values(staff_list),
+    (employee) => ({
+      fb_staff_id: employee.fb_staff_id,
+      is_online: employee.is_online,
+    })
+  )
+
   return (
     <div
       className={`flex relative  ${
@@ -194,27 +220,7 @@ const ChatApp: React.FC<ChatProps> = ({
 
             <div className="flex items-center gap-x-5">
               <div className="flex items-center h-8">
-                <img
-                  src={'https://avatar.iran.liara.run/public/1'}
-                  className="-mr-2 h-8 w-8 rounded-lg"
-                  alt=""
-                />
-                <img
-                  src={'https://avatar.iran.liara.run/public/2'}
-                  className=" -mr-1 h-8 w-8 rounded-lg"
-                  alt=""
-                />
-                <img
-                  src={'https://avatar.iran.liara.run/public/3'}
-                  className="h-8 w-8 rounded-lg"
-                  alt=""
-                />
-
-                {/* <img
-                className="mask h-8 w-8"
-                src={'./images/earth.svg'}
-                alt="page_logo"
-              /> */}
+                <OnlineStaff data={EMPLOYEE_LIST} />
               </div>
               <div
                 onClick={setHideForMobile}
@@ -269,6 +275,7 @@ const ChatApp: React.FC<ChatProps> = ({
               setHideForMobile={setHideForMobile}
               current_width={current_width}
               page_name={page_name}
+              employee_list={EMPLOYEE_LIST}
             />
           )}
         </div>

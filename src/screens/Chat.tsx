@@ -11,6 +11,7 @@ interface ChatProps {
   setHideForMobile?: () => void
   current_width: number
   page_name?: string
+  employee_list?: { fb_staff_id: string; is_online: boolean }[]
 }
 function ChatScreen({
   userOutChat,
@@ -18,6 +19,7 @@ function ChatScreen({
   setHideForMobile,
   current_width,
   page_name,
+  employee_list,
 }: ChatProps) {
   const navigate = useNavigate()
   const [page_id, setPageId] = useState<string>('')
@@ -174,6 +176,7 @@ function ChatScreen({
         staff_name={staff_name}
         loading_staff={loading_staff}
         client_name={client_name}
+        employee_list={employee_list}
       />
     </div>
   )

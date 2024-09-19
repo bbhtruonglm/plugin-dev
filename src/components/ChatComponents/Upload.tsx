@@ -3,15 +3,16 @@ import React, { useRef, useState } from 'react'
 import { ReactComponent as IconExtract } from '@/assets/extract.svg'
 
 interface UploadProps {
-  finalUrl?: string
+  source_url?: string
 }
-function Upload({ finalUrl }: UploadProps) {
+function Upload({ source_url }: UploadProps) {
   const [file, setFile] = useState(null)
   const [fileUrl, setFileUrl] = useState('')
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [stroke, setStroke] = useState('')
+  const FILE_INPUT_REF = useRef<HTMLInputElement>(null)
   const handleIconClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click() // Safely access the click method
+    if (FILE_INPUT_REF.current) {
+      FILE_INPUT_REF.current.click() // Safely access the click method
     }
     // Trigger the hidden file input when the icon is clicked
   }
@@ -25,36 +26,43 @@ function Upload({ finalUrl }: UploadProps) {
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const selectedFile = event.target.files?.[0]
-    if (selectedFile) {
-      console.log(selectedFile, 'selected File')
+    const SELECTED_FILE = event.target.files?.[0]
+    if (SELECTED_FILE) {
+      console.log(SELECTED_FILE, 'selected File')
       // await uploadFile(selectedFile)
     }
   }
   const uploadFile = async (file: any) => {
-    const formData = new FormData()
-    formData.append('file', file)
+    const FORM_DATA = new FormData()
+    FORM_DATA.append('file', file)
 
     try {
-      const response = await fetch('/upload-endpoint', {
+      const RES = await fetch('/upload-endpoint', {
         method: 'POST',
-        body: formData,
+        body: FORM_DATA,
       })
 
-      if (!response.ok) {
+      if (!RES.ok) {
         throw new Error('File upload failed')
       }
 
-      const data = await response.json()
-      setFileUrl(data.url) // Assuming the server returns the file URL in a JSON object
+      const DATA = await RES.json()
+      setFileUrl(DATA.url) // Assuming the server returns the file URL in a JSON object
     } catch (error) {
       console.error('File upload failed:', error)
     }
   }
   return (
     <div>
-      <div onClick={handleIconClick}>
-        <IconExtract />
+      <div
+        onClick={handleIconClick}
+        className="cursor-pointer z-10 text-blue-400"
+      >
+        <IconExtract
+        // onMouseEnter={() => setStroke('#334155')}
+        // fill={stroke ? stroke : ''}
+        // onMouseLeave={() => setStroke('')}
+        />
       </div>
       {/* <input
         type="file"
@@ -62,7 +70,7 @@ function Upload({ finalUrl }: UploadProps) {
       /> */}
       <input
         type="file"
-        ref={fileInputRef}
+        ref={FILE_INPUT_REF}
         onChange={handleFileChange}
         style={{ display: 'none' }} // Hide the file input
       />

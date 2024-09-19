@@ -1,6 +1,6 @@
 import _, { size } from 'lodash'
 import { fetchAPI, useAPI } from '@/api/api'
-import { letterToColorCode, nameToLetter } from '@/utils'
+import { letterToColorCode, nameToLetter, renderAvatar } from '@/utils'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import ChatHeader from './ChatHeader'
@@ -30,6 +30,7 @@ interface ChatScreenProps {
   staff_name?: string
   loading_staff?: boolean
   client_name?: string
+  employee_list?: { fb_staff_id: string; is_online: boolean }[]
 }
 type Message = {
   page_id: String | null
@@ -55,6 +56,7 @@ function DetailChat({
   staff_name,
   loading_staff,
   client_name,
+  employee_list,
 }: ChatScreenProps) {
   const [new_data, setNewData] = useState([] as any)
   const [loading, setLoading] = useState(false)
@@ -387,6 +389,21 @@ function DetailChat({
     }
   }, [last_message, init_message, user_id, identity_send])
 
+  const checkStaffExist = (id: string) => {
+    // Xem nhân viên nhắn tin có tồn tại trong list nhân viên không
+    const IS_STAFF_EXIST = employee_list?.find((item) =>
+      id.includes(item.fb_staff_id)
+    )
+    // Nếu không tồn tại thì trả về ''
+
+    if (!IS_STAFF_EXIST) {
+      return ''
+    }
+    // Lấy link avatar
+    const LINK_AVATAR = renderAvatar(IS_STAFF_EXIST.fb_staff_id)
+    return LINK_AVATAR
+  }
+
   return (
     <div className="flex flex-col w-full h-full absolute top-0">
       {/* header */}
@@ -399,6 +416,7 @@ function DetailChat({
         staff_avatar={staff_avatar}
         staff_name={staff_name}
         loading_staff={loading_staff}
+        employee_list={employee_list}
       />
       {/* body */}
       <div
@@ -458,15 +476,22 @@ function DetailChat({
               {/* Hiển thị avatar theo role user / shop */}
               <div
                 className={`flex w-full py-2 gap-1 ${
-                  item.message_type === 'page'
+                  item.message_type === 'system'
+                    ? ' justify-center'
+                    : item.message_type === 'page'
                     ? ' justify-start items-start'
                     : ' justify-end items-end'
                 }`}
               >
                 {item.message_type === 'page' && (
                   <div className="flex rounded-lg">
+                    {/* {checkStaffExist(item?.message_metadata)} */}
                     <img
-                      src={staff_avatar || './images/earth.svg'}
+                      src={
+                        checkStaffExist(item?.message_metadata) ||
+                        // staff_avatar ||
+                        './images/earth.svg'
+                      }
                       className="w-6 h-6 rounded-lg "
                       alt=""
                     />
@@ -519,7 +544,6 @@ function DetailChat({
       )}
 
       {/* ô input  Khi có text trong input thì hiển thị thêm icon send */}
-
       {user_id && (
         <InputChat
           errorMessage={error_message}

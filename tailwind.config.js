@@ -3,6 +3,10 @@ module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
   theme: {
     extend: {
+      // clipPath: {
+      //   squircle:
+      //     'path("M 0.1 0 C 0.04 0 0 0.04 0 0.1 V 0.9 C 0 0.96 0.04 1 0.1 1 H 0.9 C 0.96 1 1 0.96 1 0.9 V 0.1 C 1 0.04 0.96 0 0.9 0 Z")',
+      // },
       screens: {
         xxs: '320px', // Custom extra extra small breakpoint
         xs: '450px', // Custom extra small breakpoint
@@ -69,6 +73,7 @@ module.exports = {
           },
         },
       },
+
       animation: {
         spinSlow: 'spin 3s linear infinite', // Adding a slower spin animation
         bounce: 'bounce 1s infinite',
@@ -114,6 +119,13 @@ module.exports = {
             "url(data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' fill='none'%3E%3Cpath fill='%23000' d='M100 0C20 0 0 20 0 100s20 100 100 100 100-20 100-100S180 0 100 0z'/%3E%3C/svg%3E)",
           'mask-image':
             "url(data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' fill='none'%3E%3Cpath fill='%23000' d='M100 0C20 0 0 20 0 100s20 100 100 100 100-20 100-100S180 0 100 0z'/%3E%3C/svg%3E)",
+        },
+        '.clip-squircle': {
+          clipPath:
+            'path("M 0.1 0 C 0.04 0 0 0.04 0 0.1 V 0.9 C 0 0.96 0.04 1 0.1 1 H 0.9 C 0.96 1 1 0.96 1 0.9 V 0.1 C 1 0.04 0.96 0 0.9 0 Z")',
+        },
+        '.clip-circle': {
+          clipPath: 'circle(50%)',
         },
       }
       addUtilities(newUtilities, ['responsive', 'hover'])

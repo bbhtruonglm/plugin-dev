@@ -29,8 +29,12 @@ interface MessageProps {
 function MessageComponent({ data }: MessageProps) {
   return (
     <div
-      className={`flex p-2 flex-col gap-y-4 max-w-[60%] rounded-lg ${
-        data.message_type === 'page' ? 'bg-white' : 'bg-messBg'
+      className={`flex p-2 flex-col gap-y-4  rounded-lg ${
+        data.message_type === 'system'
+          ? 'bg-transparent max-w-[90%] font-medium'
+          : data.message_type === 'page'
+          ? 'bg-white max-w-[60%]'
+          : 'bg-messBg max-w-[60%]'
       }`}
     >
       {/* Hiển thị data dạng ảnh */}
