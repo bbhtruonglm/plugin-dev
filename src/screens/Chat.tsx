@@ -126,7 +126,7 @@ function ChatScreen({
   }
 
   /** Hàm đọc data khách hàng */
-  const fetchClientData = async (client_id: string, page_id: string) => {
+  const fetchClientData = async (client_id: string, page_id: String | null) => {
     setLoadingStaff(true)
     const BODY = {
       client_id: client_id,
@@ -142,7 +142,6 @@ function ChatScreen({
       const LINK_AVATAR = apiImage(
         `/app/facebook/avatar/${RES.data.fb_staff_id}?width=64&height=64`
       )
-      console.log(LINK_AVATAR, 'LINK_AVATAR')
 
       setStaffAvatar(LINK_AVATAR)
       setLoadingStaff(false)

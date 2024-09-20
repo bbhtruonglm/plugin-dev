@@ -19,7 +19,7 @@ interface ChatScreenProps {
   onInitClient: (e: any) => void
   loading_init: boolean
   setLoadingInit: (e: any) => void
-  page_id: String | null
+  page_id: string
   invalid_page_id: boolean
   onResetInput: () => void
   error_message: String | null
@@ -553,6 +553,8 @@ function DetailChat({
           }}
           loading={loading}
           page_name={page_name}
+          page_id={page_id}
+          client_id={user_id}
         />
       )}
     </div>
