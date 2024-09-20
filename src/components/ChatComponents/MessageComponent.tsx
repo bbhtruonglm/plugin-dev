@@ -23,10 +23,12 @@ interface MessageProps {
     message_text?: string
     message_type?: string
     time?: string
+    message_attachments?: any
   }
   userId?: string
 }
 function MessageComponent({ data }: MessageProps) {
+  console.log(data, 'data')
   return (
     <div
       className={`flex p-2 flex-col gap-y-4  rounded-lg ${
@@ -38,11 +40,11 @@ function MessageComponent({ data }: MessageProps) {
       }`}
     >
       {/* Hiển thị data dạng ảnh */}
-      {data?.content?.image && (
+      {data?.message_attachments?.[0]?.type === 'image' && (
         <div className="flex rounded-lg">
           <img
-            src={money}
-            className="w-full h-full"
+            src={data?.message_attachments?.[0]?.payload?.url}
+            className="w-full h-full bg-slate-200 rounded-lg"
             alt=""
           />
         </div>
