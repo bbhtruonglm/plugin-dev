@@ -4,21 +4,11 @@ import Input from './Input'
 import { t } from 'i18next'
 
 interface InitClientProps {
-  setUsername: (e: any) => void
-  setUserPhone: (e: any) => void
-  setUserEmail: (e: any) => void
   resetData: boolean
   onError: (e: boolean) => void
   onInitClient: (e?: any) => void
 }
-function InitClient({
-  setUsername,
-  setUserPhone,
-  setUserEmail,
-  resetData,
-  onError,
-  onInitClient,
-}: InitClientProps) {
+function InitClient({ resetData, onError, onInitClient }: InitClientProps) {
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
@@ -57,7 +47,7 @@ function InitClient({
   const handleEmailChange = (e: any) => {
     const value = e.target.value
     setEmail(value)
-    setUserEmail(value)
+
     if (!value || EMAIL_REGEX.test(value)) {
       setEmailError('')
     } else {
@@ -68,7 +58,7 @@ function InitClient({
   const handlePhoneChange = (e: any) => {
     const value = e.target.value
     setPhone(value)
-    setUserPhone(value)
+
     if (!value) {
       setPhoneError(t('input_data')) // Thông báo bắt buộc nhập số điện thoại
     } else if (VN_PHONE_REGEX.test(value) || UK_PHONE_REGEX.test(value)) {
@@ -81,7 +71,7 @@ function InitClient({
   const handleNameChange = (e: any) => {
     const value = e.target.value
     setName(value)
-    setUsername(value)
+
     if (!value) {
       setNameError(t('input_data')) // Thông báo bắt buộc nhập tên
     } else {

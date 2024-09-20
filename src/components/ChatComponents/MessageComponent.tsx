@@ -1,4 +1,5 @@
 import { ReactComponent as IconArrow } from '@/assets/arrow-up-right-square.svg'
+import { formatDate } from '@/utils'
 import photo from '@/assets/photo.png'
 
 interface MessageProps {
@@ -29,7 +30,7 @@ interface MessageProps {
 function MessageComponent({ data }: MessageProps) {
   return (
     <div
-      className={`flex p-2 flex-col gap-y-4  rounded-lg ${
+      className={`flex p-2 flex-col gap-y-4 rounded-lg group relative ${
         data.message_type === 'system'
           ? 'hidden bg-transparent max-w-[90%] font-medium'
           : data.message_type === 'page'
@@ -37,6 +38,14 @@ function MessageComponent({ data }: MessageProps) {
           : 'bg-messBg max-w-[60%]'
       }`}
     >
+      {/* Tooltip */}
+      <div
+        className={`absolute w-32 bottom-full ${
+          data.message_type === 'page' ? 'left-0' : 'right-0'
+        }  text-xs font-semibold text-slate-700 bg-transparent rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
+      >
+        {formatDate(data?.time)}
+      </div>
       {/* Hiển thị data dạng ảnh */}
       {data?.message_attachments?.[0]?.type === 'image' && (
         <div className="flex rounded-lg">
@@ -47,7 +56,6 @@ function MessageComponent({ data }: MessageProps) {
           />
         </div>
       )}
-
       {/* Hiển thị data dạng video */}
       {data?.content?.video && (
         <div>
@@ -58,26 +66,20 @@ function MessageComponent({ data }: MessageProps) {
           />
         </div>
       )}
-
       {/* Hiển thị data dạng audio */}
       {data?.content?.audio && <div>audio</div>}
-
       {/* Hiển thị data dạng Highlight */}
       {data?.content?.highlight && (
         <div className="">
           <h4 className="font-semibold">Tiêu đề</h4>
         </div>
       )}
-
       {/* Hiện thị data dạng text */}
       {data?.message_text && data?.message_type !== 'system' && (
-        <div>
-          <p className="text-sm min-h-4 break-words whitespace-pre-line">
-            {data.message_text}
-          </p>
-        </div>
+        <p className="text-sm min-h-4 break-words whitespace-pre-line">
+          {data.message_text}
+        </p>
       )}
-
       {/* Hiện thị data dạng lịch */}
       {data?.content?.schedule && (
         <div>
@@ -87,7 +89,6 @@ function MessageComponent({ data }: MessageProps) {
           </div>
         </div>
       )}
-
       {/* Hiện thị data dạng button */}
       {data?.content?.button && (
         <div>

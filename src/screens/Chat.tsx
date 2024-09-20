@@ -31,6 +31,7 @@ function ChatScreen({
   const [staff_name, setStaffName] = useState(null as any)
   const [loading_staff, setLoadingStaff] = useState(false)
   const [client_name, setClientName] = useState(null as any)
+  const [first_time, setFirstTime] = useState(true)
 
   useEffect(() => {
     /**
@@ -176,6 +177,8 @@ function ChatScreen({
         loading_staff={loading_staff}
         client_name={client_name}
         employee_list={employee_list}
+        first_time={first_time}
+        setFirstTime={() => setFirstTime(false)}
       />
     </div>
   )

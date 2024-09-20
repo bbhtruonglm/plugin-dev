@@ -440,18 +440,6 @@ function DetailChat({
         {!user_id && !error_message && (
           <div className="flex flex-col gap-2 ">
             <InitClient
-              setUsername={(e) => {
-                setName(e)
-                onResetInput()
-              }}
-              setUserEmail={(e) => {
-                setEmail(e)
-                onResetInput()
-              }}
-              setUserPhone={(e) => {
-                setPhone(e)
-                onResetInput()
-              }}
               resetData={invalid_page_id}
               onError={(e) => {
                 // bao gồm sai định dạng email và sdt
@@ -480,7 +468,7 @@ function DetailChat({
             >
               {/* Hiển thị avatar theo role user / shop */}
               <div
-                className={`flex w-full py-2 gap-1 ${
+                className={`flex w-full py-2 gap-1  ${
                   item.message_type === 'system'
                     ? ' hidden justify-center'
                     : item.message_type === 'page'
@@ -502,11 +490,13 @@ function DetailChat({
                     />
                   </div>
                 )}
+
                 {/* Phần nội dung tin nhắn được hiển thị */}
                 <MessageComponent
                   data={item}
                   userId={user_id}
                 />
+
                 {item.message_type === 'client' && (
                   <div
                     className="flex rounded-lg text-white text-sm items-center justify-center w-6 h-6"

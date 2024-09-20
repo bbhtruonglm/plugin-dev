@@ -42,23 +42,11 @@ function ChatHeader({
               className="w-7 h-7 cursor-pointer"
               onClick={() => onCancel()}
             />
+
             <div>
               {loading_staff ? (
                 <div className="h-5 flex items-center">
-                  <Loading />
-                </div>
-              ) : (
-                <img
-                  src={staff_avatar || './images/earth.svg'}
-                  className="h-8 w-8 object-cover rounded-lg"
-                  alt=""
-                />
-              )}
-            </div>
-            <div>
-              {loading_staff ? (
-                <div className="h-5 flex items-center">
-                  <LoadingDots />
+                  {/* <LoadingDots /> */}
                 </div>
               ) : (
                 <h2 className="text-white text-sm font-medium">
@@ -71,16 +59,24 @@ function ChatHeader({
               </h5>
             </div>
           </div>
+          <div>
+            <div className="flex h-8 justify-center">
+              <OnlineStaff
+                data={employee_list}
+                size="small"
+              />
+            </div>
 
-          <div
-            onClick={setHideForMobile}
-            className={`${
-              current_width < 768 && current_width !== 0
-                ? ' flex w-9 h-9 items-center justify-center'
-                : ' hidden'
-            }`}
-          >
-            <Close />
+            <div
+              onClick={setHideForMobile}
+              className={`${
+                current_width < 768 && current_width !== 0
+                  ? ' flex w-9 h-9 items-center justify-center'
+                  : ' hidden'
+              }`}
+            >
+              <Close />
+            </div>
           </div>
         </div>
       ) : (
@@ -90,7 +86,11 @@ function ChatHeader({
               className="w-7 h-7 cursor-pointer"
               onClick={() => onCancel()}
             />
-            <h2 className="text-lg font-medium text-white">{page_name}</h2>
+            {loading_staff ? (
+              <></>
+            ) : (
+              <h2 className="text-lg font-medium text-white">{page_name}</h2>
+            )}
             {current_width < 768 && current_width !== 0 ? (
               <div
                 onClick={setHideForMobile}

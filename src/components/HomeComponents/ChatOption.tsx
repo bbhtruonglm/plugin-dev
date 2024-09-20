@@ -32,26 +32,8 @@ function ChatOption({ social_link }: any) {
   return (
     <div className="bg-white p-3 rounded-xl flex justify-between px-6 items-center shadow-md">
       <div>
-        <h4 className="text-xs font-medium">{t('chatWithUs')}</h4>
-        {/* <div className="grid grid-cols-2 gap-4 mt-2 ">
-          {social_link.map((item: any, index: number) => (
-            <a
-              className="flex gap-1 items-center p-1 cursor-pointer"
-              key={index}
-              href={item.url}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <div className="bg-gray-100 p-2 rounded-full">
-                {item.type === 'FACEBOOK' && <Facebook />}
-                {item.type === 'ZALO' && <Zalo />}
-                {item.type === 'WHATSAPP' && <Whatsapp />}
-                {item.type === 'INSTAGRAM' && <Instagram />}
-              </div>
-              <p className="text-xs font-medium">{item.title}</p>
-            </a>
-          ))}
-        </div> */}
+        <h4 className="text-sm font-medium">{t('chatWithUs')}</h4>
+
         <div className="flex w-full gap-6 mt-2">
           {!!social_link?.length &&
             social_link.map((item: any, index: number) => (
@@ -74,7 +56,7 @@ function ChatOption({ social_link }: any) {
                     <Instagram className=" text-pink-600" />
                   )}
                 </div>
-                <p className="text-xs font-medium truncate">{item.title}</p>
+                <p className="text-sm font-medium truncate">{item.title}</p>
               </a>
             ))}
         </div>

@@ -185,7 +185,7 @@ const ChatApp: React.FC<ChatProps> = ({
 
   return (
     <div
-      className={`flex relative  ${
+      className={`flex relative   ${
         // Nếu không show, thì hiện icon bong bóng chat
         !show
           ? 'w-12 h-12'
@@ -204,7 +204,9 @@ const ChatApp: React.FC<ChatProps> = ({
             : ' w-[400px] h-[600px] '
         } bg-bg-gradient rounded-[20px] overflow-hidden shadow-md ${
           // mặc định sẽ ẩn/ Khi kich hoạt sẽ mở kèm animation
-          !show ? ' hidden' : ' flex flex-col animate-zoomInBottomRight '
+          !show
+            ? ' hidden'
+            : ' flex flex-col animate-zoomInBottomRight transition-transform duration-200 ease-in-out '
         }  `}
       >
         {/* header */}
@@ -347,7 +349,7 @@ const ChatApp: React.FC<ChatProps> = ({
           handleBtn()
           setErrorMessage('')
         }}
-        className={`absolute justify-center items-center h-12 w-12 bg-white shadow-lg rounded-full z-[999999] bottom-0 right-0  ${
+        className={`absolute justify-center items-center h-12 w-12 bg-white shadow-lg rounded-full z-[999999] bottom-0 right-0 transition-transform transform hover:scale-110  ${
           !show
             ? ' flex  '
             : current_width < 768 && current_width !== 0

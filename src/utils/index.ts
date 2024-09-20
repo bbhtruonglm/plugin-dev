@@ -85,3 +85,19 @@ export const renderAvatar = (id: string) => {
 
   return LINK_AVATAR
 }
+export function formatDate(isoString?: string) {
+  const DATE = new Date(isoString || '')
+
+  // Lấy giờ, phút, giây
+  const HOUR = DATE.getHours().toString().padStart(2, '0')
+  const MINUTE = DATE.getMinutes().toString().padStart(2, '0')
+  const SECONDS = DATE.getSeconds().toString().padStart(2, '0')
+
+  // Lấy ngày, tháng, năm
+  const DAY = DATE.getDate().toString().padStart(2, '0')
+  const MONTH = (DATE.getMonth() + 1).toString().padStart(2, '0') // getMonth() trả về tháng từ 0-11
+  const YEAR = DATE.getFullYear()
+
+  // Kết hợp thành chuỗi theo định dạng mong muốn
+  return `${HOUR}:${MINUTE}:${SECONDS} ${DAY}/${MONTH}/${YEAR}`
+}
