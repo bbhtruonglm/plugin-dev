@@ -294,7 +294,6 @@ const ChatApp: React.FC<ChatProps> = ({
                     key={index}
                     className="flex flex-col w-full h-full justify-center items-center cursor-pointer"
                     onClick={() => {
-                      console.log(name)
                       if (value !== 'message') {
                         // tab !== 'message' thì overview để hiển thị menu
                         setCurrentTab(value)

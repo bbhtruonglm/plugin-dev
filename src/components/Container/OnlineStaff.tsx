@@ -19,13 +19,17 @@ function OnlineStaff({ data, size = 'small' }: StaffProps) {
               employee.is_online ? '' : ' opacity-75 '
             } ${
               size === 'small'
-                ? '-mr-2 h-8 w-8 rounded-lg'
-                : '-mr-1 h-12 w-12 rounded-2xl'
+                ? '-mr-2 h-8 w-8 rounded-full'
+                : '-mr-1 h-12 w-12 rounded-full'
             }`}
           />
         ))}
       {data && data.length > 3 && (
-        <span className="ml-3 text-sm font-medium text-gray-100">
+        <span
+          className={`ml-3 ${
+            size == 'small' ? 'text-sm' : ' '
+          }   font-medium text-gray-100`}
+        >
           +{data.length - 3}
         </span>
       )}

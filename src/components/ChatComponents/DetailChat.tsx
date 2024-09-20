@@ -200,15 +200,20 @@ function DetailChat({
       URL_READ.search = new URLSearchParams(PARAMS as any).toString()
 
       const RES = await fetchAPI(URL_READ.toString(), 'GET')
-
+      console.log(RES, 'RES')
       const RESULT = await RES
       if (RESULT.data.length === LIMIT) {
         // set call api se skip bn ban ghi
         setSkip(skip + RESULT.data.length)
       }
+      console.log(RESULT)
+      const FILTER_RES = RESULT?.data.filter(
+        (item: any) => item.message_type !== 'system'
+      )
 
+      console.log(FILTER_RES)
       //lưu data về phía trước do data đã bị reverse
-      setNewData([...RESULT.data.reverse(), ...new_data])
+      setNewData([...FILTER_RES.reverse(), ...new_data])
 
       setTimeout(() => {
         if (CONTAINER) {
@@ -421,8 +426,8 @@ function DetailChat({
       {/* body */}
       <div
         ref={MESSAGE_CONTAINER_REF}
-        className={`px-5 py-3 gap-4 overflow-y-auto mb-16 scrollbar-thin scrollbar-webkit flex flex-col relative ${
-          user_id ? 'mt-16' : 'mt-44'
+        className={`px-5 py-3 gap-4 overflow-y-auto scrollbar-thin scrollbar-webkit flex flex-col relative ${
+          user_id ? 'my-16' : 'mt-44'
         }`}
       >
         {user_id && loading_more && <Loading />}
@@ -477,7 +482,7 @@ function DetailChat({
               <div
                 className={`flex w-full py-2 gap-1 ${
                   item.message_type === 'system'
-                    ? ' justify-center'
+                    ? ' hidden justify-center'
                     : item.message_type === 'page'
                     ? ' justify-start items-start'
                     : ' justify-end items-end'
@@ -546,7 +551,7 @@ function DetailChat({
       {/* ô input  Khi có text trong input thì hiển thị thêm icon send */}
       {user_id && (
         <InputChat
-          errorMessage={error_message}
+          error_message={error_message}
           handleSend={(e) => {
             sendMessage(e)
             setLoading(true)
@@ -555,6 +560,7 @@ function DetailChat({
           page_name={page_name}
           page_id={page_id}
           client_id={user_id}
+          setLoading={(e) => setLoading(e)}
         />
       )}
     </div>

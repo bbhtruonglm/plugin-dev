@@ -138,7 +138,7 @@ function InitClient({
 
       <button
         className={`text-white ${
-          isButtonDisabled() ? 'bg-slate-400' : ' bg-black'
+          isButtonDisabled() ? 'bg-slate-400 cursor-not-allowed' : ' bg-black'
         } rounded-md px-4 py-2 text-sm font-medium`}
         // disabled={isButtonDisabled()}
         onClick={() => {

@@ -1,5 +1,4 @@
 import { ReactComponent as IconArrow } from '@/assets/arrow-up-right-square.svg'
-import money from '@/assets/money.png'
 import photo from '@/assets/photo.png'
 
 interface MessageProps {
@@ -28,12 +27,11 @@ interface MessageProps {
   userId?: string
 }
 function MessageComponent({ data }: MessageProps) {
-  console.log(data, 'data')
   return (
     <div
       className={`flex p-2 flex-col gap-y-4  rounded-lg ${
         data.message_type === 'system'
-          ? 'bg-transparent max-w-[90%] font-medium'
+          ? 'hidden bg-transparent max-w-[90%] font-medium'
           : data.message_type === 'page'
           ? 'bg-white max-w-[60%]'
           : 'bg-messBg max-w-[60%]'
@@ -44,7 +42,7 @@ function MessageComponent({ data }: MessageProps) {
         <div className="flex rounded-lg">
           <img
             src={data?.message_attachments?.[0]?.payload?.url}
-            className="w-full h-full bg-slate-200 rounded-lg"
+            className="w-32 h-32 object-contain bg-slate-200 rounded-lg"
             alt=""
           />
         </div>
@@ -72,7 +70,7 @@ function MessageComponent({ data }: MessageProps) {
       )}
 
       {/* Hiện thị data dạng text */}
-      {data?.message_text && (
+      {data?.message_text && data?.message_type !== 'system' && (
         <div>
           <p className="text-sm min-h-4 break-words whitespace-pre-line">
             {data.message_text}
