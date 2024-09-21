@@ -29,26 +29,22 @@ import { useTranslation } from 'react-i18next'
 const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
   const { t, i18n } = useTranslation()
   const { READ_PAGE_INFO, SOCKET_API } = useAPI()
-
   const [error_message, setErrorMessage] = useState<String | null>('')
-
   const [page_name, setPageName] = useState<string>('')
   const [social_link, setSocialLink] = useState<Array<any> | null>([])
   const [staff_list, setStaffList] = useState<EmployeeList>({})
   const [is_force_close_socket, setIsForceCloseSocket] = useState(false)
 
+  // Khởi tạo websocket
   const WS = useRef<WebSocket | null>(null)
 
   // Tạo tab hiện tại là HOME
-  const [current_tab, setCurrentTab] = useState('home')
+  const [current_tab, setCurrentTab] = useState<string>('home')
 
-  console.log(current_tab, 'current_tab')
-  useEffect(() => {
-    console.log(current_tab, 'current_tab')
-  }, [current_tab])
   // Tin nhắn chưa đọc
   const [unread_message, setUnreadMessage] = useState<MessageInfo[]>([])
 
+  const [latest_message, setLatestMessage] = useState<MessageInfo | null>(null)
   // hàm dispatch đến store
   const dispatch = useDispatch()
 
@@ -86,8 +82,20 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
         console.error('Error changing language:', error)
       })
     /** page_id từ URL page cha */
-    const PAGE_ID = URL_PARENT.searchParams.get('page_id')
+    const PAGE_ID =
+      URL_PARENT.searchParams.get('page_id') ||
+      'bf425487afbe403895116dd9b585537b'
+    console.log(PAGE_ID, 'page-id')
 
+    // lưu page_id vào store
+    /** Example @value :bf425487afbe403895116dd9b585537b  */
+    dispatch(setPageId(PAGE_ID || ''))
+
+    const CLIENT_ID = localStorage.getItem(`client_id_<${PAGE_ID}>`)
+
+    if (CLIENT_ID && CLIENT_ID !== 'undefined') {
+      onSocketFromChatboxServer(PAGE_ID, CLIENT_ID)
+    }
     /** Độ rộng của màn hình trong page cha, truyền qua URL */
     const WIDTH_PARENT = URL_PARENT.searchParams.get('parentWidth')
 
@@ -95,11 +103,16 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
       // nếu có truyền width thì lưu vào store
       dispatch(setCurrentWidth(Number(WIDTH_PARENT)))
     }
-    // lưu page_id vào store
-    /** Example @value :bf425487afbe403895116dd9b585537b  */
-    dispatch(setPageId(PAGE_ID || 'bf425487afbe403895116dd9b585537b'))
   }, [])
 
+  useEffect(() => {
+    if (!PAGE_ID) return // Nếu không có PAGE_ID, thoát ngay
+
+    // Gọi API để lấy dữ liệu trang
+    fetchPageData(PAGE_ID)
+
+    // Lấy client_id từ localStorage, chỉ xử lý nếu hợp lệ
+  }, [PAGE_ID]) // Thêm PAGE_ID và current_tab vào dependency array
   /**
    * Tab menu với các mục chính gồm:
    * - Home
@@ -172,12 +185,12 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     setStaffList(RES?.data?.staffs)
   }
   /** Gọi api xác định danh tính khi mở WebSocket */
-  const sendIdentifyMessage = (client_id: String) => {
+  const sendIdentifyMessage = (page_id: String | null, client_id: String) => {
     // Check điều kiện khi nào websocket đang readyState === websocket.OPEN thì mới gửi tin nhắn
     if (WS.current?.readyState === WebSocket.OPEN) {
       WS.current?.send(
         JSON.stringify({
-          page_id: PAGE_ID,
+          page_id: page_id || PAGE_ID,
           client_id: client_id,
           event: 'JOIN',
         })
@@ -192,7 +205,10 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
   }
 
   /**  Cấu hình websocket */
-  function onSocketFromChatboxServer(client_id: String) {
+  function onSocketFromChatboxServer(
+    page_id: String | null,
+    client_id: String
+  ) {
     // Kết nối tới WebSocket server
     WS.current = new WebSocket(SOCKET_API || '')
 
@@ -205,7 +221,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
       console.log('WebSocket Connectedddd')
 
       // Gửi tin nhắn khởi tạo socket
-      sendIdentifyMessage(client_id)
+      sendIdentifyMessage(page_id, client_id)
 
       // Nếu socket đang readyState === websocket.OPEN thì được gọi tin nhắn
       if (WS.current?.readyState === WebSocket.OPEN) {
@@ -239,15 +255,16 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
 
       // Lấy tin nhắn từ socket
       let { message } = socket_data
-      console.log('hehehhehe', current_tab)
+
+      console.log(message, 'message')
+      console.log(current_tab, 'current_tab')
       // nếu có tin nhắn. Đóng p
-      if (message && (!show || (show && current_tab === 'home'))) {
+      if (message && !show) {
+        console.log('aaaaa')
+        setLatestMessage(message)
         setUnreadMessage((prevMessages) => [...prevMessages, message])
       }
-      if (message && current_tab === 'message') {
-        dispatch(setListMessage([...LIST_MESSAGE, message]))
-      }
-      // Lưu tin nhắn mới nhất vào state
+
       // setLastMessage(message)
     }
 
@@ -259,7 +276,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
 
       // nếu đóng hoàn toàn thì không cho kết nổi tự mở lại nữa
       if (is_force_close_socket) return
-      setTimeout(() => onSocketFromChatboxServer(client_id), 100)
+      setTimeout(() => onSocketFromChatboxServer(page_id, client_id), 100)
     }
 
     // Nếu xảy ra lỗi
@@ -268,23 +285,13 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     }
   }
 
-  useEffect(() => {
-    // Nếu có page_id thì mới xử lý tiếp
-    if (PAGE_ID) {
-      console.log(current_tab, 'current_tab PAGE_ID')
-      fetchPageData(PAGE_ID)
-      const CLIENT_ID = localStorage.getItem(`client_id_<${PAGE_ID}>`)
-      if (CLIENT_ID && CLIENT_ID !== 'undefined') {
-        onSocketFromChatboxServer(CLIENT_ID)
-      }
-    }
-  }, [PAGE_ID])
   // Ngăn kết nối mở lại
   useEffect(() => {
     return () => {
-      closeSocketConnect()
+      // closeSocketConnect()
+      console.log(LIST_MESSAGE, 'LIST_MESSAGE')
     }
-  }, [])
+  }, [LIST_MESSAGE])
   /** Đóng kết nối socket */
   function closeSocketConnect() {
     // gắn cờ ngăn chặn kết nối mở lại
@@ -381,9 +388,10 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
               userOutChat={() => {
                 // Khi back ra thì về trang Home
                 setCurrentTab('home')
-                console.log('checkkkkkk +++++++++++++++++++')
                 // Reset mảng tin nhắn chưa đọc
                 setUnreadMessage([])
+
+                setLatestMessage(null)
                 // Reset danh sách tin nhắn trong store
                 dispatch(setListMessage([]))
               }}
@@ -392,6 +400,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
               setHideForMobile={setHideForMobile}
               page_name={page_name}
               employee_list={EMPLOYEE_LIST}
+              latest_message={latest_message}
             />
           )}
         </div>
@@ -411,13 +420,10 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
                     className="flex flex-col w-full h-full justify-center items-center cursor-pointer"
                     onClick={() => {
                       if (value !== 'message') {
-                        console.log(value, 'valueee ++++++++++________')
-                        // tab !== 'message' thì overview để hiển thị menu
-
                         setCurrentTab(value)
                       } else {
-                        console.log('chek ===========', value)
                         setCurrentTab('message')
+                        setLatestMessage(null)
                         setUnreadMessage([])
                         if (PAGE_ID === null) {
                           // Không có page_id thì tạo message Lỗi

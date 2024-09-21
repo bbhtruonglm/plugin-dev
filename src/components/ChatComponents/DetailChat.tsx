@@ -1,4 +1,3 @@
-import _, { size } from 'lodash'
 import { fetchAPI, useAPI } from '@/api/api'
 import { letterToColorCode, nameToLetter, renderAvatar } from '@/utils'
 import {
@@ -16,7 +15,7 @@ import InputChat from './InputChat'
 import Loading from '../Loading/Loading'
 import LoadingDots from '../Loading/LoadingDot'
 import MessageComponent from './MessageComponent'
-import { MessageInfo } from '@/utils/type'
+import _ from 'lodash'
 import { t } from 'i18next'
 
 /** Chi tiết component chat */
@@ -36,6 +35,7 @@ function DetailChat({
   loading_staff,
   client_name,
   employee_list,
+  latest_message,
 }: ChatScreenProps) {
   /** Bắt vị trí end scroll ở bottom */
   const MESSAGE_END_REF = useRef<HTMLDivElement | null>(null)
@@ -57,7 +57,6 @@ function DetailChat({
   const [skip, setSkip] = useState(0)
   const [new_data, setNewData] = useState([] as any)
   const [loading, setLoading] = useState(false)
-  const [last_message, setLastMessage] = useState({} as any)
 
   const [loading_more, setLoadingMore] = useState(false)
   const [has_more, setHasMore] = useState(true)
@@ -262,15 +261,16 @@ function DetailChat({
       setIdentitySent(false)
     }
     // có tin tin nhắn từ socket (đã được lưu vào lastmessage)
-    if (_.keys(last_message).length !== 0 && !init_message) {
-      const DATA = [...new_data, last_message]
+    if (_.keys(latest_message).length !== 0 && !init_message) {
+      const DATA = [...new_data, latest_message]
       setNewData(DATA)
       // Nếu có tin nhắn từ websocket, scroll xuống cuối trang
+      dispatch(setListMessage([...LIST_MESSAGE, latest_message]))
       setTimeout(() => {
         scrollToBottom()
       }, 100)
     }
-  }, [last_message, init_message, user_id, identity_send])
+  }, [latest_message, init_message, user_id, identity_send])
 
   /** Hàm kiểm tra nhân sự có tồn tại không */
   const checkStaffExist = (id: string) => {
@@ -324,7 +324,7 @@ function DetailChat({
               resetData={invalid_page_id}
               onInitClient={(e) => {
                 setLoadingInit(true)
-                onInitClient({ ...e, PAGE_ID })
+                onInitClient({ ...e, page_id: PAGE_ID })
               }}
             />
             {invalid_page_id && (
@@ -346,14 +346,14 @@ function DetailChat({
               {/* Hiển thị avatar theo role user / shop */}
               <div
                 className={`flex w-full py-2 gap-1  ${
-                  item.message_type === 'system'
+                  item?.message_type === 'system'
                     ? ' hidden justify-center'
-                    : item.message_type === 'page'
+                    : item?.message_type === 'page'
                     ? ' justify-start items-start'
                     : ' justify-end items-end'
                 }`}
               >
-                {item.message_type === 'page' && (
+                {item?.message_type === 'page' && (
                   <div className="flex rounded-lg">
                     {/* {checkStaffExist(item?.message_metadata)} */}
                     <img
@@ -374,7 +374,7 @@ function DetailChat({
                   userId={user_id}
                 />
 
-                {item.message_type === 'client' && (
+                {item?.message_type === 'client' && (
                   <div
                     className="flex rounded-lg text-white text-sm items-center justify-center w-6 h-6"
                     style={{ background: letterToColorCode(client_name) }}

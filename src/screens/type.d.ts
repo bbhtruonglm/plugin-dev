@@ -26,6 +26,8 @@ interface ChatProps {
   page_name?: string
   /** Danh sách nhân viên */
   employee_list?: { fb_staff_id: string; is_online: boolean }[]
+  /** Tin nhắn mới nhất */
+  latest_message?: any
 }
 
 interface HomeProps {

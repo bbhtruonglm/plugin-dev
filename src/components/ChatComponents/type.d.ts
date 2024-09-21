@@ -32,6 +32,8 @@ interface ChatScreenProps {
   client_name?: string
   /** Danh sách nhân sự page */
   employee_list?: Employee[]
+  /** TIn nhắn mới nhất */
+  latest_message?: any
 }
 /** Kiểu dữ liệu nhân viên */
 type Employee = {

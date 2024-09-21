@@ -31,9 +31,9 @@ function MessageComponent({ data }: MessageProps) {
   return (
     <div
       className={`flex p-2 flex-col gap-y-4 rounded-lg group relative ${
-        data.message_type === 'system'
+        data?.message_type === 'system'
           ? 'hidden bg-transparent max-w-[90%] font-medium'
-          : data.message_type === 'page'
+          : data?.message_type === 'page'
           ? 'bg-white max-w-[60%]'
           : 'bg-messBg max-w-[60%]'
       }`}
@@ -41,7 +41,7 @@ function MessageComponent({ data }: MessageProps) {
       {/* Tooltip */}
       <div
         className={`absolute w-32 bottom-full ${
-          data.message_type === 'page' ? 'left-0' : 'right-0'
+          data?.message_type === 'page' ? 'left-0' : 'right-0'
         }  text-xs font-semibold text-slate-700 bg-transparent rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
       >
         {formatDate(data?.time)}
@@ -77,7 +77,7 @@ function MessageComponent({ data }: MessageProps) {
       {/* Hiện thị data dạng text */}
       {data?.message_text && data?.message_type !== 'system' && (
         <p className="text-sm min-h-4 break-words whitespace-pre-line">
-          {data.message_text}
+          {data?.message_text}
         </p>
       )}
       {/* Hiện thị data dạng lịch */}

@@ -12,6 +12,7 @@ function ChatScreen({
   setHideForMobile,
   page_name,
   employee_list,
+  latest_message,
 }: ChatProps) {
   const { INIT_CLIENT_API, READ_CLIENT_INFO } = useAPI()
   /** ID trang được lấy từ store */
@@ -154,6 +155,7 @@ function ChatScreen({
         loading_staff={loading_staff}
         client_name={client_name}
         employee_list={employee_list}
+        latest_message={latest_message}
       />
     </div>
   )
