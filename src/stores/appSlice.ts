@@ -8,6 +8,7 @@ const initialState: AppState = {
   client_id: '',
   locale: 'vi',
   current_width: 0,
+  list_message: [],
 }
 
 export const appSlice = createSlice({
@@ -31,12 +32,25 @@ export const appSlice = createSlice({
     setCurrentWidth: (state, action: PayloadAction<number>) => {
       state.current_width = action.payload
     },
+
+    /** lưu dữ liệu tin nhắn */
+    setListMessage: (
+      state,
+      action: PayloadAction<AppState['list_message']>
+    ) => {
+      state.list_message = action.payload
+    },
   },
 })
 
 // Action creators are generated for each case reducer function
-export const { setPageId, setClientId, setLocale, setCurrentWidth } =
-  appSlice.actions
+export const {
+  setPageId,
+  setClientId,
+  setLocale,
+  setCurrentWidth,
+  setListMessage,
+} = appSlice.actions
 
 /** chọn đến page id */
 export const selectPageId = (state: RootState) => state.app.page_id
@@ -49,5 +63,8 @@ export const selectLocale = (state: RootState) => state.app.locale
 
 /** chọn đầu dữ liệu Locale */
 export const selectCurrentWidth = (state: RootState) => state.app.current_width
+
+/** chọn đầu dữ liệu Locale */
+export const selectListMessage = (state: RootState) => state.app.list_message
 
 export default appSlice.reducer

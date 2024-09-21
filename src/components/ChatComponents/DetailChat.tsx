@@ -1,7 +1,13 @@
 import _, { size } from 'lodash'
 import { fetchAPI, useAPI } from '@/api/api'
 import { letterToColorCode, nameToLetter, renderAvatar } from '@/utils'
+import {
+  selectListMessage,
+  selectPageId,
+  setListMessage,
+} from '@/stores/appSlice'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 import ChatHeader from './ChatHeader'
 import { ReactComponent as Down } from '@/assets/arrow.svg'
@@ -11,9 +17,7 @@ import Loading from '../Loading/Loading'
 import LoadingDots from '../Loading/LoadingDot'
 import MessageComponent from './MessageComponent'
 import { MessageInfo } from '@/utils/type'
-import { selectPageId } from '@/stores/appSlice'
 import { t } from 'i18next'
-import { useSelector } from 'react-redux'
 
 /** Chi tiết component chat */
 function DetailChat({
@@ -22,7 +26,6 @@ function DetailChat({
   onInitClient,
   loading_init,
   setLoadingInit,
-
   invalid_page_id,
   onResetInput,
   error_message,
@@ -34,33 +37,34 @@ function DetailChat({
   client_name,
   employee_list,
 }: ChatScreenProps) {
-  // Khởi tạo socket
-  const WS = useRef<WebSocket | null>(null)
   /** Bắt vị trí end scroll ở bottom */
   const MESSAGE_END_REF = useRef<HTMLDivElement | null>(null)
   /** Bắt vị trí ref ở đầu tin nhắn */
   const MESSAGE_CONTAINER_REF = useRef<HTMLDivElement | null>(null)
   // lấy Api từ hooks api
-  const { SOCKET_API, READ_MESSAGE_API, SEND_MESSAGE_API } = useAPI()
+  const { READ_MESSAGE_API, SEND_MESSAGE_API } = useAPI()
+
+  // hàm dispatch đến store
+  const dispatch = useDispatch()
 
   /** ID trang được lấy từ store */
   const PAGE_ID = useSelector(selectPageId)
+
+  /** List tin nhắn được lấy từ store */
+  const LIST_MESSAGE = useSelector(selectListMessage)
 
   const LIMIT = 20
   const [skip, setSkip] = useState(0)
   const [new_data, setNewData] = useState([] as any)
   const [loading, setLoading] = useState(false)
   const [last_message, setLastMessage] = useState({} as any)
-  const [is_force_close_socket, setIsForceCloseSocket] = useState(false)
+
   const [loading_more, setLoadingMore] = useState(false)
   const [has_more, setHasMore] = useState(true)
   const [scroll_at_bottom, setScrollAtBottom] = useState(true)
   const [show_jump_button, setShowJumpButton] = useState(false)
   const [init_message, setInitMessage] = useState('')
   const [identity_send, setIdentitySent] = useState(false)
-
-  let plugin_status = sessionStorage.getItem('plugin_status')
-  console.log(plugin_status)
 
   /** Debounce để xử lý scroll */
   const debounce = (func: Function, delay: number) => {
@@ -119,29 +123,16 @@ function DetailChat({
     }
   }, [scroll_at_bottom])
 
-  // Ngăn kết nối mở lại
-  useEffect(() => {
-    return () => {
-      closeSocketConnect()
-    }
-  }, [])
-
   // call api list tin nhan
   useEffect(() => {
     // check có user Id sẽ send init message
     if (user_id) {
-      onSocketFromChatboxServer()
+      // onSocketFromChatboxServer()
       sendMessage(init_message)
       fetchMessage()
     }
   }, [user_id])
 
-  /** Đóng kết nối socket */
-  function closeSocketConnect() {
-    // gắn cờ ngăn chặn kết nối mở lại
-    setIsForceCloseSocket(true)
-    WS.current?.close()
-  }
   /** Hàm gọi API để lấy tin nhắn */
   const fetchMessage = async () => {
     // Đang loading hoặc không có thêm bản ghi sẽ không fetch data nữa
@@ -181,9 +172,9 @@ function DetailChat({
         (item: any) => item.message_type !== 'system'
       )
 
-      console.log(FILTER_RES)
       //lưu data về phía trước do data đã bị reverse
-      setNewData([...FILTER_RES.reverse(), ...new_data])
+      // setNewData([...FILTER_RES.reverse(), ...new_data])
+      dispatch(setListMessage([...FILTER_RES.reverse(), ...LIST_MESSAGE]))
 
       setTimeout(() => {
         if (CONTAINER) {
@@ -228,101 +219,12 @@ function DetailChat({
       }
 
       //lưu data về phía trước do data đã bị reverse
-      setNewData([...RESULT.data.reverse()])
+      // setNewData([...RESULT.data.reverse()])
+      dispatch(setListMessage(RESULT.data.reverse()))
     } catch (error) {
     } finally {
       // setLoadingMore(false)
       console.log('finally')
-    }
-  }
-
-  /** Gọi api xác định danh tính khi mở WebSocket */
-  const sendIdentifyMessage = () => {
-    // Check điều kiện khi nào websocket đang readyState === websocket.OPEN thì mới gửi tin nhắn
-    if (WS.current?.readyState === WebSocket.OPEN) {
-      WS.current?.send(
-        JSON.stringify({
-          page_id: PAGE_ID,
-          client_id: user_id,
-          event: 'JOIN',
-        })
-      )
-      // Khi kết nối thành công thì mới trigger để gọi tin nhắn khởi tạo
-      setIdentitySent(true)
-    } else {
-      // Nếu chưa kết nối mở lại gọi lai tin nhắn
-      console.log('WebSocket is not open yet. Retrying...')
-      setTimeout(sendIdentifyMessage, 100) // Thử lại sau 100ms nếu chưa kết nối
-    }
-  }
-
-  /**  Cấu hình websocket */
-  function onSocketFromChatboxServer() {
-    // Kết nối tới WebSocket server
-    WS.current = new WebSocket(SOCKET_API || '')
-
-    //Lưu lại id vòng lặp
-    let ping_interval_id: number | any
-
-    // kết nối được mở
-    WS.current.onopen = () => {
-      // Thông báo connect thành công
-      console.log('WebSocket Connectedddd')
-
-      // Gửi tin nhắn khởi tạo socket
-      sendIdentifyMessage()
-
-      // Nếu socket đang readyState === websocket.OPEN thì được gọi tin nhắn
-      if (WS.current?.readyState === WebSocket.OPEN) {
-        // tu dong ping socket lien tuc 30s
-        ping_interval_id = setInterval(
-          () => WS.current?.send('ping'),
-          1000 * 25
-        )
-      } else {
-        console.log('WebSocket is not open yet. Retrying...')
-        // Thử lại sau 100ms nếu chưa kết nối
-        setTimeout(sendIdentifyMessage, 100)
-      }
-    }
-
-    // Khi có tin nhắn
-    WS.current.onmessage = ({ data }) => {
-      if (!data || data === 'pong') return
-      /**dữ liệu socket nhận được */
-      let socket_data: {
-        /**dữ liệu tin nhắn mới */
-        message?: MessageInfo
-      } = {}
-
-      // cố gắng giải mã dữ liệu
-      try {
-        socket_data = JSON.parse(data)
-      } catch (e) {}
-
-      if (!size(socket_data)) return
-
-      // Lấy tin nhắn từ socket
-      let { message } = socket_data
-      console.log(plugin_status, 'plugin_status')
-      // Lưu tin nhắn mới nhất vào state
-      setLastMessage(message)
-    }
-
-    // Khi kết nối bị đóng
-    WS.current.onclose = () => {
-      console.log('WebSocket Disconnected')
-      // Loại bỏ vòng lặp tự động ping soket cũ
-      clearInterval(ping_interval_id)
-
-      // nếu đóng hoàn toàn thì không cho kết nổi tự mở lại nữa
-      if (is_force_close_socket) return
-      setTimeout(() => onSocketFromChatboxServer(), 100)
-    }
-
-    // Nếu xảy ra lỗi
-    WS.current.onerror = () => {
-      WS.current?.close()
     }
   }
 
@@ -386,12 +288,12 @@ function DetailChat({
     const LINK_AVATAR = renderAvatar(IS_STAFF_EXIST.fb_staff_id)
     return LINK_AVATAR
   }
-  console.log(user_id, 'user_id')
+
   return (
     <div className="flex flex-col w-full h-full absolute top-0">
       {/* header */}
       <ChatHeader
-        onCancel={onCancel}
+        onCancel={() => onCancel()}
         user_id={user_id}
         setHideForMobile={setHideForMobile}
         page_name={page_name}
@@ -435,8 +337,8 @@ function DetailChat({
 
         {/* render nội dung tin nhắn từ list có sẵn */}
         {user_id &&
-          new_data &&
-          new_data.map((item: any, index: number) => (
+          LIST_MESSAGE &&
+          LIST_MESSAGE.map((item: any, index: number) => (
             <div
               className="flex flex-col"
               key={index}
@@ -505,7 +407,7 @@ function DetailChat({
       {show_jump_button && (
         <button
           onClick={scrollToBottom}
-          className="absolute flex justify-center items-center h-[30px] w-[30px] shadow-md bg-white rounded-full z-[999999] bottom-[13%] right-[45%]"
+          className="absolute flex justify-center items-center h-7 w-7 shadow-md bg-white rounded-full z-[999999] bottom-[13%] right-[45%]"
         >
           <Down
             width={10}

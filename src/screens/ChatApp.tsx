@@ -1,39 +1,53 @@
+import _, { size } from 'lodash'
 import { fetchAPI, useAPI } from '@/api/api'
 import {
   selectCurrentWidth,
+  selectListMessage,
   selectPageId,
   setCurrentWidth,
+  setListMessage,
   setPageId,
 } from '@/stores/appSlice'
 import { useDispatch, useSelector } from 'react-redux'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import ChatScreen from '@/screens/Chat'
 import { ReactComponent as Close } from '@/assets/close.svg'
 import { ReactComponent as Down } from '@/assets/arrow.svg'
 import Home from '@/screens/Home'
 import { ReactComponent as Logo } from '@/assets/logo-retion.svg'
+import { MessageInfo } from '@/utils/type'
 import OnlineStaff from '@/components/Container/OnlineStaff'
 import { ReactComponent as RetionLogo } from '@/assets/retion-logo.svg'
-import _ from 'lodash'
 import { ReactComponent as activeHome } from '@/assets/home-active.svg'
 import { ReactComponent as activeMessage } from '@/assets/messageA.svg'
 import i18next from 'i18next'
 import { ReactComponent as inactiveHome } from '@/assets/home.svg'
 import { ReactComponent as inactiveMessage } from '@/assets/message.svg'
-import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
-  const navigate = useNavigate()
   const { t, i18n } = useTranslation()
-  const { READ_PAGE_INFO } = useAPI()
+  const { READ_PAGE_INFO, SOCKET_API } = useAPI()
 
   const [error_message, setErrorMessage] = useState<String | null>('')
 
   const [page_name, setPageName] = useState<string>('')
   const [social_link, setSocialLink] = useState<Array<any> | null>([])
   const [staff_list, setStaffList] = useState<EmployeeList>({})
+  const [is_force_close_socket, setIsForceCloseSocket] = useState(false)
+
+  const WS = useRef<WebSocket | null>(null)
+
+  // Tạo tab hiện tại là HOME
+  const [current_tab, setCurrentTab] = useState('home')
+
+  console.log(current_tab, 'current_tab')
+  useEffect(() => {
+    console.log(current_tab, 'current_tab')
+  }, [current_tab])
+  // Tin nhắn chưa đọc
+  const [unread_message, setUnreadMessage] = useState<MessageInfo[]>([])
 
   // hàm dispatch đến store
   const dispatch = useDispatch()
@@ -41,11 +55,11 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
   /** danh sách id page */
   const PAGE_ID = useSelector(selectPageId)
 
+  /** List tin nhắn được lấy từ store */
+  const LIST_MESSAGE = useSelector(selectListMessage)
+
   /** Độ rộng hiện tại của màn hình */
   const CURRENT_WIDTH = useSelector(selectCurrentWidth)
-
-  // Tạo tab hiện tại là HOME
-  const [current_tab, setCurrentTab] = useState('home')
 
   useEffect(() => {
     /** @type {string} Lấy url của page cha */
@@ -157,12 +171,126 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     // Lưu danh sách nhân viên
     setStaffList(RES?.data?.staffs)
   }
+  /** Gọi api xác định danh tính khi mở WebSocket */
+  const sendIdentifyMessage = (client_id: String) => {
+    // Check điều kiện khi nào websocket đang readyState === websocket.OPEN thì mới gửi tin nhắn
+    if (WS.current?.readyState === WebSocket.OPEN) {
+      WS.current?.send(
+        JSON.stringify({
+          page_id: PAGE_ID,
+          client_id: client_id,
+          event: 'JOIN',
+        })
+      )
+      // Khi kết nối thành công thì mới trigger để gọi tin nhắn khởi tạo
+      // setIdentitySent(true)
+    } else {
+      // Nếu chưa kết nối mở lại gọi lai tin nhắn
+      console.log('WebSocket is not open yet. Retrying...')
+      setTimeout(sendIdentifyMessage, 100) // Thử lại sau 100ms nếu chưa kết nối
+    }
+  }
+
+  /**  Cấu hình websocket */
+  function onSocketFromChatboxServer(client_id: String) {
+    // Kết nối tới WebSocket server
+    WS.current = new WebSocket(SOCKET_API || '')
+
+    //Lưu lại id vòng lặp
+    let ping_interval_id: number | any
+
+    // kết nối được mở
+    WS.current.onopen = () => {
+      // Thông báo connect thành công
+      console.log('WebSocket Connectedddd')
+
+      // Gửi tin nhắn khởi tạo socket
+      sendIdentifyMessage(client_id)
+
+      // Nếu socket đang readyState === websocket.OPEN thì được gọi tin nhắn
+      if (WS.current?.readyState === WebSocket.OPEN) {
+        // tu dong ping socket lien tuc 30s
+        ping_interval_id = setInterval(
+          () => WS.current?.send('ping'),
+          1000 * 25
+        )
+      } else {
+        console.log('WebSocket is not open yet. Retrying...')
+        // Thử lại sau 100ms nếu chưa kết nối
+        setTimeout(sendIdentifyMessage, 100)
+      }
+    }
+
+    // Khi có tin nhắn
+    WS.current.onmessage = ({ data }) => {
+      if (!data || data === 'pong') return
+      /**dữ liệu socket nhận được */
+      let socket_data: {
+        /**dữ liệu tin nhắn mới */
+        message?: MessageInfo
+      } = {}
+
+      // cố gắng giải mã dữ liệu
+      try {
+        socket_data = JSON.parse(data)
+      } catch (e) {}
+
+      if (!size(socket_data)) return
+
+      // Lấy tin nhắn từ socket
+      let { message } = socket_data
+      console.log('hehehhehe', current_tab)
+      // nếu có tin nhắn. Đóng p
+      if (message && (!show || (show && current_tab === 'home'))) {
+        setUnreadMessage((prevMessages) => [...prevMessages, message])
+      }
+      if (message && current_tab === 'message') {
+        dispatch(setListMessage([...LIST_MESSAGE, message]))
+      }
+      // Lưu tin nhắn mới nhất vào state
+      // setLastMessage(message)
+    }
+
+    // Khi kết nối bị đóng
+    WS.current.onclose = () => {
+      console.log('WebSocket Disconnected')
+      // Loại bỏ vòng lặp tự động ping soket cũ
+      clearInterval(ping_interval_id)
+
+      // nếu đóng hoàn toàn thì không cho kết nổi tự mở lại nữa
+      if (is_force_close_socket) return
+      setTimeout(() => onSocketFromChatboxServer(client_id), 100)
+    }
+
+    // Nếu xảy ra lỗi
+    WS.current.onerror = () => {
+      WS.current?.close()
+    }
+  }
+
   useEffect(() => {
     // Nếu có page_id thì mới xử lý tiếp
     if (PAGE_ID) {
+      console.log(current_tab, 'current_tab PAGE_ID')
       fetchPageData(PAGE_ID)
+      const CLIENT_ID = localStorage.getItem(`client_id_<${PAGE_ID}>`)
+      if (CLIENT_ID && CLIENT_ID !== 'undefined') {
+        onSocketFromChatboxServer(CLIENT_ID)
+      }
     }
   }, [PAGE_ID])
+  // Ngăn kết nối mở lại
+  useEffect(() => {
+    return () => {
+      closeSocketConnect()
+    }
+  }, [])
+  /** Đóng kết nối socket */
+  function closeSocketConnect() {
+    // gắn cờ ngăn chặn kết nối mở lại
+    setIsForceCloseSocket(true)
+    WS.current?.close()
+  }
 
   // Chuyển đổi thành mảng và lấy fb_staff_id và is_online
   const EMPLOYEE_LIST: Employee[] = _.map(_.values(staff_list), (employee) => ({
@@ -172,15 +300,15 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
 
   return (
     <div
-      className={`flex relative   ${
+      className={`flex flex-col relative   ${
         // Nếu không show, thì hiện icon bong bóng chat
         !show
-          ? 'w-12 h-12'
+          ? 'w-16 h-16 justify-center items-center'
           : // Nếu kích thước điện thoại thì hiện full screen
           CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
           ? ' w-screen h-screen '
           : // Nếu màn PC thì hiện thành 1 tab nhỏ
-            ' w-[400px] h-[658px] '
+            ' w-[416px] h-[674px] p-2 justify-between items-end'
       }  `}
     >
       <div
@@ -253,7 +381,11 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
               userOutChat={() => {
                 // Khi back ra thì về trang Home
                 setCurrentTab('home')
-                navigate('/')
+                console.log('checkkkkkk +++++++++++++++++++')
+                // Reset mảng tin nhắn chưa đọc
+                setUnreadMessage([])
+                // Reset danh sách tin nhắn trong store
+                dispatch(setListMessage([]))
               }}
               error_message={error_message}
               onError={() => setErrorMessage('')}
@@ -279,10 +411,14 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
                     className="flex flex-col w-full h-full justify-center items-center cursor-pointer"
                     onClick={() => {
                       if (value !== 'message') {
+                        console.log(value, 'valueee ++++++++++________')
                         // tab !== 'message' thì overview để hiển thị menu
+
                         setCurrentTab(value)
                       } else {
-                        setCurrentTab(value)
+                        console.log('chek ===========', value)
+                        setCurrentTab('message')
+                        setUnreadMessage([])
                         if (PAGE_ID === null) {
                           // Không có page_id thì tạo message Lỗi
                           setErrorMessage(t('errorMessage'))
@@ -290,13 +426,23 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
                       }
                     }}
                   >
-                    {/* active menu tab */}
-                    {current_tab === value ? (
-                      <IconComponentA />
-                    ) : (
-                      <IconComponent />
-                    )}
-
+                    <div className="relative">
+                      <div className="">
+                        {value === 'message' && unread_message?.length > 0 && (
+                          <div className="flex justify-center items-center text-xs text-white border absolute right-0 top-0 w-4 h-4 bg-red-500 rounded-full translate-x-1 -translate-y-1">
+                            {unread_message?.length < 10
+                              ? unread_message?.length
+                              : '9+'}
+                          </div>
+                        )}
+                      </div>
+                      {/* active menu tab */}
+                      {current_tab === value ? (
+                        <IconComponentA />
+                      ) : (
+                        <IconComponent />
+                      )}
+                    </div>
                     <p className={'text-sm font-medium'}>{name}</p>
                   </div>
                 )
@@ -322,7 +468,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
           handleBtn()
           setErrorMessage('')
         }}
-        className={`absolute justify-center items-center h-12 w-12 bg-white shadow-lg rounded-full z-[999999] bottom-0 right-0 transition-transform transform hover:scale-110  ${
+        className={`relative justify-center items-center  h-12 w-12 bg-white shadow-lg rounded-full  hover:scale-110  ${
           !show
             ? ' flex  '
             : CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
@@ -330,7 +476,17 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
             : ' flex '
         }`}
       >
-        <div>
+        <div
+          className={`absolute ${
+            // Khi không có tin nhắn, hoặc đang show, thì không hiện
+            unread_message?.length === 0 || show
+              ? 'hidden'
+              : 'flex justify-center items-center'
+          } text-white text-xs truncate right-0 top-0 bg-red-500 h-5 w-5 rounded-full border-2 border-white translate-x-1 -translate-y-1`}
+        >
+          {unread_message?.length < 10 ? unread_message?.length : '9+'}
+        </div>
+        <div className="">
           {show ? (
             <Down />
           ) : (

@@ -1,8 +1,9 @@
 import './App.css'
 import './i18n' // Import cấu hình i18n
 
+import { useRef, useState } from 'react'
+
 import ChatApp from './screens/ChatApp'
-import { useState } from 'react'
 
 function App() {
   const [is_show, setShow] = useState(false)
@@ -30,7 +31,7 @@ function App() {
   }
 
   return (
-    <div className="flex flex-col justify-center items-center ">
+    <div className="flex flex-col justify-center items-center h-fit w-fit bg-slate-500 border">
       <ChatApp
         handleBtn={() => {
           handleToggle()

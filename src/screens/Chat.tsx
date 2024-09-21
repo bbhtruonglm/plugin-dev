@@ -13,7 +13,6 @@ function ChatScreen({
   page_name,
   employee_list,
 }: ChatProps) {
-  const navigate = useNavigate()
   const { INIT_CLIENT_API, READ_CLIENT_INFO } = useAPI()
   /** ID trang được lấy từ store */
   const PAGE_ID = useSelector(selectPageId)

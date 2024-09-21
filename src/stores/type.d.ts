@@ -7,4 +7,6 @@ export interface AppState {
   locale?: string
   /** Kích thước chiều rộng hiện tại ở page cha */
   current_width: number
+  /** Danh sách tin nhắn */
+  list_message: MessageInfo[]
 }

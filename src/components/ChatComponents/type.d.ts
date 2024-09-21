@@ -75,14 +75,21 @@ interface ChatHeaderProps {
 
 /** Cấu trúc dữ liệu input */
 interface InputProps {
+  /** Hàm gửi tin nhắn */
   handleSend: (e: any) => void
+  /** Trạng thái loading */
   loading: boolean
+  /** Tin nhắn báo lỗi */
   error_message: String | null
+  /** Tên trang */
   page_name?: string
+  /** ID khách hàng */
   client_id: string
+  /** Hàm set loading */
   setLoading: (e: boolean) => void
 }
 /** Cấu trức dữ liệu upload */
 interface UploadProps {
+  /** Hàm upload file */
   setPreviewUrl: (url: File) => void
 }
