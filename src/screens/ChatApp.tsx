@@ -1,6 +1,12 @@
-import React, { useEffect, useState } from 'react'
 import { fetchAPI, useAPI } from '@/api/api'
-import { useNavigate, useParams } from 'react-router-dom'
+import {
+  selectCurrentWidth,
+  selectPageId,
+  setCurrentWidth,
+  setPageId,
+} from '@/stores/appSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { useEffect, useState } from 'react'
 
 import ChatScreen from '@/screens/Chat'
 import { ReactComponent as Close } from '@/assets/close.svg'
@@ -15,43 +21,28 @@ import { ReactComponent as activeMessage } from '@/assets/messageA.svg'
 import i18next from 'i18next'
 import { ReactComponent as inactiveHome } from '@/assets/home.svg'
 import { ReactComponent as inactiveMessage } from '@/assets/message.svg'
+import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
-interface ChatProps {
-  handleBtn: () => void
-  show: boolean
-  setHideForMobile?: () => void
-}
-
-// Định nghĩa kiểu dữ liệu cho nhân viên
-interface Employee {
-  fb_staff_id: string
-  name: string
-  is_online: boolean
-}
-
-// Định nghĩa kiểu dữ liệu cho danh sách nhân viên
-interface EmployeeList {
-  [key: string]: Employee
-}
-const ChatApp: React.FC<ChatProps> = ({
-  handleBtn,
-  show,
-  setHideForMobile,
-}) => {
-  const { t, i18n } = useTranslation()
-
-  // Lấy locale hiện tại từ i18next
-  const { locale } = useParams()
-
-  const { READ_PAGE_INFO } = useAPI()
+const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
   const navigate = useNavigate()
-  const [page_id, setPageId] = useState<String | null>('')
+  const { t, i18n } = useTranslation()
+  const { READ_PAGE_INFO } = useAPI()
+
   const [error_message, setErrorMessage] = useState<String | null>('')
-  const [current_width, setCurrentW] = useState<any>(0)
+
   const [page_name, setPageName] = useState<string>('')
   const [social_link, setSocialLink] = useState<Array<any> | null>([])
   const [staff_list, setStaffList] = useState<EmployeeList>({})
+
+  // hàm dispatch đến store
+  const dispatch = useDispatch()
+
+  /** danh sách id page */
+  const PAGE_ID = useSelector(selectPageId)
+
+  /** Độ rộng hiện tại của màn hình */
+  const CURRENT_WIDTH = useSelector(selectCurrentWidth)
 
   // Tạo tab hiện tại là HOME
   const [current_tab, setCurrentTab] = useState('home')
@@ -87,12 +78,12 @@ const ChatApp: React.FC<ChatProps> = ({
     const WIDTH_PARENT = URL_PARENT.searchParams.get('parentWidth')
 
     if (WIDTH_PARENT) {
-      // nếu có truyền width thì lưu vào state
-      setCurrentW(WIDTH_PARENT)
+      // nếu có truyền width thì lưu vào store
+      dispatch(setCurrentWidth(Number(WIDTH_PARENT)))
     }
-    // lưu page_id với state
-    setPageId(PAGE_ID)
-    // setPageId('bf425487afbe403895116dd9b585537b')
+    // lưu page_id vào store
+    /** Example @value :bf425487afbe403895116dd9b585537b  */
+    dispatch(setPageId(PAGE_ID || 'bf425487afbe403895116dd9b585537b'))
   }, [])
 
   /**
@@ -168,20 +159,16 @@ const ChatApp: React.FC<ChatProps> = ({
   }
   useEffect(() => {
     // Nếu có page_id thì mới xử lý tiếp
-    if (page_id) {
-      setPageId(page_id)
-      // console.log(page_id, 'check')
-      fetchPageData(page_id)
+    if (PAGE_ID) {
+      fetchPageData(PAGE_ID)
     }
-  }, [page_id])
+  }, [PAGE_ID])
+
   // Chuyển đổi thành mảng và lấy fb_staff_id và is_online
-  const EMPLOYEE_LIST: { fb_staff_id: string; is_online: boolean }[] = _.map(
-    _.values(staff_list),
-    (employee) => ({
-      fb_staff_id: employee.fb_staff_id,
-      is_online: employee.is_online,
-    })
-  )
+  const EMPLOYEE_LIST: Employee[] = _.map(_.values(staff_list), (employee) => ({
+    fb_staff_id: employee.fb_staff_id,
+    is_online: employee.is_online,
+  }))
 
   return (
     <div
@@ -190,7 +177,7 @@ const ChatApp: React.FC<ChatProps> = ({
         !show
           ? 'w-12 h-12'
           : // Nếu kích thước điện thoại thì hiện full screen
-          current_width < 768 && current_width !== 0
+          CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
           ? ' w-screen h-screen '
           : // Nếu màn PC thì hiện thành 1 tab nhỏ
             ' w-[400px] h-[658px] '
@@ -199,7 +186,7 @@ const ChatApp: React.FC<ChatProps> = ({
       <div
         className={`relative  ${
           // Phần chính của bong bóng chat
-          current_width < 768 && current_width !== 0
+          CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
             ? ' w-screen h-screen rounded-none '
             : ' w-[400px] h-[600px] '
         } bg-bg-gradient rounded-[20px] overflow-hidden shadow-md ${
@@ -227,7 +214,7 @@ const ChatApp: React.FC<ChatProps> = ({
               <div
                 onClick={setHideForMobile}
                 className={` cursor-pointer w-10 h-10 flex justify-center items-center  ${
-                  current_width < 768 && current_width !== 0
+                  CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
                     ? ' flex'
                     : ' hidden'
                 }`}
@@ -251,14 +238,10 @@ const ChatApp: React.FC<ChatProps> = ({
         >
           {current_tab === 'home' && (
             <Home
-              page_id={page_id}
               onNavigate={() => {
                 setCurrentTab('message')
               }}
               onError={() => {
-                // setErrorMessage(
-                //   'Hệ thống chưa được liên kết.\n Vui lòng liên hệ quản trị viên để được hỗ trợ!'
-                // )
                 setErrorMessage(t('errorMessage'))
                 setCurrentTab('message')
               }}
@@ -275,7 +258,6 @@ const ChatApp: React.FC<ChatProps> = ({
               error_message={error_message}
               onError={() => setErrorMessage('')}
               setHideForMobile={setHideForMobile}
-              current_width={current_width}
               page_name={page_name}
               employee_list={EMPLOYEE_LIST}
             />
@@ -300,17 +282,8 @@ const ChatApp: React.FC<ChatProps> = ({
                         // tab !== 'message' thì overview để hiển thị menu
                         setCurrentTab(value)
                       } else {
-                        // ẩn menu
-                        // navigate('/?page_id=3861367970af4b7cadacaec5d1443473')
-
                         setCurrentTab(value)
-                        if (page_id !== null) {
-                          // có page_id thì thêm page_id vào url
-                          navigate(`/?page_id=${page_id}`)
-                          // navigate(
-                          //   `/?page_id=${'3861367970af4b7cadacaec5d1443473'}`
-                          // )
-                        } else {
+                        if (PAGE_ID === null) {
                           // Không có page_id thì tạo message Lỗi
                           setErrorMessage(t('errorMessage'))
                         }
@@ -352,7 +325,7 @@ const ChatApp: React.FC<ChatProps> = ({
         className={`absolute justify-center items-center h-12 w-12 bg-white shadow-lg rounded-full z-[999999] bottom-0 right-0 transition-transform transform hover:scale-110  ${
           !show
             ? ' flex  '
-            : current_width < 768 && current_width !== 0
+            : CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
             ? ' hidden '
             : ' flex '
         }`}

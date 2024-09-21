@@ -1,34 +1,28 @@
+import { t, use } from 'i18next'
+
 import { ReactComponent as BackArrow } from '@/assets/white-arrow.svg'
 import { ReactComponent as Close } from '@/assets/close.svg'
-import Loading from '../Loading/Loading'
-import LoadingDots from '../Loading/LoadingDot'
 import OnlineStaff from '../Container/OnlineStaff'
-import { t } from 'i18next'
+import { selectCurrentWidth } from '@/stores/appSlice'
+import { useSelector } from 'react-redux'
 
-interface ChatScreenProps {
-  onCancel: () => void
-  user_id: string
-  setHideForMobile?: () => void
-  current_width: number
-  page_name?: string
-  staff_avatar?: string
-  staff_name?: string
-  loading_staff?: boolean
-  employee_list?: { fb_staff_id: string; is_online: boolean }[]
-}
 function ChatHeader({
   onCancel,
   user_id,
   setHideForMobile,
-  current_width,
   page_name,
   staff_avatar,
   staff_name,
   loading_staff,
   employee_list,
-}: ChatScreenProps) {
+  loading_chat_data,
+}: ChatHeaderProps) {
+  /** Độ rộng màn hình hiện tại */
+  const CURRENT_WIDTH = useSelector(selectCurrentWidth)
+
   /** Check list nhân viên có ai online không */
   const ANY_ONLINE = employee_list?.some((employee) => employee.is_online)
+
   return (
     <div
       className={`flex bg-slate-800  w-full py-3 px-5 gap-2 absolute top-0 ${
@@ -70,7 +64,7 @@ function ChatHeader({
             <div
               onClick={setHideForMobile}
               className={`${
-                current_width < 768 && current_width !== 0
+                CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
                   ? ' flex w-9 h-9 items-center justify-center'
                   : ' hidden'
               }`}
@@ -91,7 +85,7 @@ function ChatHeader({
             ) : (
               <h2 className="text-lg font-medium text-white">{page_name}</h2>
             )}
-            {current_width < 768 && current_width !== 0 ? (
+            {CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0 ? (
               <div
                 onClick={setHideForMobile}
                 className="w-8 h-8  flex justify-center items-center cursor-pointer"

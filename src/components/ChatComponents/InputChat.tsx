@@ -2,25 +2,17 @@ import { ReactComponent as Arrow } from '../../assets/Icon_up_circle.svg'
 import { ReactComponent as ArrowSlate } from '../../assets/Icon_up_circle_slate.svg'
 import { ReactComponent as Close } from '@/assets/close.svg'
 import Upload from './Upload'
+import { selectPageId } from '@/stores/appSlice'
 import { t } from 'i18next'
 import { useAPI } from '@/api/api'
+import { useSelector } from 'react-redux'
 import { useState } from 'react'
 
-interface InputProps {
-  handleSend: (e: any) => void
-  loading: boolean
-  error_message: String | null
-  page_name?: string
-  page_id: string
-  client_id: string
-  setLoading: (e: boolean) => void
-}
 function InputChat({
   handleSend,
   loading,
   error_message,
   page_name,
-  page_id,
   client_id,
   setLoading,
 }: InputProps) {
@@ -29,6 +21,9 @@ function InputChat({
   const [file, setFile] = useState<File | null>(null)
 
   const { SEND_MESSAGE_API } = useAPI()
+
+  /** ID trang được lấy từ store */
+  const PAGE_ID = useSelector(selectPageId)
 
   /** Upload file */
   const uploadFile = async (file: File | null) => {
@@ -40,7 +35,7 @@ function InputChat({
       // Thêm file ảnh vào form
       FORM_DATA.append('file', file)
       // Thêm các trường còn lại vào form
-      FORM_DATA.append('page_id', page_id)
+      FORM_DATA.append('page_id', PAGE_ID)
       FORM_DATA.append('client_id', client_id)
 
       // gửi tin nhắn đi

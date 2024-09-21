@@ -11,32 +11,9 @@ import Loading from '../Loading/Loading'
 import LoadingDots from '../Loading/LoadingDot'
 import MessageComponent from './MessageComponent'
 import { MessageInfo } from '@/utils/type'
+import { selectPageId } from '@/stores/appSlice'
 import { t } from 'i18next'
-
-interface ChatScreenProps {
-  onCancel: () => void
-  user_id: string
-  onInitClient: (e: any) => void
-  loading_init: boolean
-  setLoadingInit: (e: any) => void
-  page_id: string
-  invalid_page_id: boolean
-  onResetInput: () => void
-  error_message: String | null
-  setHideForMobile?: () => void
-  current_width: number
-  page_name?: string
-  staff_avatar?: string
-  staff_name?: string
-  loading_staff?: boolean
-  client_name?: string
-  employee_list?: { fb_staff_id: string; is_online: boolean }[]
-}
-type Message = {
-  page_id: String | null
-  client_id: string
-  text: string
-}
+import { useSelector } from 'react-redux'
 
 /** Chi tiết component chat */
 function DetailChat({
@@ -45,12 +22,11 @@ function DetailChat({
   onInitClient,
   loading_init,
   setLoadingInit,
-  page_id,
+
   invalid_page_id,
   onResetInput,
   error_message,
   setHideForMobile,
-  current_width,
   page_name,
   staff_avatar,
   staff_name,
@@ -58,26 +34,8 @@ function DetailChat({
   client_name,
   employee_list,
 }: ChatScreenProps) {
-  const [new_data, setNewData] = useState([] as any)
-  const [loading, setLoading] = useState(false)
-  const [last_message, setLastMessage] = useState({} as any)
-  const [is_force_close_socket, setIsForceCloseSocket] = useState(false)
+  // Khởi tạo socket
   const WS = useRef<WebSocket | null>(null)
-  const [skip, setSkip] = useState(0)
-  const LIMIT = 20
-  const [loading_more, setLoadingMore] = useState(false)
-  const [has_more, setHasMore] = useState(true)
-  const [scroll_at_bottom, setScrollAtBottom] = useState(true)
-  const [show_jump_button, setShowJumpButton] = useState(false)
-  const [init_message, setInitMessage] = useState('')
-  const [error_init, setErrorInit] = useState(false)
-  const [identity_send, setIdentitySent] = useState(false)
-
-  // Thông tin user khi khởi tạo chat
-  const [name, setName] = useState('')
-  const [phone, setPhone] = useState('')
-  const [email, setEmail] = useState('')
-
   /** Bắt vị trí end scroll ở bottom */
   const MESSAGE_END_REF = useRef<HTMLDivElement | null>(null)
   /** Bắt vị trí ref ở đầu tin nhắn */
@@ -85,12 +43,31 @@ function DetailChat({
   // lấy Api từ hooks api
   const { SOCKET_API, READ_MESSAGE_API, SEND_MESSAGE_API } = useAPI()
 
+  /** ID trang được lấy từ store */
+  const PAGE_ID = useSelector(selectPageId)
+
+  const LIMIT = 20
+  const [skip, setSkip] = useState(0)
+  const [new_data, setNewData] = useState([] as any)
+  const [loading, setLoading] = useState(false)
+  const [last_message, setLastMessage] = useState({} as any)
+  const [is_force_close_socket, setIsForceCloseSocket] = useState(false)
+  const [loading_more, setLoadingMore] = useState(false)
+  const [has_more, setHasMore] = useState(true)
+  const [scroll_at_bottom, setScrollAtBottom] = useState(true)
+  const [show_jump_button, setShowJumpButton] = useState(false)
+  const [init_message, setInitMessage] = useState('')
+  const [identity_send, setIdentitySent] = useState(false)
+
+  let plugin_status = sessionStorage.getItem('plugin_status')
+  console.log(plugin_status)
+
   /** Debounce để xử lý scroll */
   const debounce = (func: Function, delay: number) => {
-    let debounceTimer: ReturnType<typeof setTimeout>
+    let debounce_timer: ReturnType<typeof setTimeout>
     return (...args: any[]) => {
-      clearTimeout(debounceTimer)
-      debounceTimer = setTimeout(() => func(...args), delay)
+      clearTimeout(debounce_timer)
+      debounce_timer = setTimeout(() => func(...args), delay)
     }
   }
   /** Function kéo xuống dưới cùng */
@@ -159,13 +136,6 @@ function DetailChat({
     }
   }, [user_id])
 
-  // Check khi đã có pageId nhưng bị sai, reset ô input của người dùng
-  useEffect(() => {
-    setEmail('')
-    setName('')
-    setPhone('')
-  }, [invalid_page_id])
-
   /** Đóng kết nối socket */
   function closeSocketConnect() {
     // gắn cờ ngăn chặn kết nối mở lại
@@ -192,7 +162,7 @@ function DetailChat({
       //setup params
       const PARAMS = {
         // page_id: '3861367970af4b7cadacaec5d1443473',
-        page_id: page_id,
+        page_id: PAGE_ID,
         client_id: user_id,
         limit: LIMIT.toString(),
         skip: skip.toString(),
@@ -206,7 +176,7 @@ function DetailChat({
         // set call api se skip bn ban ghi
         setSkip(skip + RESULT.data.length)
       }
-      console.log(RESULT)
+
       const FILTER_RES = RESULT?.data.filter(
         (item: any) => item.message_type !== 'system'
       )
@@ -241,7 +211,7 @@ function DetailChat({
       //setup params
       const params = {
         // page_id: '3861367970af4b7cadacaec5d1443473',
-        page_id: page_id,
+        page_id: PAGE_ID,
         client_id: user_id,
         limit: LIMIT.toString(),
         skip: skip.toString(),
@@ -272,7 +242,7 @@ function DetailChat({
     if (WS.current?.readyState === WebSocket.OPEN) {
       WS.current?.send(
         JSON.stringify({
-          page_id: page_id,
+          page_id: PAGE_ID,
           client_id: user_id,
           event: 'JOIN',
         })
@@ -290,29 +260,33 @@ function DetailChat({
   function onSocketFromChatboxServer() {
     // Kết nối tới WebSocket server
     WS.current = new WebSocket(SOCKET_API || '')
-    // console.log(SOCKET_API, 'socket URL_READ')
-    // luu lai id vong lap ping
+
+    //Lưu lại id vòng lặp
     let ping_interval_id: number | any
 
+    // kết nối được mở
     WS.current.onopen = () => {
       // Thông báo connect thành công
       console.log('WebSocket Connectedddd')
+
       // Gửi tin nhắn khởi tạo socket
       sendIdentifyMessage()
 
+      // Nếu socket đang readyState === websocket.OPEN thì được gọi tin nhắn
       if (WS.current?.readyState === WebSocket.OPEN) {
         // tu dong ping socket lien tuc 30s
-
         ping_interval_id = setInterval(
           () => WS.current?.send('ping'),
           1000 * 25
         )
       } else {
         console.log('WebSocket is not open yet. Retrying...')
-        setTimeout(sendIdentifyMessage, 100) // Thử lại sau 100ms nếu chưa kết nối
+        // Thử lại sau 100ms nếu chưa kết nối
+        setTimeout(sendIdentifyMessage, 100)
       }
     }
 
+    // Khi có tin nhắn
     WS.current.onmessage = ({ data }) => {
       if (!data || data === 'pong') return
       /**dữ liệu socket nhận được */
@@ -327,9 +301,11 @@ function DetailChat({
       } catch (e) {}
 
       if (!size(socket_data)) return
-      let { message } = socket_data
 
-      // luu tin nhan moi nhat vao state
+      // Lấy tin nhắn từ socket
+      let { message } = socket_data
+      console.log(plugin_status, 'plugin_status')
+      // Lưu tin nhắn mới nhất vào state
       setLastMessage(message)
     }
 
@@ -340,7 +316,6 @@ function DetailChat({
       clearInterval(ping_interval_id)
 
       // nếu đóng hoàn toàn thì không cho kết nổi tự mở lại nữa
-
       if (is_force_close_socket) return
       setTimeout(() => onSocketFromChatboxServer(), 100)
     }
@@ -350,19 +325,20 @@ function DetailChat({
       WS.current?.close()
     }
   }
+
   /** Hàm Xử lý gửi tin nhắn */
   const sendMessage = async (input: any) => {
     // Nhắn toàn khoảng trắng không cho gửi đi
-
     if (input.trim() === '') return
-    // Tiến hày gọi api
+    // Tiến hành gửi tin nhắn
     try {
+      // Khởi tạo body tin nhắn
       const message: Message = {
-        page_id: page_id,
+        page_id: PAGE_ID,
         client_id: user_id,
         text: input,
       }
-
+      // Gọi api gửi tin nhắn
       await fetchAPI(SEND_MESSAGE_API, 'POST', message)
 
       //Gửi tin nhắn thành công, scroll xuống cuối trang
@@ -383,10 +359,10 @@ function DetailChat({
       setLoadingMore(false)
       setIdentitySent(false)
     }
-    // có tin tin nhắn từ socket (Lưu vào lastmessage)
+    // có tin tin nhắn từ socket (đã được lưu vào lastmessage)
     if (_.keys(last_message).length !== 0 && !init_message) {
-      const dataaa = [...new_data, last_message]
-      setNewData(dataaa)
+      const DATA = [...new_data, last_message]
+      setNewData(DATA)
       // Nếu có tin nhắn từ websocket, scroll xuống cuối trang
       setTimeout(() => {
         scrollToBottom()
@@ -394,21 +370,23 @@ function DetailChat({
     }
   }, [last_message, init_message, user_id, identity_send])
 
+  /** Hàm kiểm tra nhân sự có tồn tại không */
   const checkStaffExist = (id: string) => {
     // Xem nhân viên nhắn tin có tồn tại trong list nhân viên không
     const IS_STAFF_EXIST = employee_list?.find((item) =>
       id.includes(item.fb_staff_id)
     )
-    // Nếu không tồn tại thì trả về ''
 
+    // Nếu không tồn tại thì trả về ''
     if (!IS_STAFF_EXIST) {
       return ''
     }
+
     // Lấy link avatar
     const LINK_AVATAR = renderAvatar(IS_STAFF_EXIST.fb_staff_id)
     return LINK_AVATAR
   }
-
+  console.log(user_id, 'user_id')
   return (
     <div className="flex flex-col w-full h-full absolute top-0">
       {/* header */}
@@ -416,12 +394,12 @@ function DetailChat({
         onCancel={onCancel}
         user_id={user_id}
         setHideForMobile={setHideForMobile}
-        current_width={current_width}
         page_name={page_name}
         staff_avatar={staff_avatar}
         staff_name={staff_name}
         loading_staff={loading_staff}
         employee_list={employee_list}
+        loading_chat_data={loading_more}
       />
       {/* body */}
       <div
@@ -437,18 +415,14 @@ function DetailChat({
             {error_message}
           </h4>
         )}
+        {/* Không có page Id sẽ báo lỗi */}
         {!user_id && !error_message && (
           <div className="flex flex-col gap-2 ">
             <InitClient
               resetData={invalid_page_id}
-              onError={(e) => {
-                // bao gồm sai định dạng email và sdt
-                setErrorInit(e)
-              }}
               onInitClient={(e) => {
                 setLoadingInit(true)
-                console.log(e)
-                onInitClient({ ...e, page_id })
+                onInitClient({ ...e, PAGE_ID })
               }}
             />
             {invalid_page_id && (
@@ -461,6 +435,7 @@ function DetailChat({
 
         {/* render nội dung tin nhắn từ list có sẵn */}
         {user_id &&
+          new_data &&
           new_data.map((item: any, index: number) => (
             <div
               className="flex flex-col"
@@ -508,8 +483,10 @@ function DetailChat({
               </div>
             </div>
           ))}
+
         {/* Thẻ div này đóng vai trò là nơi đánh dấu để cuộn tới */}
         <div ref={MESSAGE_END_REF} />
+
         {/* Khi gửi tin nhắn sẽ hiển thị loading để call api */}
         {loading && (
           <div className="fixed bg-blue-300 bottom-[22%] left-[48%] p-2 rounded-full text-xs z-50">
@@ -548,7 +525,6 @@ function DetailChat({
           }}
           loading={loading}
           page_name={page_name}
-          page_id={page_id}
           client_id={user_id}
           setLoading={(e) => setLoading(e)}
         />

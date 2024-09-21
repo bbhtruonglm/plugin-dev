@@ -1,20 +1,16 @@
 import { ReactComponent as IconSend } from '@/assets/send.svg'
+import { selectPageId } from '@/stores/appSlice'
 import { t } from 'i18next'
-import { useNavigate } from 'react-router-dom'
-interface SendMessageProps {
-  page_id: String | null
-  onNavigate: () => void
-  onError: () => void
-}
-function SendMessage({ page_id, onNavigate, onError }: SendMessageProps) {
-  const navigate = useNavigate()
+import { useSelector } from 'react-redux'
 
+function SendMessage({ onNavigate, onError }: SendMessageProps) {
+  /** danh sách id page */
+  const PAGE_ID = useSelector(selectPageId)
   return (
     <div
       onClick={() => {
-        // Có page_id thì thêm page_id và url, sau đó chuyển trang
-        if (page_id && page_id !== null) {
-          navigate(`/?page_id=${page_id}`)
+        if (PAGE_ID && PAGE_ID !== null) {
+          // Có page_id thì thêm page_id và url, sau đó chuyển trang
           onNavigate()
         } else {
           // Không có page_id thì báo lỗi

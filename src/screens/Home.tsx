@@ -2,13 +2,7 @@ import ChatOption from '@/components/HomeComponents/ChatOption'
 import SendMessage from '@/components/HomeComponents/SendMessage'
 import { t } from 'i18next'
 
-interface HomeProps {
-  page_id: String | null
-  onNavigate: () => void
-  onError: () => void
-  social_link?: Array<any> | null
-}
-function Home({ page_id, onNavigate, onError, social_link }: HomeProps) {
+function Home({ onNavigate, onError, social_link }: HomeProps) {
   return (
     <div className="flex flex-col px-5 py-3 gap-y-4">
       {/* Greeting */}
@@ -18,7 +12,7 @@ function Home({ page_id, onNavigate, onError, social_link }: HomeProps) {
       </div>
       {/* Send message */}
       <SendMessage
-        page_id={page_id}
+        // page_id={page_id}
         onNavigate={onNavigate}
         onError={onError}
       />

@@ -5,10 +5,9 @@ import { t } from 'i18next'
 
 interface InitClientProps {
   resetData: boolean
-  onError: (e: boolean) => void
   onInitClient: (e?: any) => void
 }
-function InitClient({ resetData, onError, onInitClient }: InitClientProps) {
+function InitClient({ resetData, onInitClient }: InitClientProps) {
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
@@ -27,13 +26,6 @@ function InitClient({ resetData, onError, onInitClient }: InitClientProps) {
     }
   }, [resetData])
 
-  useEffect(() => {
-    if (!email_error && !phone_error && !name_error) {
-      onError(false)
-    } else {
-      onError(true)
-    }
-  }, [email_error, phone_error, name_error])
   /** Kiếm tra regex email */
   const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 
@@ -104,7 +96,7 @@ function InitClient({ resetData, onError, onInitClient }: InitClientProps) {
             title={t('your_phone')}
             placeholder={t('input_your_phone')}
             required
-            type="number"
+            type="tel"
             onChange={handlePhoneChange}
           />
           {phone_error && (

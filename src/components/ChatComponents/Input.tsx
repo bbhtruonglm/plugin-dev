@@ -7,7 +7,7 @@ interface InputProps {
   placeholder?: string
   onChange?: (e: any) => void
   onKeyDown?: (e: any) => void
-  type?: 'text' | 'number' | 'email' | 'password'
+  type?: 'text' | 'number' | 'email' | 'password' | 'tel'
   required?: boolean
 }
 const Input = ({

@@ -2,58 +2,33 @@ import { apiImage, fetchAPI, useAPI } from '@/api/api'
 import { useEffect, useState } from 'react'
 
 import DetailChat from '@/components/ChatComponents/DetailChat'
+import { selectPageId } from '@/stores/appSlice'
 import { useNavigate } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 
-interface ChatProps {
-  userOutChat: (e?: any) => void
-  error_message: String | null
-  onError: () => void
-  setHideForMobile?: () => void
-  current_width: number
-  page_name?: string
-  employee_list?: { fb_staff_id: string; is_online: boolean }[]
-}
 function ChatScreen({
   userOutChat,
   error_message,
   setHideForMobile,
-  current_width,
   page_name,
   employee_list,
 }: ChatProps) {
   const navigate = useNavigate()
-  const [page_id, setPageId] = useState<string>('')
+  const { INIT_CLIENT_API, READ_CLIENT_INFO } = useAPI()
+  /** ID trang được lấy từ store */
+  const PAGE_ID = useSelector(selectPageId)
+
   const [client_id, setClientId] = useState<String | null | any>('')
   const [invalid_page_id, setInvalidPageId] = useState(false)
   const [loading, setLoading] = useState(false)
-  const { INIT_CLIENT_API, READ_PAGE_INFO, READ_CLIENT_INFO } = useAPI()
   const [staff_avatar, setStaffAvatar] = useState(null as any)
   const [staff_name, setStaffName] = useState(null as any)
   const [loading_staff, setLoadingStaff] = useState(false)
   const [client_name, setClientName] = useState(null as any)
-  const [first_time, setFirstTime] = useState(true)
 
   useEffect(() => {
-    /**
-     * Lấy các tham số truy vấn từ URL hiện tại.
-     * Sử dụng đối tượng `URLSearchParams` để phân tích các tham số trong chuỗi truy vấn của URL.
-     * @type {URLSearchParams}
-     *
-     * @example
-     * // Giả sử URL là: https://example.com?page=1&sort=asc
-     * const QUERY_PARAMS = new URLSearchParams(window.location.search);
-     * console.log(QUERY_PARAMS.get('page')); // Outputs: '1'
-     * console.log(QUERY_PARAMS.get('sort')); // Outputs: 'asc'
-     */
-    const QUERY_PARAMS = new URLSearchParams(window.location.search)
-
-    /** page_id được lấy từ params */
-    const PAGE_ID = QUERY_PARAMS.get('page_id')
     // Nếu có page_id thì mới xử lý tiếp
     if (PAGE_ID) {
-      setPageId(PAGE_ID)
-      // console.log(PAGE_ID, 'check')
-      // fetchPageData(PAGE_ID)
       // Tạo client Id = page_id từ cha
       const CLIENT_ID = localStorage.getItem(`client_id_<${PAGE_ID}>`)
       // Có CLIENT_ID mới set vào state
@@ -64,16 +39,10 @@ function ChatScreen({
   }, [])
 
   useEffect(() => {
-    // Cập nhật URL với client_id
-
     if (client_id) {
-      // Lấy ra URL
-      const newUrl = new URL(window.location.href)
-      // Thêm client_id vào params
-      newUrl.searchParams.set('client_id', client_id)
-      fetchClientData(client_id, page_id)
+      // Có client_id thì Gọi hàm đọc data khách hàng
+      fetchClientData(client_id, PAGE_ID)
       // add url mới
-      navigate(`/${newUrl.search}`)
     }
   }, [client_id])
 
@@ -113,11 +82,11 @@ function ChatScreen({
 
       if (RESULT.code === 403) {
         // Nếu lỗi thì lưu lại chuỗi rỗng
-        localStorage.setItem(`client_id_<${page_id}>`, '')
+        localStorage.setItem(`client_id_<${PAGE_ID}>`, '')
         setInvalidPageId(true)
       } else {
         // Có data thì lưu vào local storage
-        localStorage.setItem(`client_id_<${page_id}>`, RESULT.data)
+        localStorage.setItem(`client_id_<${PAGE_ID}>`, RESULT.data)
       }
     } catch (err) {
     } finally {
@@ -128,17 +97,25 @@ function ChatScreen({
 
   /** Hàm đọc data khách hàng */
   const fetchClientData = async (client_id: string, page_id: String | null) => {
+    // Set loading staff - Cần fix
     setLoadingStaff(true)
+
+    // Body lấy thông tin Client
     const BODY = {
       client_id: client_id,
       page_id: page_id,
     }
+    // Lấy URL
     const URL_READ = new URL(READ_CLIENT_INFO)
 
     URL_READ.search = new URLSearchParams(BODY as any).toString()
 
     const RES = await fetchAPI(URL_READ.toString(), 'GET')
+    // Lưu tên client
     setClientName(RES?.data?.client_name)
+
+    // Cần check sửa lại
+    // Lấy avatar staff từ fb_staff_id
     if (RES?.data?.fb_staff_id) {
       const LINK_AVATAR = apiImage(
         `/app/facebook/avatar/${RES.data.fb_staff_id}?width=64&height=64`
@@ -147,6 +124,9 @@ function ChatScreen({
       setStaffAvatar(LINK_AVATAR)
       setLoadingStaff(false)
     }
+
+    // Cần check để sửa lại
+    // Lấy Tên nhân viên
     if (RES?.data?.snap_staff?.name) {
       setStaffName(RES.data.snap_staff.name)
       setLoadingStaff(false)
@@ -165,20 +145,16 @@ function ChatScreen({
         onInitClient={(e) => initGetClientId(e)}
         loading_init={loading}
         setLoadingInit={(e) => setLoading(e)}
-        page_id={page_id}
         invalid_page_id={invalid_page_id}
         onResetInput={() => setInvalidPageId(false)}
         error_message={error_message}
         setHideForMobile={setHideForMobile}
-        current_width={current_width}
         page_name={page_name}
         staff_avatar={staff_avatar}
         staff_name={staff_name}
         loading_staff={loading_staff}
         client_name={client_name}
         employee_list={employee_list}
-        first_time={first_time}
-        setFirstTime={() => setFirstTime(false)}
       />
     </div>
   )

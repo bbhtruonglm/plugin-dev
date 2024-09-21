@@ -4,31 +4,6 @@ import { ReactComponent as Whatsapp } from '@/assets/whatsapp.svg'
 import { ReactComponent as Zalo } from '@/assets/zalo.svg'
 import { t } from 'i18next'
 function ChatOption({ social_link }: any) {
-  // if (!social_link) return null
-
-  /** Tạo list chat với các phương thức liên hệ đến bbh */
-  const chatList = [
-    {
-      name: '@botbanhang.fb',
-      url: 'https://m.me/100179064765476',
-      icon: Facebook,
-    },
-    {
-      name: '@botbanhang.ig',
-      url: '',
-      icon: Instagram,
-    },
-    {
-      name: '@botbanhang.oa',
-      url: 'https://zalo.me/1591257820328477563',
-      icon: Zalo,
-    },
-    {
-      name: '1900.9999.70',
-      url: '',
-      icon: Whatsapp,
-    },
-  ]
   return (
     <div className="bg-white p-3 rounded-xl flex justify-between px-6 items-center shadow-md">
       <div>
