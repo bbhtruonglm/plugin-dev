@@ -425,6 +425,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
                 setUnreadMessage([])
 
                 setLatestMessage(null)
+                dispatch(setLatestMessageGlobal(null))
                 console.log('run here')
                 // Reset danh sách tin nhắn trong store
                 dispatch(setListMessage([]))
