@@ -9,6 +9,8 @@ const initialState: AppState = {
   locale: 'vi',
   current_width: 0,
   list_message: [],
+  list_unread_message: [],
+  latest_message: {},
 }
 
 export const appSlice = createSlice({
@@ -40,6 +42,20 @@ export const appSlice = createSlice({
     ) => {
       state.list_message = action.payload
     },
+    /** lưu dữ liệu tin nhắn */
+    setListUnreadMessage: (
+      state,
+      action: PayloadAction<AppState['list_unread_message']>
+    ) => {
+      state.list_unread_message = action.payload
+    },
+    /** lưu dữ liệu tin nhắn */
+    setLatestMessageGlobal: (
+      state,
+      action: PayloadAction<AppState['latest_message']>
+    ) => {
+      state.list_message = action.payload
+    },
   },
 })
 
@@ -50,6 +66,8 @@ export const {
   setLocale,
   setCurrentWidth,
   setListMessage,
+  setListUnreadMessage,
+  setLatestMessageGlobal,
 } = appSlice.actions
 
 /** chọn đến page id */
@@ -64,7 +82,13 @@ export const selectLocale = (state: RootState) => state.app.locale
 /** chọn đầu dữ liệu Locale */
 export const selectCurrentWidth = (state: RootState) => state.app.current_width
 
-/** chọn đầu dữ liệu Locale */
+/** chọn đầu danh sách tin nhắn */
 export const selectListMessage = (state: RootState) => state.app.list_message
+/** chọn đầu danh sách tin nhắn chưa đọc */
+export const selectListUnreadMessage = (state: RootState) =>
+  state.app.list_unread_message
+/** chọn đầu tin nhắn mới nhất */
+export const selectLatestMessage = (state: RootState) =>
+  state.app.latest_message
 
 export default appSlice.reducer

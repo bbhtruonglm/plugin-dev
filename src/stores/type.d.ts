@@ -9,4 +9,8 @@ export interface AppState {
   current_width: number
   /** Danh sách tin nhắn */
   list_message: MessageInfo[]
+  /** Danh sách tin nhắn chưa đọc */
+  list_unread_message: MessageInfo[]
+  /** Tin nhắn mới nhất */
+  latest_message?: MessageInfo
 }

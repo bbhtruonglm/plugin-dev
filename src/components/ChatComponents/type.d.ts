@@ -34,6 +34,10 @@ interface ChatScreenProps {
   employee_list?: Employee[]
   /** TIn nhắn mới nhất */
   latest_message?: any
+  /** có phải tin nhắn khởi tạo không ? */
+  is_init: boolean
+  /** set Trạng thái Init */
+  setIsInit: (e: any) => void
 }
 /** Kiểu dữ liệu nhân viên */
 type Employee = {

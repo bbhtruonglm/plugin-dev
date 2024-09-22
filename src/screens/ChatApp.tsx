@@ -3,9 +3,12 @@ import { fetchAPI, useAPI } from '@/api/api'
 import {
   selectCurrentWidth,
   selectListMessage,
+  selectListUnreadMessage,
   selectPageId,
   setCurrentWidth,
+  setLatestMessageGlobal,
   setListMessage,
+  setListUnreadMessage,
   setPageId,
 } from '@/stores/appSlice'
 import { useDispatch, useSelector } from 'react-redux'
@@ -27,8 +30,11 @@ import { ReactComponent as inactiveMessage } from '@/assets/message.svg'
 import { useTranslation } from 'react-i18next'
 
 const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
+  // Dịch ngôn ngữ
   const { t, i18n } = useTranslation()
+  // Các đầu api
   const { READ_PAGE_INFO, SOCKET_API } = useAPI()
+
   const [error_message, setErrorMessage] = useState<String | null>('')
   const [page_name, setPageName] = useState<string>('')
   const [social_link, setSocialLink] = useState<Array<any> | null>([])
@@ -40,10 +46,20 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
 
   // Tạo tab hiện tại là HOME
   const [current_tab, setCurrentTab] = useState<string>('home')
+  // Tạo ref để giữ giá trị của current_tab
+  const TAB_REF = useRef(current_tab)
+  // Tạo ref để giữ giá trị của is_show
+  const IS_SHOW_REF = useRef(show)
+  useEffect(() => {
+    // Cập nhật giá trị mới nhất của tab trong ref mỗi khi tab thay đổi
+    TAB_REF.current = current_tab
+    // Cập nhật giá trị là show trong ref một khi show thay đổi
+    IS_SHOW_REF.current = show
+  }, [current_tab, show])
 
-  // Tin nhắn chưa đọc
+  // danh sách Tin nhắn chưa đọc
   const [unread_message, setUnreadMessage] = useState<MessageInfo[]>([])
-
+  // Tin nhắn mới nhất
   const [latest_message, setLatestMessage] = useState<MessageInfo | null>(null)
   // hàm dispatch đến store
   const dispatch = useDispatch()
@@ -53,6 +69,9 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
 
   /** List tin nhắn được lấy từ store */
   const LIST_MESSAGE = useSelector(selectListMessage)
+
+  /** List tin nhắn được lấy từ store */
+  const LIST_UNREAD_MESSAGE = useSelector(selectListUnreadMessage)
 
   /** Độ rộng hiện tại của màn hình */
   const CURRENT_WIDTH = useSelector(selectCurrentWidth)
@@ -82,20 +101,12 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
         console.error('Error changing language:', error)
       })
     /** page_id từ URL page cha */
-    const PAGE_ID =
-      URL_PARENT.searchParams.get('page_id') ||
-      'bf425487afbe403895116dd9b585537b'
-    console.log(PAGE_ID, 'page-id')
+    const PAGE_ID = URL_PARENT.searchParams.get('page_id')
 
     // lưu page_id vào store
     /** Example @value :bf425487afbe403895116dd9b585537b  */
     dispatch(setPageId(PAGE_ID || ''))
 
-    const CLIENT_ID = localStorage.getItem(`client_id_<${PAGE_ID}>`)
-
-    if (CLIENT_ID && CLIENT_ID !== 'undefined') {
-      onSocketFromChatboxServer(PAGE_ID, CLIENT_ID)
-    }
     /** Độ rộng của màn hình trong page cha, truyền qua URL */
     const WIDTH_PARENT = URL_PARENT.searchParams.get('parentWidth')
 
@@ -104,15 +115,22 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
       dispatch(setCurrentWidth(Number(WIDTH_PARENT)))
     }
   }, [])
+  /** Client ID lấy từ localStorage */
+  const CLIENT_ID = localStorage.getItem(`client_id_<${PAGE_ID}>`)
 
   useEffect(() => {
-    if (!PAGE_ID) return // Nếu không có PAGE_ID, thoát ngay
-
+    // Nếu không có PAGE_ID, thoát ngay
+    if (!PAGE_ID) return
+    // Khi có page_id và client_id thì Khởi tạo WebSocket
+    if (CLIENT_ID && CLIENT_ID !== 'undefined') {
+      onSocketFromChatboxServer(PAGE_ID, CLIENT_ID)
+    }
     // Gọi API để lấy dữ liệu trang
     fetchPageData(PAGE_ID)
 
     // Lấy client_id từ localStorage, chỉ xử lý nếu hợp lệ
-  }, [PAGE_ID]) // Thêm PAGE_ID và current_tab vào dependency array
+  }, [PAGE_ID, CLIENT_ID])
+
   /**
    * Tab menu với các mục chính gồm:
    * - Home
@@ -255,17 +273,21 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
 
       // Lấy tin nhắn từ socket
       let { message } = socket_data
-
-      console.log(message, 'message')
-      console.log(current_tab, 'current_tab')
-      // nếu có tin nhắn. Đóng p
-      if (message && !show) {
-        console.log('aaaaa')
-        setLatestMessage(message)
+      /**
+       * Phải lấy data trong REF,
+       * Vì khi websocket, chỉ lưu giá trị lúc mới khởi tạo
+       * Dù có thay đổi cũng không bắt được sự kiện
+       */
+      // nếu có tin nhắn. Popup đóng hoặc đang ở tab home
+      if (message && (!IS_SHOW_REF.current || TAB_REF.current !== 'message')) {
         setUnreadMessage((prevMessages) => [...prevMessages, message])
+        dispatch(setListUnreadMessage([...LIST_UNREAD_MESSAGE, message]))
       }
-
-      // setLastMessage(message)
+      // Nếu có tin nhắn popup mở và ở tab chat
+      if (message && IS_SHOW_REF.current && TAB_REF.current === 'message') {
+        setLatestMessage(message)
+        dispatch(setLatestMessageGlobal(message))
+      }
     }
 
     // Khi kết nối bị đóng
@@ -288,10 +310,9 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
   // Ngăn kết nối mở lại
   useEffect(() => {
     return () => {
-      // closeSocketConnect()
-      console.log(LIST_MESSAGE, 'LIST_MESSAGE')
+      closeSocketConnect()
     }
-  }, [LIST_MESSAGE])
+  }, [])
   /** Đóng kết nối socket */
   function closeSocketConnect() {
     // gắn cờ ngăn chặn kết nối mở lại
@@ -381,6 +402,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
                 setCurrentTab('message')
               }}
               social_link={social_link}
+              unread_message_count={unread_message?.length}
             />
           )}
           {current_tab === 'message' && (
@@ -435,7 +457,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
                     <div className="relative">
                       <div className="">
                         {value === 'message' && unread_message?.length > 0 && (
-                          <div className="flex justify-center items-center text-xs text-white border absolute right-0 top-0 w-4 h-4 bg-red-500 rounded-full translate-x-1 -translate-y-1">
+                          <div className="flex justify-center items-center text-xxs text-white border absolute right-0 top-0 w-4 h-4 bg-red-500 rounded-full translate-x-1 -translate-y-1">
                             {unread_message?.length < 10
                               ? unread_message?.length
                               : '9+'}

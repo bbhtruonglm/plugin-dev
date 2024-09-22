@@ -13,7 +13,7 @@ export const en = {
     welcomeMessage: 'How can we assist you?',
     sendUs: 'Send us a message',
     we_are_online: 'We are online',
-    chatWithUs: 'or chat with us through your preferred channel:',
+    chatWithUs: 'or contact us through the channel you use:',
     // Message
     // Message:
     online: 'Online',

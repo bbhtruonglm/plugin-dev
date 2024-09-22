@@ -70,7 +70,11 @@ function InitClient({ resetData, onInitClient }: InitClientProps) {
       setNameError('')
     }
   }
-  /**  Hàm kiểm tra còn lỗi không */
+  /**  Hàm kiểm tra còn lỗi không
+   * @returns {boolean} true: 1 trong các điều kiện không thoả man
+   * false: Tất cả điều kiện đều thoả mãn
+   *
+   */
   const isButtonDisabled = () => {
     return !name || !phone || phone_error || name_error || email_error
   }

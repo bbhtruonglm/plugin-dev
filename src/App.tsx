@@ -1,9 +1,8 @@
 import './App.css'
 import './i18n' // Import cấu hình i18n
 
-import { useRef, useState } from 'react'
-
 import ChatApp from './screens/ChatApp'
+import { useState } from 'react'
 
 function App() {
   const [is_show, setShow] = useState(false)

@@ -25,6 +25,7 @@ function ChatScreen({
   const [staff_name, setStaffName] = useState(null as any)
   const [loading_staff, setLoadingStaff] = useState(false)
   const [client_name, setClientName] = useState(null as any)
+  const [is_init, setIsInit] = useState(false)
 
   useEffect(() => {
     // Nếu có page_id thì mới xử lý tiếp
@@ -87,6 +88,7 @@ function ChatScreen({
       } else {
         // Có data thì lưu vào local storage
         localStorage.setItem(`client_id_<${PAGE_ID}>`, RESULT.data)
+        setIsInit(true)
       }
     } catch (err) {
     } finally {
@@ -132,7 +134,6 @@ function ChatScreen({
       setLoadingStaff(false)
     }
     setLoadingStaff(false)
-    console.log(RES, 'RES client')
   }
 
   return (
@@ -156,6 +157,8 @@ function ChatScreen({
         client_name={client_name}
         employee_list={employee_list}
         latest_message={latest_message}
+        setIsInit={setIsInit}
+        is_init={is_init}
       />
     </div>
   )

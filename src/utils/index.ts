@@ -79,10 +79,12 @@ export const removeVietnameseTones = (str?: string) => {
     .replace(/Đ/g, 'D') // Thay thế chữ "Đ" thành "D"
     .toLowerCase() // Chuyển thành chữ thường để dễ so sánh
 }
-/** Trả về link avatar */
+/** Trả về link avatar
+ * @param {string} id: Nhận vào id của nhân sự
+ * @returns {string} link avatar
+ */
 export const renderAvatar = (id: string) => {
   const LINK_AVATAR = apiImage(`/app/facebook/avatar/${id}?width=64&height=64`)
-
   return LINK_AVATAR
 }
 export function formatDate(isoString?: string) {

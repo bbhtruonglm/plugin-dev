@@ -37,4 +37,6 @@ interface HomeProps {
   onError: () => void
   /** Danh sách kênh liên lạc */
   social_link?: Array<any> | null
+  /** Số tin nhắn chưa đọc */
+  unread_message_count: number
 }

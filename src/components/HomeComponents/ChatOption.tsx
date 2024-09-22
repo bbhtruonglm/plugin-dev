@@ -5,11 +5,11 @@ import { ReactComponent as Zalo } from '@/assets/zalo.svg'
 import { t } from 'i18next'
 function ChatOption({ social_link }: any) {
   return (
-    <div className="bg-white p-3 rounded-xl flex justify-between px-6 items-center shadow-md">
+    <div className="bg-white p-3 rounded-xl flex justify-between items-center shadow-md">
       <div>
         <h4 className="text-sm font-medium">{t('chatWithUs')}</h4>
 
-        <div className="flex w-full gap-6 mt-2">
+        <div className="flex w-full gap-6 mt-2 px-3">
           {!!social_link?.length &&
             social_link.map((item: any, index: number) => (
               <a

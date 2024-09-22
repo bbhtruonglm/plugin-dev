@@ -26,7 +26,6 @@ function DetailChat({
   loading_init,
   setLoadingInit,
   invalid_page_id,
-  onResetInput,
   error_message,
   setHideForMobile,
   page_name,
@@ -36,6 +35,8 @@ function DetailChat({
   client_name,
   employee_list,
   latest_message,
+  is_init,
+  setIsInit,
 }: ChatScreenProps) {
   /** Bắt vị trí end scroll ở bottom */
   const MESSAGE_END_REF = useRef<HTMLDivElement | null>(null)
@@ -55,15 +56,12 @@ function DetailChat({
 
   const LIMIT = 20
   const [skip, setSkip] = useState(0)
-  const [new_data, setNewData] = useState([] as any)
   const [loading, setLoading] = useState(false)
 
   const [loading_more, setLoadingMore] = useState(false)
   const [has_more, setHasMore] = useState(true)
   const [scroll_at_bottom, setScrollAtBottom] = useState(true)
   const [show_jump_button, setShowJumpButton] = useState(false)
-  const [init_message, setInitMessage] = useState('')
-  const [identity_send, setIdentitySent] = useState(false)
 
   /** Debounce để xử lý scroll */
   const debounce = (func: Function, delay: number) => {
@@ -124,13 +122,30 @@ function DetailChat({
 
   // call api list tin nhan
   useEffect(() => {
-    // check có user Id sẽ send init message
-    if (user_id) {
-      // onSocketFromChatboxServer()
-      sendMessage(init_message)
+    let timeoutId: NodeJS.Timeout
+
+    if (is_init) {
+      // Đặt timeout để call API sau 1 giây
+      timeoutId = setTimeout(() => {
+        // Gọi API sau khi đợi 1 giây
+        fetchMessage()
+        console.log('API called after 1 second because is_init is true')
+        // Call API hoặc xử lý logic tại đây
+      }, 100)
+    }
+
+    // Khi user_id thay đổi thì gọi fetchMessage ngay lập tức
+    if (user_id && !is_init) {
       fetchMessage()
     }
-  }, [user_id])
+
+    // Cleanup: Hủy bỏ timeout nếu is_init thay đổi hoặc component bị unmount
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
+    }
+  }, [user_id, is_init])
 
   /** Hàm gọi API để lấy tin nhắn */
   const fetchMessage = async () => {
@@ -160,7 +175,7 @@ function DetailChat({
       URL_READ.search = new URLSearchParams(PARAMS as any).toString()
 
       const RES = await fetchAPI(URL_READ.toString(), 'GET')
-      console.log(RES, 'RES')
+      console.log(RES, 'RESsssssssss')
       const RESULT = await RES
       if (RESULT.data.length === LIMIT) {
         // set call api se skip bn ban ghi
@@ -193,40 +208,6 @@ function DetailChat({
     }
   }
 
-  // Tạo ra function chỉ để call lần đầu
-  const fetchMessageInit = async () => {
-    try {
-      const URL_READ = new URL(READ_MESSAGE_API)
-
-      //setup params
-      const params = {
-        // page_id: '3861367970af4b7cadacaec5d1443473',
-        page_id: PAGE_ID,
-        client_id: user_id,
-        limit: LIMIT.toString(),
-        skip: skip.toString(),
-      }
-      URL_READ.search = new URLSearchParams(params as any).toString()
-
-      const RES = await fetchAPI(URL_READ.toString(), 'GET')
-
-      const RESULT = await RES
-
-      if (RESULT.data.length === LIMIT) {
-        // set call api se skip bn ban ghi
-        setSkip(skip + RESULT.data.length)
-      }
-
-      //lưu data về phía trước do data đã bị reverse
-      // setNewData([...RESULT.data.reverse()])
-      dispatch(setListMessage(RESULT.data.reverse()))
-    } catch (error) {
-    } finally {
-      // setLoadingMore(false)
-      console.log('finally')
-    }
-  }
-
   /** Hàm Xử lý gửi tin nhắn */
   const sendMessage = async (input: any) => {
     // Nhắn toàn khoảng trắng không cho gửi đi
@@ -251,32 +232,24 @@ function DetailChat({
   }
 
   useEffect(() => {
-    // Khi socket trả về last message sẽ read message 1 lần
-
-    // có tin nhắn khởi tạo + userId + websocket được kết nối (Khởi tạo lần đầu)
-    if (identity_send && init_message && user_id) {
-      fetchMessageInit()
-      setInitMessage('')
-      setLoadingMore(false)
-      setIdentitySent(false)
-    }
-    // có tin tin nhắn từ socket (đã được lưu vào lastmessage)
-    if (_.keys(latest_message).length !== 0 && !init_message) {
-      const DATA = [...new_data, latest_message]
-      setNewData(DATA)
-      // Nếu có tin nhắn từ websocket, scroll xuống cuối trang
+    // có tin tin nhắn từ socket (đã được lưu vào latest message)
+    if (_.keys(latest_message).length !== 0) {
       dispatch(setListMessage([...LIST_MESSAGE, latest_message]))
+      // Nếu có tin nhắn từ websocket, scroll xuống cuối trang
       setTimeout(() => {
         scrollToBottom()
       }, 100)
     }
-  }, [latest_message, init_message, user_id, identity_send])
+  }, [latest_message, user_id])
 
-  /** Hàm kiểm tra nhân sự có tồn tại không */
+  /** Hàm kiểm tra nhân sự có tồn tại không
+   * @string id: Nhan vao id của nhân sự
+   * @returns {string} link avatar
+   */
   const checkStaffExist = (id: string) => {
     // Xem nhân viên nhắn tin có tồn tại trong list nhân viên không
     const IS_STAFF_EXIST = employee_list?.find((item) =>
-      id.includes(item.fb_staff_id)
+      id.includes(item?.fb_staff_id)
     )
 
     // Nếu không tồn tại thì trả về ''
@@ -285,7 +258,7 @@ function DetailChat({
     }
 
     // Lấy link avatar
-    const LINK_AVATAR = renderAvatar(IS_STAFF_EXIST.fb_staff_id)
+    const LINK_AVATAR = renderAvatar(IS_STAFF_EXIST?.fb_staff_id)
     return LINK_AVATAR
   }
 
