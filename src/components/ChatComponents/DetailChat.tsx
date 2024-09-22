@@ -1,6 +1,7 @@
 import { fetchAPI, useAPI } from '@/api/api'
 import { letterToColorCode, nameToLetter, renderAvatar } from '@/utils'
 import {
+  selectLatestMessage,
   selectListMessage,
   selectPageId,
   setListMessage,
@@ -53,6 +54,8 @@ function DetailChat({
 
   /** List tin nhắn được lấy từ store */
   const LIST_MESSAGE = useSelector(selectListMessage)
+
+  const LATEST_MESSAGE = useSelector(selectLatestMessage)
 
   const LIMIT = 20
   const [skip, setSkip] = useState(0)
@@ -188,6 +191,7 @@ function DetailChat({
 
       //lưu data về phía trước do data đã bị reverse
       // setNewData([...FILTER_RES.reverse(), ...new_data])
+      // console.log(FILTER_RES, 'FILTER_RES')
       dispatch(setListMessage([...FILTER_RES.reverse(), ...LIST_MESSAGE]))
 
       setTimeout(() => {
@@ -233,14 +237,15 @@ function DetailChat({
 
   useEffect(() => {
     // có tin tin nhắn từ socket (đã được lưu vào latest message)
-    if (_.keys(latest_message).length !== 0) {
-      dispatch(setListMessage([...LIST_MESSAGE, latest_message]))
+
+    if (_.keys(LATEST_MESSAGE).length !== 0) {
+      dispatch(setListMessage([...LIST_MESSAGE, LATEST_MESSAGE]))
       // Nếu có tin nhắn từ websocket, scroll xuống cuối trang
       setTimeout(() => {
         scrollToBottom()
       }, 100)
     }
-  }, [latest_message, user_id])
+  }, [LATEST_MESSAGE, user_id])
 
   /** Hàm kiểm tra nhân sự có tồn tại không
    * @string id: Nhan vao id của nhân sự
@@ -328,11 +333,9 @@ function DetailChat({
               >
                 {item?.message_type === 'page' && (
                   <div className="flex rounded-lg">
-                    {/* {checkStaffExist(item?.message_metadata)} */}
                     <img
                       src={
                         checkStaffExist(item?.message_metadata) ||
-                        // staff_avatar ||
                         './images/earth.svg'
                       }
                       className="w-6 h-6 rounded-lg "

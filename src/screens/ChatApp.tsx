@@ -281,12 +281,23 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
       // nếu có tin nhắn. Popup đóng hoặc đang ở tab home
       if (message && (!IS_SHOW_REF.current || TAB_REF.current !== 'message')) {
         setUnreadMessage((prevMessages) => [...prevMessages, message])
-        dispatch(setListUnreadMessage([...LIST_UNREAD_MESSAGE, message]))
+        /** Cần lưu ý (với data của redux, WS đang lưu giá trị [] ban đầu)
+         * còn setList message thì lấy giá trị LIST_UNREAD_MESSAGE và push thêm tin nhắn vào.
+         * Lúc này LIST_UNREAD_MESSAGE mặc định là []
+         * dispatch(setListUnreadMessage([...LIST_UNREAD_MESSAGE, message]))
+         */
       }
       // Nếu có tin nhắn popup mở và ở tab chat
       if (message && IS_SHOW_REF.current && TAB_REF.current === 'message') {
         setLatestMessage(message)
+
         dispatch(setLatestMessageGlobal(message))
+        /** Cần lưu ý (với data của redux, WS đang lưu giá trị [] ban đầu)
+         * Vì Latest mesage chỉ gọi hàm setListMessage
+         * còn setList message thì lấy giá trị LIST_MESSAGE và push thêm tin nhắn vào.
+         * Lúc này LIST_MESSAGE mặc định là []
+         * dispatch(setListMessage([...LIST_MESSAGE, message]))
+         */
       }
     }
 
@@ -331,7 +342,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
       className={`flex flex-col relative   ${
         // Nếu không show, thì hiện icon bong bóng chat
         !show
-          ? 'w-16 h-16 justify-center items-center'
+          ? 'w-16 h-16 items-center justify-center'
           : // Nếu kích thước điện thoại thì hiện full screen
           CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
           ? ' w-screen h-screen '
@@ -414,6 +425,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
                 setUnreadMessage([])
 
                 setLatestMessage(null)
+                console.log('run here')
                 // Reset danh sách tin nhắn trong store
                 dispatch(setListMessage([]))
               }}

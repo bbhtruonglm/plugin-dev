@@ -54,7 +54,7 @@ export const appSlice = createSlice({
       state,
       action: PayloadAction<AppState['latest_message']>
     ) => {
-      state.list_message = action.payload
+      state.latest_message = action.payload
     },
   },
 })
