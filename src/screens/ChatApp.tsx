@@ -44,8 +44,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
   // Dịch ngôn ngữ
   const { t, i18n } = useTranslation()
   // Các đầu api
-  const { READ_PAGE_INFO, SOCKET_API, READ_CLIENT_INFO, SEND_MESSAGE_API } =
-    useAPI()
+  const { READ_PAGE_INFO, SOCKET_API, SEND_MESSAGE_API } = useAPI()
 
   const [error_message, setErrorMessage] = useState<String | null>('')
   const [page_name, setPageName] = useState<string>('')
@@ -53,7 +52,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
   const [staff_list, setStaffList] = useState<EmployeeList>({})
   const [is_force_close_socket, setIsForceCloseSocket] = useState(false)
 
-  // Khởi tạo websocket
+  /** Khởi tạo websocket */
   const WS = useRef<WebSocket | null>(null)
 
   // Tạo tab hiện tại là HOME
@@ -71,7 +70,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     IS_SHOW_REF.current = show
   }, [current_tab, show])
 
-  // hàm dispatch đến store
+  /** hàm dispatch đến store */
   const dispatch = useDispatch()
 
   /** danh sách id page */
@@ -83,6 +82,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
   /** Tin nhắn mới nhất */
   const LATEST_MESSAGE = useSelector(selectLatestMessage)
 
+  /** Tạo ref một để luu giữ giá trị LIST_UNREAD_MESSAGE */
   const REF_LIST_UNREAD_MESSAGE = useRef(LIST_UNREAD_MESSAGE)
 
   useEffect(() => {
@@ -201,7 +201,9 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     // },
   ]
 
-  /** Hàm đọc dữ liệu trang */
+  /** Hàm đọc dữ liệu trang
+   * @param {string} page_id - ID trang
+   */
   const fetchPageData = async (page_id: String) => {
     // Tạo đối tượng URL từ string
     const URL_READ = new URL(READ_PAGE_INFO)
@@ -224,9 +226,11 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     i18n.changeLanguage(RES?.data.config.locale)
     // Lưu danh sách nhân viên
     setStaffList(RES?.data?.staffs)
-    console.log(RES?.data?.staffs)
   }
-  /** Gọi api xác định danh tính khi mở WebSocket */
+  /** Gọi api xác định danh tính khi mở WebSocket
+   * @param {string} page_id - ID trang
+   * @param {string} client_id - ID khách hàng
+   */
   const sendIdentifyMessage = (page_id: String | null, client_id: String) => {
     // Check điều kiện khi nào websocket đang readyState === websocket.OPEN thì mới gửi tin nhắn
     if (WS.current?.readyState === WebSocket.OPEN) {
@@ -237,8 +241,6 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
           event: 'JOIN',
         })
       )
-      // Khi kết nối thành công thì mới trigger để gọi tin nhắn khởi tạo
-      // setIdentitySent(true)
     } else {
       // Nếu chưa kết nối mở lại gọi lai tin nhắn
       console.log('WebSocket is not open yet. Retrying...')
@@ -246,7 +248,14 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     }
   }
 
-  /**  Cấu hình websocket */
+  /**  Cấu hình websocket
+   * - Kết nối tới WebSocket server
+   * - Gọi tin nhắn khởi tạo socket
+   * - Tu dụng socket để nhận tin nhắn
+   * @param {string} page_id - ID trang
+   * @param {string} client_id - ID khách hàng
+   *
+   */
   function onSocketFromChatboxServer(
     page_id: String | null,
     client_id: String
@@ -293,6 +302,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
         socket_data = JSON.parse(data)
       } catch (e) {}
 
+      //Kiểm tra socket_data có dữ liệu không
       if (!size(socket_data)) return
 
       // Lấy tin nhắn từ socket
@@ -369,6 +379,10 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     is_online: employee.is_online,
   }))
 
+  /** Hàm kiểm tra nhân sự có tồn tại không
+   * @param {string} id: Nhận vào id của nhân sự
+   * @returns {string} link avatar
+   */
   const checkStaffExist = (id: string) => {
     // Xem nhân viên nhắn tin có tồn tại trong list nhân viên không
     const IS_STAFF_EXIST = EMPLOYEE_LIST?.find((item) =>
@@ -404,7 +418,9 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     }
   }
 
-  /** Hàm Xử lý gửi tin nhắn */
+  /** Hàm Xử lý gửi tin nhắn
+   * @param {string} input - Nội dung tin nhắn text
+   */
   const sendMessage = async (input: any) => {
     // Nhắn toàn khoảng trắng không cho gửi đi
     if (input.trim() === '') return
@@ -419,6 +435,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
         }
         // Gọi api gửi tin nhắn
         await fetchAPI(SEND_MESSAGE_API, 'POST', message)
+        // Reset data
         dispatch(setListUnreadMessage([]))
         dispatch(setLatestMessageGlobal(null))
         postMessageToParent(false, false)
@@ -427,12 +444,9 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     } finally {
     }
   }
-  // console.log(LIST_UNREAD_MESSAGE, 'LIST_UNREAD_MESSAGE')
-  // console.log(LATEST_MESSAGE, 'LATEST_MESSAGE')
-  // console.log(LIST_UNREAD_MESSAGE_FILTER, 'LIST_UNREAD_MESSAGE_FILTER')
-  // console.log(REF_LIST_UNREAD_MESSAGE, 'REF_LIST_UNREAD_MESSAGE')
+  /** Lấy ra thời gian đóng popup gần nhất từ trong localStorage */
   const LAST_TIME_CLOSE = localStorage.getItem(`last_time_close__${PAGE_ID}`)
-  console.log(LAST_TIME_CLOSE, 'LAST_TIME_CLOSE')
+
   return (
     <div
       className={`flex flex-col  ${
@@ -522,7 +536,6 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
                 userOutChat={() => {
                   // Khi back ra thì về trang Home
                   setCurrentTab('home')
-
                   /** Reset store khi thoát khỏi màn chat */
                   // 1. Tin nhắn mới nhất
                   dispatch(setLatestMessageGlobal(null))
@@ -614,6 +627,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
       )}
       <div
         className={`${
+          // Popup đang đóng && Tin nhắn từ page && danh sách tin nhắn chưa đọc > 0
           !show &&
           LATEST_MESSAGE?.message_type === 'page' &&
           LIST_UNREAD_MESSAGE_FILTER?.length > 0
@@ -653,7 +667,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
                     </h4>
                     <div
                       onClick={() => {
-                        // Reset hết data
+                        // Reset hết data trong store
                         dispatch(setLatestMessageGlobal(null))
                         dispatch(setListUnreadMessage([]))
                         dispatch(setListMessage([]))

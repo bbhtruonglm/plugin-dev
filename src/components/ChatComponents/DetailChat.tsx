@@ -61,11 +61,15 @@ function DetailChat({
   /** List tin nhắn được lấy từ store */
   const LIST_MESSAGE = useSelector(selectListMessage)
 
+  /** List tin nhắn chưa đọc được lấy từ store */
   const LIST_UNREAD_MESSAGE = useSelector(selectListUnreadMessage)
 
+  /** TIn nhắn mới nhất từ store */
   const LATEST_MESSAGE = useSelector(selectLatestMessage)
 
+  /** Số bản ghi hiển thị trong 1 trang */
   const LIMIT = 20
+
   const [skip, setSkip] = useState(0)
   const [loading, setLoading] = useState(false)
 
@@ -74,7 +78,11 @@ function DetailChat({
   const [scroll_at_bottom, setScrollAtBottom] = useState(true)
   const [show_jump_button, setShowJumpButton] = useState(false)
 
-  /** Debounce để xử lý scroll */
+  /** Debounce để xử lý scroll
+   * @param func
+   * @param delay
+   * @returns setTimeout
+   */
   const debounce = (func: Function, delay: number) => {
     let debounce_timer: ReturnType<typeof setTimeout>
     return (...args: any[]) => {
@@ -173,6 +181,7 @@ function DetailChat({
     setLoadingMore(true)
 
     try {
+      /** Tạo đối tượng URL từ string */
       const URL_READ = new URL(READ_MESSAGE_API)
 
       //setup params
@@ -183,16 +192,19 @@ function DetailChat({
         limit: LIMIT.toString(),
         skip: skip.toString(),
       }
+      /** Thêm params vào URL */
       URL_READ.search = new URLSearchParams(PARAMS as any).toString()
 
+      // Kết quả trả về
       const RES = await fetchAPI(URL_READ.toString(), 'GET')
-      console.log(RES, 'RESsssssssss')
+
       const RESULT = await RES
+
       if (RESULT.data.length === LIMIT) {
         // set call api se skip bn ban ghi
         setSkip(skip + RESULT.data.length)
       }
-
+      // Loại bỏ những tin nhắn từ hệ thống
       const FILTER_RES = RESULT?.data.filter(
         (item: any) => item.message_type !== 'system'
       )
@@ -220,7 +232,9 @@ function DetailChat({
     }
   }
 
-  /** Hàm Xử lý gửi tin nhắn */
+  /** Hàm Xử lý gửi tin nhắn
+   * @param {string} input - Nội dung tin nhắn text
+   */
   const sendMessage = async (input: any) => {
     // Nhắn toàn khoảng trắng không cho gửi đi
     if (input.trim() === '') return
@@ -304,34 +318,6 @@ function DetailChat({
     return LINK_AVATAR
   }
 
-  const DATA_TEST = [
-    {
-      _id: '66f12f08271db2db8a2ec0be',
-      fb_page_id: 'bf425487afbe403895116dd9b585537b',
-      fb_client_id: '52e9935c1a1249e8bd72fd4dad9fb9e1',
-      platform_type: 'WEBSITE',
-      message_type: 'page',
-      sender_id: 'bf425487afbe403895116dd9b585537b',
-      recipient_id: '52e9935c1a1249e8bd72fd4dad9fb9e1',
-      time: '2024-09-23T09:04:07.787Z',
-      message_mid: '33b72ec110e84725873673953910a42f',
-      message_attachments: [
-        {
-          type: 'audio',
-          payload: {
-            url: 'https://static.botbanhang.vn/chatbox/bf425487afbe403895116dd9b585537b/message/6d39b666-1e66-4924-82c9-8f78275a5ec8-1727082247365.mp3',
-          },
-          _id: '66f12f08271db2db8a2ec0bf',
-        },
-      ],
-      message_metadata: '__Nv Kỹ Thuật__106585719065651',
-      ai: [],
-      createdAt: '2024-09-23T09:04:08.017Z',
-      updatedAt: '2024-09-23T09:04:08.017Z',
-      __v: 0,
-      attachment_size: [],
-    },
-  ]
   return (
     <div className="flex flex-col w-full h-full absolute top-0">
       {/* header */}

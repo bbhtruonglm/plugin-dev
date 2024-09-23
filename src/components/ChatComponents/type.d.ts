@@ -189,10 +189,13 @@ export interface MessageProps {
     attachment_size: any[]
   }
 }
+/** ĐỊnh nghĩa cấu trúc dữ liệu audio */
 export interface AudioPlayerProps {
   /** url video */
   src: string
 }
+
+/** ĐỊnh nghĩa cấu trúc dữ liệu video */
 export interface VideoPlayerProps {
   /** url video */
   src: string
@@ -200,4 +203,27 @@ export interface VideoPlayerProps {
   width?: string
   /** độ cao video */
   height?: string
+}
+
+/** ĐỊnh nghĩa cấu trúc khởi tạo Client ID */
+interface InitClientProps {
+  /** Hàm reset data */
+  resetData: boolean
+  /** Hàm khởi tạo client */
+  onInitClient: (e?: any) => void
+}
+/** Định nghĩa cấu trúc dữ liệu input */
+interface InputProps {
+  /** Tiêu đề  */
+  title?: string
+  /** Placeholder */
+  placeholder?: string
+  /** Hàm thay đổi nội dung */
+  onChange?: (e: any) => void
+  /** hàm check phím ấn */
+  onKeyDown?: (e: any) => void
+  /** Kiểu input */
+  type?: 'text' | 'number' | 'email' | 'password' | 'tel'
+  /** có bắt buộc hay không */
+  required?: boolean
 }

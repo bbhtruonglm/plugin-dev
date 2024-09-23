@@ -1,12 +1,9 @@
 import { useEffect, useState } from 'react'
 
+import { InitClientProps } from './type'
 import Input from './Input'
 import { t } from 'i18next'
 
-interface InitClientProps {
-  resetData: boolean
-  onInitClient: (e?: any) => void
-}
 function InitClient({ resetData, onInitClient }: InitClientProps) {
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
@@ -35,7 +32,9 @@ function InitClient({ resetData, onInitClient }: InitClientProps) {
   /** Kiếm tra regex sđt uk */
   const UK_PHONE_REGEX = /^(?:\+44|44|0)7\d{9}$/
 
-  /** Hàm xử lý thay đổi email */
+  /** Hàm xử lý thay đổi email
+   * @param {any} e
+   */
   const handleEmailChange = (e: any) => {
     const value = e.target.value
     setEmail(value)

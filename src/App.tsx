@@ -15,7 +15,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useEffect, useState } from 'react'
 
 import ChatApp from './screens/ChatApp'
-import { use } from 'i18next'
 
 function App() {
   const [is_show, setShow] = useState(false)
@@ -29,26 +28,30 @@ function App() {
   const LATEST_MESSAGE = useSelector(selectLatestMessage)
 
   useEffect(() => {
+    // Tin nhắn mới nhất từ Page && danh sách tin nhắn chưa đọc > 0 && popup đang đóng
     if (
       LATEST_MESSAGE?.message_type === 'page' &&
       LIST_UNREAD_MESSAGE?.length > 0 &&
       !is_show
     ) {
+      // Gọi tới parent để hiển thị popup
       postMessageToParent(false, true)
     }
   }, [LIST_UNREAD_MESSAGE])
 
   /** Function tắt bật của popup dạng PC */
   const handleToggle = () => {
-    /** Lưu vào store */
+    /** Lưu vào store  trạng thái đóng mở của popup*/
     dispatch(setStatusPopup(!is_show))
+    // Gọi tới parent để hiện thị popup
     postMessageToParent(!is_show, false)
   }
 
   /** Function tắt báo popup dạng Mobile*/
   const handleOff = () => {
+    /** Lưu vào store trạng thái đóng của popup*/
     dispatch(setStatusPopup(false))
-
+    // Gọi tới parent để đóng popup
     postMessageToParent(false, false)
   }
 

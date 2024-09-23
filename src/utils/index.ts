@@ -1,7 +1,9 @@
 import { apiImage } from '@/api/api'
 import { t } from 'i18next'
 
-/** Hàm tìm locale từ URL */
+/** Hàm tìm locale từ URL
+ * @returns {string} mặc định là 'en'
+ */
 export function detectLocaleFromURL() {
   const pathSegments = window.location.pathname.split('/').filter(Boolean) // Lấy tất cả các phần của URL
 
@@ -18,31 +20,35 @@ export function detectLocaleFromURL() {
   // Nếu không tìm thấy, trả về ngôn ngữ mặc định
   return 'en' // 'en' là fallback
 }
-// Hàm trích xuất locale từ cuối URL
+
+/** Hàm trích xuất locale từ cuối URL
+ * @param {string} path: Đường dẫn URL
+ * @return {string} mặc định là 'en'
+ */
 export function getLocaleFromURL(path: any) {
   // Lấy pathname từ URL
-  //   const path = window.location.pathname
-  console.log(path, 'path')
   // Lấy phần cuối của pathname (sau dấu '/')
-  const pathSegments = path.split('/').filter(Boolean) // Loại bỏ các chuỗi rỗng
+  const PATH_SEGMENTS = path.split('/').filter(Boolean) // Loại bỏ các chuỗi rỗng
 
   // Giả sử các locale hợp lệ là 'en' và 'vn'
-  const supportedLocales = ['en', 'vn']
+  const SUPPORTED_LOCALES = ['en', 'vn']
 
   // Lấy locale từ phần cuối cùng của pathname
-  const lastSegment = pathSegments[pathSegments.length - 1]
-  console.log(lastSegment, 'lastSegment')
+  const LAST_SEGMENT = PATH_SEGMENTS[PATH_SEGMENTS.length - 1]
 
   // Kiểm tra xem segment cuối cùng có phải là locale hợp lệ hay không
-  if (supportedLocales.includes(lastSegment)) {
-    return lastSegment
+  if (SUPPORTED_LOCALES.includes(LAST_SEGMENT)) {
+    return LAST_SEGMENT
   }
 
   // Trả về ngôn ngữ mặc định nếu không tìm thấy locale hợp lệ
   return 'vn' // 'en' là fallback
 }
 
-/**tạo bg dựa trên chữ cái */
+/**tạo bg dựa trên chữ cái
+ * @param {string} client_name: tên người dùng
+ * @return {string} mã màu rgb
+ */
 export function letterToColorCode(client_name?: string) {
   let character = client_name
 
@@ -60,7 +66,10 @@ export function letterToColorCode(client_name?: string) {
   return 'rgb(' + red + ', ' + green + ', ' + blue + ')'
 }
 
-/**cắt ra 2 ký tự đầu và cuối trong tên */
+/**cắt ra 2 ký tự đầu và cuối trong tên
+ * @param {string} name: tên người dùng
+ * @return {string} ký tự đầu và cuối
+ */
 export const nameToLetter = (name?: string) => {
   // Xử lý xoá dấu tiếng việt và lấy ký tự đầu cuối trong tên
   return removeVietnameseTones(name)
@@ -70,7 +79,11 @@ export const nameToLetter = (name?: string) => {
     ?.join('')
     .toUpperCase()
 }
-/** Xoá dấu tiếng việt */
+
+/** Xoá dấu tiếng việt
+ * @param {string} str: tên người dùng
+ * @return {string} tên đã được xoá dấu
+ */
 export const removeVietnameseTones = (str?: string) => {
   if (!str) return ''
   return str
@@ -80,6 +93,7 @@ export const removeVietnameseTones = (str?: string) => {
     .replace(/Đ/g, 'D') // Thay thế chữ "Đ" thành "D"
     .toLowerCase() // Chuyển thành chữ thường để dễ so sánh
 }
+
 /** Trả về link avatar
  * @param {string} id: Nhận vào id của nhân sự
  * @returns {string} link avatar
@@ -104,7 +118,11 @@ export function formatDate(isoString?: string) {
   // Kết hợp thành chuỗi theo định dạng mong muốn
   return `${HOUR}:${MINUTE}:${SECONDS} ${DAY}/${MONTH}/${YEAR}`
 }
-/** Function tính thời gian cách hiện tại */
+
+/** Function tính thời gian cách hiện tại
+ * @param {string} timeString: Thời gian chuyển đổi sang string
+ * @return {string} thời gian cách hiện tại
+ */
 export function calculateTimeAgo(timeString: string) {
   console.log(timeString)
   const NOW = new Date() // Thời gian hiện tại

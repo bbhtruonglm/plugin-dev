@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import { ChatProps } from './type'
 import DetailChat from '@/components/ChatComponents/DetailChat'
 import { selectPageId } from '@/stores/appSlice'
-import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 
 function ChatScreen({
@@ -97,7 +96,11 @@ function ChatScreen({
     }
   }
 
-  /** Hàm đọc data khách hàng */
+  /** Hàm đọc data khách hàng
+   * @param {string} client_id - ID khách hàng
+   * @param {string} page_id - ID trang
+   *
+   */
   const fetchClientData = async (client_id: string, page_id: String | null) => {
     // Set loading staff - Cần fix
     setLoadingStaff(true)

@@ -26,7 +26,9 @@ function InputChat({
   /** ID trang được lấy từ store */
   const PAGE_ID = useSelector(selectPageId)
 
-  /** Upload file */
+  /** Upload file
+   * @param {File | null} file
+   */
   const uploadFile = async (file: File | null) => {
     if (file) {
       // Set loading

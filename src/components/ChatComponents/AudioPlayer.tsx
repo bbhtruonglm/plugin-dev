@@ -12,11 +12,13 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src }) => {
    * mỗi khi component render lại.
    *  */
   const AUDIO_REF = useRef<HTMLAudioElement>(null)
+
   const [is_playing, setIsPlaying] = useState(false)
   const [current_time, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
 
   useEffect(() => {
+    /** Tạo phần tử audio */
     const AUDIO = AUDIO_REF.current
     if (AUDIO) {
       AUDIO.addEventListener('loadedmetadata', () => {
@@ -37,10 +39,12 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src }) => {
       }
     }
   }, [])
+  /** Hàm check xem audio đã kết thúc hay chưa */
   const handleAudioEnd = () => {
     setIsPlaying(false)
     setCurrentTime(0) // Reset progress to the beginning
   }
+  /** Hàm play/pause */
   const handlePlayPause = () => {
     if (AUDIO_REF.current) {
       if (is_playing) {
@@ -51,7 +55,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src }) => {
       setIsPlaying(!is_playing)
     }
   }
-
+  /** Hàm di chuyển progress bar */
   const handleSeek = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     const PROGRESS_BAR = e.currentTarget
     const RECT = PROGRESS_BAR.getBoundingClientRect()
@@ -63,6 +67,10 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src }) => {
     }
   }
 
+  /** Format time
+   * @param {number} time
+   * @return {string}
+   */
   const formatTime = (time: number) => {
     const MINUTES = Math.floor(time / 60)
     const SECONDS = Math.floor(time % 60)

@@ -1,15 +1,8 @@
 import React, { useState } from 'react'
 
+import { InputProps } from './type'
 import { useTranslation } from 'react-i18next'
 
-interface InputProps {
-  title?: string
-  placeholder?: string
-  onChange?: (e: any) => void
-  onKeyDown?: (e: any) => void
-  type?: 'text' | 'number' | 'email' | 'password' | 'tel'
-  required?: boolean
-}
 const Input = ({
   title,
   placeholder,

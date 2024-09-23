@@ -1,9 +1,6 @@
-import { InputProps, InputQuickProps } from './type'
-
 import { ReactComponent as Arrow } from '../../assets/Icon_up_circle.svg'
 import { ReactComponent as ArrowSlate } from '../../assets/Icon_up_circle_slate.svg'
-import { ReactComponent as Close } from '@/assets/close.svg'
-import Upload from './Upload'
+import { InputQuickProps } from './type'
 import { selectPageId } from '@/stores/appSlice'
 import { t } from 'i18next'
 import { useAPI } from '@/api/api'
@@ -20,11 +17,6 @@ function InputQuickChat({
   const [value, setValue] = useState('')
   const [preview_url, setPreviewUrl] = useState<string | null>(null)
   const [file, setFile] = useState<File | null>(null)
-
-  const { SEND_MESSAGE_API } = useAPI()
-
-  /** ID trang được lấy từ store */
-  const PAGE_ID = useSelector(selectPageId)
 
   /** Cho phép ấn Enter để gửi */
   const handleKeyDown = (event: any) => {

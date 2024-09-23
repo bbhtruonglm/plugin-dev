@@ -3,7 +3,6 @@ import { ReactComponent as IconArrow } from '@/assets/arrow-up-right-square.svg'
 import { MessageProps } from './type'
 import VideoPlayer from './VideoPlayter'
 import { formatDate } from '@/utils'
-import photo from '@/assets/photo.png'
 
 function MessageComponent({ data }: MessageProps) {
   return (
