@@ -1,13 +1,9 @@
 import ChatOption from '@/components/HomeComponents/ChatOption'
+import { HomeProps } from './type'
 import SendMessage from '@/components/HomeComponents/SendMessage'
 import { t } from 'i18next'
 
-function Home({
-  onNavigate,
-  onError,
-  social_link,
-  unread_message_count,
-}: HomeProps) {
+function Home({ onNavigate, onError, social_link }: HomeProps) {
   return (
     <div className="flex flex-col px-5 py-3 gap-y-4">
       {/* Greeting */}
@@ -20,7 +16,6 @@ function Home({
         // page_id={page_id}
         onNavigate={onNavigate}
         onError={onError}
-        unread_message_count={unread_message_count}
       />
 
       {/* Lựa chọn kênh liên lạc */}

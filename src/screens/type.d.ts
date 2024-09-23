@@ -1,3 +1,5 @@
+import { MessageInfo } from '@/utils/type'
+
 /** Cấu trúc dữ liệu Chat App */
 interface ChatAppProps {
   /** Nút trigger bật tắt popup */
@@ -25,9 +27,11 @@ interface ChatProps {
   /** Tên trang */
   page_name?: string
   /** Danh sách nhân viên */
-  employee_list?: { fb_staff_id: string; is_online: boolean }[]
+  employee_list?: Employee[]
   /** Tin nhắn mới nhất */
-  latest_message?: any
+  // latest_message?: any
+  /** Danh sách tin nhắn chưa đọc */
+  // list_unread_message: MessageInfo[]
 }
 
 interface HomeProps {
@@ -37,6 +41,4 @@ interface HomeProps {
   onError: () => void
   /** Danh sách kênh liên lạc */
   social_link?: Array<any> | null
-  /** Số tin nhắn chưa đọc */
-  unread_message_count: number
 }

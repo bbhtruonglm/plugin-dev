@@ -1,4 +1,5 @@
 import { apiImage } from '@/api/api'
+import { t } from 'i18next'
 
 /** Hàm tìm locale từ URL */
 export function detectLocaleFromURL() {
@@ -102,4 +103,31 @@ export function formatDate(isoString?: string) {
 
   // Kết hợp thành chuỗi theo định dạng mong muốn
   return `${HOUR}:${MINUTE}:${SECONDS} ${DAY}/${MONTH}/${YEAR}`
+}
+/** Function tính thời gian cách hiện tại */
+export function calculateTimeAgo(timeString: string) {
+  console.log(timeString)
+  const NOW = new Date() // Thời gian hiện tại
+  const TIME = new Date(timeString) // Chuỗi thời gian được chuyển thành đối tượng Date
+  console.log(NOW.getTime(), TIME.getTime())
+  // Sử dụng getTime() để chuyển Date thành số (mili-giây)
+  const DIFF_IN_SEC = Math.floor((NOW.getTime() - TIME.getTime()) / 1000)
+  const MINUTES = Math.floor(DIFF_IN_SEC / 60)
+  const HOURS = Math.floor(DIFF_IN_SEC / 3600)
+  // const days = Math.floor(DIFF_IN_SEC / 86400)
+  // const weeks = Math.floor(DIFF_IN_SEC / 604800)
+
+  if (DIFF_IN_SEC < 60) {
+    if (DIFF_IN_SEC < 10) return t('now')
+    return `${DIFF_IN_SEC}s ${t('ago')}`
+  } else if (MINUTES < 60) {
+    return `${MINUTES}${t('m')} ${t('ago')}`
+  } else if (HOURS < 24) {
+    return `${HOURS}h ${t('ago')}`
+  }
+  // else if (days < 7) {
+  //   return `${days}d ${t('ago')}`
+  // } else {
+  //   return `${weeks}w ${t('ago')}`
+  // }
 }

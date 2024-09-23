@@ -1,6 +1,7 @@
 import { apiImage, fetchAPI, useAPI } from '@/api/api'
 import { useEffect, useState } from 'react'
 
+import { ChatProps } from './type'
 import DetailChat from '@/components/ChatComponents/DetailChat'
 import { selectPageId } from '@/stores/appSlice'
 import { useNavigate } from 'react-router-dom'
@@ -12,7 +13,6 @@ function ChatScreen({
   setHideForMobile,
   page_name,
   employee_list,
-  latest_message,
 }: ChatProps) {
   const { INIT_CLIENT_API, READ_CLIENT_INFO } = useAPI()
   /** ID trang được lấy từ store */
@@ -143,9 +143,9 @@ function ChatScreen({
           userOutChat(client_id)
         }}
         user_id={client_id}
-        onInitClient={(e) => initGetClientId(e)}
+        onInitClient={(e: Object) => initGetClientId(e)}
         loading_init={loading}
-        setLoadingInit={(e) => setLoading(e)}
+        setLoadingInit={(e: boolean) => setLoading(e)}
         invalid_page_id={invalid_page_id}
         onResetInput={() => setInvalidPageId(false)}
         error_message={error_message}
@@ -156,8 +156,6 @@ function ChatScreen({
         loading_staff={loading_staff}
         client_name={client_name}
         employee_list={employee_list}
-        latest_message={latest_message}
-        setIsInit={setIsInit}
         is_init={is_init}
       />
     </div>

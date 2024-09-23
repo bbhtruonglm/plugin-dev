@@ -13,4 +13,6 @@ export interface AppState {
   list_unread_message: MessageInfo[]
   /** Tin nhắn mới nhất */
   latest_message?: MessageInfo
+  /** Trạng thái đóng mở popup */
+  show_popup: boolean
 }

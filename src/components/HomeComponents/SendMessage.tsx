@@ -1,15 +1,19 @@
+import { selectListUnreadMessage, selectPageId } from '@/stores/appSlice'
+
 import { ReactComponent as IconSend } from '@/assets/send.svg'
-import { selectPageId } from '@/stores/appSlice'
 import { t } from 'i18next'
 import { useSelector } from 'react-redux'
 
-function SendMessage({
-  onNavigate,
-  onError,
-  unread_message_count = 0,
-}: SendMessageProps) {
+function SendMessage({ onNavigate, onError }: SendMessageProps) {
   /** danh sách id page */
   const PAGE_ID = useSelector(selectPageId)
+  /** Số tin nhắn chưa đọc từ store */
+  const LIST_UNREAD_MESSAGE = useSelector(selectListUnreadMessage)
+  /** Chỉ lấy tin nhắn chưa đọc từ page, không lấy từ client */
+  const LIST_UNREAD_MESSAGE_FILTER = LIST_UNREAD_MESSAGE.filter(
+    (item) => item.message_type === 'page'
+  )
+
   return (
     <div
       onClick={() => {
@@ -28,10 +32,12 @@ function SendMessage({
           {t('sendUs')}
           <span
             className={`text-white bg-red-500 text-xxs rounded-full h-4 w-4 ${
-              unread_message_count ? 'block' : 'hidden'
+              !LIST_UNREAD_MESSAGE_FILTER?.length ? 'hidden' : 'block'
             } flex justify-center items-center`}
           >
-            {unread_message_count < 10 ? unread_message_count : '9+'}
+            {LIST_UNREAD_MESSAGE_FILTER?.length < 10
+              ? LIST_UNREAD_MESSAGE_FILTER?.length
+              : '9+'}
           </span>
         </h4>
         <h5 className="flex gap-2 items-center text-sm text-onlineColor">

@@ -1,11 +1,17 @@
+import { ChatScreenProps, Message } from './type'
 import { fetchAPI, useAPI } from '@/api/api'
 import { letterToColorCode, nameToLetter, renderAvatar } from '@/utils'
 import {
   selectLatestMessage,
   selectListMessage,
+  selectListUnreadMessage,
   selectPageId,
+  selectStatusPopup,
+  setLatestMessageGlobal,
   setListMessage,
+  setListUnreadMessage,
 } from '@/stores/appSlice'
+import { t, use } from 'i18next'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -17,7 +23,6 @@ import Loading from '../Loading/Loading'
 import LoadingDots from '../Loading/LoadingDot'
 import MessageComponent from './MessageComponent'
 import _ from 'lodash'
-import { t } from 'i18next'
 
 /** Chi tiết component chat */
 function DetailChat({
@@ -35,9 +40,7 @@ function DetailChat({
   loading_staff,
   client_name,
   employee_list,
-  latest_message,
   is_init,
-  setIsInit,
 }: ChatScreenProps) {
   /** Bắt vị trí end scroll ở bottom */
   const MESSAGE_END_REF = useRef<HTMLDivElement | null>(null)
@@ -52,8 +55,13 @@ function DetailChat({
   /** ID trang được lấy từ store */
   const PAGE_ID = useSelector(selectPageId)
 
+  /** Trạng thái đóng mở popup */
+  const SHOW_POPUP = useSelector(selectStatusPopup)
+
   /** List tin nhắn được lấy từ store */
   const LIST_MESSAGE = useSelector(selectListMessage)
+
+  const LIST_UNREAD_MESSAGE = useSelector(selectListUnreadMessage)
 
   const LATEST_MESSAGE = useSelector(selectLatestMessage)
 
@@ -236,16 +244,45 @@ function DetailChat({
   }
 
   useEffect(() => {
-    // có tin tin nhắn từ socket (đã được lưu vào latest message)
+    /**
+     * Trường hợp đang mở tab chat
+     * - Người dùng gửi tin nhắn đi
+     * - Page nhắn tin trả lời
+     * Thì sẽ thêm vào store
+     */
 
     if (_.keys(LATEST_MESSAGE).length !== 0) {
+      // Lưu tin nhắn mới từ socket vào store
       dispatch(setListMessage([...LIST_MESSAGE, LATEST_MESSAGE]))
+
       // Nếu có tin nhắn từ websocket, scroll xuống cuối trang
       setTimeout(() => {
         scrollToBottom()
       }, 100)
     }
-  }, [LATEST_MESSAGE, user_id])
+  }, [LATEST_MESSAGE])
+
+  useEffect(() => {
+    /**
+     * Trường hợp đang ở tab 'Message'
+     * Nhưng khách hàng ẩn popup đi
+     * Khi mở lại popup, Tin nhắn chưa đọc sẽ được thêm vào danh sách tin nhắn
+     * sau khi thêm xong thì clear danh sách tin nhắn chưa đọc trong store
+     */
+
+    if (
+      LIST_UNREAD_MESSAGE &&
+      LIST_UNREAD_MESSAGE?.length !== 0 &&
+      SHOW_POPUP
+    ) {
+      dispatch(setListMessage([...LIST_MESSAGE, ...LIST_UNREAD_MESSAGE]))
+      dispatch(setListUnreadMessage([]))
+
+      setTimeout(() => {
+        scrollToBottom()
+      }, 100)
+    }
+  }, [SHOW_POPUP, LIST_UNREAD_MESSAGE])
 
   /** Hàm kiểm tra nhân sự có tồn tại không
    * @string id: Nhan vao id của nhân sự
@@ -397,14 +434,14 @@ function DetailChat({
       {user_id && (
         <InputChat
           error_message={error_message}
-          handleSend={(e) => {
+          handleSend={(e: string) => {
             sendMessage(e)
             setLoading(true)
           }}
           loading={loading}
           page_name={page_name}
           client_id={user_id}
-          setLoading={(e) => setLoading(e)}
+          setLoading={(e: boolean) => setLoading(e)}
         />
       )}
     </div>

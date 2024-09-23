@@ -20,7 +20,7 @@ const Input = ({
   const { t } = useTranslation()
   const [value, setValue] = useState('')
   return (
-    <div className="flex flex-col w-full gap-1">
+    <div className="flex flex-col w-full gap-1 shadow-lg">
       <h4 className="text-sm font-medium flex gap-x-0.5">
         {title}
         <span className={`${!required && 'hidden'} text-red-500`}>*</span>

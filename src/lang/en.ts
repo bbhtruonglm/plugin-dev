@@ -8,6 +8,11 @@ export const en = {
     errorMessage:
       'The system is not linked.\n Please contact the administrator for support!',
     org_name: 'Sales Bot',
+    from: 'from',
+    ago: 'ago',
+    m: 'm',
+    now: 'Now',
+    reply: 'Reply',
     your_options:
       'You can ask questions or provide feedback on service quality.',
     welcomeMessage: 'How can we assist you?',

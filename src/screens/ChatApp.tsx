@@ -1,10 +1,14 @@
+import { ChatAppProps, EmployeeList } from './type'
+import { Employee, Message } from '@/components/ChatComponents/type'
 import _, { size } from 'lodash'
+import { calculateTimeAgo, renderAvatar } from '@/utils'
 import { fetchAPI, useAPI } from '@/api/api'
 import {
   selectCurrentWidth,
-  selectListMessage,
+  selectLatestMessage,
   selectListUnreadMessage,
   selectPageId,
+  selectStatusPopup,
   setCurrentWidth,
   setLatestMessageGlobal,
   setListMessage,
@@ -16,8 +20,10 @@ import { useEffect, useRef, useState } from 'react'
 
 import ChatScreen from '@/screens/Chat'
 import { ReactComponent as Close } from '@/assets/close.svg'
+import { ReactComponent as CloseSlate } from '@/assets/close-black.svg'
 import { ReactComponent as Down } from '@/assets/arrow.svg'
 import Home from '@/screens/Home'
+import InputQuickChat from '@/components/ChatComponents/InputQuickChat'
 import { ReactComponent as Logo } from '@/assets/logo-retion.svg'
 import { MessageInfo } from '@/utils/type'
 import OnlineStaff from '@/components/Container/OnlineStaff'
@@ -33,7 +39,8 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
   // Dịch ngôn ngữ
   const { t, i18n } = useTranslation()
   // Các đầu api
-  const { READ_PAGE_INFO, SOCKET_API } = useAPI()
+  const { READ_PAGE_INFO, SOCKET_API, READ_CLIENT_INFO, SEND_MESSAGE_API } =
+    useAPI()
 
   const [error_message, setErrorMessage] = useState<String | null>('')
   const [page_name, setPageName] = useState<string>('')
@@ -46,10 +53,12 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
 
   // Tạo tab hiện tại là HOME
   const [current_tab, setCurrentTab] = useState<string>('home')
-  // Tạo ref để giữ giá trị của current_tab
+
+  /** Tạo ref để giữ giá trị của current_tab */
   const TAB_REF = useRef(current_tab)
-  // Tạo ref để giữ giá trị của is_show
+  /** Tạo ref để giữ giá trị của is_show */
   const IS_SHOW_REF = useRef(show)
+
   useEffect(() => {
     // Cập nhật giá trị mới nhất của tab trong ref mỗi khi tab thay đổi
     TAB_REF.current = current_tab
@@ -57,10 +66,6 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     IS_SHOW_REF.current = show
   }, [current_tab, show])
 
-  // danh sách Tin nhắn chưa đọc
-  const [unread_message, setUnreadMessage] = useState<MessageInfo[]>([])
-  // Tin nhắn mới nhất
-  const [latest_message, setLatestMessage] = useState<MessageInfo | null>(null)
   // hàm dispatch đến store
   const dispatch = useDispatch()
 
@@ -68,10 +73,19 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
   const PAGE_ID = useSelector(selectPageId)
 
   /** List tin nhắn được lấy từ store */
-  const LIST_MESSAGE = useSelector(selectListMessage)
-
-  /** List tin nhắn được lấy từ store */
   const LIST_UNREAD_MESSAGE = useSelector(selectListUnreadMessage)
+
+  /** Tin nhắn mới nhất */
+  const LATEST_MESSAGE = useSelector(selectLatestMessage)
+
+  const REF_LIST_UNREAD_MESSAGE = useRef(LIST_UNREAD_MESSAGE)
+
+  useEffect(() => {
+    REF_LIST_UNREAD_MESSAGE.current = LIST_UNREAD_MESSAGE
+  }, [LIST_UNREAD_MESSAGE])
+
+  /** Trạng thái đóng mở popup */
+  const SHOW_POPUP = useSelector(selectStatusPopup)
 
   /** Độ rộng hiện tại của màn hình */
   const CURRENT_WIDTH = useSelector(selectCurrentWidth)
@@ -88,7 +102,8 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     const URL_PARENT = new URL(FULL_SRC)
     const URL_PARAMS = new URLSearchParams(window.location.search)
     // Lấy giá trị locale từ URL
-    // Mặc định là 'vn' nếu không có locale
+
+    /** Mặc định là 'vn' nếu không có locale */
     const LOCALE = URL_PARAMS.get('locale') || 'vn'
 
     // Thay đổi ngôn ngữ của SDK dựa trên locale từ URL
@@ -101,7 +116,9 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
         console.error('Error changing language:', error)
       })
     /** page_id từ URL page cha */
-    const PAGE_ID = URL_PARENT.searchParams.get('page_id')
+    const PAGE_ID =
+      URL_PARENT.searchParams.get('page_id') ||
+      'bf425487afbe403895116dd9b585537b'
 
     // lưu page_id vào store
     /** Example @value :bf425487afbe403895116dd9b585537b  */
@@ -115,6 +132,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
       dispatch(setCurrentWidth(Number(WIDTH_PARENT)))
     }
   }, [])
+
   /** Client ID lấy từ localStorage */
   const CLIENT_ID = localStorage.getItem(`client_id_<${PAGE_ID}>`)
 
@@ -201,6 +219,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     i18n.changeLanguage(RES?.data.config.locale)
     // Lưu danh sách nhân viên
     setStaffList(RES?.data?.staffs)
+    console.log(RES?.data?.staffs)
   }
   /** Gọi api xác định danh tính khi mở WebSocket */
   const sendIdentifyMessage = (page_id: String | null, client_id: String) => {
@@ -273,23 +292,31 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
 
       // Lấy tin nhắn từ socket
       let { message } = socket_data
+
       /**
        * Phải lấy data trong REF,
        * Vì khi websocket, chỉ lưu giá trị lúc mới khởi tạo
        * Dù có thay đổi cũng không bắt được sự kiện
        */
+
       // nếu có tin nhắn. Popup đóng hoặc đang ở tab home
       if (message && (!IS_SHOW_REF.current || TAB_REF.current !== 'message')) {
-        setUnreadMessage((prevMessages) => [...prevMessages, message])
+        console.log('vao day')
+        // setUnreadMessage((prevMessages) => [...prevMessages, message])
         /** Cần lưu ý (với data của redux, WS đang lưu giá trị [] ban đầu)
          * còn setList message thì lấy giá trị LIST_UNREAD_MESSAGE và push thêm tin nhắn vào.
          * Lúc này LIST_UNREAD_MESSAGE mặc định là []
          * dispatch(setListUnreadMessage([...LIST_UNREAD_MESSAGE, message]))
          */
+        dispatch(
+          setListUnreadMessage([...REF_LIST_UNREAD_MESSAGE.current, message])
+        )
+
+        dispatch(setLatestMessageGlobal(message))
       }
       // Nếu có tin nhắn popup mở và ở tab chat
       if (message && IS_SHOW_REF.current && TAB_REF.current === 'message') {
-        setLatestMessage(message)
+        // setLatestMessage(message)
 
         dispatch(setLatestMessageGlobal(message))
         /** Cần lưu ý (với data của redux, WS đang lưu giá trị [] ban đầu)
@@ -331,18 +358,86 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     WS.current?.close()
   }
 
-  // Chuyển đổi thành mảng và lấy fb_staff_id và is_online
+  /** Chuyển từ Object thành mảng Array và lấy ra fb_staff_id và is_online */
   const EMPLOYEE_LIST: Employee[] = _.map(_.values(staff_list), (employee) => ({
     fb_staff_id: employee.fb_staff_id,
     is_online: employee.is_online,
   }))
 
+  const checkStaffExist = (id: string) => {
+    // Xem nhân viên nhắn tin có tồn tại trong list nhân viên không
+    const IS_STAFF_EXIST = EMPLOYEE_LIST?.find((item) =>
+      id.includes(item?.fb_staff_id)
+    )
+
+    // Nếu không tồn tại thì trả về ''
+    if (!IS_STAFF_EXIST) {
+      return ''
+    }
+
+    // Lấy link avatar
+    const LINK_AVATAR = renderAvatar(IS_STAFF_EXIST?.fb_staff_id)
+    return LINK_AVATAR
+  }
+  /** Chỉ lấy tin nhắn chưa đọc từ page, không lấy từ client */
+  const LIST_UNREAD_MESSAGE_FILTER = LIST_UNREAD_MESSAGE.filter(
+    (item) => item.message_type === 'page'
+  )
+
+  /** Trả về tên nhân viên
+   * @param {string} message_metadata
+   * @returns {string} Tên nhân viên
+   */
+  const renderStaffName = (message_metadata?: string) => {
+    // Lấy ID từ message_metadata
+    const ID_FROM_META_DATA = message_metadata?.split('__').pop() // Lấy phần sau cùng sau dấu '__'
+
+    if (ID_FROM_META_DATA) {
+      // Kiểm tra ID có trong data không và lấy tên
+      const STAFF_NAME = _.get(staff_list, ID_FROM_META_DATA, null)?.name
+      return STAFF_NAME ? STAFF_NAME : 'Nhân viên'
+    }
+  }
+
+  /** Hàm Xử lý gửi tin nhắn */
+  const sendMessage = async (input: any) => {
+    // Nhắn toàn khoảng trắng không cho gửi đi
+    if (input.trim() === '') return
+    // Tiến hành gửi tin nhắn
+    try {
+      // Khởi tạo body tin nhắn
+      if (CLIENT_ID) {
+        const message: Message = {
+          page_id: PAGE_ID,
+          client_id: CLIENT_ID,
+          text: input,
+        }
+        // Gọi api gửi tin nhắn
+        await fetchAPI(SEND_MESSAGE_API, 'POST', message)
+        dispatch(setListUnreadMessage([]))
+        dispatch(setLatestMessageGlobal(null))
+      }
+    } catch (error) {
+    } finally {
+    }
+  }
+  // console.log(LIST_UNREAD_MESSAGE, 'LIST_UNREAD_MESSAGE')
+  // console.log(LATEST_MESSAGE, 'LATEST_MESSAGE')
+  // console.log(LIST_UNREAD_MESSAGE_FILTER, 'LIST_UNREAD_MESSAGE_FILTER')
+  // console.log(REF_LIST_UNREAD_MESSAGE, 'REF_LIST_UNREAD_MESSAGE')
+  const LAST_TIME_CLOSE = localStorage.getItem(`last_time_close__${PAGE_ID}`)
+  console.log(LAST_TIME_CLOSE, 'LAST_TIME_CLOSE')
   return (
     <div
-      className={`flex flex-col relative   ${
+      className={`flex flex-col  ${
         // Nếu không show, thì hiện icon bong bóng chat
-        !show
+        !show && LIST_UNREAD_MESSAGE_FILTER.length === 0
           ? 'w-16 h-16 items-center justify-center'
+          : // Nếu không show, có tin nhắn chưa đọc thì hiện tin nhắn mới nhất đó
+          !show &&
+            LIST_UNREAD_MESSAGE_FILTER.length > 0 &&
+            LATEST_MESSAGE?.message_type === 'page'
+          ? 'w-[286px] h-52 items-end justify-between py-1'
           : // Nếu kích thước điện thoại thì hiện full screen
           CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
           ? ' w-screen h-screen '
@@ -350,158 +445,244 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
             ' w-[416px] h-[674px] p-2 justify-between items-end'
       }  `}
     >
-      <div
-        className={`relative  ${
-          // Phần chính của bong bóng chat
-          CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
-            ? ' w-screen h-screen rounded-none '
-            : ' w-[400px] h-[600px] '
-        } bg-bg-gradient rounded-[20px] overflow-hidden shadow-md ${
-          // mặc định sẽ ẩn/ Khi kich hoạt sẽ mở kèm animation
-          !show
-            ? ' hidden'
-            : ' flex flex-col animate-zoomInBottomRight transition-transform duration-200 ease-in-out '
-        }  `}
-      >
-        {/* header */}
-        {current_tab !== 'message' && (
+      {show && (
+        <div
+          className={`relative  ${
+            // Phần chính của bong bóng chat
+            CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
+              ? ' w-screen h-screen rounded-none '
+              : ' w-[400px] h-[600px] '
+          } bg-bg-gradient rounded-[20px] overflow-hidden shadow-md ${
+            // mặc định sẽ ẩn/ Khi kich hoạt sẽ mở kèm animation
+            !show && LIST_UNREAD_MESSAGE_FILTER.length === 0
+              ? ' hidden'
+              : ' flex flex-col animate-zoomInBottomRight transition-transform duration-200 ease-in-out '
+          }  `}
+        >
+          {/* header */}
+          {current_tab !== 'message' && (
+            <div
+              className={
+                'flex justify-between items-center px-5 py-3 bg-slate-800 text-white'
+              }
+            >
+              <div>
+                <RetionLogo />
+              </div>
+
+              <div className="flex items-center gap-x-5">
+                <div className="flex items-center h-8">
+                  <OnlineStaff data={EMPLOYEE_LIST} />
+                </div>
+                <div
+                  onClick={setHideForMobile}
+                  className={` cursor-pointer w-10 h-10 flex justify-center items-center  ${
+                    CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
+                      ? ' flex'
+                      : ' hidden'
+                  }`}
+                >
+                  <Close />
+                </div>
+              </div>
+            </div>
+          )}
+          {/* body check theo bien current tab de render data */}
+
           <div
             className={
-              'flex justify-between items-center px-5 py-3 bg-slate-800 text-white'
+              'flex flex-col resize-none outline-none scrollbar-thin scrollbar-webkit ' +
+              `${
+                current_tab !== 'home'
+                  ? ' h-[468px] overflow-y-auto'
+                  : ' h-[600px]'
+              }`
             }
           >
-            <div>
-              <RetionLogo />
-            </div>
-
-            <div className="flex items-center gap-x-5">
-              <div className="flex items-center h-8">
-                <OnlineStaff data={EMPLOYEE_LIST} />
-              </div>
-              <div
-                onClick={setHideForMobile}
-                className={` cursor-pointer w-10 h-10 flex justify-center items-center  ${
-                  CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
-                    ? ' flex'
-                    : ' hidden'
-                }`}
-              >
-                <Close />
-              </div>
-            </div>
+            {current_tab === 'home' && (
+              <Home
+                onNavigate={() => {
+                  setCurrentTab('message')
+                }}
+                onError={() => {
+                  setErrorMessage(t('errorMessage'))
+                  setCurrentTab('message')
+                }}
+                social_link={social_link}
+              />
+            )}
+            {current_tab === 'message' && (
+              <ChatScreen
+                userOutChat={() => {
+                  // Khi back ra thì về trang Home
+                  setCurrentTab('home')
+                  // Reset mảng tin nhắn chưa đọc
+                  // setUnreadMessage([])
+                  // setLatestMessage(null)
+                  /** Reset store khi thoát khỏi màn chat */
+                  // 1. Tin nhắn mới nhất
+                  dispatch(setLatestMessageGlobal(null))
+                  // 2. Reset danh sách tin nhắn trong store
+                  dispatch(setListMessage([]))
+                  // 3. Danh sách tin nhắn chưa đọc
+                  dispatch(setListUnreadMessage([]))
+                }}
+                error_message={error_message}
+                onError={() => setErrorMessage('')}
+                setHideForMobile={setHideForMobile}
+                page_name={page_name}
+                employee_list={EMPLOYEE_LIST}
+              />
+            )}
           </div>
-        )}
-        {/* body check theo bien current tab de render data */}
 
-        <div
-          className={
-            'flex flex-col resize-none outline-none scrollbar-thin scrollbar-webkit ' +
-            `${
-              current_tab !== 'home'
-                ? ' h-[468px] overflow-y-auto'
-                : ' h-[600px]'
-            }`
-          }
-        >
-          {current_tab === 'home' && (
-            <Home
-              onNavigate={() => {
-                setCurrentTab('message')
-              }}
-              onError={() => {
-                setErrorMessage(t('errorMessage'))
-                setCurrentTab('message')
-              }}
-              social_link={social_link}
-              unread_message_count={unread_message?.length}
-            />
-          )}
-          {current_tab === 'message' && (
-            <ChatScreen
-              userOutChat={() => {
-                // Khi back ra thì về trang Home
-                setCurrentTab('home')
-                // Reset mảng tin nhắn chưa đọc
-                setUnreadMessage([])
+          {/* Hiển thị Menu */}
+          {/* Nếu tab hiện tại không phải chat thì hiển thị menu */}
+          {current_tab !== 'message' && (
+            <div className="absolute bottom-0 w-full flex flex-col justify-evenly p-2 px-6 h-16 z-20  bg-bg-gradient">
+              <div className="flex">
+                {MENU_LIST.map(
+                  (
+                    { src: IconComponent, srcA: IconComponentA, value, name },
+                    index
+                  ) => (
+                    <div
+                      key={index}
+                      className="flex flex-col w-full h-full justify-center items-center cursor-pointer"
+                      onClick={() => {
+                        if (value !== 'message') {
+                          setCurrentTab(value)
+                        } else {
+                          setCurrentTab('message')
+                          /** Khi ấn vào tab message,
+                           * reset tin nhắn mới nhất
+                           * reset mảng tin nhắn chưa đọc
+                           * => Vì khi vào trong tab sẽ fetch api đọc tin nhắn,
+                           * => không cần các state này nữa
+                           *  */
+                          dispatch(setListUnreadMessage([]))
+                          dispatch(setLatestMessageGlobal(null))
 
-                setLatestMessage(null)
-                dispatch(setLatestMessageGlobal(null))
-                console.log('run here')
-                // Reset danh sách tin nhắn trong store
-                dispatch(setListMessage([]))
-              }}
-              error_message={error_message}
-              onError={() => setErrorMessage('')}
-              setHideForMobile={setHideForMobile}
-              page_name={page_name}
-              employee_list={EMPLOYEE_LIST}
-              latest_message={latest_message}
-            />
-          )}
-        </div>
-
-        {/* Hiển thị Menu */}
-        {/* Nếu tab hiện tại không phải chat thì hiển thị menu */}
-        {current_tab !== 'message' && (
-          <div className="absolute bottom-0 w-full flex flex-col justify-evenly p-2 px-6 h-16 z-20  bg-bg-gradient">
-            <div className="flex">
-              {MENU_LIST.map(
-                (
-                  { src: IconComponent, srcA: IconComponentA, value, name },
-                  index
-                ) => (
-                  <div
-                    key={index}
-                    className="flex flex-col w-full h-full justify-center items-center cursor-pointer"
-                    onClick={() => {
-                      if (value !== 'message') {
-                        setCurrentTab(value)
-                      } else {
-                        setCurrentTab('message')
-                        setLatestMessage(null)
-                        setUnreadMessage([])
-                        if (PAGE_ID === null) {
-                          // Không có page_id thì tạo message Lỗi
-                          setErrorMessage(t('errorMessage'))
+                          if (PAGE_ID === null) {
+                            // Không có page_id thì tạo message Lỗi
+                            setErrorMessage(t('errorMessage'))
+                          }
                         }
-                      }
-                    }}
-                  >
-                    <div className="relative">
-                      <div className="">
-                        {value === 'message' && unread_message?.length > 0 && (
-                          <div className="flex justify-center items-center text-xxs text-white border absolute right-0 top-0 w-4 h-4 bg-red-500 rounded-full translate-x-1 -translate-y-1">
-                            {unread_message?.length < 10
-                              ? unread_message?.length
-                              : '9+'}
-                          </div>
+                      }}
+                    >
+                      <div className="relative">
+                        <div className="">
+                          {value === 'message' &&
+                            LIST_UNREAD_MESSAGE_FILTER?.length > 0 && (
+                              <div className="flex justify-center items-center text-xxs text-white border absolute right-0 top-0 w-4 h-4 bg-red-500 rounded-full translate-x-1 -translate-y-1">
+                                {LIST_UNREAD_MESSAGE_FILTER?.length < 10
+                                  ? LIST_UNREAD_MESSAGE_FILTER?.length
+                                  : '9+'}
+                              </div>
+                            )}
+                        </div>
+                        {/* active menu tab */}
+                        {current_tab === value ? (
+                          <IconComponentA />
+                        ) : (
+                          <IconComponent />
                         )}
                       </div>
-                      {/* active menu tab */}
-                      {current_tab === value ? (
-                        <IconComponentA />
-                      ) : (
-                        <IconComponent />
-                      )}
+                      <p className={'text-sm font-medium'}>{name}</p>
                     </div>
-                    <p className={'text-sm font-medium'}>{name}</p>
-                  </div>
-                )
-              )}
+                  )
+                )}
+              </div>
+              {/* Thông tin đơn vị phát triển */}
+              <h4 className="text-xs text-center text-slate-700">
+                powered by{' '}
+                <a
+                  href="https://beta-bbh-vn-lac.vercel.app/vn"
+                  className="underline"
+                  target="_blank"
+                >
+                  Retion.ai
+                </a>
+              </h4>
             </div>
-            {/* Thông tin đơn vị phát triển */}
-            <h4 className="text-xs text-center text-slate-700">
-              powered by{' '}
-              <a
-                href="https://beta-bbh-vn-lac.vercel.app/vn"
-                className="underline"
-                target="_blank"
+          )}
+        </div>
+      )}
+      <div
+        className={`${
+          !show &&
+          LATEST_MESSAGE?.message_type === 'page' &&
+          LIST_UNREAD_MESSAGE_FILTER?.length > 0
+            ? 'flex flex-col w-[286px] h-[142px] justify-between'
+            : 'hidden'
+        }`}
+      >
+        <div className="flex h-full w-full">
+          {LATEST_MESSAGE?.message_type === 'page' && (
+            <div className="flex flex-col w-full gap-2">
+              {/* Hiển thị avatar theo role user / shop */}
+              <div
+                className={`flex gap-x-1 flex-grow min-h-0 justify-start items-end`}
               >
-                Retion.ai
-              </a>
-            </h4>
-          </div>
-        )}
+                <div className="flex rounded-lg flex-shrink-0">
+                  {LATEST_MESSAGE?.message_type === 'page' && (
+                    <img
+                      src={
+                        checkStaffExist(LATEST_MESSAGE?.message_metadata) ||
+                        './images/earth.svg'
+                      }
+                      className="w-8 h-8 rounded-lg "
+                      alt=""
+                    />
+                  )}
+                </div>
+                <div className="flex flex-col flex-grow min-w-0 h-full bg-white shadow-md rounded-xl p-3">
+                  <div className="flex justify-between items-center w-full">
+                    <h4 className="text-slate-500 text-xs font-medium flex items-center truncate">
+                      {renderStaffName(LATEST_MESSAGE?.message_metadata)}
+                      <span className="mx-0.5">{t('from')}</span>
+                      <span className="mx-0.5">{page_name}</span>
+                      <span className="mx-0.5">•</span>
+                      <span className="text-slate-500 text-xs font-medium">
+                        {calculateTimeAgo(LATEST_MESSAGE?.createdAt)}
+                      </span>
+                    </h4>
+                    <div
+                      onClick={() => {
+                        // Reset hết data
+                        dispatch(setLatestMessageGlobal(null))
+                        dispatch(setListUnreadMessage([]))
+                        dispatch(setListMessage([]))
+
+                        // Lưu thời gian vào localstorage Khi đóng tin nhắn mới
+                        localStorage.setItem(
+                          `last_time_close__${PAGE_ID}`,
+                          Date.now().toString()
+                        )
+                      }}
+                      className="h-5 w-5 cursor-pointer flex justify-center items-center"
+                    >
+                      <CloseSlate className="h-3 w-3" />
+                    </div>
+                  </div>
+
+                  {/* Phần nội dung tin nhắn được hiển thị */}
+                  <h4 className="line-clamp-2 text-sm">
+                    {LATEST_MESSAGE?.message_text}
+                  </h4>
+                </div>
+              </div>
+              <div className="flex gap-x-2">
+                <div className="w-8 h-8"></div>
+                <InputQuickChat
+                  handleSend={(e: string) => {
+                    sendMessage(e)
+                  }}
+                />
+              </div>
+            </div>
+          )}
+        </div>
       </div>
       {/*  Nút trigger hiện thị bong bóng chat */}
       <button
@@ -520,12 +701,14 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
         <div
           className={`absolute ${
             // Khi không có tin nhắn, hoặc đang show, thì không hiện
-            unread_message?.length === 0 || show
+            LIST_UNREAD_MESSAGE_FILTER?.length === 0 || show
               ? 'hidden'
               : 'flex justify-center items-center'
           } text-white text-xs truncate right-0 top-0 bg-red-500 h-5 w-5 rounded-full border-2 border-white translate-x-1 -translate-y-1`}
         >
-          {unread_message?.length < 10 ? unread_message?.length : '9+'}
+          {LIST_UNREAD_MESSAGE_FILTER?.length < 10
+            ? LIST_UNREAD_MESSAGE_FILTER?.length
+            : '9+'}
         </div>
         <div className="">
           {show ? (

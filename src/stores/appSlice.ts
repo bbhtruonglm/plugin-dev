@@ -11,6 +11,7 @@ const initialState: AppState = {
   list_message: [],
   list_unread_message: [],
   latest_message: {},
+  show_popup: false,
 }
 
 export const appSlice = createSlice({
@@ -33,6 +34,10 @@ export const appSlice = createSlice({
     /** lưu dữ Kích thước chiều rộng trang */
     setCurrentWidth: (state, action: PayloadAction<number>) => {
       state.current_width = action.payload
+    },
+    /** lưu dữ Kích thước chiều rộng trang */
+    setStatusPopup: (state, action: PayloadAction<boolean>) => {
+      state.show_popup = action.payload
     },
 
     /** lưu dữ liệu tin nhắn */
@@ -68,6 +73,7 @@ export const {
   setListMessage,
   setListUnreadMessage,
   setLatestMessageGlobal,
+  setStatusPopup,
 } = appSlice.actions
 
 /** chọn đến page id */
@@ -90,5 +96,7 @@ export const selectListUnreadMessage = (state: RootState) =>
 /** chọn đầu tin nhắn mới nhất */
 export const selectLatestMessage = (state: RootState) =>
   state.app.latest_message
+/** chọn đầu trạng thái đóng mở popup */
+export const selectStatusPopup = (state: RootState) => state.app.show_popup
 
 export default appSlice.reducer

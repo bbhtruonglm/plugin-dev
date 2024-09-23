@@ -9,6 +9,11 @@ export const vn = {
       'Hệ thống chưa được liên kết.\n Vui lòng liên hệ quản trị viên để được hỗ trợ!',
     org_name: 'Bot Bán Hàng',
     your_options: 'Bạn có thể đặt câu hỏi hoặc phản ánh chất lượng dịch vụ.',
+    from: 'từ',
+    ago: 'trước',
+    m: 'p',
+    now: 'Bây giờ',
+    reply: 'Trả lời',
     // Home
     welcome: 'Xin chào,',
     welcomeMessage: 'Chúng tôi có thể hỗ trợ được gì bạn?',

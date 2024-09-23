@@ -25,7 +25,7 @@ interface MessageProps {
     time?: string
     message_attachments?: any
   }
-  userId?: string
+  userId?: string | null
 }
 function MessageComponent({ data }: MessageProps) {
   return (
@@ -40,7 +40,7 @@ function MessageComponent({ data }: MessageProps) {
     >
       {/* Tooltip */}
       <div
-        className={`absolute w-32 bottom-full ${
+        className={`absolute w-36 bottom-full ${
           data?.message_type === 'page' ? 'left-0' : 'right-0'
         }  text-xs font-semibold text-slate-700 bg-transparent rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
       >

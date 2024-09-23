@@ -1,3 +1,5 @@
+import { MessageInfo } from '@/utils/type'
+
 /** cấu trúc dữ liệu chi tiết tin nhắn*/
 interface ChatScreenProps {
   /** Sự kiện trở lại trang chủ */
@@ -32,12 +34,15 @@ interface ChatScreenProps {
   client_name?: string
   /** Danh sách nhân sự page */
   employee_list?: Employee[]
-  /** TIn nhắn mới nhất */
-  latest_message?: any
   /** có phải tin nhắn khởi tạo không ? */
   is_init: boolean
+
+  /** TIn nhắn mới nhất */
+  // latest_message?: any
   /** set Trạng thái Init */
-  setIsInit: (e: any) => void
+  // setIsInit: (e: any) => void
+  /** Tin nhắn chưa đọc */
+  // list_unread_message?: MessageInfo[]
 }
 /** Kiểu dữ liệu nhân viên */
 type Employee = {
@@ -93,6 +98,20 @@ interface InputProps {
   client_id: string
   /** Hàm set loading */
   setLoading: (e: boolean) => void
+}
+
+/** Cấu trúc dữ liệu input */
+interface InputQuickProps {
+  /** Hàm gửi tin nhắn */
+  handleSend: (e: any) => void
+  /** Trạng thái loading */
+  loading?: boolean
+  /** Tên nhân viên */
+  staff_name?: string
+  /** Tin nhắn báo lỗi */
+  error_message?: String | null
+  /** Hàm set loading */
+  setLoading?: (e: boolean) => void
 }
 /** Cấu trức dữ liệu upload */
 interface UploadProps {

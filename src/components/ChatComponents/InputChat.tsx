@@ -1,6 +1,7 @@
 import { ReactComponent as Arrow } from '../../assets/Icon_up_circle.svg'
 import { ReactComponent as ArrowSlate } from '../../assets/Icon_up_circle_slate.svg'
 import { ReactComponent as Close } from '@/assets/close.svg'
+import { InputProps } from './type'
 import Upload from './Upload'
 import { selectPageId } from '@/stores/appSlice'
 import { t } from 'i18next'
@@ -66,7 +67,7 @@ function InputChat({
     <div className="absolute bottom-4 flex justify-center items-center h-12 bg-transparent w-full px-5 gap-2">
       <div className="bg-white w-full flex justify-between gap-2 items-center h-full py-2 px-4 rounded-full">
         <Upload
-          setPreviewUrl={(e) => {
+          setPreviewUrl={(e: File) => {
             // Lưu file
             setFile(e)
             // Tạo đối tượng READER
