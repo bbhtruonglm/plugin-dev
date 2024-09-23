@@ -304,6 +304,34 @@ function DetailChat({
     return LINK_AVATAR
   }
 
+  const DATA_TEST = [
+    {
+      _id: '66f12f08271db2db8a2ec0be',
+      fb_page_id: 'bf425487afbe403895116dd9b585537b',
+      fb_client_id: '52e9935c1a1249e8bd72fd4dad9fb9e1',
+      platform_type: 'WEBSITE',
+      message_type: 'page',
+      sender_id: 'bf425487afbe403895116dd9b585537b',
+      recipient_id: '52e9935c1a1249e8bd72fd4dad9fb9e1',
+      time: '2024-09-23T09:04:07.787Z',
+      message_mid: '33b72ec110e84725873673953910a42f',
+      message_attachments: [
+        {
+          type: 'audio',
+          payload: {
+            url: 'https://static.botbanhang.vn/chatbox/bf425487afbe403895116dd9b585537b/message/6d39b666-1e66-4924-82c9-8f78275a5ec8-1727082247365.mp3',
+          },
+          _id: '66f12f08271db2db8a2ec0bf',
+        },
+      ],
+      message_metadata: '__Nv Kỹ Thuật__106585719065651',
+      ai: [],
+      createdAt: '2024-09-23T09:04:08.017Z',
+      updatedAt: '2024-09-23T09:04:08.017Z',
+      __v: 0,
+      attachment_size: [],
+    },
+  ]
   return (
     <div className="flex flex-col w-full h-full absolute top-0">
       {/* header */}
@@ -382,10 +410,7 @@ function DetailChat({
                 )}
 
                 {/* Phần nội dung tin nhắn được hiển thị */}
-                <MessageComponent
-                  data={item}
-                  userId={user_id}
-                />
+                <MessageComponent data={item} />
 
                 {item?.message_type === 'client' && (
                   <div

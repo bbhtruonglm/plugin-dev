@@ -3,10 +3,9 @@ module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
   theme: {
     extend: {
-      // clipPath: {
-      //   squircle:
-      //     'path("M 0.1 0 C 0.04 0 0 0.04 0 0.1 V 0.9 C 0 0.96 0.04 1 0.1 1 H 0.9 C 0.96 1 1 0.96 1 0.9 V 0.1 C 1 0.04 0.96 0 0.9 0 Z")',
-      // },
+      spacing: {
+        '1px': '1px',
+      },
       screens: {
         xxs: '320px', // Custom extra extra small breakpoint
         xs: '450px', // Custom extra small breakpoint
@@ -31,6 +30,9 @@ module.exports = {
         textYellow: '#FEF08A',
         onlineColor: '#22C55E',
         inputBg: '#F3F4F7',
+        'slate-500': '#64748b',
+        'slate-100': '#e2e8f0',
+        'blue-500': '#3b82f6',
       },
       // animation: {
       //   spinSlow: 'spin 3s linear infinite', // Adding a slower spin animation
@@ -108,24 +110,45 @@ module.exports = {
             borderRadius: '6px',
           },
         },
-        '.rounded-oval': {
-          '-webkit-mask-position': 'center',
-          'mask-position': 'center',
-          '-webkit-mask-repeat': 'no-repeat',
-          'mask-repeat': 'no-repeat',
-          '-webkit-mask-size': 'contain',
-          'mask-size': 'contain',
-          '-webkit-mask-image':
-            "url(data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' fill='none'%3E%3Cpath fill='%23000' d='M100 0C20 0 0 20 0 100s20 100 100 100 100-20 100-100S180 0 100 0z'/%3E%3C/svg%3E)",
-          'mask-image':
-            "url(data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' fill='none'%3E%3Cpath fill='%23000' d='M100 0C20 0 0 20 0 100s20 100 100 100 100-20 100-100S180 0 100 0z'/%3E%3C/svg%3E)",
+
+        '.progress-bar': {
+          '-webkit-appearance': 'none',
+          appearance: 'none',
+          width: '100%',
+          height: '4px',
+          'border-radius': '9999px',
+          'background-color': '#e2e8f0', // bg-slate-100
+          cursor: 'pointer',
+          overflow: 'hidden',
         },
-        '.clip-squircle': {
-          clipPath:
-            'path("M 0.1 0 C 0.04 0 0 0.04 0 0.1 V 0.9 C 0 0.96 0.04 1 0.1 1 H 0.9 C 0.96 1 1 0.96 1 0.9 V 0.1 C 1 0.04 0.96 0 0.9 0 Z")',
+        '.progress-bar::-webkit-slider-runnable-track': {
+          'background-color': '#e2e8f0', // bg-slate-100
+          height: '4px',
         },
-        '.clip-circle': {
-          clipPath: 'circle(50%)',
+        '.progress-bar::-webkit-slider-thumb': {
+          '-webkit-appearance': 'none',
+          appearance: 'none',
+          width: '12px',
+          height: '12px',
+          'background-color': '#000', // Thumb màu đen
+          'border-radius': '50%',
+          'margin-top': '-4px',
+          cursor: 'pointer',
+        },
+        '.progress-bar::-moz-range-track': {
+          'background-color': '#e2e8f0', // bg-slate-100
+          height: '4px',
+        },
+        '.progress-bar::-moz-range-thumb': {
+          width: '12px',
+          height: '12px',
+          'background-color': '#000', // Thumb màu đen
+          'border-radius': '50%',
+          cursor: 'pointer',
+        },
+        '.progress-bar::-webkit-slider-runnable-track': {
+          background:
+            'linear-gradient(to right, black var(--progress), #e2e8f0 var(--progress))', // Màu đen khi đã chạy
         },
       }
       addUtilities(newUtilities, ['responsive', 'hover'])

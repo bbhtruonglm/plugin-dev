@@ -121,7 +121,9 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
         console.error('Error changing language:', error)
       })
     /** page_id từ URL page cha */
-    const PAGE_ID = URL_PARENT.searchParams.get('page_id')
+    const PAGE_ID =
+      URL_PARENT.searchParams.get('page_id') ||
+      'bf425487afbe403895116dd9b585537b'
 
     // lưu page_id vào store
     /** Example @value :bf425487afbe403895116dd9b585537b  */

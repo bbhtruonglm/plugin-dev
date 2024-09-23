@@ -118,3 +118,86 @@ interface UploadProps {
   /** Hàm upload file */
   setPreviewUrl: (url: File) => void
 }
+
+/**
+ * Định nghĩa kiểu cho attachment của tin nhắn
+ */
+export interface MessageAttachment {
+  /** Loại file đính kèm (ví dụ: audio, video, v.v.) */
+  type: string
+
+  /** URL của file đính kèm */
+  payload: {
+    url: string
+  }
+
+  /** ID của attachment */
+  _id: string
+}
+
+/**
+ * Định nghĩa kiểu cho props của MessageComponent
+ */
+export interface MessageProps {
+  data: {
+    /** ID của tin nhắn */
+    _id: string
+
+    /** ID của trang Facebook */
+    fb_page_id: string
+
+    /** ID của client Facebook */
+    fb_client_id: string
+
+    /** Loại nền tảng (ví dụ: WEBSITE) */
+    platform_type: string
+
+    /** Loại tin nhắn (ví dụ: page) */
+    message_type: string
+
+    /** Nội dung tin nhắn Text */
+    message_text: string
+
+    /** ID của người gửi */
+    sender_id: string
+
+    /** ID của người nhận */
+    recipient_id: string
+
+    /** Thời gian gửi tin nhắn */
+    time: string
+
+    /** ID của tin nhắn */
+    message_mid: string
+
+    /** Danh sách các file đính kèm */
+    message_attachments: MessageAttachment[]
+
+    /** Metadata của tin nhắn */
+    message_metadata: string
+
+    /** Thời gian tạo */
+    createdAt: string
+
+    /** Thời gian cập nhật */
+    updatedAt: string
+
+    /** Phiên bản */
+    __v: number
+
+    /** Kích thước của các file đính kèm */
+    attachment_size: any[]
+  }
+}
+export interface AudioPlayerProps {
+  /** url video */
+  src: string
+}
+export interface VideoPlayerProps {
+  /** url video */
+  src: string
+  /** độ rộng video */
+  width?: string
+  /** độ cao video */
+  height?: string
+}

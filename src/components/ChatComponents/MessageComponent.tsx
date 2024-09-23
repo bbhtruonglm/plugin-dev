@@ -1,32 +1,10 @@
+import AudioPlayer from './AudioPlayer'
 import { ReactComponent as IconArrow } from '@/assets/arrow-up-right-square.svg'
+import { MessageProps } from './type'
+import VideoPlayer from './VideoPlayter'
 import { formatDate } from '@/utils'
 import photo from '@/assets/photo.png'
 
-interface MessageProps {
-  data: {
-    type?: string
-    role?: string
-    content: {
-      image?: string
-      video?: string
-      audio?: string
-      text?: string
-      note?: string
-      highlight?: string
-      schedule?: string
-      button?: string
-    }
-    avatar?: any
-    message?: any
-    timestamp?: any
-    userId?: any
-    message_text?: string
-    message_type?: string
-    time?: string
-    message_attachments?: any
-  }
-  userId?: string | null
-}
 function MessageComponent({ data }: MessageProps) {
   return (
     <div
@@ -57,19 +35,15 @@ function MessageComponent({ data }: MessageProps) {
         </div>
       )}
       {/* Hiển thị data dạng video */}
-      {data?.content?.video && (
-        <div>
-          <img
-            src={photo}
-            className="w-[50%] h-full"
-            alt=""
-          />
-        </div>
+      {data?.message_attachments?.[0]?.type === 'video' && (
+        <VideoPlayer src={'https://www.w3schools.com/html/mov_bbb.mp4'} />
       )}
       {/* Hiển thị data dạng audio */}
-      {data?.content?.audio && <div>audio</div>}
+      {data?.message_attachments?.[0]?.type === 'audio' && (
+        <AudioPlayer src={data?.message_attachments?.[0]?.payload?.url} />
+      )}
       {/* Hiển thị data dạng Highlight */}
-      {data?.content?.highlight && (
+      {data?.message_attachments?.[0]?.type === 'highlight' && (
         <div className="">
           <h4 className="font-semibold">Tiêu đề</h4>
         </div>
@@ -81,7 +55,7 @@ function MessageComponent({ data }: MessageProps) {
         </p>
       )}
       {/* Hiện thị data dạng lịch */}
-      {data?.content?.schedule && (
+      {data?.message_attachments?.[0]?.type === 'schedule' && (
         <div>
           <div className="flex bg-bgBtnBold text-textYellow cursor-pointer py-2 gap-1 rounded-lg justify-center items-center">
             Lập lịch
@@ -90,14 +64,14 @@ function MessageComponent({ data }: MessageProps) {
         </div>
       )}
       {/* Hiện thị data dạng button */}
-      {data?.content?.button && (
+      {data?.message_attachments?.[0]?.type === 'button' && (
         <div>
           <div className="flex bg-bgBtnLight text-white cursor-pointer py-2 gap-1 rounded-lg justify-center items-center">
             Nút số 1
           </div>
         </div>
       )}
-      {data?.content?.button && (
+      {data?.message_attachments?.[0]?.type === 'button' && (
         <div>
           <div className="flex bg-bgBtnLight text-white cursor-pointer py-2 gap-1 rounded-lg justify-center items-center">
             Nút số 2
