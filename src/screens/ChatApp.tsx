@@ -1,7 +1,12 @@
 import { ChatAppProps, EmployeeList } from './type'
 import { Employee, Message } from '@/components/ChatComponents/type'
 import _, { size } from 'lodash'
-import { calculateTimeAgo, renderAvatar } from '@/utils'
+import {
+  calculateTimeAgo,
+  postMessageToParent,
+  renderAvatar,
+  saveTimeClosePopup,
+} from '@/utils'
 import { fetchAPI, useAPI } from '@/api/api'
 import {
   selectCurrentWidth,
@@ -116,9 +121,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
         console.error('Error changing language:', error)
       })
     /** page_id từ URL page cha */
-    const PAGE_ID =
-      URL_PARENT.searchParams.get('page_id') ||
-      'bf425487afbe403895116dd9b585537b'
+    const PAGE_ID = URL_PARENT.searchParams.get('page_id')
 
     // lưu page_id vào store
     /** Example @value :bf425487afbe403895116dd9b585537b  */
@@ -416,6 +419,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
         await fetchAPI(SEND_MESSAGE_API, 'POST', message)
         dispatch(setListUnreadMessage([]))
         dispatch(setLatestMessageGlobal(null))
+        postMessageToParent(false, false)
       }
     } catch (error) {
     } finally {
@@ -432,17 +436,17 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
       className={`flex flex-col  ${
         // Nếu không show, thì hiện icon bong bóng chat
         !show && LIST_UNREAD_MESSAGE_FILTER.length === 0
-          ? 'w-16 h-16 items-center justify-center'
+          ? 'w-16 h-[72px] items-center justify-center pb-4 pt-2'
           : // Nếu không show, có tin nhắn chưa đọc thì hiện tin nhắn mới nhất đó
           !show &&
             LIST_UNREAD_MESSAGE_FILTER.length > 0 &&
             LATEST_MESSAGE?.message_type === 'page'
-          ? 'w-[286px] h-52 items-end justify-between py-1'
+          ? 'w-[302px] h-56 items-end justify-between pb-4 px-2'
           : // Nếu kích thước điện thoại thì hiện full screen
           CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
           ? ' w-screen h-screen '
           : // Nếu màn PC thì hiện thành 1 tab nhỏ
-            ' w-[416px] h-[674px] p-2 justify-between items-end'
+            ' w-[416px] h-[674px] px-2 pb-4 justify-between items-end'
       }  `}
     >
       {show && (
@@ -516,9 +520,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
                 userOutChat={() => {
                   // Khi back ra thì về trang Home
                   setCurrentTab('home')
-                  // Reset mảng tin nhắn chưa đọc
-                  // setUnreadMessage([])
-                  // setLatestMessage(null)
+
                   /** Reset store khi thoát khỏi màn chat */
                   // 1. Tin nhắn mới nhất
                   dispatch(setLatestMessageGlobal(null))
@@ -655,10 +657,9 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
                         dispatch(setListMessage([]))
 
                         // Lưu thời gian vào localstorage Khi đóng tin nhắn mới
-                        localStorage.setItem(
-                          `last_time_close__${PAGE_ID}`,
-                          Date.now().toString()
-                        )
+                        saveTimeClosePopup(PAGE_ID)
+                        // post message 1 lần nữa
+                        postMessageToParent(false, false)
                       }}
                       className="h-5 w-5 cursor-pointer flex justify-center items-center"
                     >
@@ -678,6 +679,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
                   handleSend={(e: string) => {
                     sendMessage(e)
                   }}
+                  staff_name={renderStaffName(LATEST_MESSAGE?.message_metadata)}
                 />
               </div>
             </div>

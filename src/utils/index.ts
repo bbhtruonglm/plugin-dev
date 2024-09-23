@@ -131,3 +131,31 @@ export function calculateTimeAgo(timeString: string) {
   //   return `${weeks}w ${t('ago')}`
   // }
 }
+
+/** Hàm post message thông tin đến parent
+ * @param {boolean} is_show: Kiểm tra xem popup hiển thị hay không?
+ * @param {boolean} is_quick_chat: Kiểm tra xem có QUICK_CHAT không?
+ *
+ */
+export const postMessageToParent = (
+  is_show: boolean,
+  is_quick_chat: boolean
+) => {
+  // post message đến parent
+  window.parent.postMessage(
+    {
+      from: 'BBH-EMBED-IFRAME',
+      is_show: is_show,
+      is_quick_chat: is_quick_chat,
+    },
+    '*'
+  )
+}
+
+/** Thêm thời gian đóng popup vào localStorage
+ * @param {string} page_id: Nhận với page_id
+ */
+export const saveTimeClosePopup = (page_id: string) => {
+  // Lưu vào thời gian đóng popup
+  localStorage.setItem(`last_time_close__${page_id}`, Date.now().toString())
+}

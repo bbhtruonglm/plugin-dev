@@ -54,7 +54,7 @@ function ChatHeader({
               </h5>
             </div>
           </div>
-          <div>
+          <div className="flex gap-x-5">
             <div className="flex h-8 justify-center">
               <OnlineStaff
                 data={employee_list}
