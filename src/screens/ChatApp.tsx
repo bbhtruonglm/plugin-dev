@@ -5,7 +5,8 @@ import {
   calculateTimeAgo,
   postMessageToParent,
   renderAvatar,
-  saveTimeClosePopup,
+  truncateSentences,
+  truncateString,
 } from '@/utils'
 import { fetchAPI, useAPI } from '@/api/api'
 import {
@@ -28,7 +29,6 @@ import { ReactComponent as Close } from '@/assets/close.svg'
 import { ReactComponent as CloseSlate } from '@/assets/close-black.svg'
 import { ReactComponent as Down } from '@/assets/arrow.svg'
 import Home from '@/screens/Home'
-import InputQuickChat from '@/components/ChatComponents/InputQuickChat'
 import { ReactComponent as Logo } from '@/assets/logo-retion.svg'
 import { MessageInfo } from '@/utils/type'
 import OnlineStaff from '@/components/Container/OnlineStaff'
@@ -447,20 +447,26 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
   /** Lấy ra thời gian đóng popup gần nhất từ trong localStorage */
   const LAST_TIME_CLOSE = localStorage.getItem(`last_time_close__${PAGE_ID}`)
 
+  console.log(show, LIST_UNREAD_MESSAGE_FILTER, LATEST_MESSAGE)
   return (
     <div
       className={`flex flex-col  ${
-        // Nếu không show, thì hiện icon bong bóng chat
-        !show && LIST_UNREAD_MESSAGE_FILTER.length === 0
+        // Nếu không show, hoặc người dùng tắt Quickchat
+        // thì hiện icon bong bóng chat
+        (!show && LIST_UNREAD_MESSAGE_FILTER.length === 0) ||
+        (!show &&
+          LATEST_MESSAGE === null &&
+          LIST_UNREAD_MESSAGE_FILTER.length > 0)
           ? 'w-16 h-[72px] items-center justify-center pb-4 pt-2'
-          : // Nếu không show, có tin nhắn chưa đọc thì hiện tin nhắn mới nhất đó
+          : // Nếu không show, có tin nhắn chưa đọc, và tin nhắn mới nhất từ page
+          // thì hiện tin nhắn mới nhất đó
           !show &&
             LIST_UNREAD_MESSAGE_FILTER.length > 0 &&
             LATEST_MESSAGE?.message_type === 'page'
           ? 'w-[302px] h-56 items-end justify-between pb-4 px-2'
           : // Nếu kích thước điện thoại thì hiện full screen
           CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
-          ? ' w-screen h-screen '
+          ? ' w-screen h-screen'
           : // Nếu màn PC thì hiện thành 1 tab nhỏ
             ' w-[416px] h-[674px] px-2 pb-4 justify-between items-end'
       }  `}
@@ -649,31 +655,47 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
                         checkStaffExist(LATEST_MESSAGE?.message_metadata) ||
                         './images/earth.svg'
                       }
-                      className="w-8 h-8 rounded-lg "
+                      className="w-8 h-8  mask-rounded-oval"
                       alt=""
                     />
                   )}
                 </div>
-                <div className="flex flex-col flex-grow min-w-0 h-full bg-white shadow-md rounded-xl p-3">
-                  <div className="flex justify-between items-center w-full">
-                    <h4 className="text-slate-500 text-xs font-medium flex items-center truncate">
-                      {renderStaffName(LATEST_MESSAGE?.message_metadata)}
-                      <span className="mx-0.5">{t('from')}</span>
-                      <span className="mx-0.5">{page_name}</span>
-                      <span className="mx-0.5">•</span>
-                      <span className="text-slate-500 text-xs font-medium">
+                <div className="flex flex-col flex-grow min-w-0 h-full bg-white rounded-xl p-3">
+                  <div className="flex justify-between items-center w-full gap-x-1">
+                    {/* Phần hiển thị thông tin tin nhắn */}
+                    <div className="flex justify-between w-full ">
+                      <div className="text-slate-500 text-xs font-medium flex items-center">
+                        {/* Hiển thị tên nhân viên */}
+                        <span className="">
+                          {truncateSentences(
+                            renderStaffName(LATEST_MESSAGE?.message_metadata),
+                            6
+                          )}
+                        </span>
+                        <span className="mx-0.5">{t('from')}</span>
+                        {/* Hiển thị tên trang, có thể bị cắt ngắn nếu quá dài */}
+                        <span className="mx-0.5 truncate">
+                          {truncateString(page_name, 10)}
+                        </span>
+                      </div>
+
+                      {/* Hiển thị thời gian tin nhắn */}
+                      <span className="text-slate-500 text-xs font-medium truncate flex items-center flex-shrink-0">
+                        <span className="mx-0.5">•</span>
                         {calculateTimeAgo(LATEST_MESSAGE?.createdAt)}
                       </span>
-                    </h4>
+                    </div>
+
+                    {/* Nút đóng */}
                     <div
                       onClick={() => {
                         // Reset hết data trong store
                         dispatch(setLatestMessageGlobal(null))
-                        dispatch(setListUnreadMessage([]))
-                        dispatch(setListMessage([]))
+                        // dispatch(setListUnreadMessage([]))
+                        // dispatch(setListMessage([]))
 
                         // Lưu thời gian vào localstorage Khi đóng tin nhắn mới
-                        saveTimeClosePopup(PAGE_ID)
+                        // saveTimeClosePopup(PAGE_ID)
                         // post message 1 lần nữa
                         postMessageToParent(false, false)
                       }}
@@ -689,14 +711,38 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
                   </h4>
                 </div>
               </div>
-              <div className="flex gap-x-2">
+              <div className="flex gap-x-2 h-11">
                 <div className="w-8 h-8"></div>
-                <InputQuickChat
+                {/* <InputQuickChat
                   handleSend={(e: string) => {
                     sendMessage(e)
                   }}
-                  staff_name={renderStaffName(LATEST_MESSAGE?.message_metadata)}
-                />
+                  staff_name={truncateSentences(
+                    renderStaffName(LATEST_MESSAGE?.message_metadata),
+                    6
+                  )}
+                /> */}
+                <div
+                  onClick={() => {
+                    // Khi click trả lời sẽ  reset hết data trong store
+                    dispatch(setLatestMessageGlobal(null))
+                    dispatch(setListUnreadMessage([]))
+                    dispatch(setListMessage([]))
+
+                    // Chuyển tab thành message
+                    setCurrentTab('message')
+                    // trigger hàm đóng mở popup
+                    handleBtn()
+                  }}
+                  className="h-11 bg-white text-slate-400 text-sm flex w-full rounded-xl shadow-md p-3  items-center"
+                >
+                  {t('reply') +
+                    ' ' +
+                    truncateSentences(
+                      renderStaffName(LATEST_MESSAGE?.message_metadata),
+                      6
+                    )}
+                </div>
               </div>
             </div>
           )}
@@ -705,6 +751,12 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
       {/*  Nút trigger hiện thị bong bóng chat */}
       <button
         onClick={() => {
+          if (!show && current_tab === 'message') {
+            // Reset hết data trong store
+            dispatch(setLatestMessageGlobal(null))
+            dispatch(setListUnreadMessage([]))
+            dispatch(setListMessage([]))
+          }
           handleBtn()
           setErrorMessage('')
         }}

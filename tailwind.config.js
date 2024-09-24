@@ -6,6 +6,12 @@ module.exports = {
       spacing: {
         '1px': '1px',
       },
+      // Tạo tiện ích tùy chỉnh cho mask
+      maskImage: {
+        'rounded-oval':
+          "url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' fill='none'%3E%3Cpath fill='%23000' d='M100 0C20 0 0 20 0 100s20 100 100 100 100-20 100-100S180 0 100 0z'/%3E%3C/svg%3E\")",
+      },
+
       screens: {
         xxs: '320px', // Custom extra extra small breakpoint
         xs: '450px', // Custom extra small breakpoint
@@ -149,6 +155,14 @@ module.exports = {
         '.progress-bar::-webkit-slider-runnable-track': {
           background:
             'linear-gradient(to right, black var(--progress), #e2e8f0 var(--progress))', // Màu đen khi đã chạy
+        },
+
+        '.mask-rounded-oval': {
+          'mask-position': 'center', // Đặt vị trí mask
+          'mask-repeat': 'no-repeat', // Không lặp lại
+          'mask-size': 'contain', // Mask có kích thước vừa khít
+          'mask-image':
+            "url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' fill='none'%3E%3Cpath fill='%23000' d='M100 0C20 0 0 20 0 100s20 100 100 100 100-20 100-100S180 0 100 0z'/%3E%3C/svg%3E\")",
         },
       }
       addUtilities(newUtilities, ['responsive', 'hover'])

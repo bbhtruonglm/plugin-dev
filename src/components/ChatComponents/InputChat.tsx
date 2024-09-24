@@ -1,3 +1,5 @@
+import { useEffect, useRef, useState } from 'react'
+
 import { ReactComponent as Arrow } from '../../assets/Icon_up_circle.svg'
 import { ReactComponent as ArrowSlate } from '../../assets/Icon_up_circle_slate.svg'
 import { ReactComponent as Close } from '@/assets/close.svg'
@@ -7,7 +9,6 @@ import { selectPageId } from '@/stores/appSlice'
 import { t } from 'i18next'
 import { useAPI } from '@/api/api'
 import { useSelector } from 'react-redux'
-import { useState } from 'react'
 
 function InputChat({
   handleSend,
@@ -17,6 +18,14 @@ function InputChat({
   client_id,
   setLoading,
 }: InputProps) {
+  const inputRef = useRef<HTMLInputElement>(null) // Tạo ref cho ô input
+
+  // Dùng useEffect để focus vào ô input khi component được render
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus() // Focus vào ô input khi component mở
+    }
+  }, []) // useEffect sẽ chạy một lần khi component được render
   const [value, setValue] = useState('')
   const [preview_url, setPreviewUrl] = useState<string | null>(null)
   const [file, setFile] = useState<File | null>(null)
@@ -84,6 +93,7 @@ function InputChat({
         />
         {/* ô input chat */}
         <input
+          ref={inputRef}
           onChange={(e) => {
             setValue(e.target.value)
           }}

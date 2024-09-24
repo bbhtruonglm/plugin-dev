@@ -62,9 +62,10 @@ function App() {
           handleToggle()
           setShow(!is_show)
           if (!is_show) {
+            // Khi mở chỉ reset tin nhắn mới nhất trong store
             dispatch(setLatestMessageGlobal(null))
-            dispatch(setListUnreadMessage([]))
-            dispatch(setListMessage([]))
+            // dispatch(setListUnreadMessage([]))
+            // dispatch(setListMessage([]))
           } else {
             // Lưu thời gian vào localstorage Khi đóng popup
             saveTimeClosePopup(PAGE_ID)

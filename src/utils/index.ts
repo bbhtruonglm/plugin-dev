@@ -177,3 +177,31 @@ export const saveTimeClosePopup = (page_id: string) => {
   // Lưu vào thời gian đóng popup
   localStorage.setItem(`last_time_close__${page_id}`, Date.now().toString())
 }
+
+/** Hàm truncate
+ * @param {string} str: Chuỗi cần truncate
+ * @param {number} maxLength: Chiều dài chuỗi cần truncate
+ * @returns {string} Chuỗi đã truncate
+ */
+export const truncateString = (str: string, maxLength: number) => {
+  if (!str) return '' // Trả về chuỗi rỗng nếu str là null hoặc undefined
+  return str.length > maxLength ? str.substring(0, maxLength) + '...' : str
+}
+
+/** Hàm truncate cho sentences
+ * @param {string} str: Chuỗi cần truncate
+ * • Lấy từ đầu tiên của trong tên
+ * @param {number} maxLength: Chiều dài chuỗi cần truncate
+ * @returns {string} Chuỗi đã truncate
+ */
+export const truncateSentences = (str: string, maxLength: number) => {
+  if (!str) return '' // Trả về chuỗi rỗng nếu str là null hoặc undefined
+
+  const WORDS = str.split(' ') // Tách chuỗi thành mảng từ
+  const FIRST_WORD = WORDS[0] // Lấy từ đầu tiên
+
+  // Truncate nếu từ đầu tiên dài hơn maxLength
+  return FIRST_WORD.length > maxLength
+    ? FIRST_WORD.substring(0, maxLength) + '...'
+    : FIRST_WORD
+}
