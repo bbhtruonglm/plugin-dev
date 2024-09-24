@@ -4,44 +4,40 @@ import { ReactComponent as Pause } from '@/assets/pause-circle.svg'
 import { ReactComponent as Play } from '@/assets/play-btn.svg'
 import { VideoPlayerProps } from './type'
 
-const VideoPlayer: React.FC<VideoPlayerProps> = ({
-  src,
-  width = '180px',
-  height = '110px',
-}) => {
+const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, width, height }) => {
   const VIDEO_REF = useRef<HTMLVideoElement>(null)
   const [is_playing, setIsPlaying] = useState(false)
   const [current_time, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
+  const [is_hovered, setIsHovered] = useState(false) // State for hover
 
   useEffect(() => {
-    const video = VIDEO_REF.current
-    if (video) {
-      video.addEventListener('loadedmetadata', () => {
-        setDuration(video.duration)
+    const VIDEO = VIDEO_REF.current
+    if (VIDEO) {
+      VIDEO.addEventListener('loadedmetadata', () => {
+        setDuration(VIDEO.duration)
       })
-      video.addEventListener('timeupdate', () => {
-        setCurrentTime(video.currentTime)
+      VIDEO.addEventListener('timeupdate', () => {
+        setCurrentTime(VIDEO.currentTime)
       })
-      video.addEventListener('ended', handleVideoEnd)
+      VIDEO.addEventListener('ended', handleVideoEnd)
     }
     return () => {
-      if (video) {
-        video.removeEventListener('loadedmetadata', () => {})
-        video.removeEventListener('timeupdate', () => {})
-        video.removeEventListener('ended', handleVideoEnd)
+      if (VIDEO) {
+        VIDEO.removeEventListener('loadedmetadata', () => {})
+        VIDEO.removeEventListener('timeupdate', () => {})
+        VIDEO.removeEventListener('ended', handleVideoEnd)
       }
     }
   }, [])
 
-  /** Hàm check xem video đã kết thúc hay chưa */
+  /** Hàm check video kết thúc */
   const handleVideoEnd = () => {
     setIsPlaying(false)
     setCurrentTime(0)
   }
 
   /** Hàm play/pause */
-
   const handlePlayPause = () => {
     if (VIDEO_REF.current) {
       if (is_playing) {
@@ -69,6 +65,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
    * @param {number} time
    * @return {string}
    */
+
   const formatTime = (time: number) => {
     const MINUTES = Math.floor(time / 60)
     const SECONDS = Math.floor(time % 60)
@@ -76,10 +73,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   }
 
   return (
-    <div className="w-full flex flex-col gap-y-1  rounded-lg">
+    <div className="w-full h-full flex flex-col gap-y-1 rounded-lg relative">
       <div
         className="relative"
         style={{ width, height }}
+        onMouseEnter={() => setIsHovered(true)} // Show overlay on hover
+        onMouseLeave={() => setIsHovered(false)} // Hide overlay when not hovered
       >
         <video
           ref={VIDEO_REF}
@@ -87,41 +86,41 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           width={width}
           height={height}
           className="rounded-lg"
+          controls
+          preload="metadata"
         />
 
-        {/* Play/Pause button above the video */}
-        <button
-          onClick={handlePlayPause}
-          //   className=" flex-shrink-0"
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-4 py-2 text-white rounded-lg"
-        >
-          {is_playing ? (
-            <Pause className="h-12 w-12" />
-          ) : (
-            <Play className="w-12 h-12" />
-          )}
-        </button>
-      </div>
+        {/* {is_hovered && (
+          <div className="absolute inset-0 bg-black bg-opacity-30 flex flex-col rounded-lg justify-end p-2">
+            <div className="flex justify-between w-full">
+              <button
+                onClick={handlePlayPause}
+                className="p-1 rounded-lg"
+              >
+                {is_playing ? (
+                  <Pause className="h-8 w-8" />
+                ) : (
+                  <Play className="h-8 w-8" />
+                )}
+              </button>
+            </div>
 
-      {/* Progress Bar and Time on the right */}
-      <div className="flex items-center">
-        <div className="flex-grow">
-          <div
-            className="relative w-full cursor-pointer"
-            onClick={handleSeek}
-          >
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-200 rounded-full">
-              <div
-                className="absolute bottom-0 left-0 h-1 rounded-full bg-slate-500"
-                style={{ width: `${(current_time / duration) * 100}%` }}
-              />
+            <div
+              className="w-full mt-2 cursor-pointer"
+              onClick={handleSeek}
+            >
+              <div className="text-left text-white text-xs mt-1">
+                {formatTime(current_time)} / {formatTime(duration)}
+              </div>
+              <div className="relative w-full h-1 bg-gray-400 rounded-full">
+                <div
+                  className="absolute h-full bg-white rounded-full"
+                  style={{ width: `${(current_time / duration) * 100}%` }}
+                />
+              </div>
             </div>
           </div>
-          {/* Time display */}
-          <div className=" text-left text-sm">
-            {formatTime(current_time)} / {formatTime(duration)}
-          </div>
-        </div>
+        )} */}
       </div>
     </div>
   )

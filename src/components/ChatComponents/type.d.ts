@@ -139,6 +139,7 @@ export interface MessageAttachment {
  * Định nghĩa kiểu cho props của MessageComponent
  */
 export interface MessageProps {
+  height?: number
   data: {
     /** ID của tin nhắn */
     _id: string

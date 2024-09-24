@@ -30,9 +30,11 @@ import { ReactComponent as CloseSlate } from '@/assets/close-black.svg'
 import { ReactComponent as Down } from '@/assets/arrow.svg'
 import Home from '@/screens/Home'
 import { ReactComponent as Logo } from '@/assets/logo-retion.svg'
+import MessageComponent from '@/components/ChatComponents/MessageComponent'
 import { MessageInfo } from '@/utils/type'
 import OnlineStaff from '@/components/Container/OnlineStaff'
 import { ReactComponent as RetionLogo } from '@/assets/retion-logo.svg'
+import TemplateMessageComponent from '@/components/ChatComponents/TemplateMessageComponent'
 import { ReactComponent as activeHome } from '@/assets/home-active.svg'
 import { ReactComponent as activeMessage } from '@/assets/messageA.svg'
 import i18next from 'i18next'
@@ -445,45 +447,130 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     }
   }
   /** Lấy ra thời gian đóng popup gần nhất từ trong localStorage */
-  const LAST_TIME_CLOSE = localStorage.getItem(`last_time_close__${PAGE_ID}`)
+  // const LAST_TIME_CLOSE = localStorage.getItem(`last_time_close__${PAGE_ID}`)
 
   console.log(show, LIST_UNREAD_MESSAGE_FILTER, LATEST_MESSAGE)
+
+  /** Hàm xử lý điều kiện để trả về css render giao diện
+   * @param {boolean} show Trạng thái đóng mở giao diện
+   * @param {MessageInfo[]} LIST_UNREAD_MESSAGE_FILTER Danh sách tin chưa đọc
+   * @param {MessageInfo} LATEST_MESSAGE Tin nhắn mới nhất
+   * @param {number} CURRENT_WIDTH Kích thước chiều rộng page cha
+   * @returns {string} CSS
+   */
+  const getChatBoxClasses = (
+    show: boolean,
+    LIST_UNREAD_MESSAGE_FILTER: MessageInfo[],
+    LATEST_MESSAGE: MessageInfo,
+    CURRENT_WIDTH: number
+  ) => {
+    if (
+      (!show && LIST_UNREAD_MESSAGE_FILTER.length === 0) ||
+      (!show &&
+        LATEST_MESSAGE === null &&
+        LIST_UNREAD_MESSAGE_FILTER.length > 0)
+    ) {
+      return 'w-16 h-[72px] items-center justify-center pb-4 pt-2'
+    }
+
+    if (
+      !show &&
+      LIST_UNREAD_MESSAGE_FILTER.length > 0 &&
+      LATEST_MESSAGE?.message_type === 'page' &&
+      LATEST_MESSAGE?.message_attachments &&
+      (LATEST_MESSAGE?.message_attachments[0]?.type === 'image' ||
+        LATEST_MESSAGE?.message_attachments[0]?.type === 'video')
+    ) {
+      return 'w-[302px] h-[312px] items-end justify-between pb-4 px-2'
+    }
+    if (
+      !show &&
+      LIST_UNREAD_MESSAGE_FILTER.length > 0 &&
+      LATEST_MESSAGE?.message_type === 'page'
+    ) {
+      return 'w-[302px] h-56 items-end justify-between pb-4 px-2'
+    }
+
+    if (CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0) {
+      return 'w-screen h-screen'
+    }
+
+    return 'w-[416px] h-[674px] px-2 pb-4 justify-between items-end'
+  }
+
+  /** Hàm xử lý điều kiện để trả về css render giao diện
+   * @param {boolean} show Trạng thái đóng mở giao diện
+   * @param {MessageInfo[]} LIST_UNREAD_MESSAGE_FILTER Danh sách tin chưa đọc
+   * @param {number} CURRENT_WIDTH Kích thước chiều rộng page cha
+   * @returns {string} CSS
+   */
+  const getBubbleClasses = (
+    show: boolean,
+    LIST_UNREAD_MESSAGE_FILTER: MessageInfo[],
+    CURRENT_WIDTH: number
+  ) => {
+    const BASE_CLASSES = 'relative bg-bg-gradient overflow-hidden shadow-md'
+
+    const SIZE_CLASSES =
+      CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
+        ? 'w-screen h-screen rounded-none'
+        : 'w-[400px] h-[600px] rounded-[20px]'
+
+    const VISIBILITY_CLASSES =
+      !show && LIST_UNREAD_MESSAGE_FILTER.length === 0
+        ? 'hidden'
+        : 'flex flex-col animate-zoomInBottomRight transition-transform duration-200 ease-in-out'
+
+    return `${BASE_CLASSES} ${SIZE_CLASSES} ${VISIBILITY_CLASSES}`
+  }
+
+  // Utility function to determine the CSS classes for the popup
+  const getPopupClasses = (
+    show: boolean,
+    LATEST_MESSAGE: MessageInfo,
+    LIST_UNREAD_MESSAGE_FILTER: MessageInfo[]
+  ) => {
+    // Base condition: Popup closed, message is from page, unread messages > 0
+    const baseCondition =
+      !show &&
+      LATEST_MESSAGE?.message_type === 'page' &&
+      LIST_UNREAD_MESSAGE_FILTER?.length > 0
+
+    // Additional condition: If the latest message has attachments and the first one is an image
+    const hasImageAttachment =
+      LATEST_MESSAGE?.message_attachments &&
+      (LATEST_MESSAGE?.message_attachments[0]?.type === 'image' ||
+        LATEST_MESSAGE?.message_attachments[0]?.type === 'video')
+
+    console.log(hasImageAttachment)
+    // Return appropriate class based on conditions
+    if (baseCondition) {
+      if (hasImageAttachment) {
+        return 'flex flex-col w-[286px] h-[240px] justify-between' // Adjust height for image case
+      }
+      return 'flex flex-col w-[286px] h-[142px] justify-between'
+    }
+
+    return 'hidden'
+  }
+
   return (
+    // JSX component using the function
     <div
-      className={`flex flex-col  ${
-        // Nếu không show, hoặc người dùng tắt Quickchat
-        // thì hiện icon bong bóng chat
-        (!show && LIST_UNREAD_MESSAGE_FILTER.length === 0) ||
-        (!show &&
-          LATEST_MESSAGE === null &&
-          LIST_UNREAD_MESSAGE_FILTER.length > 0)
-          ? 'w-16 h-[72px] items-center justify-center pb-4 pt-2'
-          : // Nếu không show, có tin nhắn chưa đọc, và tin nhắn mới nhất từ page
-          // thì hiện tin nhắn mới nhất đó
-          !show &&
-            LIST_UNREAD_MESSAGE_FILTER.length > 0 &&
-            LATEST_MESSAGE?.message_type === 'page'
-          ? 'w-[302px] h-56 items-end justify-between pb-4 px-2'
-          : // Nếu kích thước điện thoại thì hiện full screen
-          CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
-          ? ' w-screen h-screen'
-          : // Nếu màn PC thì hiện thành 1 tab nhỏ
-            ' w-[416px] h-[674px] px-2 pb-4 justify-between items-end'
-      }  `}
+      className={`flex flex-col ${getChatBoxClasses(
+        show,
+        LIST_UNREAD_MESSAGE_FILTER,
+        LATEST_MESSAGE,
+        CURRENT_WIDTH
+      )}`}
     >
       {show && (
         <div
-          className={`relative  ${
-            // Phần chính của bong bóng chat
-            CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
-              ? ' w-screen h-screen rounded-none '
-              : ' w-[400px] h-[600px] '
-          } bg-bg-gradient rounded-[20px] overflow-hidden shadow-md ${
-            // mặc định sẽ ẩn/ Khi kich hoạt sẽ mở kèm animation
-            !show && LIST_UNREAD_MESSAGE_FILTER.length === 0
-              ? ' hidden'
-              : ' flex flex-col animate-zoomInBottomRight transition-transform duration-200 ease-in-out '
-          }  `}
+          className={getBubbleClasses(
+            show,
+            LIST_UNREAD_MESSAGE_FILTER,
+            CURRENT_WIDTH
+          )}
         >
           {/* header */}
           {current_tab !== 'message' && (
@@ -631,7 +718,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
           )}
         </div>
       )}
-      <div
+      {/* <div
         className={`${
           // Popup đang đóng && Tin nhắn từ page && danh sách tin nhắn chưa đọc > 0
           !show &&
@@ -640,13 +727,20 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
             ? 'flex flex-col w-[286px] h-[142px] justify-between'
             : 'hidden'
         }`}
+      > */}
+      <div
+        className={getPopupClasses(
+          show,
+          LATEST_MESSAGE,
+          LIST_UNREAD_MESSAGE_FILTER
+        )}
       >
         <div className="flex h-full w-full">
           {LATEST_MESSAGE?.message_type === 'page' && (
             <div className="flex flex-col w-full gap-2">
               {/* Hiển thị avatar theo role user / shop */}
               <div
-                className={`flex gap-x-1 flex-grow min-h-0 justify-start items-end`}
+                className={`flex gap-x-1 flex-grow min-h-0 justify-start items-end `}
               >
                 <div className="flex rounded-lg flex-shrink-0">
                   {LATEST_MESSAGE?.message_type === 'page' && (
@@ -706,8 +800,14 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
                   </div>
 
                   {/* Phần nội dung tin nhắn được hiển thị */}
-                  <h4 className="line-clamp-2 text-sm">
-                    {LATEST_MESSAGE?.message_text}
+                  <h4 className="line-clamp-2 text-sm flex-grow min-h-0">
+                    {/* <div>{LATEST_MESSAGE?.message_text}</div> */}
+                    {/* Tin nhắn đa phương tiện */}
+
+                    <TemplateMessageComponent
+                      data={LATEST_MESSAGE}
+                      height={200}
+                    />
                   </h4>
                 </div>
               </div>

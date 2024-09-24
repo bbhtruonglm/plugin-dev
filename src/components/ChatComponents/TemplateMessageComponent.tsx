@@ -4,21 +4,9 @@ import { MessageProps } from './type'
 import VideoPlayer from './VideoPlayter'
 import { formatDate } from '@/utils'
 
-function MessageComponent({ data, height }: MessageProps) {
+function TemplateMessageComponent({ data, height }: MessageProps) {
   return (
-    <div
-      className={`flex p-2 flex-col gap-y-4 rounded-lg group relative ${
-        data?.message_type === 'system'
-          ? 'hidden bg-transparent max-w-[90%] font-medium'
-          : data?.message_type === 'page'
-          ? 'bg-white max-w-[60%]'
-          : 'bg-messBg max-w-[60%]'
-      }`}
-      style={{
-        width: height ? '100%' : undefined, // Set full width if height is provided
-        height: height ? `${height}px` : undefined, // Set the height if provided
-      }}
-    >
+    <div className={`flex flex-col rounded-lg group relative w-full h-full`}>
       {/* Tooltip */}
       <div
         className={`absolute w-36 bottom-full ${
@@ -32,7 +20,7 @@ function MessageComponent({ data, height }: MessageProps) {
         <div className="flex rounded-lg">
           <img
             src={data?.message_attachments?.[0]?.payload?.url}
-            className="w-32 h-32 object-contain bg-slate-200 rounded-lg"
+            className=" object-contain  rounded-lg"
             alt=""
           />
         </div>
@@ -85,4 +73,4 @@ function MessageComponent({ data, height }: MessageProps) {
   )
 }
 
-export default MessageComponent
+export default TemplateMessageComponent
