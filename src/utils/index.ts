@@ -102,6 +102,7 @@ export const renderAvatar = (id: string) => {
   const LINK_AVATAR = apiImage(`/app/facebook/avatar/${id}?width=64&height=64`)
   return LINK_AVATAR
 }
+/** Chuyển đổi giờ, phút, giây */
 export function formatDate(isoString?: string) {
   const DATE = new Date(isoString || '')
 
@@ -153,11 +154,12 @@ export function calculateTimeAgo(timeString: string) {
 /** Hàm post message thông tin đến parent
  * @param {boolean} is_show: Kiểm tra xem popup hiển thị hay không?
  * @param {boolean} is_quick_chat: Kiểm tra xem có QUICK_CHAT không?
- *
+ *  @param {number} height: Chiều cao QUICK_CHAT (Do có nhiều case kích thước chiều cao)
  */
 export const postMessageToParent = (
   is_show: boolean,
-  is_quick_chat: boolean
+  is_quick_chat: boolean,
+  height?: number
 ) => {
   // post message đến parent
   window.parent.postMessage(
@@ -165,6 +167,7 @@ export const postMessageToParent = (
       from: 'BBH-EMBED-IFRAME',
       is_show: is_show,
       is_quick_chat: is_quick_chat,
+      height: height || 0,
     },
     '*'
   )
@@ -204,4 +207,22 @@ export const truncateSentences = (str: string, maxLength: number) => {
   return FIRST_WORD.length > maxLength
     ? FIRST_WORD.substring(0, maxLength) + '...'
     : FIRST_WORD
+}
+/** Hàm lấy tên file từ URL
+ * @param {string} url: URL file
+ * @return {string} Tên file
+ */
+export function extractMessageId(url: string) {
+  // Tìm vị trí của "message/" trong URL
+  const MESSAGE_INDEX = url.indexOf('message/')
+
+  // Kiểm tra xem chuỗi có chứa "message/" hay không
+  if (MESSAGE_INDEX !== -1) {
+    // Lấy phần chuỗi sau "message/" (cộng 8 vì "message/" có độ dài 8 ký tự)
+    const MESSAGE_ID = url.substring(MESSAGE_INDEX + 8)
+    return MESSAGE_ID // Trả về phần chuỗi sau "message/"
+  } else {
+    // Nếu không tìm thấy "message/" trong URL, trả về null
+    return null
+  }
 }

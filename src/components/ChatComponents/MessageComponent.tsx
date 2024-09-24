@@ -1,23 +1,36 @@
+import { extractMessageId, formatDate } from '@/utils'
+
 import AudioPlayer from './AudioPlayer'
+import { ReactComponent as FileIcon } from '@/assets/document-text.svg'
 import { ReactComponent as IconArrow } from '@/assets/arrow-up-right-square.svg'
 import { MessageProps } from './type'
 import VideoPlayer from './VideoPlayter'
-import { formatDate } from '@/utils'
 
-function MessageComponent({ data, height }: MessageProps) {
+/** Hàm render css khi check type tin nhắn */
+const getMessageClasses = (messageType: string) => {
+  // Kiểm tra nếu messageType là 'system'
+  if (messageType === 'system') {
+    // Trả về các lớp CSS tương ứng nếu messageType là 'system'
+    return 'hidden bg-transparent max-w-[90%] font-medium'
+  }
+  // Kiểm tra nếu messageType là 'page'
+  else if (messageType === 'page') {
+    // Trả về các lớp CSS tương ứng nếu messageType là 'page'
+    return 'bg-white max-w-[60%]'
+  }
+  // Nếu messageType không phải là 'system' hay 'page'
+  else {
+    // Trả về các lớp CSS mặc định cho các loại message khác
+    return 'bg-messBg max-w-[60%]'
+  }
+}
+
+function MessageComponent({ data }: MessageProps) {
   return (
     <div
-      className={`flex p-2 flex-col gap-y-4 rounded-lg group relative ${
-        data?.message_type === 'system'
-          ? 'hidden bg-transparent max-w-[90%] font-medium'
-          : data?.message_type === 'page'
-          ? 'bg-white max-w-[60%]'
-          : 'bg-messBg max-w-[60%]'
-      }`}
-      style={{
-        width: height ? '100%' : undefined, // Set full width if height is provided
-        height: height ? `${height}px` : undefined, // Set the height if provided
-      }}
+      className={`flex p-2 flex-col gap-y-4 rounded-lg group relative ${getMessageClasses(
+        data?.message_type
+      )}`}
     >
       {/* Tooltip */}
       <div
@@ -45,6 +58,24 @@ function MessageComponent({ data, height }: MessageProps) {
       {data?.message_attachments?.[0]?.type === 'audio' && (
         <AudioPlayer src={data?.message_attachments?.[0]?.payload?.url} />
       )}
+      {/* Hiển thị data dạng file */}
+      {data?.message_attachments?.[0]?.type === 'file' && (
+        <div className="bg-white rounded-lg p-2 gap-y-1 flex flex-col">
+          <div className="flex h-9 w-9 items-center justify-center p-2 rounded-full bg-slate-300">
+            <FileIcon className="h-5 w-5" />
+          </div>
+
+          {/* Thẻ <a> để xử lý chức năng tải file */}
+          <a
+            href={data?.message_attachments?.[0]?.payload?.url} // URL của tệp
+            download // Thuộc tính download giúp tải tệp
+            className="text-slate-700 truncate underline text-sm"
+          >
+            {extractMessageId(data?.message_attachments?.[0]?.payload?.url)}
+          </a>
+        </div>
+      )}
+
       {/* Hiển thị data dạng Highlight */}
       {data?.message_attachments?.[0]?.type === 'highlight' && (
         <div className="">

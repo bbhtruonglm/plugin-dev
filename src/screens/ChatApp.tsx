@@ -464,15 +464,17 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     LATEST_MESSAGE: MessageInfo,
     CURRENT_WIDTH: number
   ) => {
+    // Base condition: Popup closed, message is from page, unread messages > 0
     if (
       (!show && LIST_UNREAD_MESSAGE_FILTER.length === 0) ||
       (!show &&
         LATEST_MESSAGE === null &&
         LIST_UNREAD_MESSAGE_FILTER.length > 0)
     ) {
+      postMessageToParent(false, false)
       return 'w-16 h-[72px] items-center justify-center pb-4 pt-2'
     }
-
+    // Popup đóng, tin nhắn từ page, có file attach, Kiểu tin nhắn = image hoặc video
     if (
       !show &&
       LIST_UNREAD_MESSAGE_FILTER.length > 0 &&
@@ -481,20 +483,38 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
       (LATEST_MESSAGE?.message_attachments[0]?.type === 'image' ||
         LATEST_MESSAGE?.message_attachments[0]?.type === 'video')
     ) {
+      console.log('first one is image or video')
+      postMessageToParent(false, true, 312)
       return 'w-[302px] h-[312px] items-end justify-between pb-4 px-2'
+    }
+    // Popup đóng, tin nhắn từ page, có file attach, Kiểu tin nhắn = file
+    if (
+      !show &&
+      LIST_UNREAD_MESSAGE_FILTER.length > 0 &&
+      LATEST_MESSAGE?.message_type === 'page' &&
+      LATEST_MESSAGE?.message_attachments &&
+      LATEST_MESSAGE?.message_attachments[0]?.type === 'file'
+    ) {
+      console.log(' first one is file')
+      postMessageToParent(false, true, 240)
+      return 'w-[302px] h-[240px] items-end justify-between pb-4 px-2'
     }
     if (
       !show &&
       LIST_UNREAD_MESSAGE_FILTER.length > 0 &&
       LATEST_MESSAGE?.message_type === 'page'
     ) {
+      console.log('first one is text or audio')
+      postMessageToParent(false, true, 224)
       return 'w-[302px] h-56 items-end justify-between pb-4 px-2'
     }
 
+    // Popup mở, trạng thái mobile hiện full màn hình
     if (CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0) {
       return 'w-screen h-screen'
     }
-
+    postMessageToParent(true, false)
+    // Popup mở, trả về full kích thước
     return 'w-[416px] h-[674px] px-2 pb-4 justify-between items-end'
   }
 
@@ -509,13 +529,15 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     LIST_UNREAD_MESSAGE_FILTER: MessageInfo[],
     CURRENT_WIDTH: number
   ) => {
+    /** CSS base */
     const BASE_CLASSES = 'relative bg-bg-gradient overflow-hidden shadow-md'
 
+    /** Màn Mobile / PC */
     const SIZE_CLASSES =
       CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
         ? 'w-screen h-screen rounded-none'
         : 'w-[400px] h-[600px] rounded-[20px]'
-
+    /** Popup đang đóng, và không có tin nhắn chưa đọc */
     const VISIBILITY_CLASSES =
       !show && LIST_UNREAD_MESSAGE_FILTER.length === 0
         ? 'hidden'
@@ -524,7 +546,12 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     return `${BASE_CLASSES} ${SIZE_CLASSES} ${VISIBILITY_CLASSES}`
   }
 
-  // Utility function to determine the CSS classes for the popup
+  /**  Utility function to determine the CSS classes for the popup
+   * @param {boolean} show Trạng thái đóng mở giao diện
+   * @param {MessageInfo} LATEST_MESSAGE Tin nhắn là nhất
+   * @param {MessageInfo[]} LIST_UNREAD_MESSAGE_FILTER Danh sách tin chứng đọc
+   * @returns {string} CSS
+   */
   const getPopupClasses = (
     show: boolean,
     LATEST_MESSAGE: MessageInfo,
@@ -541,12 +568,18 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
       LATEST_MESSAGE?.message_attachments &&
       (LATEST_MESSAGE?.message_attachments[0]?.type === 'image' ||
         LATEST_MESSAGE?.message_attachments[0]?.type === 'video')
+    // Có file attachment
+    const hasFileAttachment =
+      LATEST_MESSAGE?.message_attachments &&
+      LATEST_MESSAGE?.message_attachments[0]?.type === 'file'
 
-    console.log(hasImageAttachment)
     // Return appropriate class based on conditions
     if (baseCondition) {
       if (hasImageAttachment) {
         return 'flex flex-col w-[286px] h-[240px] justify-between' // Adjust height for image case
+      }
+      if (hasFileAttachment) {
+        return 'flex flex-col w-[286px] h-[168px] justify-between' // Adjust height for image case
       }
       return 'flex flex-col w-[286px] h-[142px] justify-between'
     }
@@ -564,6 +597,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
         CURRENT_WIDTH
       )}`}
     >
+      {/* Popup tin nhắn */}
       {show && (
         <div
           className={getBubbleClasses(
@@ -718,16 +752,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
           )}
         </div>
       )}
-      {/* <div
-        className={`${
-          // Popup đang đóng && Tin nhắn từ page && danh sách tin nhắn chưa đọc > 0
-          !show &&
-          LATEST_MESSAGE?.message_type === 'page' &&
-          LIST_UNREAD_MESSAGE_FILTER?.length > 0
-            ? 'flex flex-col w-[286px] h-[142px] justify-between'
-            : 'hidden'
-        }`}
-      > */}
+      {/* Quick chat */}
       <div
         className={getPopupClasses(
           show,
@@ -856,6 +881,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
             dispatch(setLatestMessageGlobal(null))
             dispatch(setListUnreadMessage([]))
             dispatch(setListMessage([]))
+            postMessageToParent(false, false)
           }
           handleBtn()
           setErrorMessage('')

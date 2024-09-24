@@ -12,64 +12,47 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, width, height }) => {
   const [is_hovered, setIsHovered] = useState(false) // State for hover
 
   useEffect(() => {
+    // Lấy tham chiếu đến phần tử video hiện tại
     const VIDEO = VIDEO_REF.current
+
+    // Kiểm tra xem phần tử video có tồn tại không
     if (VIDEO) {
+      // Thêm một trình lắng nghe sự kiện cho khi siêu dữ liệu của video đã được tải
       VIDEO.addEventListener('loadedmetadata', () => {
+        // Đặt độ dài của video khi siêu dữ liệu được tải
         setDuration(VIDEO.duration)
       })
+
+      // Thêm một trình lắng nghe sự kiện cho các cập nhật thời gian trong quá trình phát
       VIDEO.addEventListener('timeupdate', () => {
+        // Cập nhật trạng thái thời gian hiện tại khi currentTime của video thay đổi
         setCurrentTime(VIDEO.currentTime)
       })
+
+      // Thêm một trình lắng nghe sự kiện cho khi video kết thúc
       VIDEO.addEventListener('ended', handleVideoEnd)
     }
+
+    // Hàm cleanup để xóa bỏ các trình lắng nghe sự kiện khi thành phần không còn tồn tại
     return () => {
+      // Kiểm tra lại xem phần tử video có tồn tại không
       if (VIDEO) {
+        // Xóa bỏ trình lắng nghe sự kiện 'loadedmetadata'
         VIDEO.removeEventListener('loadedmetadata', () => {})
+
+        // Xóa bỏ trình lắng nghe sự kiện 'timeupdate'
         VIDEO.removeEventListener('timeupdate', () => {})
+
+        // Xóa bỏ trình lắng nghe sự kiện 'ended'
         VIDEO.removeEventListener('ended', handleVideoEnd)
       }
     }
-  }, [])
+  }, []) // Mảng phụ thuộc rỗng nghĩa là hiệu ứng này chỉ chạy khi thành phần được gắn và gỡ bỏ
 
   /** Hàm check video kết thúc */
   const handleVideoEnd = () => {
     setIsPlaying(false)
     setCurrentTime(0)
-  }
-
-  /** Hàm play/pause */
-  const handlePlayPause = () => {
-    if (VIDEO_REF.current) {
-      if (is_playing) {
-        VIDEO_REF.current.pause()
-      } else {
-        VIDEO_REF.current.play()
-      }
-      setIsPlaying(!is_playing)
-    }
-  }
-
-  /** Hàm di chuyển progress bar */
-  const handleSeek = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    const PROGRESS_BAR = e.currentTarget
-    const RECT = PROGRESS_BAR.getBoundingClientRect()
-    const CLICK_X = e.clientX - RECT.left
-    const NEW_TIME = (CLICK_X / RECT.width) * duration
-    if (VIDEO_REF.current) {
-      VIDEO_REF.current.currentTime = NEW_TIME
-      setCurrentTime(NEW_TIME)
-    }
-  }
-
-  /** Format time
-   * @param {number} time
-   * @return {string}
-   */
-
-  const formatTime = (time: number) => {
-    const MINUTES = Math.floor(time / 60)
-    const SECONDS = Math.floor(time % 60)
-    return `${MINUTES}:${SECONDS < 10 ? '0' : ''}${SECONDS}`
   }
 
   return (
@@ -89,38 +72,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, width, height }) => {
           controls
           preload="metadata"
         />
-
-        {/* {is_hovered && (
-          <div className="absolute inset-0 bg-black bg-opacity-30 flex flex-col rounded-lg justify-end p-2">
-            <div className="flex justify-between w-full">
-              <button
-                onClick={handlePlayPause}
-                className="p-1 rounded-lg"
-              >
-                {is_playing ? (
-                  <Pause className="h-8 w-8" />
-                ) : (
-                  <Play className="h-8 w-8" />
-                )}
-              </button>
-            </div>
-
-            <div
-              className="w-full mt-2 cursor-pointer"
-              onClick={handleSeek}
-            >
-              <div className="text-left text-white text-xs mt-1">
-                {formatTime(current_time)} / {formatTime(duration)}
-              </div>
-              <div className="relative w-full h-1 bg-gray-400 rounded-full">
-                <div
-                  className="absolute h-full bg-white rounded-full"
-                  style={{ width: `${(current_time / duration) * 100}%` }}
-                />
-              </div>
-            </div>
-          </div>
-        )} */}
       </div>
     </div>
   )

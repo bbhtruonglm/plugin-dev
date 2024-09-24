@@ -19,26 +19,40 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src }) => {
 
   useEffect(() => {
     /** Tạo phần tử audio */
-    const AUDIO = AUDIO_REF.current
+    const AUDIO = AUDIO_REF.current // Lấy tham chiếu đến phần tử audio hiện tại
+
     if (AUDIO) {
+      // Thêm một trình lắng nghe sự kiện khi siêu dữ liệu của audio được tải
       AUDIO.addEventListener('loadedmetadata', () => {
+        // Cập nhật trạng thái với độ dài của file audio sau khi siêu dữ liệu được tải
         setDuration(AUDIO.duration)
       })
+
+      // Thêm một trình lắng nghe sự kiện cập nhật thời gian khi audio đang phát
       AUDIO.addEventListener('timeupdate', () => {
+        // Cập nhật trạng thái thời gian hiện tại của audio
         setCurrentTime(AUDIO.currentTime)
       })
 
-      // Event listener for when AUDIO ends
+      // Thêm một trình lắng nghe sự kiện khi audio kết thúc phát
       AUDIO.addEventListener('ended', handleAudioEnd)
     }
+
+    // Cleanup function, loại bỏ các trình lắng nghe khi component bị unmount
     return () => {
       if (AUDIO) {
+        // Xóa bỏ trình lắng nghe sự kiện khi siêu dữ liệu được tải
         AUDIO.removeEventListener('loadedmetadata', () => {})
+
+        // Xóa bỏ trình lắng nghe sự kiện cập nhật thời gian phát
         AUDIO.removeEventListener('timeupdate', () => {})
+
+        // Xóa bỏ trình lắng nghe sự kiện khi audio kết thúc
         AUDIO.removeEventListener('ended', handleAudioEnd)
       }
     }
-  }, [])
+  }, []) // Mảng phụ thuộc rỗng để đảm bảo useEffect chỉ chạy một lần khi component được mount
+
   /** Hàm check xem audio đã kết thúc hay chưa */
   const handleAudioEnd = () => {
     setIsPlaying(false)
@@ -69,7 +83,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src }) => {
 
   /** Format time
    * @param {number} time
-   * @return {string}
+   * @return {string} time
    */
   const formatTime = (time: number) => {
     const MINUTES = Math.floor(time / 60)
@@ -78,7 +92,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src }) => {
   }
 
   return (
-    <div className="relative flex items-center gap-x-2 flex-grow min-w-44 px-2">
+    <div className="relative flex items-center gap-x-2 flex-grow min-w-44">
       <audio
         ref={AUDIO_REF}
         src={src}
@@ -90,27 +104,25 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src }) => {
         className=" flex-shrink-0"
       >
         {is_playing ? (
-          <Pause className="h-12 w-12" />
+          <Pause className="h-11 w-11" />
         ) : (
-          <Play className="w-12 h-12" />
+          <Play className="w-11 h-11" />
         )}
       </button>
-
-      {/* Progress Bar and Time on the right */}
-      <div className="flex-grow flex flex-col ">
-        <div
-          className="relative w-full cursor-pointer"
-          onClick={handleSeek}
-        >
-          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-200 rounded-full">
+      <div className="flex flex-col w-full justify-center">
+        <div className="bg-slate-300 h-1 w-full cursor-pointer rounded-full mt-2">
+          <div
+            className="relative w-full cursor-pointer"
+            onClick={handleSeek}
+          >
             <div
-              className="absolute bottom-0 left-0 h-1 rounded-full bg-slate-500"
+              className="progress bg-black h-1 rounded-full w-0"
               style={{ width: `${(current_time / duration) * 100}%` }}
-            />
+            ></div>
           </div>
         </div>
-        {/* Time display */}
-        <div className=" text-left text-sm">
+
+        <div className="text-left text-sm">
           {formatTime(current_time)} / {formatTime(duration)}
         </div>
       </div>

@@ -27,17 +27,17 @@ function App() {
   /** Tin nhắn mới nhất */
   const LATEST_MESSAGE = useSelector(selectLatestMessage)
 
-  useEffect(() => {
-    // Tin nhắn mới nhất từ Page && danh sách tin nhắn chưa đọc > 0 && popup đang đóng
-    if (
-      LATEST_MESSAGE?.message_type === 'page' &&
-      LIST_UNREAD_MESSAGE?.length > 0 &&
-      !is_show
-    ) {
-      // Gọi tới parent để hiển thị popup
-      postMessageToParent(false, true)
-    }
-  }, [LIST_UNREAD_MESSAGE])
+  // useEffect(() => {
+  //   // Tin nhắn mới nhất từ Page && danh sách tin nhắn chưa đọc > 0 && popup đang đóng
+  //   if (
+  //     LATEST_MESSAGE?.message_type === 'page' &&
+  //     LIST_UNREAD_MESSAGE?.length > 0 &&
+  //     !is_show
+  //   ) {
+  //     // Gọi tới parent để hiển thị popup
+  //     postMessageToParent(false, true)
+  //   }
+  // }, [LIST_UNREAD_MESSAGE])
 
   /** Function tắt bật của popup dạng PC */
   const handleToggle = () => {

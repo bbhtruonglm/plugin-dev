@@ -1,8 +1,10 @@
+import { extractMessageId, formatDate } from '@/utils'
+
 import AudioPlayer from './AudioPlayer'
+import { ReactComponent as FileIcon } from '@/assets/document-text.svg'
 import { ReactComponent as IconArrow } from '@/assets/arrow-up-right-square.svg'
 import { MessageProps } from './type'
 import VideoPlayer from './VideoPlayter'
-import { formatDate } from '@/utils'
 
 function TemplateMessageComponent({ data, height }: MessageProps) {
   return (
@@ -32,6 +34,23 @@ function TemplateMessageComponent({ data, height }: MessageProps) {
       {/* Hiển thị data dạng audio */}
       {data?.message_attachments?.[0]?.type === 'audio' && (
         <AudioPlayer src={data?.message_attachments?.[0]?.payload?.url} />
+      )}
+      {/* Hiển thị data dạng file */}
+      {data?.message_attachments?.[0]?.type === 'file' && (
+        <div className="bg-white rounded-lg p-2 gap-y-1 flex flex-col">
+          <div className="flex h-9 w-9 items-center justify-center p-2 rounded-full bg-slate-300">
+            <FileIcon className="h-5 w-5" />
+          </div>
+
+          {/* Thẻ <a> để xử lý chức năng tải file */}
+          <a
+            href={data?.message_attachments?.[0]?.payload?.url} // URL của tệp
+            download // Thuộc tính download giúp tải tệp
+            className="text-slate-700 truncate underline text-sm"
+          >
+            {extractMessageId(data?.message_attachments?.[0]?.payload?.url)}
+          </a>
+        </div>
       )}
       {/* Hiển thị data dạng Highlight */}
       {data?.message_attachments?.[0]?.type === 'highlight' && (
