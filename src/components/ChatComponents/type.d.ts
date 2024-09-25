@@ -124,15 +124,78 @@ interface UploadProps {
  */
 export interface MessageAttachment {
   /** Loại file đính kèm (ví dụ: audio, video, v.v.) */
-  type: string
+  type?: string
 
-  /** URL của file đính kèm */
+  /**
+   * Thông tin payload của file đính kèm
+   */
   payload: {
-    url: string
+    /** URL của file đính kèm (đường dẫn tới file) */
+    url?: string
+
+    /** Loại template cho nội dung đính kèm (ví dụ: generic, button template) */
+    template_type?: string
+
+    /** Mảng chứa các nút (buttons) của đính kèm */
+    buttons?: BtnType[]
+
+    /** Mảng chứa các phần tử (elements) của template */
+    elements?: ElementType[]
   }
 
-  /** ID của attachment */
-  _id: string
+  /** Tiêu đề của file đính kèm */
+  title?: string
+
+  /** ID của attachment (nếu có) */
+  _id?: string
+}
+
+/**
+ * Định nghĩa kiểu cho phần tử (element) trong payload
+ */
+export type ElementType = {
+  /** Tiêu đề của phần tử */
+  title?: string
+
+  /** Phụ đề của phần tử */
+  subtitle?: string
+
+  /** Đường dẫn URL của hình ảnh đại diện cho phần tử */
+  image_url?: string
+
+  /** Mảng chứa các nút (buttons) cho phần tử */
+  buttons?: BtnType[]
+
+  /** Hành động mặc định khi người dùng chọn phần tử */
+  default_action?: Action[]
+}
+
+/**
+ * Định nghĩa kiểu cho hành động của nút hoặc phần tử
+ */
+export type Action = {
+  /** Loại hành động (ví dụ: link, postback) */
+  type?: string
+
+  /** Đường dẫn URL của hành động (nếu là link) */
+  url?: string
+}
+
+/**
+ * Định nghĩa kiểu cho nút (button) trong payload hoặc element
+ */
+export type BtnType = {
+  /** Loại nút (ví dụ: web_url, postback) */
+  type?: string
+
+  /** Tiêu đề hiển thị trên nút */
+  title?: string
+
+  /** Dữ liệu gửi khi nút được bấm (cho loại nút postback) */
+  payload?: string
+
+  /** Đường dẫn URL nếu nút là loại liên kết (web_url) */
+  url?: string
 }
 
 /**
@@ -193,7 +256,7 @@ export interface MessageProps {
 /** ĐỊnh nghĩa cấu trúc dữ liệu audio */
 export interface AudioPlayerProps {
   /** url video */
-  src: string
+  src?: string
 }
 
 /** ĐỊnh nghĩa cấu trúc dữ liệu video */

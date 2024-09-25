@@ -212,7 +212,8 @@ export const truncateSentences = (str: string, maxLength: number) => {
  * @param {string} url: URL file
  * @return {string} Tên file
  */
-export function extractMessageId(url: string) {
+export function extractMessageId(url: string | undefined) {
+  if (!url) return null
   // Tìm vị trí của "message/" trong URL
   const MESSAGE_INDEX = url.indexOf('message/')
 

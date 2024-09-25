@@ -1,9 +1,9 @@
+import { BtnType, ElementType, MessageProps } from './type'
 import { extractMessageId, formatDate } from '@/utils'
 
 import AudioPlayer from './AudioPlayer'
 import { ReactComponent as FileIcon } from '@/assets/document-text.svg'
 import { ReactComponent as IconArrow } from '@/assets/arrow-up-right-square.svg'
-import { MessageProps } from './type'
 import VideoPlayer from './VideoPlayter'
 
 function TemplateMessageComponent({ data, height }: MessageProps) {
@@ -59,11 +59,13 @@ function TemplateMessageComponent({ data, height }: MessageProps) {
         </div>
       )}
       {/* Hiện thị data dạng text */}
-      {data?.message_text && data?.message_type !== 'system' && (
-        <p className="text-sm min-h-4 break-words whitespace-pre-line">
-          {data?.message_text}
-        </p>
-      )}
+      {data?.message_text &&
+        data?.message_type !== 'system' &&
+        !data?.message_attachments?.length && (
+          <p className="text-sm min-h-4 break-words whitespace-pre-line">
+            {data?.message_text}
+          </p>
+        )}
       {/* Hiện thị data dạng lịch */}
       {data?.message_attachments?.[0]?.type === 'schedule' && (
         <div>
@@ -73,21 +75,126 @@ function TemplateMessageComponent({ data, height }: MessageProps) {
           </div>
         </div>
       )}
-      {/* Hiện thị data dạng button */}
-      {data?.message_attachments?.[0]?.type === 'button' && (
-        <div>
-          <div className="flex bg-bgBtnLight text-white cursor-pointer py-2 gap-1 rounded-lg justify-center items-center">
-            Nút số 1
+      {/* Hiện thị data dạng buttom */}
+      {data?.message_attachments?.[0]?.type === 'template' &&
+        data?.message_attachments?.[0]?.payload?.template_type === 'button' && (
+          <div>
+            <h4 className="text-sm enter-line min-h-4 break-words whitespace-pre-line truncate">
+              {data?.message_attachments?.[0]?.title}
+            </h4>
+            <div className="flex flex-col gap-y-1">
+              {data?.message_attachments?.[0]?.payload?.buttons?.map(
+                (button: BtnType, index: number) => (
+                  <div
+                    onClick={() => {
+                      if (button?.type === 'web_url') {
+                        window.open(button?.url, '_blank')
+                      }
+                    }}
+                    key={index}
+                    className={`flex ${
+                      button?.type === 'web_url'
+                        ? 'bg-slate-800 cursor-pointer text-yellow-200'
+                        : 'bg-slate-600 text-slate-100 cursor-not-allowed'
+                    }  px-4 py-2 gap-1 rounded-lg justify-center items-center text-sm font-medium`}
+                  >
+                    {button?.title}
+                    {button?.type === 'web_url' && (
+                      <svg
+                        viewBox="0 0 16 16"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-3.5 h-3.5"
+                      >
+                        <path
+                          d="M12 8.66667V12.6667C12 13.0203 11.8595 13.3594 11.6095 13.6095C11.3594 13.8595 11.0203 14 10.6667 14H3.33333C2.97971 14 2.64057 13.8595 2.39052 13.6095C2.14048 13.3594 2 13.0203 2 12.6667V5.33333C2 4.97971 2.14048 4.64057 2.39052 4.39052C2.64057 4.14048 2.97971 4 3.33333 4H7.33333M10 2H14M14 2V6M14 2L6.66667 9.33333"
+                          stroke="currentColor"
+                          strokeWidth="1.33"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    )}
+                  </div>
+                )
+              )}
+            </div>
           </div>
-        </div>
-      )}
-      {data?.message_attachments?.[0]?.type === 'button' && (
-        <div>
-          <div className="flex bg-bgBtnLight text-white cursor-pointer py-2 gap-1 rounded-lg justify-center items-center">
-            Nút số 2
+        )}
+      {/* Hiển thị dạng generic */}
+      {data?.message_attachments?.[0]?.type === 'template' &&
+        data?.message_attachments?.[0]?.payload?.template_type ===
+          'generic' && (
+          // <div>
+          //   <h4 className="text-sm enter-line min-h-4 break-words whitespace-pre-line truncate">
+          //     {data?.message_attachments?.[0]?.title}
+          //   </h4>
+          //   <div className="flex bg-bgBtnLight text-white cursor-pointer py-2 gap-1 rounded-lg justify-center items-center">
+          //     slider
+          //   </div>
+          // </div>
+          <div className="flex gap-4 overflow-x-auto">
+            {data?.message_attachments?.[0]?.payload?.elements?.map(
+              (element: ElementType, index) => (
+                <div
+                  key={index}
+                  className="w-[300px] rounded-lg p-2 flex flex-col gap-4 bg-[#FFF8E1] flex-shrink-0"
+                >
+                  {/* Hình ảnh */}
+                  <div className="cursor-pointer hover:brightness-90 rounded-lg overflow-hidden">
+                    <div className="bg-gray-50 w-[160px] h-[160px]">
+                      <img
+                        src={element?.image_url}
+                        alt={element?.title}
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Tiêu đề và phụ đề */}
+                  <div className="text-sm">
+                    <div className="font-semibold">{element?.title}</div>
+                    <div>{element?.subtitle}</div>
+                  </div>
+
+                  {/* Các nút */}
+                  <div className="flex flex-col gap-2">
+                    {element?.buttons?.map((button, buttonIndex) => (
+                      <button
+                        key={buttonIndex}
+                        className={`py-2 px-4 rounded-lg text-sm font-medium flex items-center justify-center gap-1 ${
+                          button.type === 'web_url'
+                            ? 'bg-slate-800 text-yellow-200'
+                            : button.type === 'phone_number'
+                            ? 'bg-slate-600 text-slate-100'
+                            : 'bg-slate-600 text-slate-100 cursor-not-allowed'
+                        }`}
+                      >
+                        {button?.title}
+                        {button?.type === 'web_url' && (
+                          <svg
+                            viewBox="0 0 16 16"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="w-3.5 h-3.5"
+                          >
+                            <path
+                              d="M12 8.66667V12.6667C12 13.0203 11.8595 13.3594 11.6095 13.6095C11.3594 13.8595 11.0203 14 10.6667 14H3.33333C2.97971 14 2.64057 13.8595 2.39052 13.6095C2.14048 13.3594 2 13.0203 2 12.6667V5.33333C2 4.97971 2.14048 4.64057 2.39052 4.39052C2.64057 4.14048 2.97971 4 3.33333 4H7.33333M10 2H14M14 2V6M14 2L6.66667 9.33333"
+                              stroke="currentColor"
+                              strokeWidth="1.33"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )
+            )}
           </div>
-        </div>
-      )}
+        )}
     </div>
   )
 }

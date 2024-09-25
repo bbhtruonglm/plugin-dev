@@ -1,5 +1,4 @@
 import { ChatAppProps, EmployeeList } from './type'
-import { Employee, Message } from '@/components/ChatComponents/type'
 import _, { size } from 'lodash'
 import {
   calculateTimeAgo,
@@ -19,7 +18,6 @@ import {
   selectStatusPopup,
   setCurrentWidth,
   setGlobalClientId,
-  setIsInit,
   setLatestMessageGlobal,
   setListMessage,
   setListUnreadMessage,
@@ -33,9 +31,9 @@ import ChatScreen from '@/screens/Chat'
 import { ReactComponent as Close } from '@/assets/close.svg'
 import { ReactComponent as CloseSlate } from '@/assets/close-black.svg'
 import { ReactComponent as Down } from '@/assets/arrow.svg'
+import { Employee } from '@/components/ChatComponents/type'
 import Home from '@/screens/Home'
 import { ReactComponent as Logo } from '@/assets/logo-retion.svg'
-import MessageComponent from '@/components/ChatComponents/MessageComponent'
 import { MessageInfo } from '@/utils/type'
 import OnlineStaff from '@/components/Container/OnlineStaff'
 import { ReactComponent as RetionLogo } from '@/assets/retion-logo.svg'
@@ -58,8 +56,6 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
   const [social_link, setSocialLink] = useState<Array<any> | null>([])
   const [staff_list, setStaffList] = useState<EmployeeList>({})
   const [is_force_close_socket, setIsForceCloseSocket] = useState(false)
-
-  const [is_socket_initialized, setIsSocketInitialized] = useState(false)
 
   /** Khởi tạo websocket */
   const WS = useRef<WebSocket | null>(null)
@@ -131,7 +127,6 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
       })
     /** page_id từ URL page cha */
     const PAGE_ID = URL_PARENT.searchParams.get('page_id')
-
     // lưu page_id vào store
     /** Example @value :bf425487afbe403895116dd9b585537b || 100179064765476 || 5c290e88a5304e8e84ce8a8804b764e4 */
     dispatch(setPageId(PAGE_ID || ''))
@@ -150,22 +145,25 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
 
   /** GLobal client_id */
   const GLOBAL_CLIENT_ID = useSelector(selectGlobalClientId)
+
   // localStorage.setItem(`client_id_<${PAGE_ID}>`, '6131478076934694')
-  const [client_id, setClientId] = useState<string | null>(null) // Quản lý clientId qua state
 
   useEffect(() => {
     // Nếu không có PAGE_ID, thoát ngay
     if (!PAGE_ID) return
+    console.log(PAGE_ID, 'PAGE_ID')
 
     // Lấy client_id từ localStorage, chỉ xử lý nếu hợp lệ
-    const STORED_CLIENT_ID = localStorage.getItem(`client_id_${PAGE_ID}`)
 
-    if (!STORED_CLIENT_ID || STORED_CLIENT_ID === 'undefined') {
+    const STORED_CLIENT_ID = localStorage.getItem(`client_id_<${PAGE_ID}>`)
+    // const STORED_CLIENT_ID = '6131478076934694'
+
+    console.log(STORED_CLIENT_ID, 'STORED_CLIENT_ID')
+    if (!STORED_CLIENT_ID) {
       // Nếu không có client_id, khởi tạo lại hoặc đặt cờ khởi tạo socket
-      setIsSocketInitialized(false)
     } else {
       // Nếu có client_id hợp lệ, cập nhật vào state
-      setClientId(STORED_CLIENT_ID)
+      onSocketFromChatboxServer(PAGE_ID, GLOBAL_CLIENT_ID || STORED_CLIENT_ID)
     }
 
     // Gọi API để lấy dữ liệu trang (luôn gọi mỗi khi PAGE_ID thay đổi)
@@ -175,13 +173,13 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
   useEffect(() => {
     // Khi có clientId hợp lệ và socket chưa được khởi tạo
     // Check từ global TH khởi tạo USER
-    if ((GLOBAL_CLIENT_ID || client_id) && IS_INIT_CLIENT) {
+    if (GLOBAL_CLIENT_ID && IS_INIT_CLIENT) {
       // Khởi tạo WebSocket
-      onSocketFromChatboxServer(PAGE_ID, GLOBAL_CLIENT_ID || client_id)
+      onSocketFromChatboxServer(PAGE_ID, GLOBAL_CLIENT_ID)
       dispatch(setStatusIsInit(false))
       dispatch(setGlobalClientId(''))
     }
-  }, [PAGE_ID, IS_INIT_CLIENT, client_id, GLOBAL_CLIENT_ID])
+  }, [PAGE_ID, IS_INIT_CLIENT, GLOBAL_CLIENT_ID])
 
   /**
    * Tab menu với các mục chính gồm:
@@ -292,6 +290,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     page_id: String | null,
     client_id: String | null
   ) {
+    console.log(client_id, page_id)
     // Kết nối tới WebSocket server
     WS.current = new WebSocket(SOCKET_API || '')
 
@@ -418,6 +417,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
    * @returns {string} link avatar
    */
   const checkStaffExist = (id: string) => {
+    if (!id) return ''
     // Xem nhân viên nhắn tin có tồn tại trong list nhân viên không
     const IS_STAFF_EXIST = EMPLOYEE_LIST?.find((item) =>
       id.includes(item?.fb_staff_id)
@@ -436,6 +436,179 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
   const LIST_UNREAD_MESSAGE_FILTER = LIST_UNREAD_MESSAGE.filter(
     (item) => item.message_type === 'page'
   )
+  /** Chỉ lấy tin nhắn chưa đọc từ page, không lấy từ client */
+  // const LIST_UNREAD_MESSAGE_FILTER = [
+  //   {
+  //     _id: '66f387d9271db2db8a88f4f4',
+  //     fb_page_id: '100179064765476',
+  //     fb_client_id: '6131478076934694',
+  //     platform_type: 'FB_MESS',
+  //     message_type: 'page',
+  //     sender_id: '100179064765476',
+  //     recipient_id: '6131478076934694',
+  //     time: '2024-09-25T03:47:37.059Z',
+  //     message_mid:
+  //       'm_hukRF2b55fWYOr0BCDLSEsw7jQrJjGjlxnapic_pyarVSe1_gWj4yEjcXoUL_kz7vMHzD9nzKjguLyqXmz9uug',
+  //     message_attachments: [
+  //       {
+  //         type: 'template',
+  //         title: 'tiêu đề của silder',
+  //         payload: {
+  //           template_type: 'generic',
+  //           sharable: false,
+  //           elements: [
+  //             {
+  //               title: 'tiêu đề của silder',
+  //               image_url:
+  //                 'https://static.botbanhang.vn/chatbot/100179064765476/slider/236168d4-e036-4038-aed7-9034fdfe94b5-1727235884975.jpg',
+  //               default_action: {
+  //                 type: 'web_url',
+  //                 url: 'https://google.com/',
+  //               },
+  //               buttons: [
+  //                 {
+  //                   type: 'postback',
+  //                   title: 'nút kịch bản',
+  //                   payload: '<FLOW>_db7867d2e25d46b8aac018d8adffa099',
+  //                 },
+  //                 {
+  //                   type: 'web_url',
+  //                   title: 'nút web',
+  //                   url: 'https://google.com/',
+  //                 },
+  //                 {
+  //                   type: 'phone_number',
+  //                   title: 'nút dtk',
+  //                   url: 'tel:+84839383938',
+  //                   payload: '+84839383938',
+  //                 },
+  //               ],
+  //               subtitle: 'phụ đề ở đây',
+  //             },
+  //             {
+  //               title: 'tiêu đề của silder',
+  //               image_url:
+  //                 'https://static.botbanhang.vn/chatbot/100179064765476/slider/236168d4-e036-4038-aed7-9034fdfe94b5-1727235884975.jpg',
+  //               default_action: {
+  //                 type: 'web_url',
+  //                 url: 'https://google.com/',
+  //               },
+  //               buttons: [
+  //                 {
+  //                   type: 'postback',
+  //                   title: 'nút kịch bản',
+  //                   payload: '<FLOW>_db7867d2e25d46b8aac018d8adffa099',
+  //                 },
+  //                 {
+  //                   type: 'web_url',
+  //                   title: 'nút web',
+  //                   url: 'https://google.com/',
+  //                 },
+  //                 {
+  //                   type: 'phone_number',
+  //                   title: 'nút dtk',
+  //                   url: 'tel:+84839383938',
+  //                   payload: '+84839383938',
+  //                 },
+  //               ],
+  //               subtitle: 'phụ đề ở đây',
+  //             },
+  //             {
+  //               title: 'tiêu đề của silder',
+  //               image_url:
+  //                 'https://static.botbanhang.vn/chatbot/100179064765476/slider/236168d4-e036-4038-aed7-9034fdfe94b5-1727235884975.jpg',
+  //               default_action: {
+  //                 type: 'web_url',
+  //                 url: 'https://google.com/',
+  //               },
+  //               buttons: [
+  //                 {
+  //                   type: 'postback',
+  //                   title: 'nút kịch bản',
+  //                   payload: '<FLOW>_db7867d2e25d46b8aac018d8adffa099',
+  //                 },
+  //                 {
+  //                   type: 'web_url',
+  //                   title: 'nút web',
+  //                   url: 'https://google.com/',
+  //                 },
+  //                 {
+  //                   type: 'phone_number',
+  //                   title: 'nút dtk',
+  //                   url: 'tel:+84839383938',
+  //                   payload: '+84839383938',
+  //                 },
+  //               ],
+  //               subtitle: 'phụ đề ở đây',
+  //             },
+  //             {
+  //               title: 'tiêu đề của silder',
+  //               image_url:
+  //                 'https://static.botbanhang.vn/chatbot/100179064765476/slider/236168d4-e036-4038-aed7-9034fdfe94b5-1727235884975.jpg',
+  //               default_action: {
+  //                 type: 'web_url',
+  //                 url: 'https://google.com/',
+  //               },
+  //               buttons: [
+  //                 {
+  //                   type: 'postback',
+  //                   title: 'nút kịch bản',
+  //                   payload: '<FLOW>_db7867d2e25d46b8aac018d8adffa099',
+  //                 },
+  //                 {
+  //                   type: 'web_url',
+  //                   title: 'nút web',
+  //                   url: 'https://google.com/',
+  //                 },
+  //                 {
+  //                   type: 'phone_number',
+  //                   title: 'nút dtk',
+  //                   url: 'tel:+84839383938',
+  //                   payload: '+84839383938',
+  //                 },
+  //               ],
+  //               subtitle: 'phụ đề ở đây',
+  //             },
+  //             {
+  //               title: 'tiêu đề của silder',
+  //               image_url:
+  //                 'https://static.botbanhang.vn/chatbot/100179064765476/slider/236168d4-e036-4038-aed7-9034fdfe94b5-1727235884975.jpg',
+  //               default_action: {
+  //                 type: 'web_url',
+  //                 url: 'https://google.com/',
+  //               },
+  //               buttons: [
+  //                 {
+  //                   type: 'postback',
+  //                   title: 'nút kịch bản',
+  //                   payload: '<FLOW>_db7867d2e25d46b8aac018d8adffa099',
+  //                 },
+  //                 {
+  //                   type: 'web_url',
+  //                   title: 'nút web',
+  //                   url: 'https://google.com/',
+  //                 },
+  //                 {
+  //                   type: 'phone_number',
+  //                   title: 'nút dtk',
+  //                   url: 'tel:+84839383938',
+  //                   payload: '+84839383938',
+  //                 },
+  //               ],
+  //               subtitle: 'phụ đề ở đây',
+  //             },
+  //           ],
+  //         },
+  //         _id: '66f387d9271db2db8a88f4f5',
+  //       },
+  //     ],
+  //     ai: [],
+  //     createdAt: '2024-09-25T03:47:37.677Z',
+  //     updatedAt: '2024-09-25T03:47:37.677Z',
+  //     __v: 0,
+  //     attachment_size: [],
+  //   },
+  // ]
 
   /** Trả về tên nhân viên
    * @param {string} message_metadata
@@ -452,32 +625,6 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     }
   }
 
-  /** Hàm Xử lý gửi tin nhắn
-   * @param {string} input - Nội dung tin nhắn text
-   */
-  const sendMessage = async (input: any) => {
-    // Nhắn toàn khoảng trắng không cho gửi đi
-    if (input.trim() === '') return
-    // Tiến hành gửi tin nhắn
-    try {
-      // Khởi tạo body tin nhắn
-      if (CLIENT_ID) {
-        const message: Message = {
-          page_id: PAGE_ID,
-          client_id: CLIENT_ID,
-          text: input,
-        }
-        // Gọi api gửi tin nhắn
-        await fetchAPI(SEND_MESSAGE_API, 'POST', message)
-        // Reset data
-        dispatch(setListUnreadMessage([]))
-        dispatch(setLatestMessageGlobal(null))
-        postMessageToParent(false, false)
-      }
-    } catch (error) {
-    } finally {
-    }
-  }
   /** Lấy ra thời gian đóng popup gần nhất từ trong localStorage */
   // const LAST_TIME_CLOSE = localStorage.getItem(`last_time_close__${PAGE_ID}`)
 
@@ -506,19 +653,38 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
       // Trả về css chỉ hiện popup
       return 'w-16 h-[72px] items-center justify-center pb-4 pt-2'
     }
-    // Popup đóng, tin nhắn từ page, có file attach, Kiểu tin nhắn = image hoặc video
+    // Popup đóng, tin nhắn từ page, có file attach,
+    // Kiểu tin nhắn = image hoặc video || type = template && payload = button
     if (
       !show &&
       LIST_UNREAD_MESSAGE_FILTER.length > 0 &&
       LATEST_MESSAGE?.message_type === 'page' &&
       LATEST_MESSAGE?.message_attachments &&
       (LATEST_MESSAGE?.message_attachments[0]?.type === 'image' ||
-        LATEST_MESSAGE?.message_attachments[0]?.type === 'video')
+        LATEST_MESSAGE?.message_attachments[0]?.type === 'video' ||
+        (LATEST_MESSAGE?.message_attachments[0]?.type === 'template' &&
+          LATEST_MESSAGE?.message_attachments[0]?.payload?.template_type ===
+            'button'))
     ) {
       // Call postMessageToParent
       postMessageToParent(false, true, 312)
       // Trả về giao diện video
       return 'w-[302px] h-[312px] items-end justify-between pb-4 px-2'
+    }
+    // Popup đóng, tin nhắn từ page,  type = template && payload = generic
+    if (
+      !show &&
+      LIST_UNREAD_MESSAGE_FILTER.length > 0 &&
+      LATEST_MESSAGE?.message_type === 'page' &&
+      LATEST_MESSAGE?.message_attachments &&
+      LATEST_MESSAGE?.message_attachments[0]?.type === 'template' &&
+      LATEST_MESSAGE?.message_attachments[0]?.payload?.template_type ===
+        'generic'
+    ) {
+      // Call postMessageToParent
+      postMessageToParent(false, true, 540)
+      // Trả về giao diện video
+      return 'w-[302px] h-[540px] items-end justify-between pb-4 px-2'
     }
     // Popup đóng, tin nhắn từ page, có file attach, Kiểu tin nhắn = file
     if (
@@ -610,7 +776,18 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     const hasFileAttachment =
       LATEST_MESSAGE?.message_attachments &&
       LATEST_MESSAGE?.message_attachments[0]?.type === 'file'
-
+    // Có button attachment
+    const hasButtonAttachment =
+      LATEST_MESSAGE?.message_attachments &&
+      LATEST_MESSAGE?.message_attachments[0]?.type === 'template' &&
+      LATEST_MESSAGE?.message_attachments[0]?.payload?.template_type ===
+        'button'
+    // Có slide attachment
+    const hasSlideAttachment =
+      LATEST_MESSAGE?.message_attachments &&
+      LATEST_MESSAGE?.message_attachments[0]?.type === 'template' &&
+      LATEST_MESSAGE?.message_attachments[0]?.payload?.template_type ===
+        'generic'
     // Return appropriate class based on conditions
     if (baseCondition) {
       if (hasImageAttachment) {
@@ -620,6 +797,14 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
       if (hasFileAttachment) {
         // Adjust height for File case
         return 'flex flex-col w-[286px] h-[168px] justify-between'
+      }
+      if (hasButtonAttachment) {
+        // Adjust height for Button case
+        return 'flex flex-col w-[286px] h-[240px] justify-between'
+      }
+      if (hasSlideAttachment) {
+        // Adjust height for Button case
+        return 'flex flex-col w-[286px] h-[468px] justify-between'
       }
 
       // Adjust height for text case

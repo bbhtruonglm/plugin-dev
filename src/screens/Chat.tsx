@@ -92,6 +92,7 @@ function ChatScreen({
       } else {
         // Có data thì lưu vào local storage
         localStorage.setItem(`client_id_<${PAGE_ID}>`, RESULT.data)
+
         console.log(RESULT.data)
         dispatch(setStatusIsInit(true))
         dispatch(setGlobalClientId(RESULT.data))
