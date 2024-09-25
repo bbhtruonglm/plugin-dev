@@ -27,18 +27,29 @@ function App() {
   /** Tin nhắn mới nhất */
   const LATEST_MESSAGE = useSelector(selectLatestMessage)
 
-  // useEffect(() => {
-  //   // Tin nhắn mới nhất từ Page && danh sách tin nhắn chưa đọc > 0 && popup đang đóng
-  //   if (
-  //     LATEST_MESSAGE?.message_type === 'page' &&
-  //     LIST_UNREAD_MESSAGE?.length > 0 &&
-  //     !is_show
-  //   ) {
-  //     // Gọi tới parent để hiển thị popup
-  //     postMessageToParent(false, true)
-  //   }
-  // }, [LIST_UNREAD_MESSAGE])
-
+  useEffect(() => {
+    // Tin nhắn mới nhất từ Page && danh sách tin nhắn chưa đọc > 0 && popup đang đóng
+    // if (
+    //   !is_show &&
+    //   LIST_UNREAD_MESSAGE.length > 0 &&
+    //   LATEST_MESSAGE?.message_type === 'page' &&
+    //   LATEST_MESSAGE?.message_attachments &&
+    //   (LATEST_MESSAGE?.message_attachments[0]?.type === 'image' ||
+    //     LATEST_MESSAGE?.message_attachments[0]?.type === 'video')
+    // ) {
+    //   // Gọi tới parent để hiển thị popup
+    //   return postMessageToParent(false, true, 312)
+    // }
+    // Tin nhắn mới nhất từ Page && danh sách tin nhắn chưa đọc > 0 && popup đang đóng
+    // if (
+    //   LATEST_MESSAGE?.message_type === 'page' &&
+    //   LIST_UNREAD_MESSAGE?.length > 0 &&
+    //   !is_show
+    // ) {
+    //   // Gọi tới parent để hiển thị popup
+    //   return postMessageToParent(false, true)
+    // }
+  }, [LIST_UNREAD_MESSAGE])
   /** Function tắt bật của popup dạng PC */
   const handleToggle = () => {
     /** Lưu vào store  trạng thái đóng mở của popup*/

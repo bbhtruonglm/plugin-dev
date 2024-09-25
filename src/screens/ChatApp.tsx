@@ -54,6 +54,8 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
   const [staff_list, setStaffList] = useState<EmployeeList>({})
   const [is_force_close_socket, setIsForceCloseSocket] = useState(false)
 
+  const [is_socket_initialized, setIsSocketInitialized] = useState(false)
+
   /** Khởi tạo websocket */
   const WS = useRef<WebSocket | null>(null)
 
@@ -123,12 +125,10 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
         console.error('Error changing language:', error)
       })
     /** page_id từ URL page cha */
-    const PAGE_ID =
-      URL_PARENT.searchParams.get('page_id') ||
-      'bf425487afbe403895116dd9b585537b'
+    const PAGE_ID = URL_PARENT.searchParams.get('page_id')
 
     // lưu page_id vào store
-    /** Example @value :bf425487afbe403895116dd9b585537b  */
+    /** Example @value :bf425487afbe403895116dd9b585537b || 100179064765476 || 5c290e88a5304e8e84ce8a8804b764e4 */
     dispatch(setPageId(PAGE_ID || ''))
 
     /** Độ rộng của màn hình trong page cha, truyền qua URL */
@@ -140,14 +140,21 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     }
   }, [])
 
+  // localStorage.setItem(`client_id_<${PAGE_ID}>`, '6131478076934694')
   /** Client ID lấy từ localStorage */
   const CLIENT_ID = localStorage.getItem(`client_id_<${PAGE_ID}>`)
 
   useEffect(() => {
+    console.log('check wtf')
     // Nếu không có PAGE_ID, thoát ngay
     if (!PAGE_ID) return
+    if (!CLIENT_ID) {
+      setIsSocketInitialized(true)
+    }
     // Khi có page_id và client_id thì Khởi tạo WebSocket
     if (CLIENT_ID && CLIENT_ID !== 'undefined') {
+      console.log('run here')
+
       onSocketFromChatboxServer(PAGE_ID, CLIENT_ID)
     }
     // Gọi API để lấy dữ liệu trang
@@ -233,7 +240,10 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
    * @param {string} page_id - ID trang
    * @param {string} client_id - ID khách hàng
    */
-  const sendIdentifyMessage = (page_id: String | null, client_id: String) => {
+  const sendIdentifyMessage = (
+    page_id: String | null,
+    client_id: String | null
+  ) => {
     // Check điều kiện khi nào websocket đang readyState === websocket.OPEN thì mới gửi tin nhắn
     if (WS.current?.readyState === WebSocket.OPEN) {
       WS.current?.send(
@@ -260,14 +270,14 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
    */
   function onSocketFromChatboxServer(
     page_id: String | null,
-    client_id: String
+    client_id: String | null
   ) {
     // Kết nối tới WebSocket server
     WS.current = new WebSocket(SOCKET_API || '')
 
     //Lưu lại id vòng lặp
     let ping_interval_id: number | any
-
+    console.log('Chay vao socket')
     // kết nối được mở
     WS.current.onopen = () => {
       // Thông báo connect thành công
@@ -472,7 +482,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
         LIST_UNREAD_MESSAGE_FILTER.length > 0)
     ) {
       postMessageToParent(false, false)
-      return 'w-16 h-[72px] items-center justify-center pb-4 pt-2'
+      return 'w-16 h-[72px] items-center justify-center pb-4 pt-2 bg-red-200'
     }
     // Popup đóng, tin nhắn từ page, có file attach, Kiểu tin nhắn = image hoặc video
     if (
@@ -485,7 +495,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     ) {
       console.log('first one is image or video')
       postMessageToParent(false, true, 312)
-      return 'w-[302px] h-[312px] items-end justify-between pb-4 px-2'
+      return 'w-[302px] h-[312px] items-end justify-between pb-4 px-2 bg-blue-200'
     }
     // Popup đóng, tin nhắn từ page, có file attach, Kiểu tin nhắn = file
     if (
@@ -497,7 +507,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     ) {
       console.log(' first one is file')
       postMessageToParent(false, true, 240)
-      return 'w-[302px] h-[240px] items-end justify-between pb-4 px-2'
+      return 'w-[302px] h-[240px] items-end justify-between pb-4 px-2 bg-yellow-200'
     }
     if (
       !show &&
@@ -506,7 +516,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     ) {
       console.log('first one is text or audio')
       postMessageToParent(false, true, 224)
-      return 'w-[302px] h-56 items-end justify-between pb-4 px-2'
+      return 'w-[302px] h-56 items-end justify-between pb-4 px-2 bg-cyan-200'
     }
 
     // Popup mở, trạng thái mobile hiện full màn hình
@@ -515,7 +525,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     }
     postMessageToParent(true, false)
     // Popup mở, trả về full kích thước
-    return 'w-[416px] h-[674px] px-2 pb-4 justify-between items-end'
+    return 'w-[416px] h-[674px] px-2 pb-4 justify-between items-end bg-purple-200'
   }
 
   /** Hàm xử lý điều kiện để trả về css render giao diện

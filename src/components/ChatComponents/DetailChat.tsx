@@ -303,6 +303,8 @@ function DetailChat({
    * @returns {string} link avatar
    */
   const checkStaffExist = (id: string) => {
+    if (!id) return './images/earth.svg'
+
     // Xem nhân viên nhắn tin có tồn tại trong list nhân viên không
     const IS_STAFF_EXIST = employee_list?.find((item) =>
       id.includes(item?.fb_staff_id)
