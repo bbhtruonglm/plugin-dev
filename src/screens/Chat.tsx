@@ -1,10 +1,15 @@
 import { apiImage, fetchAPI, useAPI } from '@/api/api'
+import {
+  selectPageId,
+  setGlobalClientId,
+  setStatusIsInit,
+  setStatusPopup,
+} from '@/stores/appSlice'
+import { useDispatch, useSelector } from 'react-redux'
 import { useEffect, useState } from 'react'
 
 import { ChatProps } from './type'
 import DetailChat from '@/components/ChatComponents/DetailChat'
-import { selectPageId } from '@/stores/appSlice'
-import { useSelector } from 'react-redux'
 
 function ChatScreen({
   userOutChat,
@@ -16,7 +21,7 @@ function ChatScreen({
   const { INIT_CLIENT_API, READ_CLIENT_INFO } = useAPI()
   /** ID trang được lấy từ store */
   const PAGE_ID = useSelector(selectPageId)
-
+  const dispatch = useDispatch()
   const [client_id, setClientId] = useState<String | null | any>('')
   const [invalid_page_id, setInvalidPageId] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -87,6 +92,9 @@ function ChatScreen({
       } else {
         // Có data thì lưu vào local storage
         localStorage.setItem(`client_id_<${PAGE_ID}>`, RESULT.data)
+        console.log(RESULT.data)
+        dispatch(setStatusIsInit(true))
+        dispatch(setGlobalClientId(RESULT.data))
         setIsInit(true)
       }
     } catch (err) {

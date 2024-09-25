@@ -67,7 +67,7 @@ function App() {
   }
 
   return (
-    <div className="flex flex-col justify-center items-center h-fit w-fit">
+    <div className="flex flex-col justify-center items-center h-fit w-fit overflow-hidden">
       <ChatApp
         handleBtn={() => {
           handleToggle()

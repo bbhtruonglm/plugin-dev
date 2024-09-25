@@ -1,3 +1,4 @@
+import { selectPageId, selectStatusPopup } from '@/stores/appSlice'
 import { useEffect, useRef, useState } from 'react'
 
 import { ReactComponent as Arrow } from '../../assets/Icon_up_circle.svg'
@@ -5,7 +6,6 @@ import { ReactComponent as ArrowSlate } from '../../assets/Icon_up_circle_slate.
 import { ReactComponent as Close } from '@/assets/close.svg'
 import { InputProps } from './type'
 import Upload from './Upload'
-import { selectPageId } from '@/stores/appSlice'
 import { t } from 'i18next'
 import { useAPI } from '@/api/api'
 import { useSelector } from 'react-redux'
@@ -18,14 +18,32 @@ function InputChat({
   client_id,
   setLoading,
 }: InputProps) {
-  const inputRef = useRef<HTMLInputElement>(null) // Tạo ref cho ô input
+  // Tạo ref cho ô input
+  const INPUT_REF = useRef<HTMLInputElement>(null)
+  // Trạng thái đóng mở popup
+  const SHOW_POPUP = useSelector(selectStatusPopup)
 
-  // Dùng useEffect để focus vào ô input khi component được render
   useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus() // Focus vào ô input khi component mở
+    if (SHOW_POPUP) {
+      // When the popup is open, focus the input
+      const timer = setTimeout(() => {
+        if (INPUT_REF.current) {
+          INPUT_REF.current.focus()
+        }
+      }, 200) // Delay to ensure layout is stable
+
+      // Disable body scroll when popup is open
+      document.body.style.overflow = 'hidden'
+
+      return () => {
+        clearTimeout(timer)
+      }
+    } else {
+      // Enable body scroll when popup is closed
+      document.body.style.overflow = 'auto'
     }
-  }, []) // useEffect sẽ chạy một lần khi component được render
+  }, [SHOW_POPUP])
+
   const [value, setValue] = useState('')
   const [preview_url, setPreviewUrl] = useState<string | null>(null)
   const [file, setFile] = useState<File | null>(null)
@@ -93,7 +111,7 @@ function InputChat({
         />
         {/* ô input chat */}
         <input
-          ref={inputRef}
+          ref={INPUT_REF}
           onChange={(e) => {
             setValue(e.target.value)
           }}

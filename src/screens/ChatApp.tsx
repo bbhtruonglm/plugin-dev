@@ -11,15 +11,20 @@ import {
 import { fetchAPI, useAPI } from '@/api/api'
 import {
   selectCurrentWidth,
+  selectGlobalClientId,
   selectLatestMessage,
   selectListUnreadMessage,
   selectPageId,
+  selectStatusIsInit,
   selectStatusPopup,
   setCurrentWidth,
+  setGlobalClientId,
+  setIsInit,
   setLatestMessageGlobal,
   setListMessage,
   setListUnreadMessage,
   setPageId,
+  setStatusIsInit,
 } from '@/stores/appSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { useEffect, useRef, useState } from 'react'
@@ -140,28 +145,43 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     }
   }, [])
 
+  /** Trạng thái khởi tạo client */
+  const IS_INIT_CLIENT = useSelector(selectStatusIsInit)
+
+  /** GLobal client_id */
+  const GLOBAL_CLIENT_ID = useSelector(selectGlobalClientId)
   // localStorage.setItem(`client_id_<${PAGE_ID}>`, '6131478076934694')
-  /** Client ID lấy từ localStorage */
-  const CLIENT_ID = localStorage.getItem(`client_id_<${PAGE_ID}>`)
+  const [client_id, setClientId] = useState<string | null>(null) // Quản lý clientId qua state
 
   useEffect(() => {
-    console.log('check wtf')
     // Nếu không có PAGE_ID, thoát ngay
     if (!PAGE_ID) return
-    if (!CLIENT_ID) {
-      setIsSocketInitialized(true)
-    }
-    // Khi có page_id và client_id thì Khởi tạo WebSocket
-    if (CLIENT_ID && CLIENT_ID !== 'undefined') {
-      console.log('run here')
-
-      onSocketFromChatboxServer(PAGE_ID, CLIENT_ID)
-    }
-    // Gọi API để lấy dữ liệu trang
-    fetchPageData(PAGE_ID)
 
     // Lấy client_id từ localStorage, chỉ xử lý nếu hợp lệ
-  }, [PAGE_ID, CLIENT_ID])
+    const STORED_CLIENT_ID = localStorage.getItem(`client_id_${PAGE_ID}`)
+
+    if (!STORED_CLIENT_ID || STORED_CLIENT_ID === 'undefined') {
+      // Nếu không có client_id, khởi tạo lại hoặc đặt cờ khởi tạo socket
+      setIsSocketInitialized(false)
+    } else {
+      // Nếu có client_id hợp lệ, cập nhật vào state
+      setClientId(STORED_CLIENT_ID)
+    }
+
+    // Gọi API để lấy dữ liệu trang (luôn gọi mỗi khi PAGE_ID thay đổi)
+    fetchPageData(PAGE_ID)
+  }, [PAGE_ID]) // Chỉ chạy khi PAGE_ID thay đổi
+
+  useEffect(() => {
+    // Khi có clientId hợp lệ và socket chưa được khởi tạo
+    // Check từ global TH khởi tạo USER
+    if ((GLOBAL_CLIENT_ID || client_id) && IS_INIT_CLIENT) {
+      // Khởi tạo WebSocket
+      onSocketFromChatboxServer(PAGE_ID, GLOBAL_CLIENT_ID || client_id)
+      dispatch(setStatusIsInit(false))
+      dispatch(setGlobalClientId(''))
+    }
+  }, [PAGE_ID, IS_INIT_CLIENT, client_id, GLOBAL_CLIENT_ID])
 
   /**
    * Tab menu với các mục chính gồm:
@@ -277,7 +297,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
 
     //Lưu lại id vòng lặp
     let ping_interval_id: number | any
-    console.log('Chay vao socket')
+
     // kết nối được mở
     WS.current.onopen = () => {
       // Thông báo connect thành công
@@ -328,30 +348,32 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
 
       // nếu có tin nhắn. Popup đóng hoặc đang ở tab home
       if (message && (!IS_SHOW_REF.current || TAB_REF.current !== 'message')) {
-        console.log('vao day')
-        // setUnreadMessage((prevMessages) => [...prevMessages, message])
-        /** Cần lưu ý (với data của redux, WS đang lưu giá trị [] ban đầu)
-         * còn setList message thì lấy giá trị LIST_UNREAD_MESSAGE và push thêm tin nhắn vào.
-         * Lúc này LIST_UNREAD_MESSAGE mặc định là []
-         * dispatch(setListUnreadMessage([...LIST_UNREAD_MESSAGE, message]))
-         */
-        dispatch(
-          setListUnreadMessage([...REF_LIST_UNREAD_MESSAGE.current, message])
-        )
+        // Không hiển thị tin nhắn hệ thống
+        if (message?.message_type !== 'system') {
+          /** Cần lưu ý (với data của redux, WS đang lưu giá trị [] ban đầu)
+           * còn setList message thì lấy giá trị LIST_UNREAD_MESSAGE và push thêm tin nhắn vào.
+           * Lúc này LIST_UNREAD_MESSAGE mặc định là []
+           * dispatch(setListUnreadMessage([...LIST_UNREAD_MESSAGE, message]))
+           */
+          dispatch(
+            setListUnreadMessage([...REF_LIST_UNREAD_MESSAGE.current, message])
+          )
 
-        dispatch(setLatestMessageGlobal(message))
+          dispatch(setLatestMessageGlobal(message))
+        }
       }
       // Nếu có tin nhắn popup mở và ở tab chat
       if (message && IS_SHOW_REF.current && TAB_REF.current === 'message') {
-        // setLatestMessage(message)
-
-        dispatch(setLatestMessageGlobal(message))
-        /** Cần lưu ý (với data của redux, WS đang lưu giá trị [] ban đầu)
-         * Vì Latest mesage chỉ gọi hàm setListMessage
-         * còn setList message thì lấy giá trị LIST_MESSAGE và push thêm tin nhắn vào.
-         * Lúc này LIST_MESSAGE mặc định là []
-         * dispatch(setListMessage([...LIST_MESSAGE, message]))
-         */
+        // Không nhận tin nhắn từ hệ thống
+        if (message?.message_type !== 'system') {
+          dispatch(setLatestMessageGlobal(message))
+          /** Cần lưu ý (với data của redux, WS đang lưu giá trị [] ban đầu)
+           * Vì Latest mesage chỉ gọi hàm setListMessage
+           * còn setList message thì lấy giá trị LIST_MESSAGE và push thêm tin nhắn vào.
+           * Lúc này LIST_MESSAGE mặc định là []
+           * dispatch(setListMessage([...LIST_MESSAGE, message]))
+           */
+        }
       }
     }
 
@@ -459,8 +481,6 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
   /** Lấy ra thời gian đóng popup gần nhất từ trong localStorage */
   // const LAST_TIME_CLOSE = localStorage.getItem(`last_time_close__${PAGE_ID}`)
 
-  console.log(show, LIST_UNREAD_MESSAGE_FILTER, LATEST_MESSAGE)
-
   /** Hàm xử lý điều kiện để trả về css render giao diện
    * @param {boolean} show Trạng thái đóng mở giao diện
    * @param {MessageInfo[]} LIST_UNREAD_MESSAGE_FILTER Danh sách tin chưa đọc
@@ -481,8 +501,10 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
         LATEST_MESSAGE === null &&
         LIST_UNREAD_MESSAGE_FILTER.length > 0)
     ) {
+      // Call postMessageToParent
       postMessageToParent(false, false)
-      return 'w-16 h-[72px] items-center justify-center pb-4 pt-2 bg-red-200'
+      // Trả về css chỉ hiện popup
+      return 'w-16 h-[72px] items-center justify-center pb-4 pt-2'
     }
     // Popup đóng, tin nhắn từ page, có file attach, Kiểu tin nhắn = image hoặc video
     if (
@@ -493,9 +515,10 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
       (LATEST_MESSAGE?.message_attachments[0]?.type === 'image' ||
         LATEST_MESSAGE?.message_attachments[0]?.type === 'video')
     ) {
-      console.log('first one is image or video')
+      // Call postMessageToParent
       postMessageToParent(false, true, 312)
-      return 'w-[302px] h-[312px] items-end justify-between pb-4 px-2 bg-blue-200'
+      // Trả về giao diện video
+      return 'w-[302px] h-[312px] items-end justify-between pb-4 px-2'
     }
     // Popup đóng, tin nhắn từ page, có file attach, Kiểu tin nhắn = file
     if (
@@ -505,27 +528,32 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
       LATEST_MESSAGE?.message_attachments &&
       LATEST_MESSAGE?.message_attachments[0]?.type === 'file'
     ) {
-      console.log(' first one is file')
+      // Call postMessageToParent
       postMessageToParent(false, true, 240)
-      return 'w-[302px] h-[240px] items-end justify-between pb-4 px-2 bg-yellow-200'
+      // Trả về giao diện file
+      return 'w-[302px] h-[240px] items-end justify-between pb-4 px-2'
     }
+
+    // Popup đóng, tin nhắn từ page, kiểu tin nhắn text
     if (
       !show &&
       LIST_UNREAD_MESSAGE_FILTER.length > 0 &&
       LATEST_MESSAGE?.message_type === 'page'
     ) {
-      console.log('first one is text or audio')
+      // Call postMessageToParent
       postMessageToParent(false, true, 224)
-      return 'w-[302px] h-56 items-end justify-between pb-4 px-2 bg-cyan-200'
+      // Trả về giao diện Text thông thường
+      return 'w-[302px] h-56 items-end justify-between pb-4 px-2'
     }
 
     // Popup mở, trạng thái mobile hiện full màn hình
     if (CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0) {
       return 'w-screen h-screen'
     }
+    // Popup mở, trả về full kích thước
     postMessageToParent(true, false)
     // Popup mở, trả về full kích thước
-    return 'w-[416px] h-[674px] px-2 pb-4 justify-between items-end bg-purple-200'
+    return 'w-[416px] h-[674px] px-2 pb-4 justify-between items-end'
   }
 
   /** Hàm xử lý điều kiện để trả về css render giao diện
@@ -586,14 +614,18 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     // Return appropriate class based on conditions
     if (baseCondition) {
       if (hasImageAttachment) {
-        return 'flex flex-col w-[286px] h-[240px] justify-between' // Adjust height for image case
+        // Adjust height for image case
+        return 'flex flex-col w-[286px] h-[240px] justify-between'
       }
       if (hasFileAttachment) {
-        return 'flex flex-col w-[286px] h-[168px] justify-between' // Adjust height for image case
+        // Adjust height for File case
+        return 'flex flex-col w-[286px] h-[168px] justify-between'
       }
+
+      // Adjust height for text case
       return 'flex flex-col w-[286px] h-[142px] justify-between'
     }
-
+    // Popup đóng thì ẩn màn chat
     return 'hidden'
   }
 

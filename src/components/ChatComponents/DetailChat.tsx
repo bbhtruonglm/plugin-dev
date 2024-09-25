@@ -204,10 +204,12 @@ function DetailChat({
         // set call api se skip bn ban ghi
         setSkip(skip + RESULT.data.length)
       }
+
       // Loại bỏ những tin nhắn từ hệ thống
       const FILTER_RES = RESULT?.data.filter(
         (item: any) => item.message_type !== 'system'
       )
+      console.log(FILTER_RES, 'FILTER_RES')
 
       //lưu data về phía trước do data đã bị reverse
       // setNewData([...FILTER_RES.reverse(), ...new_data])
@@ -303,7 +305,8 @@ function DetailChat({
    * @returns {string} link avatar
    */
   const checkStaffExist = (id: string) => {
-    if (!id) return './images/earth.svg'
+    // Nếu không có staff Id thì trả về ''
+    if (!id) return ''
 
     // Xem nhân viên nhắn tin có tồn tại trong list nhân viên không
     const IS_STAFF_EXIST = employee_list?.find((item) =>

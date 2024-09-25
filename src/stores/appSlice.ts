@@ -12,6 +12,7 @@ const initialState: AppState = {
   list_unread_message: [],
   latest_message: {},
   show_popup: false,
+  is_init: false,
 }
 
 export const appSlice = createSlice({
@@ -23,8 +24,8 @@ export const appSlice = createSlice({
       state.page_id = action.payload
     },
     /** lưu client_id */
-    setClientId: (state, action: PayloadAction<string>) => {
-      state.page_id = action.payload
+    setGlobalClientId: (state, action: PayloadAction<string>) => {
+      state.client_id = action.payload
     },
 
     /** lưu dữ liệu Trang */
@@ -35,9 +36,13 @@ export const appSlice = createSlice({
     setCurrentWidth: (state, action: PayloadAction<number>) => {
       state.current_width = action.payload
     },
-    /** lưu dữ Kích thước chiều rộng trang */
+    /** lưu dữ trạng thái đóng mở */
     setStatusPopup: (state, action: PayloadAction<boolean>) => {
       state.show_popup = action.payload
+    },
+    /** lưu dữ trạng thái khởi tạo */
+    setStatusIsInit: (state, action: PayloadAction<boolean>) => {
+      state.is_init = action.payload
     },
 
     /** lưu dữ liệu tin nhắn */
@@ -67,20 +72,21 @@ export const appSlice = createSlice({
 // Action creators are generated for each case reducer function
 export const {
   setPageId,
-  setClientId,
+  setGlobalClientId,
   setLocale,
   setCurrentWidth,
   setListMessage,
   setListUnreadMessage,
   setLatestMessageGlobal,
   setStatusPopup,
+  setStatusIsInit,
 } = appSlice.actions
 
 /** chọn đến page id */
 export const selectPageId = (state: RootState) => state.app.page_id
 
 /** chọn đến client id */
-export const selectOrgId = (state: RootState) => state.app.client_id
+export const selectGlobalClientId = (state: RootState) => state.app.client_id
 
 /** chọn đầu dữ liệu Locale */
 export const selectLocale = (state: RootState) => state.app.locale
@@ -98,5 +104,7 @@ export const selectLatestMessage = (state: RootState) =>
   state.app.latest_message
 /** chọn đầu trạng thái đóng mở popup */
 export const selectStatusPopup = (state: RootState) => state.app.show_popup
+/** chọn đầu trạng thái Khởi tạo client */
+export const selectStatusIsInit = (state: RootState) => state.app.is_init
 
 export default appSlice.reducer

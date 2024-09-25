@@ -15,4 +15,6 @@ export interface AppState {
   latest_message?: MessageInfo
   /** Trạng thái đóng mở popup */
   show_popup: boolean
+  /** Trạng thái khởi tạo client */
+  is_init: boolean
 }
