@@ -1,11 +1,17 @@
 import './App.css'
 import './i18n' // Import cấu hình i18n
 
-import { postMessageToParent, saveTimeClosePopup } from './utils'
+import {
+  parsedString,
+  postMessageToParent,
+  saveQuickChatLatestMessage,
+  saveTimeClosePopup,
+} from './utils'
 import {
   selectLatestMessage,
   selectListUnreadMessage,
   selectPageId,
+  setGlobalUnreadCount,
   setLatestMessageGlobal,
   setStatusPopup,
 } from './stores/appSlice'
@@ -17,6 +23,7 @@ import ChatApp from './screens/ChatApp'
 function App() {
   const [is_show, setShow] = useState(false)
   const PAGE_ID = useSelector(selectPageId)
+  const CLIENT_ID = localStorage.getItem(`client_id_<${PAGE_ID}>`)
   const dispatch = useDispatch()
 
   /** Tin nhắn chưa đọc/tin nhắn mới nhất */
@@ -39,27 +46,30 @@ function App() {
       `client_id_<${STORED_PAGE_ID}>`
     )
 
-    console.log('STORED_PAGE_ID', STORED_PAGE_ID)
-    console.log('STORED_CLIENT_ID', STORED_CLIENT_ID)
     /** Lấy từ localStorage một tin nhắn chưa đọc */
-    const STORED_MESSAGE_LATEST = localStorage.getItem(
-      `latest_message__<${STORED_PAGE_ID}>__<${STORED_CLIENT_ID}>`
+    const STORED_MESSAGE_LATEST = parsedString(
+      localStorage.getItem(
+        `latest_message__<${STORED_PAGE_ID}>__<${STORED_CLIENT_ID}>`
+      ) || ''
     )
     /** Lấy số lượng tin nhắn chưa đọc */
-    const STORED_UNREAD_COUNT = localStorage.getItem(
-      `count_unread__<${STORED_PAGE_ID}>__<${STORED_CLIENT_ID}>`
+    const STORED_UNREAD_COUNT = Number(
+      localStorage.getItem(
+        `count_unread__<${STORED_PAGE_ID}>__<${STORED_CLIENT_ID}>`
+      )
     )
     /** Lấy thời gian đóng QUICK_CHAT */
     const STORED_CLOSE_TIME = localStorage.getItem(
       `last_time_close__${STORED_PAGE_ID}`
     )
-    console.log(
-      STORED_MESSAGE_LATEST,
-      '==========',
-      STORED_UNREAD_COUNT,
-      '==========',
-      STORED_CLOSE_TIME
+    /** Bật show QUICK_CHAT lên */
+    localStorage.setItem(
+      `status_quick_chat__${STORED_PAGE_ID}`,
+      'show_quick_chat'
     )
+
+    dispatch(setLatestMessageGlobal(STORED_MESSAGE_LATEST))
+    dispatch(setGlobalUnreadCount(STORED_UNREAD_COUNT || 0))
   }, [])
   /** Function tắt bật của popup dạng PC */
   const handleToggle = () => {
@@ -86,6 +96,7 @@ function App() {
           if (!is_show) {
             // Khi mở chỉ reset tin nhắn mới nhất trong store
             dispatch(setLatestMessageGlobal(null))
+            saveQuickChatLatestMessage(PAGE_ID, CLIENT_ID, null)
             // dispatch(setListUnreadMessage([]))
             // dispatch(setListMessage([]))
           } else {

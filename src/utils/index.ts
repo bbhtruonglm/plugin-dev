@@ -1,4 +1,6 @@
+import { MessageInfo } from './type'
 import { apiImage } from '@/api/api'
+import { size } from 'lodash'
 import { t } from 'i18next'
 
 /** Hàm tìm locale từ URL
@@ -177,8 +179,44 @@ export const postMessageToParent = (
  * @param {string} page_id: Nhận với page_id
  */
 export const saveTimeClosePopup = (page_id: string) => {
-  // Lưu vào thời gian đóng popup
+  /** Lưu vào thời gian đóng popup */
   localStorage.setItem(`last_time_close__${page_id}`, Date.now().toString())
+}
+
+/** Lưu thông tin quickchat count vào localStorage
+ * @param {string} page_id: Nhận với page_id
+ * @param {string} client_id: Nhận với client_id
+ * @param {number} count : So luong tin nhan
+ */
+export const saveQuickChatCount = (
+  page_id: String | null,
+  client_id: String | null,
+  count: number
+) => {
+  console.log(page_id, client_id, count)
+  if (!page_id || !client_id) return
+  /** Lưu vào thời gian đóng popup */ /** Tính toán lưu count vào localStorage */
+  localStorage.setItem(
+    `count_unread__<${page_id}>__<${client_id}>`,
+    count.toString()
+  )
+}
+
+/** Lưu thông tin quickchat count vào localStorage
+ * @param {string} page_id: Nhận với page_id
+ * @param {string} client_id: Nhận với client_id
+ * @param {object} body: Body message
+ */
+export const saveQuickChatLatestMessage = (
+  page_id: String | null,
+  client_id: String | null,
+  body: MessageInfo | null
+) => {
+  /** lưu tin nhắn mới nhất vào localStorage */
+  localStorage.setItem(
+    `latest_message__<${page_id}>__<${client_id}>`,
+    JSON.stringify(body)
+  )
 }
 
 /** Hàm truncate
@@ -225,5 +263,21 @@ export function extractMessageId(url: string | undefined) {
   } else {
     // Nếu không tìm thấy "message/" trong URL, trả về null
     return null
+  }
+}
+/**
+ * Hàm parse string với JSON
+ * @param {string} str - Chuỗi JSON
+ * @return {any} - Trả về đối tượng nếu parse thành công, hoặc null nếu lỗi
+ */
+
+export const parsedString = (str: string): any => {
+  if (!str) return null // Trả về null nếu chuỗi rỗng hoặc không xác định
+
+  try {
+    return JSON.parse(str) // Thử parse chuỗi JSON
+  } catch (error) {
+    console.error('Lỗi khi parse JSON:', error) // Log lỗi ra console
+    return null // Trả về null nếu parse không thành công
   }
 }

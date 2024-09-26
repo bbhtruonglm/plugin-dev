@@ -2,11 +2,13 @@ import { ChatScreenProps, Message } from './type'
 import { fetchAPI, useAPI } from '@/api/api'
 import { letterToColorCode, nameToLetter, renderAvatar } from '@/utils'
 import {
+  selectGlobalUnreadCount,
   selectLatestMessage,
   selectListMessage,
   selectListUnreadMessage,
   selectPageId,
   selectStatusPopup,
+  setGlobalUnreadCount,
   setLatestMessageGlobal,
   setListMessage,
   setListUnreadMessage,
@@ -61,8 +63,8 @@ function DetailChat({
   /** List tin nhắn được lấy từ store */
   const LIST_MESSAGE = useSelector(selectListMessage)
 
-  /** List tin nhắn chưa đọc được lấy từ store */
-  const LIST_UNREAD_MESSAGE = useSelector(selectListUnreadMessage)
+  /** Số tin nhắn chưa đọc lấy trong STORE */
+  const GLOBAL_UNREAD_COUNT = useSelector(selectGlobalUnreadCount)
 
   /** TIn nhắn mới nhất từ store */
   const LATEST_MESSAGE = useSelector(selectLatestMessage)
@@ -286,19 +288,15 @@ function DetailChat({
      * sau khi thêm xong thì clear danh sách tin nhắn chưa đọc trong store
      */
 
-    if (
-      LIST_UNREAD_MESSAGE &&
-      LIST_UNREAD_MESSAGE?.length !== 0 &&
-      SHOW_POPUP
-    ) {
-      dispatch(setListMessage([...LIST_MESSAGE, ...LIST_UNREAD_MESSAGE]))
-      dispatch(setListUnreadMessage([]))
+    /** Đoạn này chắc bỏ được */
 
+    if (GLOBAL_UNREAD_COUNT && GLOBAL_UNREAD_COUNT > 0 && SHOW_POPUP) {
+      dispatch(setGlobalUnreadCount(0))
       setTimeout(() => {
         scrollToBottom()
       }, 100)
     }
-  }, [SHOW_POPUP, LIST_UNREAD_MESSAGE])
+  }, [SHOW_POPUP, GLOBAL_UNREAD_COUNT])
 
   /** Hàm kiểm tra nhân sự có tồn tại không
    * @string id: Nhan vao id của nhân sự
