@@ -17,4 +17,6 @@ export interface AppState {
   show_popup: boolean
   /** Trạng thái khởi tạo client */
   is_init: boolean
+  /** Số lượng tin nhắn chưa đọc */
+  unread_count: number
 }

@@ -7,8 +7,6 @@ import {
   selectListUnreadMessage,
   selectPageId,
   setLatestMessageGlobal,
-  setListMessage,
-  setListUnreadMessage,
   setStatusPopup,
 } from './stores/appSlice'
 import { useDispatch, useSelector } from 'react-redux'
@@ -28,28 +26,41 @@ function App() {
   const LATEST_MESSAGE = useSelector(selectLatestMessage)
 
   useEffect(() => {
-    // Tin nhắn mới nhất từ Page && danh sách tin nhắn chưa đọc > 0 && popup đang đóng
-    // if (
-    //   !is_show &&
-    //   LIST_UNREAD_MESSAGE.length > 0 &&
-    //   LATEST_MESSAGE?.message_type === 'page' &&
-    //   LATEST_MESSAGE?.message_attachments &&
-    //   (LATEST_MESSAGE?.message_attachments[0]?.type === 'image' ||
-    //     LATEST_MESSAGE?.message_attachments[0]?.type === 'video')
-    // ) {
-    //   // Gọi tới parent để hiển thị popup
-    //   return postMessageToParent(false, true, 312)
-    // }
-    // Tin nhắn mới nhất từ Page && danh sách tin nhắn chưa đọc > 0 && popup đang đóng
-    // if (
-    //   LATEST_MESSAGE?.message_type === 'page' &&
-    //   LIST_UNREAD_MESSAGE?.length > 0 &&
-    //   !is_show
-    // ) {
-    //   // Gọi tới parent để hiển thị popup
-    //   return postMessageToParent(false, true)
-    // }
-  }, [LIST_UNREAD_MESSAGE])
+    /** Lấy URL từ parent */
+    const FULL_SRC = window.location.href
+    /** Tạo đối tượng URL parent */
+    const URL_PARENT = new URL(FULL_SRC)
+    /** Lấy page_id */
+    const STORED_PAGE_ID =
+      URL_PARENT.searchParams.get('page_id') ||
+      'bf425487afbe403895116dd9b585537b'
+    /** CLIENT_ID từ localStorage thông qua PAGE_ID */
+    const STORED_CLIENT_ID = localStorage.getItem(
+      `client_id_<${STORED_PAGE_ID}>`
+    )
+
+    console.log('STORED_PAGE_ID', STORED_PAGE_ID)
+    console.log('STORED_CLIENT_ID', STORED_CLIENT_ID)
+    /** Lấy từ localStorage một tin nhắn chưa đọc */
+    const STORED_MESSAGE_LATEST = localStorage.getItem(
+      `latest_message__<${STORED_PAGE_ID}>__<${STORED_CLIENT_ID}>`
+    )
+    /** Lấy số lượng tin nhắn chưa đọc */
+    const STORED_UNREAD_COUNT = localStorage.getItem(
+      `count_unread__<${STORED_PAGE_ID}>__<${STORED_CLIENT_ID}>`
+    )
+    /** Lấy thời gian đóng QUICK_CHAT */
+    const STORED_CLOSE_TIME = localStorage.getItem(
+      `last_time_close__${STORED_PAGE_ID}`
+    )
+    console.log(
+      STORED_MESSAGE_LATEST,
+      '==========',
+      STORED_UNREAD_COUNT,
+      '==========',
+      STORED_CLOSE_TIME
+    )
+  }, [])
   /** Function tắt bật của popup dạng PC */
   const handleToggle = () => {
     /** Lưu vào store  trạng thái đóng mở của popup*/

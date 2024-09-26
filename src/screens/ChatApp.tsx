@@ -4,13 +4,16 @@ import {
   calculateTimeAgo,
   postMessageToParent,
   renderAvatar,
+  saveTimeClosePopup,
   truncateSentences,
   truncateString,
 } from '@/utils'
 import { fetchAPI, useAPI } from '@/api/api'
+import i18next, { use } from 'i18next'
 import {
   selectCurrentWidth,
   selectGlobalClientId,
+  selectGlobalUnreadCount,
   selectLatestMessage,
   selectListUnreadMessage,
   selectPageId,
@@ -18,6 +21,7 @@ import {
   selectStatusPopup,
   setCurrentWidth,
   setGlobalClientId,
+  setGlobalUnreadCount,
   setLatestMessageGlobal,
   setListMessage,
   setListUnreadMessage,
@@ -40,7 +44,6 @@ import { ReactComponent as RetionLogo } from '@/assets/retion-logo.svg'
 import TemplateMessageComponent from '@/components/ChatComponents/TemplateMessageComponent'
 import { ReactComponent as activeHome } from '@/assets/home-active.svg'
 import { ReactComponent as activeMessage } from '@/assets/messageA.svg'
-import i18next from 'i18next'
 import { ReactComponent as inactiveHome } from '@/assets/home.svg'
 import { ReactComponent as inactiveMessage } from '@/assets/message.svg'
 import { useTranslation } from 'react-i18next'
@@ -87,12 +90,17 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
   /** Tin nhắn mới nhất */
   const LATEST_MESSAGE = useSelector(selectLatestMessage)
 
+  /** Số lượng tin nhắn chưa đọc */
+  const GLOBAL_UNREAD_MESSAGE_COUNT = useSelector(selectGlobalUnreadCount)
+  const REF_GLOBAL_UNREAD_MESSAGE_COUNT = useRef(GLOBAL_UNREAD_MESSAGE_COUNT)
+
   /** Tạo ref một để luu giữ giá trị LIST_UNREAD_MESSAGE */
   const REF_LIST_UNREAD_MESSAGE = useRef(LIST_UNREAD_MESSAGE)
 
   useEffect(() => {
     REF_LIST_UNREAD_MESSAGE.current = LIST_UNREAD_MESSAGE
-  }, [LIST_UNREAD_MESSAGE])
+    REF_GLOBAL_UNREAD_MESSAGE_COUNT.current = GLOBAL_UNREAD_MESSAGE_COUNT
+  }, [LIST_UNREAD_MESSAGE, GLOBAL_UNREAD_MESSAGE_COUNT])
 
   /** Trạng thái đóng mở popup */
   const SHOW_POPUP = useSelector(selectStatusPopup)
@@ -126,7 +134,10 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
         console.error('Error changing language:', error)
       })
     /** page_id từ URL page cha */
-    const PAGE_ID = URL_PARENT.searchParams.get('page_id')
+    // const PAGE_ID = URL_PARENT.searchParams.get('page_id') || '100179064765476'
+    const PAGE_ID =
+      URL_PARENT.searchParams.get('page_id') ||
+      'bf425487afbe403895116dd9b585537b'
     // lưu page_id vào store
     /** Example @value :bf425487afbe403895116dd9b585537b || 100179064765476 || 5c290e88a5304e8e84ce8a8804b764e4 */
     dispatch(setPageId(PAGE_ID || ''))
@@ -356,6 +367,20 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
            */
           dispatch(
             setListUnreadMessage([...REF_LIST_UNREAD_MESSAGE.current, message])
+          )
+          dispatch(
+            setGlobalUnreadCount(size(REF_LIST_UNREAD_MESSAGE.current) + 1)
+          )
+          /** Tính toán lưu count vào localStorage */
+          localStorage.setItem(
+            `count_unread__<${page_id}>__<${client_id}>`,
+            size(REF_LIST_UNREAD_MESSAGE.current).toString()
+          )
+
+          /** lưu tin nhắn mới nhất vào localStorage */
+          localStorage.setItem(
+            `latest_message__<${page_id}>__<${client_id}>`,
+            JSON.stringify(message)
           )
 
           dispatch(setLatestMessageGlobal(message))
@@ -630,23 +655,21 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
 
   /** Hàm xử lý điều kiện để trả về css render giao diện
    * @param {boolean} show Trạng thái đóng mở giao diện
-   * @param {MessageInfo[]} LIST_UNREAD_MESSAGE_FILTER Danh sách tin chưa đọc
+   * @param {number} GLOBAL_UNREAD_MESSAGE_COUNT Tổng số tin nhắn chưa đọc
    * @param {MessageInfo} LATEST_MESSAGE Tin nhắn mới nhất
    * @param {number} CURRENT_WIDTH Kích thước chiều rộng page cha
    * @returns {string} CSS
    */
   const getChatBoxClasses = (
     show: boolean,
-    LIST_UNREAD_MESSAGE_FILTER: MessageInfo[],
+    GLOBAL_UNREAD_MESSAGE_COUNT: number,
     LATEST_MESSAGE: MessageInfo,
     CURRENT_WIDTH: number
   ) => {
     // Base condition: Popup closed, message is from page, unread messages > 0
     if (
-      (!show && LIST_UNREAD_MESSAGE_FILTER.length === 0) ||
-      (!show &&
-        LATEST_MESSAGE === null &&
-        LIST_UNREAD_MESSAGE_FILTER.length > 0)
+      (!show && GLOBAL_UNREAD_MESSAGE_COUNT === 0) ||
+      (!show && LATEST_MESSAGE === null && GLOBAL_UNREAD_MESSAGE_COUNT > 0)
     ) {
       // Call postMessageToParent
       postMessageToParent(false, false)
@@ -657,7 +680,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     // Kiểu tin nhắn = image hoặc video || type = template && payload = button
     if (
       !show &&
-      LIST_UNREAD_MESSAGE_FILTER.length > 0 &&
+      GLOBAL_UNREAD_MESSAGE_COUNT > 0 &&
       LATEST_MESSAGE?.message_type === 'page' &&
       LATEST_MESSAGE?.message_attachments &&
       (LATEST_MESSAGE?.message_attachments[0]?.type === 'image' ||
@@ -674,7 +697,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     // Popup đóng, tin nhắn từ page,  type = template && payload = generic
     if (
       !show &&
-      LIST_UNREAD_MESSAGE_FILTER.length > 0 &&
+      GLOBAL_UNREAD_MESSAGE_COUNT > 0 &&
       LATEST_MESSAGE?.message_type === 'page' &&
       LATEST_MESSAGE?.message_attachments &&
       LATEST_MESSAGE?.message_attachments[0]?.type === 'template' &&
@@ -689,7 +712,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     // Popup đóng, tin nhắn từ page, có file attach, Kiểu tin nhắn = file
     if (
       !show &&
-      LIST_UNREAD_MESSAGE_FILTER.length > 0 &&
+      GLOBAL_UNREAD_MESSAGE_COUNT > 0 &&
       LATEST_MESSAGE?.message_type === 'page' &&
       LATEST_MESSAGE?.message_attachments &&
       LATEST_MESSAGE?.message_attachments[0]?.type === 'file'
@@ -703,7 +726,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     // Popup đóng, tin nhắn từ page, kiểu tin nhắn text
     if (
       !show &&
-      LIST_UNREAD_MESSAGE_FILTER.length > 0 &&
+      GLOBAL_UNREAD_MESSAGE_COUNT > 0 &&
       LATEST_MESSAGE?.message_type === 'page'
     ) {
       // Call postMessageToParent
@@ -724,13 +747,13 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
 
   /** Hàm xử lý điều kiện để trả về css render giao diện
    * @param {boolean} show Trạng thái đóng mở giao diện
-   * @param {MessageInfo[]} LIST_UNREAD_MESSAGE_FILTER Danh sách tin chưa đọc
+   * @param {number} GLOABAL_UNREAD_MESSAGE_COUNT So luong tin chưa đọc
    * @param {number} CURRENT_WIDTH Kích thước chiều rộng page cha
    * @returns {string} CSS
    */
   const getBubbleClasses = (
     show: boolean,
-    LIST_UNREAD_MESSAGE_FILTER: MessageInfo[],
+    GLOBAL_UNREAD_MESSAGE_COUNT: number,
     CURRENT_WIDTH: number
   ) => {
     /** CSS base */
@@ -743,7 +766,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
         : 'w-[400px] h-[600px] rounded-[20px]'
     /** Popup đang đóng, và không có tin nhắn chưa đọc */
     const VISIBILITY_CLASSES =
-      !show && LIST_UNREAD_MESSAGE_FILTER.length === 0
+      !show && GLOBAL_UNREAD_MESSAGE_COUNT === 0
         ? 'hidden'
         : 'flex flex-col animate-zoomInBottomRight transition-transform duration-200 ease-in-out'
 
@@ -753,19 +776,19 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
   /**  Utility function to determine the CSS classes for the popup
    * @param {boolean} show Trạng thái đóng mở giao diện
    * @param {MessageInfo} LATEST_MESSAGE Tin nhắn là nhất
-   * @param {MessageInfo[]} LIST_UNREAD_MESSAGE_FILTER Danh sách tin chứng đọc
+   *  @param {number } GLOBAL_UNREAD_MESSAGE_COUNT So luong tin chưa đọc
    * @returns {string} CSS
    */
   const getPopupClasses = (
     show: boolean,
     LATEST_MESSAGE: MessageInfo,
-    LIST_UNREAD_MESSAGE_FILTER: MessageInfo[]
+    GLOBAL_UNREAD_MESSAGE_COUNT: number
   ) => {
     // Base condition: Popup closed, message is from page, unread messages > 0
     const baseCondition =
       !show &&
       LATEST_MESSAGE?.message_type === 'page' &&
-      LIST_UNREAD_MESSAGE_FILTER?.length > 0
+      GLOBAL_UNREAD_MESSAGE_COUNT > 0
 
     // Additional condition: If the latest message has attachments and the first one is an image
     const hasImageAttachment =
@@ -819,7 +842,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     <div
       className={`flex flex-col ${getChatBoxClasses(
         show,
-        LIST_UNREAD_MESSAGE_FILTER,
+        GLOBAL_UNREAD_MESSAGE_COUNT,
         LATEST_MESSAGE,
         CURRENT_WIDTH
       )}`}
@@ -829,7 +852,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
         <div
           className={getBubbleClasses(
             show,
-            LIST_UNREAD_MESSAGE_FILTER,
+            GLOBAL_UNREAD_MESSAGE_COUNT,
             CURRENT_WIDTH
           )}
         >
@@ -944,10 +967,10 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
                       <div className="relative">
                         <div className="">
                           {value === 'message' &&
-                            LIST_UNREAD_MESSAGE_FILTER?.length > 0 && (
+                            GLOBAL_UNREAD_MESSAGE_COUNT > 0 && (
                               <div className="flex justify-center items-center text-xxs text-white border absolute right-0 top-0 w-4 h-4 bg-red-500 rounded-full translate-x-1 -translate-y-1">
-                                {LIST_UNREAD_MESSAGE_FILTER?.length < 10
-                                  ? LIST_UNREAD_MESSAGE_FILTER?.length
+                                {GLOBAL_UNREAD_MESSAGE_COUNT < 10
+                                  ? GLOBAL_UNREAD_MESSAGE_COUNT
                                   : '9+'}
                               </div>
                             )}
@@ -984,7 +1007,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
         className={getPopupClasses(
           show,
           LATEST_MESSAGE,
-          LIST_UNREAD_MESSAGE_FILTER
+          GLOBAL_UNREAD_MESSAGE_COUNT
         )}
       >
         <div className="flex h-full w-full">
@@ -1006,8 +1029,8 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
                     />
                   )}
                 </div>
-                <div className="flex flex-col flex-grow min-w-0 h-full bg-white rounded-xl p-3">
-                  <div className="flex justify-between items-center w-full gap-x-1">
+                <div className="flex flex-col flex-grow min-w-0 h-full bg-white rounded-xl p-3 border">
+                  <div className="flex justify-between items-center w-full gap-x-1 flex-shrink-0">
                     {/* Phần hiển thị thông tin tin nhắn */}
                     <div className="flex justify-between w-full ">
                       <div className="text-slate-500 text-xs font-medium flex items-center">
@@ -1041,7 +1064,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
                         // dispatch(setListMessage([]))
 
                         // Lưu thời gian vào localstorage Khi đóng tin nhắn mới
-                        // saveTimeClosePopup(PAGE_ID)
+                        saveTimeClosePopup(PAGE_ID)
                         // post message 1 lần nữa
                         postMessageToParent(false, false)
                       }}
@@ -1052,15 +1075,9 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
                   </div>
 
                   {/* Phần nội dung tin nhắn được hiển thị */}
-                  <h4 className="line-clamp-2 text-sm flex-grow min-h-0">
-                    {/* <div>{LATEST_MESSAGE?.message_text}</div> */}
-                    {/* Tin nhắn đa phương tiện */}
-
-                    <TemplateMessageComponent
-                      data={LATEST_MESSAGE}
-                      height={200}
-                    />
-                  </h4>
+                  <div className="flex flex-grow min-h-0">
+                    <TemplateMessageComponent data={LATEST_MESSAGE} />
+                  </div>
                 </div>
               </div>
               <div className="flex gap-x-2 h-11">
@@ -1124,13 +1141,13 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
         <div
           className={`absolute ${
             // Khi không có tin nhắn, hoặc đang show, thì không hiện
-            LIST_UNREAD_MESSAGE_FILTER?.length === 0 || show
+            GLOBAL_UNREAD_MESSAGE_COUNT === 0 || show
               ? 'hidden'
               : 'flex justify-center items-center'
           } text-white text-xs truncate right-0 top-0 bg-red-500 h-5 w-5 rounded-full border-2 border-white translate-x-1 -translate-y-1`}
         >
-          {LIST_UNREAD_MESSAGE_FILTER?.length < 10
-            ? LIST_UNREAD_MESSAGE_FILTER?.length
+          {GLOBAL_UNREAD_MESSAGE_COUNT < 10
+            ? GLOBAL_UNREAD_MESSAGE_COUNT
             : '9+'}
         </div>
         <div className="">

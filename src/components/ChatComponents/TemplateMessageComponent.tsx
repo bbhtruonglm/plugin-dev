@@ -6,23 +6,30 @@ import { ReactComponent as FileIcon } from '@/assets/document-text.svg'
 import { ReactComponent as IconArrow } from '@/assets/arrow-up-right-square.svg'
 import VideoPlayer from './VideoPlayter'
 
-function TemplateMessageComponent({ data, height }: MessageProps) {
+function TemplateMessageComponent({ data }: MessageProps) {
   return (
     <div className={`flex flex-col rounded-lg group relative w-full h-full`}>
       {/* Tooltip */}
-      <div
+      {/* <div
         className={`absolute w-36 bottom-full ${
           data?.message_type === 'page' ? 'left-0' : 'right-0'
         }  text-xs font-semibold text-slate-700 bg-transparent rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
       >
         {formatDate(data?.time)}
-      </div>
+      </div> */}
       {/* Hiển thị data dạng ảnh */}
       {data?.message_attachments?.[0]?.type === 'image' && (
-        <div className="flex rounded-lg">
+        // <div className="flex rounded-lg border h-full w-full">
+        //   <img
+        //     src={data?.message_attachments?.[0]?.payload?.url}
+        //     className=" object-contain rounded-lg"
+        //     alt=""
+        //   />
+        // </div>
+        <div className="flex justify-start items-center rounded-lg overflow-hidden w-full h-full">
           <img
             src={data?.message_attachments?.[0]?.payload?.url}
-            className=" object-contain  rounded-lg"
+            className="object-contain rounded-lg h-full w-full"
             alt=""
           />
         </div>
@@ -37,7 +44,7 @@ function TemplateMessageComponent({ data, height }: MessageProps) {
       )}
       {/* Hiển thị data dạng file */}
       {data?.message_attachments?.[0]?.type === 'file' && (
-        <div className="bg-white rounded-lg p-2 gap-y-1 flex flex-col">
+        <div className="bg-white rounded-lg p-2 gap-y-1 flex flex-col ">
           <div className="flex h-9 w-9 items-center justify-center p-2 rounded-full bg-slate-300">
             <FileIcon className="h-5 w-5" />
           </div>
@@ -62,7 +69,7 @@ function TemplateMessageComponent({ data, height }: MessageProps) {
       {data?.message_text &&
         data?.message_type !== 'system' &&
         !data?.message_attachments?.length && (
-          <p className="text-sm min-h-4 break-words whitespace-pre-line">
+          <p className="text-sm line-clamp-2 break-words whitespace-pre-line">
             {data?.message_text}
           </p>
         )}

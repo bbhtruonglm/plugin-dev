@@ -10,6 +10,7 @@ const initialState: AppState = {
   current_width: 0,
   list_message: [],
   list_unread_message: [],
+  unread_count: 0,
   latest_message: {},
   // latest_message: {
   //   _id: '66f387d9271db2db8a88f4f4',
@@ -206,6 +207,10 @@ export const appSlice = createSlice({
     setCurrentWidth: (state, action: PayloadAction<number>) => {
       state.current_width = action.payload
     },
+    /** lưu dữ Số lượng tin nhắn chưa đọc */
+    setGlobalUnreadCount: (state, action: PayloadAction<number>) => {
+      state.unread_count = action.payload
+    },
     /** lưu dữ trạng thái đóng mở */
     setStatusPopup: (state, action: PayloadAction<boolean>) => {
       state.show_popup = action.payload
@@ -250,6 +255,7 @@ export const {
   setLatestMessageGlobal,
   setStatusPopup,
   setStatusIsInit,
+  setGlobalUnreadCount,
 } = appSlice.actions
 
 /** chọn đến page id */
@@ -261,8 +267,11 @@ export const selectGlobalClientId = (state: RootState) => state.app.client_id
 /** chọn đầu dữ liệu Locale */
 export const selectLocale = (state: RootState) => state.app.locale
 
-/** chọn đầu dữ liệu Locale */
+/** chọn đầu dữ liệu kích thước chiều rộng */
 export const selectCurrentWidth = (state: RootState) => state.app.current_width
+/** chọn đầu dữ liệu tin nhắn chưa đọc */
+export const selectGlobalUnreadCount = (state: RootState) =>
+  state.app.unread_count
 
 /** chọn đầu danh sách tin nhắn */
 export const selectListMessage = (state: RootState) => state.app.list_message
