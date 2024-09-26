@@ -281,3 +281,21 @@ export const parsedString = (str: string): any => {
     return null // Trả về null nếu parse không thành công
   }
 }
+
+/**
+ * Hàm kiểm tra nếu thời gian hiện tại lớn hơn last_time + 1 giờ
+ * @param {number} lastTime - Thời gian trước đó (timestamp)
+ * @return {boolean} - Trả về true nếu thời gian hiện tại lớn hơn lastTime 1 giờ, ngược lại trả về false
+ */
+export const checkTimeTillNow = (lastTime: number) => {
+  // 1 giờ = 60 phút * 60 giây * 1000 milliseconds
+  const ONE_HOUR = 60 * 60 * 1000
+  const THIRTY_SECOND = 30 * 1000 // 1 giờ = 60 phút * 60 giây * 1000 milliseconds
+  const NOW = Date.now()
+
+  console.log(lastTime, '>>>', NOW)
+
+  // Kiểm tra nếu thời gian hiện tại lớn hơn lastTime + 1 giờ
+  // return NOW > lastTime + ONE_HOUR
+  return NOW > lastTime + THIRTY_SECOND
+}

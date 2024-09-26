@@ -2,6 +2,7 @@ import { ChatAppProps, EmployeeList } from './type'
 import _, { size } from 'lodash'
 import {
   calculateTimeAgo,
+  checkTimeTillNow,
   postMessageToParent,
   renderAvatar,
   saveQuickChatCount,
@@ -51,9 +52,9 @@ import { ReactComponent as inactiveMessage } from '@/assets/message.svg'
 import { useTranslation } from 'react-i18next'
 
 const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
-  // Dịch ngôn ngữ
+  /** Dịch ngôn ngữ */
   const { t, i18n } = useTranslation()
-  // Các đầu api
+  /** Các đầu api */
   const { READ_PAGE_INFO, SOCKET_API } = useAPI()
 
   const [error_message, setErrorMessage] = useState<String | null>('')
@@ -65,7 +66,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
   /** Khởi tạo websocket */
   const WS = useRef<WebSocket | null>(null)
 
-  // Tạo tab hiện tại là HOME
+  /** Tạo tab hiện tại là HOME */
   const [current_tab, setCurrentTab] = useState<string>('home')
 
   /** Tạo ref để giữ giá trị của current_tab */
@@ -74,9 +75,9 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
   const IS_SHOW_REF = useRef(show)
 
   useEffect(() => {
-    // Cập nhật giá trị mới nhất của tab trong ref mỗi khi tab thay đổi
+    /** Cập nhật giá trị mới nhất của tab trong ref mỗi khi tab thay đổi */
     TAB_REF.current = current_tab
-    // Cập nhật giá trị là show trong ref một khi show thay đổi
+    /** Cập nhật giá trị là show trong ref một khi show thay đổi */
     IS_SHOW_REF.current = show
   }, [current_tab, show])
 
@@ -102,7 +103,9 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
   const REF_LIST_UNREAD_MESSAGE = useRef(LIST_UNREAD_MESSAGE)
 
   useEffect(() => {
+    /** Cập nhật giá trị trong ref một khi LIST_UNREAD_MESSAGE thay đổi */
     REF_LIST_UNREAD_MESSAGE.current = LIST_UNREAD_MESSAGE
+    /** Cập nhật giá trị trong ref một khi GLOBAL_UNREAD_MESSAGE_COUNT thay đổi */
     REF_GLOBAL_UNREAD_MESSAGE_COUNT.current = GLOBAL_UNREAD_MESSAGE_COUNT
   }, [LIST_UNREAD_MESSAGE, GLOBAL_UNREAD_MESSAGE_COUNT])
 
@@ -119,8 +122,20 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
 
   /** Thời gian đóng QUICK_CHAT gần nhất */
   const LAST_TIME_CLOSE_QUICK_CHAT = localStorage.getItem(
-    `last_time_close_${PAGE_ID}`
+    `last_time_close__${PAGE_ID}`
   )
+  /** Tạo REF cho giá trị SHOW_QUICK_CHAT */
+  const REF_SHOW_QUICK_CHAT = useRef(SHOW_QUICK_CHAT)
+
+  /** Tạo REF cho giá trị LAST_TIME_CLOSE_QUICK_CHAT */
+  const REF_LAST_TIME_CLOSE_QUICK_CHAT = useRef(LAST_TIME_CLOSE_QUICK_CHAT)
+
+  useEffect(() => {
+    /** Cập nhật giá trị trong ref một khi SHOW_QUICK_CHAT thay đổi */
+    REF_SHOW_QUICK_CHAT.current = SHOW_QUICK_CHAT
+    /** Cập nhật giá trị trong ref một khi LAST_TIME_CLOSE_QUICK_CHAT thay đổi */
+    REF_LAST_TIME_CLOSE_QUICK_CHAT.current = LAST_TIME_CLOSE_QUICK_CHAT
+  }, [SHOW_QUICK_CHAT, LAST_TIME_CLOSE_QUICK_CHAT])
 
   useEffect(() => {
     /** @type {string} Lấy url của page cha */
@@ -133,12 +148,12 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
      */
     const URL_PARENT = new URL(FULL_SRC)
     const URL_PARAMS = new URLSearchParams(window.location.search)
-    // Lấy giá trị locale từ URL
-
-    /** Mặc định là 'vn' nếu không có locale */
+    /**
+     * Lấy giá trị locale từ URL
+     * Mặc định là 'vn' nếu không có locale */
     const LOCALE = URL_PARAMS.get('locale') || 'vn'
 
-    // Thay đổi ngôn ngữ của SDK dựa trên locale từ URL
+    /** Thay đổi ngôn ngữ của SDK dựa trên locale từ URL */
     i18next
       .changeLanguage(LOCALE)
       .then(() => {
@@ -152,7 +167,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     const PAGE_ID =
       URL_PARENT.searchParams.get('page_id') ||
       'bf425487afbe403895116dd9b585537b'
-    // lưu page_id vào store
+    /** lưu page_id vào store */
     /** Example @value :bf425487afbe403895116dd9b585537b || 100179064765476 || 5c290e88a5304e8e84ce8a8804b764e4 */
     dispatch(setPageId(PAGE_ID || ''))
 
@@ -160,7 +175,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     const WIDTH_PARENT = URL_PARENT.searchParams.get('parentWidth')
 
     if (WIDTH_PARENT) {
-      // nếu có truyền width thì lưu vào store
+      /** nếu có truyền width thì lưu vào store */
       dispatch(setCurrentWidth(Number(WIDTH_PARENT)))
     }
   }, [])
@@ -373,11 +388,22 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
         /** Không hiển thị tin nhắn hệ thống */
         if (message?.message_type !== 'system') {
           /** Check thời gian đóng QUICK_CHAT */
-          if (SHOW_QUICK_CHAT === 'hide_quick_chat') {
+          if (REF_SHOW_QUICK_CHAT.current === 'hide_quick_chat') {
             /** Kiểm tra thời gian đóng QUICK_CHAT
              * Nếu hơn 1h thì bật lại dưới 1h thì không làm gì cả
              */
-            console.log(LAST_TIME_CLOSE_QUICK_CHAT, '>>>', Date.now())
+            const CHECK_TIME_TILL_NOW = checkTimeTillNow(
+              Number(REF_LAST_TIME_CLOSE_QUICK_CHAT.current)
+            )
+            /** Kiểm tra thời gian đóng QUICK_CHAT đã hơn 1h chưa */
+            if (CHECK_TIME_TILL_NOW) {
+              /** Đổi trạng thái QuICK_CHAT thành 'show_quick_chat' */
+              /** Bật show QUICK_CHAT lên */
+              localStorage.setItem(
+                `status_quick_chat__${PAGE_ID}`,
+                'show_quick_chat'
+              )
+            }
           }
           /** Cần lưu ý (với data của redux, WS đang lưu giá trị [] ban đầu)
            * còn setList message thì lấy giá trị LIST_UNREAD_MESSAGE và push thêm tin nhắn vào.
