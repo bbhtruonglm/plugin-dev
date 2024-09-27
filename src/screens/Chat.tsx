@@ -86,13 +86,13 @@ function ChatScreen({
 
       if (RESULT.code === 403) {
         // Nếu lỗi thì lưu lại chuỗi rỗng
-        localStorage.setItem(`client_id_<${PAGE_ID}>`, '6131478076934694')
+        localStorage.setItem(`client_id_<${PAGE_ID}>`, '')
         setInvalidPageId(true)
       } else {
         // Có data thì lưu vào local storage
 
         localStorage.setItem(`client_id_<${PAGE_ID}>`, RESULT.data)
-        localStorage.setItem(`client_id_<${PAGE_ID}>`, '6131478076934694')
+        // localStorage.setItem(`client_id_<${PAGE_ID}>`, '6131478076934694')
 
         console.log(RESULT.data)
         dispatch(setStatusIsInit(true))
