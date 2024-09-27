@@ -5,30 +5,31 @@ import {
   isValidUrl,
   postMessageToParent,
 } from '@/utils'
+import { selectStatusPopup, setGlobalPreviewUrl } from '@/stores/appSlice'
 import { useDispatch, useSelector } from 'react-redux'
 
 import AudioPlayer from './AudioPlayer'
 import { ReactComponent as FileIcon } from '@/assets/document-text.svg'
 import VideoPlayer from './VideoPlayter'
-import { selectStatusPopup } from '@/stores/appSlice'
 
 /** Hàm render css khi check type tin nhắn */
 const getMessageClasses = (messageType: string) => {
   /** Kiểm tra nếu messageType là 'page' */
   if (messageType === 'page') {
-    // Trả về các lớp CSS tương ứng nếu messageType là 'page'
+    /** Trả về các lớp CSS tương ứng nếu messageType là 'page' */
     return 'bg-white max-w-[60%]'
   } else if (messageType === 'note') {
     return 'max-w-[60%] bg-[#D8F6CB]'
-  }
-  // Nếu messageType không phải là 'system' hay 'page'
-  else {
-    // Trả về các lớp CSS mặc định cho các loại message khác
+  } else {
+    /** Nếu messageType không phải là 'system' hay 'page' */
+    /** Trả về các lớp CSS mặc định cho các loại message khác */
     return 'bg-messBg max-w-[60%]'
   }
 }
 
 function MessageComponent({ data }: MessageProps) {
+  const dispatch = useDispatch()
+  /** Trạng thái Đóng/ Mở Popup */
   const SHOW_POPUP = useSelector(selectStatusPopup)
   return (
     <div
@@ -50,33 +51,28 @@ function MessageComponent({ data }: MessageProps) {
           <div className="flex rounded-lg">
             <img
               src={data?.message_attachments?.[0]?.payload?.url}
-              className="w-32 h-32 object-contain bg-slate-200 rounded-lg"
+              className="w-32 h-32 object-contain bg-slate-200 rounded-lg hover:cursor-pointer"
               alt=""
-              onClick={() =>
+              onClick={() => {
+                /** Lưu vào STORE */
+                dispatch(
+                  setGlobalPreviewUrl(
+                    data?.message_attachments?.[0]?.payload?.url
+                  )
+                )
+                /** Click vào ảnh thì gửi thông tin cho sdk
+                 * Có thể lưu data và STORE
+                 */
                 postMessageToParent(
                   SHOW_POPUP,
                   false,
                   674,
                   data?.message_attachments?.[0]?.payload?.url
                 )
-              }
+              }}
             />
           </div>
         )}
-      {/* Hiển thị data dạng nhiều ảnh */}
-      {/* {data?.message_attachments?.length > 1 &&
-        data?.message_attachments?.[0]?.type === 'image' && (
-          <div className="flex rounded-lg p-2 overflow-x-auto gap-x-2 bg-transparent">
-            {data?.message_attachments?.map((attachment) => (
-              <img
-                key={attachment?.payload?.url}
-                src={attachment?.payload?.url}
-                className="w-24 h-24 object-contain bg-slate-200 rounded-lg"
-                alt=""
-              />
-            ))}
-          </div>
-        )} */}
 
       {/* Hiển thị data dạng nhiều ảnh */}
       {data?.message_attachments?.length > 1 &&
@@ -94,14 +90,19 @@ function MessageComponent({ data }: MessageProps) {
                       src={attachment?.payload?.url}
                       className="object-cover w-full h-full"
                       alt={`attachment ${index + 1}`}
-                      onClick={() =>
+                      onClick={() => {
+                        /** Lưu vào STORE */
+                        dispatch(setGlobalPreviewUrl(attachment?.payload?.url))
+                        /** Click vào ảnh thì gửi thông tin cho sdk
+                         * Có thể lưu data và STORE
+                         */
                         postMessageToParent(
                           SHOW_POPUP,
                           false,
                           674,
                           attachment?.payload?.url
                         )
-                      }
+                      }}
                     />
 
                     {index === 5 && data?.message_attachments?.length > 6 && (

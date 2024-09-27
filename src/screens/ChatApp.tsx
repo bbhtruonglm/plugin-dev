@@ -17,12 +17,14 @@ import { fetchAPI, useAPI } from '@/api/api'
 import {
   selectCurrentWidth,
   selectGlobalClientId,
+  selectGlobalPreviewUrl,
   selectGlobalUnreadCount,
   selectLatestMessage,
   selectListUnreadMessage,
   selectPageId,
   selectStatusIsInit,
   selectStatusPopup,
+  setGlobalPreviewUrl,
   setLatestMessageGlobal,
   setListMessage,
   setListUnreadMessage,
@@ -527,9 +529,9 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
      * gọi post message để thay kích thước SDK ở cha
      * thay đổi kích thước ở bong bóng chat
      */
-    if (selectedImage) {
-      postMessageToParent(true, false, 674, selectedImage)
-      return 'flex w-screen h-screen items-end justify-end p-9'
+    if (GLOBAL_PREVIEW_URL) {
+      // postMessageToParent(true, false, 674, GLOBAL_PREVIEW_URL)
+      return 'flex w-screen h-screen items-end justify-end px-11 pb-9'
     }
 
     /** Base condition:
@@ -656,6 +658,10 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
   ) => {
     /** CSS base */
 
+    if (GLOBAL_PREVIEW_URL) {
+      return 'flex flex-col w-[400px] h-[600px] mb-2 rounded-[20px] relative bg-bg-gradient rounded-[20px] overflow-hidden shadow-md'
+    }
+
     const BASE_CLASSES = 'relative bg-bg-gradient overflow-hidden shadow-md'
 
     /** Màn Mobile / PC */
@@ -738,15 +744,10 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     // Popup đóng thì ẩn màn chat
     return 'hidden'
   }
-  const [selectedImage, setSelectedImage] = useState<string | null>(null)
-  const handleModal = (image: string) => {
-    if (selectedImage) return setSelectedImage(null)
-    setSelectedImage(image)
-    postMessageToParent(SHOW_POPUP, false, 674, image)
-  }
+  const GLOBAL_PREVIEW_URL = useSelector(selectGlobalPreviewUrl)
 
   const handleCloseModal = () => {
-    setSelectedImage(null)
+    dispatch(setGlobalPreviewUrl(''))
     postMessageToParent(SHOW_POPUP, false, 674, '')
   }
   return (
@@ -1124,23 +1125,14 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
           )}
         </div>
       </button>
-      <button
-        onClick={() =>
-          handleModal(
-            // 'https://scontent.xx.fbcdn.net/v/t1.15752-9/450350494_903962018126696_2287620730748680864_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=fc17b8&_nc_ohc=H7ddOkXmpJMQ7kNvgEA9Sae&_nc_ad=z-m&_nc_cid=0&_nc_ht=scontent.xx&oh=03_Q7cD1QG8ShuvUGDoO-hw_hLf61_8LfnDfe8ZW9KRA3ZGGjplrg&oe=671C49C5'
-            'https://scontent.xx.fbcdn.net/v/t1.15752-9/386861746_1062687201530329_99059459800933817_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=fc17b8&_nc_ohc=ENLOuDRsVCMQ7kNvgESL9vn&_nc_ad=z-m&_nc_cid=0&_nc_ht=scontent.xx&_nc_gid=AkVkggUQk13-PpwMRZto_aq&oh=03_Q7cD1QHJs-gsdyMa5NtI_wszkqFgwTWJboW7RzK9rs5FH1QmwQ&oe=671DE42E'
-          )
-        }
-      >
-        preview ảnh
-      </button>
+
       <Modal
-        isOpen={!!selectedImage}
+        is_open={!!GLOBAL_PREVIEW_URL}
         onClose={handleCloseModal}
       >
-        {selectedImage && (
+        {GLOBAL_PREVIEW_URL && (
           <img
-            src={selectedImage}
+            src={GLOBAL_PREVIEW_URL}
             className="max-w-[880px] w-full h-auto object-contain rounded-lg"
             alt="Full Attachment"
           />

@@ -12,7 +12,7 @@ const Modal: React.FC<ModalProps> = ({ is_open, onClose, children }) => {
       <div className="relative">
         {children}
         <button
-          className="absolute top-2 right-2 text-white text-2xl font-bold"
+          className="absolute top-2 right-2 text-white text-2xl font-bold bg-slate-700 p-2 rounded-full h-10 w-10 flex items-center justify-center"
           onClick={onClose}
         >
           &times;

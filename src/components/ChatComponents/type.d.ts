@@ -131,7 +131,7 @@ export interface MessageAttachment {
    */
   payload: {
     /** URL của file đính kèm (đường dẫn tới file) */
-    url?: string
+    url?: string | undefined
 
     /** Loại template cho nội dung đính kèm (ví dụ: generic, button template) */
     template_type?: string

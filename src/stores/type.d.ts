@@ -19,4 +19,6 @@ export interface AppState {
   is_init: boolean
   /** Số lượng tin nhắn chưa đọc */
   unread_count: number
+  /** Url ảnh muốn xem preview  */
+  preview_url?: string
 }
