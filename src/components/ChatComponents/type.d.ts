@@ -203,6 +203,7 @@ export type BtnType = {
  */
 export interface MessageProps {
   height?: number
+
   data: {
     /** ID của tin nhắn */
     _id: string
@@ -290,4 +291,13 @@ interface InputProps {
   type?: 'text' | 'number' | 'email' | 'password' | 'tel'
   /** có bắt buộc hay không */
   required?: boolean
+}
+/** Cấu trúc params của modal */
+interface ModalProps {
+  /** Trạng thái đóng mở modal */
+  is_open: boolean
+  /** Hàm đóng modal */
+  onClose: () => void
+  /** Đối tượng con trong modal */
+  children: React.ReactNode
 }

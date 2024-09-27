@@ -1,10 +1,9 @@
-import { t, use } from 'i18next'
-
 import { ReactComponent as BackArrow } from '@/assets/white-arrow.svg'
 import { ChatHeaderProps } from './type'
 import { ReactComponent as Close } from '@/assets/close.svg'
 import OnlineStaff from '../Container/OnlineStaff'
 import { selectCurrentWidth } from '@/stores/appSlice'
+import { t } from 'i18next'
 import { useSelector } from 'react-redux'
 
 function ChatHeader({

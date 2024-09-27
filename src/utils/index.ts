@@ -160,7 +160,8 @@ export function calculateTimeAgo(timeString: string) {
 export const postMessageToParent = (
   is_show: boolean,
   is_quick_chat: boolean,
-  height?: number
+  height?: number,
+  media_url?: string
 ) => {
   // post message đến parent
   window.parent.postMessage(
@@ -169,6 +170,7 @@ export const postMessageToParent = (
       is_show: is_show,
       is_quick_chat: is_quick_chat,
       height: height || 0,
+      media_url: media_url || '',
     },
     '*'
   )

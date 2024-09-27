@@ -5,15 +5,11 @@ import {
   selectGlobalUnreadCount,
   selectLatestMessage,
   selectListMessage,
-  selectListUnreadMessage,
   selectPageId,
   selectStatusPopup,
   setGlobalUnreadCount,
-  setLatestMessageGlobal,
   setListMessage,
-  setListUnreadMessage,
 } from '@/stores/appSlice'
-import { t, use } from 'i18next'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -25,6 +21,7 @@ import Loading from '../Loading/Loading'
 import LoadingDots from '../Loading/LoadingDot'
 import MessageComponent from './MessageComponent'
 import _ from 'lodash'
+import { t } from 'i18next'
 
 /** Chi tiết component chat */
 function DetailChat({
@@ -319,6 +316,18 @@ function DetailChat({
     // Lấy link avatar
     const LINK_AVATAR = renderAvatar(IS_STAFF_EXIST?.fb_staff_id)
     return LINK_AVATAR
+  }
+  const [selectedImage, setSelectedImage] = useState<string | null>(null)
+
+  // Function to open the modal when an image is clicked
+  const handleImageClick = (url: string | undefined) => {
+    if (!url) return
+    setSelectedImage(url)
+  }
+
+  // Function to close the modal
+  const handleCloseModal = () => {
+    setSelectedImage(null)
   }
 
   return (

@@ -1,18 +1,20 @@
 import { BtnType, ElementType, MessageProps } from './type'
-import { extractMessageId, formatDate, isValidUrl } from '@/utils'
+import {
+  extractMessageId,
+  formatDate,
+  isValidUrl,
+  postMessageToParent,
+} from '@/utils'
+import { useDispatch, useSelector } from 'react-redux'
 
 import AudioPlayer from './AudioPlayer'
 import { ReactComponent as FileIcon } from '@/assets/document-text.svg'
 import VideoPlayer from './VideoPlayter'
+import { selectStatusPopup } from '@/stores/appSlice'
 
 /** Hàm render css khi check type tin nhắn */
 const getMessageClasses = (messageType: string) => {
-  // Kiểm tra nếu messageType là 'system'
-  // if (messageType === 'system') {
-  //   // Trả về các lớp CSS tương ứng nếu messageType là 'system'
-  //   return 'hidden bg-transparent max-w-[90%] font-medium'
-  // }
-  // Kiểm tra nếu messageType là 'page'
+  /** Kiểm tra nếu messageType là 'page' */
   if (messageType === 'page') {
     // Trả về các lớp CSS tương ứng nếu messageType là 'page'
     return 'bg-white max-w-[60%]'
@@ -27,6 +29,7 @@ const getMessageClasses = (messageType: string) => {
 }
 
 function MessageComponent({ data }: MessageProps) {
+  const SHOW_POPUP = useSelector(selectStatusPopup)
   return (
     <div
       className={`flex flex-col gap-y-4 rounded-lg group relative ${getMessageClasses(
@@ -49,11 +52,19 @@ function MessageComponent({ data }: MessageProps) {
               src={data?.message_attachments?.[0]?.payload?.url}
               className="w-32 h-32 object-contain bg-slate-200 rounded-lg"
               alt=""
+              onClick={() =>
+                postMessageToParent(
+                  SHOW_POPUP,
+                  false,
+                  674,
+                  data?.message_attachments?.[0]?.payload?.url
+                )
+              }
             />
           </div>
         )}
       {/* Hiển thị data dạng nhiều ảnh */}
-      {data?.message_attachments?.length > 1 &&
+      {/* {data?.message_attachments?.length > 1 &&
         data?.message_attachments?.[0]?.type === 'image' && (
           <div className="flex rounded-lg p-2 overflow-x-auto gap-x-2 bg-transparent">
             {data?.message_attachments?.map((attachment) => (
@@ -65,23 +76,32 @@ function MessageComponent({ data }: MessageProps) {
               />
             ))}
           </div>
-        )}
+        )} */}
+
       {/* Hiển thị data dạng nhiều ảnh */}
-      {/* {data?.message_attachments?.length > 1 &&
+      {data?.message_attachments?.length > 1 &&
         data?.message_attachments?.[0]?.type === 'image' && (
-          <div className=" overflow-x-auto p-2 bg-transparent rounded-lg">
-            <div className="flex flex-wrap gap-2">
+          <div className=" overflow-x-auto p-2 bg-transparent rounded-lg max-h-[216px]">
+            <div className="grid grid-cols-3 grid-rows-2 gap-2 w-[304px]">
               {data?.message_attachments
                 ?.slice(0, 6) // Giới hạn chỉ hiển thị tối đa 6 ảnh
                 ?.map((attachment, index) => (
                   <div
                     key={attachment?.payload?.url}
-                    className="relative w-24 h-24 bg-slate-200 rounded-lg overflow-hidden"
+                    className="relative w-24 h-24 bg-slate-200 rounded-lg overflow-hidden border border-slate-100"
                   >
                     <img
                       src={attachment?.payload?.url}
                       className="object-cover w-full h-full"
                       alt={`attachment ${index + 1}`}
+                      onClick={() =>
+                        postMessageToParent(
+                          SHOW_POPUP,
+                          false,
+                          674,
+                          attachment?.payload?.url
+                        )
+                      }
                     />
 
                     {index === 5 && data?.message_attachments?.length > 6 && (
@@ -93,7 +113,7 @@ function MessageComponent({ data }: MessageProps) {
                 ))}
             </div>
           </div>
-        )} */}
+        )}
 
       {/* Hiển thị data dạng video */}
       {data?.message_attachments?.[0]?.type === 'video' && (
