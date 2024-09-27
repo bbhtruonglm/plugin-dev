@@ -3,7 +3,6 @@ import {
   selectPageId,
   setGlobalClientId,
   setStatusIsInit,
-  setStatusPopup,
 } from '@/stores/appSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { useEffect, useState } from 'react'
@@ -32,9 +31,9 @@ function ChatScreen({
   const [is_init, setIsInit] = useState(false)
 
   useEffect(() => {
-    // Nếu có page_id thì mới xử lý tiếp
+    /** Nếu có page_id thì mới xử lý tiếp */
     if (PAGE_ID) {
-      // Tạo client Id = page_id từ cha
+      /** Tạo client Id = page_id từ cha */
       const CLIENT_ID = localStorage.getItem(`client_id_<${PAGE_ID}>`)
       // Có CLIENT_ID mới set vào state
       if (CLIENT_ID && CLIENT_ID !== 'undefined') {
@@ -87,7 +86,7 @@ function ChatScreen({
 
       if (RESULT.code === 403) {
         // Nếu lỗi thì lưu lại chuỗi rỗng
-        localStorage.setItem(`client_id_<${PAGE_ID}>`, '')
+        localStorage.setItem(`client_id_<${PAGE_ID}>`, '6131478076934694')
         setInvalidPageId(true)
       } else {
         // Có data thì lưu vào local storage

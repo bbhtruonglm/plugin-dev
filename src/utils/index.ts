@@ -1,6 +1,5 @@
 import { MessageInfo } from './type'
 import { apiImage } from '@/api/api'
-import { size } from 'lodash'
 import { t } from 'i18next'
 
 /** Hàm tìm locale từ URL
@@ -298,4 +297,16 @@ export const checkTimeTillNow = (lastTime: number) => {
   // Kiểm tra nếu thời gian hiện tại lớn hơn lastTime + 1 giờ
   // return NOW > lastTime + ONE_HOUR
   return NOW > lastTime + THIRTY_SECOND
+}
+/** Hàm check URL có hợp lệ hay không
+ * @param {string} string: Đường dẫn URL
+ * @return {boolean} Co hợp lệ hay không
+ */
+export function isValidUrl(string: string) {
+  try {
+    new URL(string) // Nếu URL không hợp lệ, sẽ ném ra lỗi.
+    return true
+  } catch (_) {
+    return false
+  }
 }

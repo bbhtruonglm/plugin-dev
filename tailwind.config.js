@@ -134,8 +134,8 @@ module.exports = {
         '.progress-bar::-webkit-slider-thumb': {
           '-webkit-appearance': 'none',
           appearance: 'none',
-          width: '12px',
-          height: '12px',
+          width: '4px',
+          height: '4px',
           'background-color': '#000', // Thumb màu đen
           'border-radius': '50%',
           'margin-top': '-4px',
