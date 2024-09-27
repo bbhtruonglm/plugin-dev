@@ -278,7 +278,7 @@ interface InitClientProps {
   onInitClient: (e?: any) => void
 }
 /** Định nghĩa cấu trúc dữ liệu input */
-interface InputProps {
+interface InputPropsInit {
   /** Tiêu đề  */
   title?: string
   /** Placeholder */

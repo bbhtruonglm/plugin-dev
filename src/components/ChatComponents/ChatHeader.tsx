@@ -11,11 +11,9 @@ function ChatHeader({
   user_id,
   setHideForMobile,
   page_name,
-  staff_avatar,
   staff_name,
   loading_staff,
   employee_list,
-  loading_chat_data,
 }: ChatHeaderProps) {
   /** Độ rộng màn hình hiện tại */
   const CURRENT_WIDTH = useSelector(selectCurrentWidth)

@@ -657,7 +657,6 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     CURRENT_WIDTH: number
   ) => {
     /** CSS base */
-
     if (GLOBAL_PREVIEW_URL) {
       return 'flex flex-col w-[400px] h-[600px] mb-2 rounded-[20px] relative bg-bg-gradient rounded-[20px] overflow-hidden shadow-md'
     }
@@ -691,57 +690,62 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     GLOBAL_UNREAD_MESSAGE_COUNT: number,
     SHOW_QUICK_CHAT: string | null
   ) => {
-    // Base condition: Popup closed, message is from page, unread messages > 0
+    /** Base condition:
+     * Popup đóng,
+     * message được gửi từ page,
+     * unread messages > 0 */
     const baseCondition =
       SHOW_QUICK_CHAT === 'show_quick_chat' &&
       !show &&
       LATEST_MESSAGE?.message_type === 'page' &&
       GLOBAL_UNREAD_MESSAGE_COUNT > 0
 
-    // Additional condition: If the latest message has attachments and the first one is an image
+    /** Additional condition:
+     *  If the latest message has attachments
+     * the first one is an image */
     const hasImageAttachment =
       LATEST_MESSAGE?.message_attachments &&
       (LATEST_MESSAGE?.message_attachments[0]?.type === 'image' ||
         LATEST_MESSAGE?.message_attachments[0]?.type === 'video')
-    // Có file attachment
+    /** Có file attachment */
     const hasFileAttachment =
       LATEST_MESSAGE?.message_attachments &&
       LATEST_MESSAGE?.message_attachments[0]?.type === 'file'
-    // Có button attachment
+    /** Có button attachment */
     const hasButtonAttachment =
       LATEST_MESSAGE?.message_attachments &&
       LATEST_MESSAGE?.message_attachments[0]?.type === 'template' &&
       LATEST_MESSAGE?.message_attachments[0]?.payload?.template_type ===
         'button'
-    // Có slide attachment
+    /** Có slide attachment */
     const hasSlideAttachment =
       LATEST_MESSAGE?.message_attachments &&
       LATEST_MESSAGE?.message_attachments[0]?.type === 'template' &&
       LATEST_MESSAGE?.message_attachments[0]?.payload?.template_type ===
         'generic'
-    // Return appropriate class based on conditions
+    /** Return appropriate class based on conditions */
     if (baseCondition) {
       if (hasImageAttachment) {
-        // Adjust height for image case
+        /** Hiển thị ảnh | video */
         return 'flex flex-col w-[286px] h-[240px] justify-between'
       }
       if (hasFileAttachment) {
-        // Adjust height for File case
+        /** Hiện thị file */
         return 'flex flex-col w-[286px] h-[168px] justify-between'
       }
       if (hasButtonAttachment) {
-        // Adjust height for Button case
+        /** Hiện thị button */
         return 'flex flex-col w-[286px] h-[240px] justify-between'
       }
       if (hasSlideAttachment) {
-        // Adjust height for Button case
+        /** Hiện thị slide */
         return 'flex flex-col w-[286px] h-[468px] justify-between'
       }
 
-      // Adjust height for text case
+      /** Hiện thị text */
       return 'flex flex-col w-[286px] h-[142px] justify-between'
     }
-    // Popup đóng thì ẩn màn chat
+    /** Popup đóng thì ẩn màn chat */
     return 'hidden'
   }
   const GLOBAL_PREVIEW_URL = useSelector(selectGlobalPreviewUrl)
@@ -814,10 +818,10 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
               <Home
                 onNavigate={() => {
                   setCurrentTab('message')
-                  // 1. Reset Số tin nhắn chưa đọc localStorage
+                  /** 1. Reset Số tin nhắn chưa đọc localStorage */
                   saveQuickChatCount(PAGE_ID, CLIENT_STORED, 0)
 
-                  // 2. Reset tin nhắn mới nhất trong localStorage
+                  /** 2. Reset tin nhắn mới nhất trong localStorage */
                   saveQuickChatLatestMessage(PAGE_ID, CLIENT_STORED, null)
                 }}
                 onError={() => {

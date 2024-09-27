@@ -72,7 +72,7 @@ function ChatScreen({
       const PARAMS = value
 
       URL_CLIENT.search = new URLSearchParams(PARAMS).toString()
-      // Lấy client_ID
+      /** Lấy client_ID */
       const res = await fetch(URL_CLIENT, {
         method: 'GET',
         headers: {
@@ -81,18 +81,18 @@ function ChatScreen({
       })
       const RESULT = await res.json()
 
-      // luu vao localStorage
+      /** luu vao localStorage */
       setClientId(RESULT.data)
 
       if (RESULT.code === 403) {
-        // Nếu lỗi thì lưu lại chuỗi rỗng
+        /** Nếu lỗi thì lưu lại chuỗi rỗng */
         localStorage.setItem(`client_id_<${PAGE_ID}>`, '')
         setInvalidPageId(true)
       } else {
-        // Có data thì lưu vào local storage
+        /** Có data thì lưu vào local storage */
 
         localStorage.setItem(`client_id_<${PAGE_ID}>`, RESULT.data)
-        // localStorage.setItem(`client_id_<${PAGE_ID}>`, '6131478076934694')
+        localStorage.setItem(`client_id_<${PAGE_ID}>`, '6131478076934694')
 
         console.log(RESULT.data)
         dispatch(setStatusIsInit(true))
@@ -112,25 +112,26 @@ function ChatScreen({
    *
    */
   const fetchClientData = async (client_id: string, page_id: String | null) => {
-    // Set loading staff - Cần fix
+    /** Set loading staff - Cần fix */
     setLoadingStaff(true)
 
-    // Body lấy thông tin Client
+    /** Body lấy thông tin Client */
     const BODY = {
       client_id: client_id,
       page_id: page_id,
     }
-    // Lấy URL
+    /** Lấy URL */
     const URL_READ = new URL(READ_CLIENT_INFO)
 
     URL_READ.search = new URLSearchParams(BODY as any).toString()
 
+    /** Lấy thông tin client */
     const RES = await fetchAPI(URL_READ.toString(), 'GET')
-    // Lưu tên client
+
+    /** Lưu tên client */
     setClientName(RES?.data?.client_name)
 
-    // Cần check sửa lại
-    // Lấy avatar staff từ fb_staff_id
+    /** Lấy avatar staff từ fb_staff_id */
     if (RES?.data?.fb_staff_id) {
       const LINK_AVATAR = apiImage(
         `/app/facebook/avatar/${RES.data.fb_staff_id}?width=64&height=64`
@@ -140,8 +141,7 @@ function ChatScreen({
       setLoadingStaff(false)
     }
 
-    // Cần check để sửa lại
-    // Lấy Tên nhân viên
+    /** Lấy Tên nhân viên */
     if (RES?.data?.snap_staff?.name) {
       setStaffName(RES.data.snap_staff.name)
       setLoadingStaff(false)

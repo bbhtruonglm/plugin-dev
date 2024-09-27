@@ -1,14 +1,12 @@
-import React from 'react'
-import imgAI from '../../assets/image.png'
 function IntroAI() {
   return (
     <div className="bg-white p-3 rounded-xl flex justify-between gap-10 items-center shadow-md">
       <div className="flex flex-col gap-2.5">
-        <img
+        {/* <img
           src={imgAI}
           alt=""
           className="w-full h-4"
-        />
+        /> */}
         <h2 className="flex gap-2 items-center text-sm font-medium">
           Increase agent efficiency by 31%
         </h2>

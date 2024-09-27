@@ -18,28 +18,28 @@ function InputChat({
   client_id,
   setLoading,
 }: InputProps) {
-  // Tạo ref cho ô input
+  /** Tạo ref cho ô input */
   const INPUT_REF = useRef<HTMLInputElement>(null)
-  // Trạng thái đóng mở popup
+  /** Trạng thái đóng mở popup */
   const SHOW_POPUP = useSelector(selectStatusPopup)
 
   useEffect(() => {
     if (SHOW_POPUP) {
-      // When the popup is open, focus the input
+      /** When the popup is open, focus the input */
       const timer = setTimeout(() => {
         if (INPUT_REF.current) {
           INPUT_REF.current.focus()
         }
       }, 200) // Delay to ensure layout is stable
 
-      // Disable body scroll when popup is open
+      /** Disable body scroll when popup is open Mobile */
       document.body.style.overflow = 'hidden'
 
       return () => {
         clearTimeout(timer)
       }
     } else {
-      // Enable body scroll when popup is closed
+      /** Enable body scroll when popup is closed Mobile */
       document.body.style.overflow = 'auto'
     }
   }, [SHOW_POPUP])
@@ -58,22 +58,23 @@ function InputChat({
    */
   const uploadFile = async (file: File | null) => {
     if (file) {
-      // Set loading
+      /** Set loading */
       setLoading(true)
       /** Khởi tạo form data */
       const FORM_DATA = new FormData()
-      // Thêm file ảnh vào form
+      /** Thêm file ảnh vào form */
       FORM_DATA.append('file', file)
-      // Thêm các trường còn lại vào form
+      /** Thêm các trường còn lại vào form */
       FORM_DATA.append('page_id', PAGE_ID)
       FORM_DATA.append('client_id', client_id)
 
-      // gửi tin nhắn đi
+      /** gửi tin nhắn đi */
       try {
         await fetch(SEND_MESSAGE_API, {
           method: 'POST',
           body: FORM_DATA,
         })
+        /** Gửi tin nhắn đi, reset các file */
         setLoading(false)
         setFile(null)
         setPreviewUrl(null)
@@ -86,6 +87,7 @@ function InputChat({
   /** Cho phép ấn Enter để gửi */
   const handleKeyDown = (event: any) => {
     if (event.key === 'Enter' && value) {
+      /** Cho phép ấn enter */
       event.preventDefault()
       handleSend(value)
       setValue('')
@@ -97,15 +99,15 @@ function InputChat({
       <div className="bg-white w-full flex justify-between gap-2 items-center h-full py-2 px-4 rounded-full">
         <Upload
           setPreviewUrl={(e: File) => {
-            // Lưu file
+            /** Lưu file */
             setFile(e)
-            // Tạo đối tượng READER
+            /** Tạo đối tượng READER */
             const READER = new FileReader()
             READER.onload = () => {
-              // Lưu base64 preview
+              /** Lưu base64 để preview */
               setPreviewUrl(READER.result as string)
             }
-            // Đọc file dưới dạng URL data
+            /** Đọc file dưới dạng URL data */
             READER.readAsDataURL(e)
           }}
         />
@@ -136,7 +138,7 @@ function InputChat({
             <div
               className="flex justify-between cursor-pointer relative"
               onClick={() => {
-                // Xoá Preview url
+                /** Xoá Preview url */
                 setPreviewUrl(null)
                 setFile(null)
               }}
@@ -156,7 +158,7 @@ function InputChat({
             <div
               className="cursor-pointer"
               onClick={() => {
-                // Khi không có preview ảnh thì gửi text như bình thường
+                /** Khi không có preview ảnh thì gửi text như bình thường */
                 if (!loading && !error_message && preview_url === null) {
                   handleSend(value)
                   setValue('')

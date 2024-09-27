@@ -10,22 +10,9 @@ function TemplateMessageComponent({ data }: MessageProps) {
   return (
     <div className={`flex flex-col rounded-lg group relative w-full h-full`}>
       {/* Tooltip */}
-      {/* <div
-        className={`absolute w-36 bottom-full ${
-          data?.message_type === 'page' ? 'left-0' : 'right-0'
-        }  text-xs font-semibold text-slate-700 bg-transparent rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
-      >
-        {formatDate(data?.time)}
-      </div> */}
+
       {/* Hiển thị data dạng ảnh */}
       {data?.message_attachments?.[0]?.type === 'image' && (
-        // <div className="flex rounded-lg border h-full w-full">
-        //   <img
-        //     src={data?.message_attachments?.[0]?.payload?.url}
-        //     className=" object-contain rounded-lg"
-        //     alt=""
-        //   />
-        // </div>
         <div className="flex justify-start items-center rounded-lg overflow-hidden w-full h-full">
           <img
             src={data?.message_attachments?.[0]?.payload?.url}

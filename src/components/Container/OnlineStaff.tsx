@@ -2,7 +2,9 @@ import { apiImage } from '@/api/api'
 import { renderAvatar } from '@/utils'
 
 interface StaffProps {
+  /** Danh sách nhân viên */
   data?: { fb_staff_id: string; is_online: boolean }[]
+  /** Kích thước hiển thị*/
   size?: 'small' | 'medium'
 }
 

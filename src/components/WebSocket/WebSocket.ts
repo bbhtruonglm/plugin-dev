@@ -171,21 +171,7 @@ export function onSocketFromChatboxServer({
     }
   }
 
-  // // Khi kết nối bị đóng
-  // WS.current.onclose = () => {
-  //   console.log('WebSocket Disconnected')
-  //   // Loại bỏ vòng lặp tự động ping soket cũ
-  //   clearInterval(ping_interval_id)
-
-  //   // nếu đóng hoàn toàn thì không cho kết nổi tự mở lại nữa
-  //   if (is_force_close_socket) return
-  //   setTimeout(() => onSocketFromChatboxServer(page_id, client_id), 100)
-  // }
-
-  // // Nếu xảy ra lỗi
-  // WS.current.onerror = () => {
-  //   WS.current?.close()
-  // }
+  /** Khi kết nối bị đóng */
   WS.current.onclose = () => {
     console.log('WebSocket Disconnected')
     clearInterval(ping_interval_id)
@@ -211,7 +197,7 @@ export function onSocketFromChatboxServer({
       100
     )
   }
-
+  /** Khi có lỗi */
   WS.current.onerror = () => {
     WS.current?.close()
   }
@@ -226,10 +212,10 @@ export function closeSocketConnect(
   WS: React.MutableRefObject<WebSocket | null>,
   setIsForceCloseSocket: React.Dispatch<React.SetStateAction<boolean>>
 ) {
-  // Gắn cờ ngăn chặn kết nối tự động mở lại
+  /** Gắn cờ ngăn chặn kết nối tự động mở lại */
   setIsForceCloseSocket(true)
 
-  // Đóng kết nối WebSocket hiện tại
+  /** Đóng kết nối WebSocket hiện tại */
   if (WS.current) {
     WS.current.close()
   }
