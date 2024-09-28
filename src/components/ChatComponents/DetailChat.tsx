@@ -210,9 +210,10 @@ function DetailChat({
         setSkip(skip + RESULT.data.length)
       }
 
-      /** Loại bỏ những tin nhắn từ hệ thống */
+      /** Loại bỏ những tin nhắn từ hệ thống và tin nhắn dạng note */
       const FILTER_RES = RESULT?.data.filter(
-        (item: any) => item.message_type !== 'system'
+        (item: any) =>
+          item.message_type !== 'system' && item.message_type !== 'note'
       )
       console.log(FILTER_RES, 'FILTER_RES')
 
@@ -385,7 +386,8 @@ function DetailChat({
               {/* Hiển thị avatar theo role user / shop */}
               <div
                 className={`flex w-full py-2 gap-1  ${
-                  item?.message_type === 'system'
+                  item?.message_type === 'system' ||
+                  item?.message_type === 'note'
                     ? ' hidden justify-center'
                     : item?.message_type === 'page'
                     ? ' justify-start items-start'

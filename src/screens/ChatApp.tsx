@@ -102,6 +102,8 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
 
   /** Tạo ref một để luu giữ giá trị LIST_UNREAD_MESSAGE */
   const REF_LIST_UNREAD_MESSAGE = useRef(LIST_UNREAD_MESSAGE)
+  /** Giá trị của preview URL */
+  const GLOBAL_PREVIEW_URL = useSelector(selectGlobalPreviewUrl)
 
   useEffect(() => {
     /** Cập nhật giá trị trong ref một khi LIST_UNREAD_MESSAGE thay đổi */
@@ -510,6 +512,17 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
   /** Lấy ra thời gian đóng popup gần nhất từ trong localStorage */
   // const LAST_TIME_CLOSE = localStorage.getItem(`last_time_close__${PAGE_ID}`)
 
+  const [hasExitedPreview, setHasExitedPreview] = useState(false)
+
+  // Theo dõi khi GLOBAL_PREVIEW_URL thay đổi và trạng thái preview đã được reset
+  useEffect(() => {
+    if (GLOBAL_PREVIEW_URL === null) {
+      setHasExitedPreview(true) // Đã thoát khỏi trạng thái preview
+    } else {
+      setHasExitedPreview(false) // Đang trong trạng thái preview
+    }
+  }, [GLOBAL_PREVIEW_URL])
+
   /** Hàm xử lý điều kiện để trả về css render giao diện
    * @param {boolean} show Trạng thái đóng mở giao diện
    * @param {number} GLOBAL_UNREAD_MESSAGE_COUNT Tổng số tin nhắn chưa đọc
@@ -531,7 +544,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
      */
     if (GLOBAL_PREVIEW_URL) {
       // postMessageToParent(true, false, 674, GLOBAL_PREVIEW_URL)
-      return 'flex w-screen h-screen items-end justify-end px-11 pb-9'
+      return 'flex w-screen h-screen items-end justify-end px-2 pr-11 pb-[52px]'
     }
 
     /** Base condition:
@@ -642,7 +655,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
      * - trả về full kích thước */
     postMessageToParent(true, false)
     /**  Trả về kích thước Fixed */
-    return 'w-[416px] h-[674px] px-2 pb-4 justify-between items-end'
+    return 'w-[416px] h-[674px] px-2 pb-4 justify-between items-end bg-transparent'
   }
 
   /** Hàm xử lý điều kiện để trả về css render giao diện
@@ -658,7 +671,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
   ) => {
     /** CSS base */
     if (GLOBAL_PREVIEW_URL) {
-      return 'flex flex-col w-[400px] h-[600px] mb-2 rounded-[20px] relative bg-bg-gradient rounded-[20px] overflow-hidden shadow-md'
+      return 'flex flex-col w-[400px] h-[600px] mb-[10px] rounded-[20px] relative bg-bg-gradient overflow-hidden shadow-md'
     }
 
     const BASE_CLASSES = 'relative bg-bg-gradient overflow-hidden shadow-md'
@@ -669,10 +682,13 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
         ? 'w-screen h-screen rounded-none'
         : 'w-[400px] h-[600px] rounded-[20px]'
     /** Popup đang đóng, và không có tin nhắn chưa đọc */
+    /** Popup đang đóng, và không có tin nhắn chưa đọc */
     const VISIBILITY_CLASSES =
       !show && GLOBAL_UNREAD_MESSAGE_COUNT === 0
         ? 'hidden'
-        : 'flex flex-col animate-zoomInBottomRight transition-transform duration-200 ease-in-out'
+        : `flex flex-col ${
+            !hasExitedPreview ? 'animate-zoomInBottomRight' : ''
+          } transition-transform duration-200 ease-in-out`
 
     return `${BASE_CLASSES} ${SIZE_CLASSES} ${VISIBILITY_CLASSES}`
   }
@@ -748,10 +764,9 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     /** Popup đóng thì ẩn màn chat */
     return 'hidden'
   }
-  const GLOBAL_PREVIEW_URL = useSelector(selectGlobalPreviewUrl)
 
   const handleCloseModal = () => {
-    dispatch(setGlobalPreviewUrl(''))
+    dispatch(setGlobalPreviewUrl(null))
     postMessageToParent(SHOW_POPUP, false, 674, '')
   }
   return (

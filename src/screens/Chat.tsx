@@ -92,7 +92,7 @@ function ChatScreen({
         /** Có data thì lưu vào local storage */
 
         localStorage.setItem(`client_id_<${PAGE_ID}>`, RESULT.data)
-        localStorage.setItem(`client_id_<${PAGE_ID}>`, '6131478076934694')
+        // localStorage.setItem(`client_id_<${PAGE_ID}>`, '6131478076934694')
 
         console.log(RESULT.data)
         dispatch(setStatusIsInit(true))

@@ -20,5 +20,5 @@ export interface AppState {
   /** Số lượng tin nhắn chưa đọc */
   unread_count: number
   /** Url ảnh muốn xem preview  */
-  preview_url?: string
+  preview_url?: string | null
 }

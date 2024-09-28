@@ -12,23 +12,39 @@ import AudioPlayer from './AudioPlayer'
 import { ReactComponent as FileIcon } from '@/assets/document-text.svg'
 import VideoPlayer from './VideoPlayter'
 
-/** Hàm render css khi check type tin nhắn */
-const getMessageClasses = (messageType: string) => {
-  /** Kiểm tra nếu messageType là 'page' */
-  if (messageType === 'page') {
-    /** Trả về các lớp CSS tương ứng nếu messageType là 'page' */
-    return 'bg-white max-w-[60%]'
-  } else if (messageType === 'note') {
-    return 'max-w-[60%] bg-[#D8F6CB]'
-  } else {
-    /** Nếu messageType không phải là 'system' hay 'page' */
-    /** Trả về các lớp CSS mặc định cho các loại message khác */
-    return 'bg-messBg max-w-[60%]'
-  }
-}
-
 function MessageComponent({ data }: MessageProps) {
+  /** Hàm render css khi check type tin nhắn */
+  const getMessageClasses = (messageType: string) => {
+    /** Kiểm tra nếu messageType là 'page' */
+    if (messageType === 'page') {
+      /** Trả về các lớp CSS tương ứng nếu messageType là 'page' */
+      return 'bg-white max-w-[60%]'
+    }
+    // else if (messageType === 'note') {
+    //   return 'max-w-[60%] bg-[#D8F6CB]'
+    // }
+    if (messageType === 'client') {
+      /** Nếu messageType không phải là 'system' hay 'page' */
+      /** Trả về các lớp CSS mặc định cho các loại message khác */
+      return 'bg-messBg max-w-[60%]'
+    }
+  }
+
   const dispatch = useDispatch()
+  /** Hàm xử lý khi click xem preview ảnh
+   * @param {string} url - Link preview
+   * @action lưu URL vào stroe
+   * @action gọi đến sdk để thay đổi kích thước hiển thị
+   */
+  const handleClickPreview = (url?: string) => {
+    if (!url) return
+    /** Lưu vào STORE */
+    dispatch(setGlobalPreviewUrl(url))
+    /** Click vào ảnh thì gửi thông tin cho sdk
+     * Có thể lưu data và STORE
+     */
+    postMessageToParent(SHOW_POPUP, false, 674, url)
+  }
   /** Trạng thái Đóng/ Mở Popup */
   const SHOW_POPUP = useSelector(selectStatusPopup)
   return (
@@ -54,21 +70,7 @@ function MessageComponent({ data }: MessageProps) {
               className="w-32 h-32 object-contain bg-slate-200 rounded-lg hover:cursor-pointer"
               alt=""
               onClick={() => {
-                /** Lưu vào STORE */
-                dispatch(
-                  setGlobalPreviewUrl(
-                    data?.message_attachments?.[0]?.payload?.url
-                  )
-                )
-                /** Click vào ảnh thì gửi thông tin cho sdk
-                 * Có thể lưu data và STORE
-                 */
-                postMessageToParent(
-                  SHOW_POPUP,
-                  false,
-                  674,
-                  data?.message_attachments?.[0]?.payload?.url
-                )
+                handleClickPreview(data?.message_attachments?.[0]?.payload?.url)
               }}
             />
           </div>
@@ -77,8 +79,22 @@ function MessageComponent({ data }: MessageProps) {
       {/* Hiển thị data dạng nhiều ảnh */}
       {data?.message_attachments?.length > 1 &&
         data?.message_attachments?.[0]?.type === 'image' && (
-          <div className=" overflow-x-auto p-2 bg-transparent rounded-lg max-h-[216px]">
-            <div className="grid grid-cols-3 grid-rows-2 gap-2 w-[304px]">
+          <div className="overflow-x-auto p-2 bg-transparent rounded-lg max-h-[216px]">
+            <div
+              className={`grid gap-2 ${
+                /** Khi chỉ có 1 ảnh, grid có 1 cột và chiều rộng nhỏ hơn */
+                data?.message_attachments?.length === 1
+                  ? 'grid-cols-1 w-32 h-32'
+                  : /** Khi có 2 ảnh, grid có 2 cột */
+                  data?.message_attachments?.length === 2
+                  ? 'grid-cols-2 w-[200px]'
+                  : /** Khi có <= 3 ảnh, grid có 3 cột */
+                  data?.message_attachments?.length <= 3
+                  ? 'grid-cols-3 w-[304px]'
+                  : /** Khi có > 3 ảnh, chia thành 2 hàng */
+                    'grid-cols-3 grid-rows-2 w-[304px]'
+              }`}
+            >
               {data?.message_attachments
                 ?.slice(0, 6) // Giới hạn chỉ hiển thị tối đa 6 ảnh
                 ?.map((attachment, index) => (
@@ -151,6 +167,7 @@ function MessageComponent({ data }: MessageProps) {
       {/* Hiện thị data dạng text */}
       {data?.message_text &&
         data?.message_type !== 'system' &&
+        data?.message_type !== 'note' &&
         (!data?.message_attachments?.length ||
           !data?.message_attachments?.[0]?.type) && (
           <div className="flex p-2">
@@ -165,7 +182,8 @@ function MessageComponent({ data }: MessageProps) {
         data?.message_attachments?.[0]?.type === 'fallback' && (
           <div className="flex p-2">
             <a
-              className="text-sm min-h-4 break-words whitespace-pre-line underline hover:text-blue-500"
+              // className="text-sm min-h-4 break-words whitespace-pre-line underline hover:text-blue-500"
+              className="text-sm min-h-4 break-words whitespace-pre-line overflow-hidden break-all text-ellipsis underline hover:text-blue-500"
               href={
                 data?.message_text && isValidUrl(data.message_text)
                   ? data.message_text
@@ -304,3 +322,9 @@ function MessageComponent({ data }: MessageProps) {
 }
 
 export default MessageComponent
+function dispatch(arg0: {
+  payload: string | null | undefined
+  type: 'app/setGlobalPreviewUrl'
+}) {
+  throw new Error('Function not implemented.')
+}

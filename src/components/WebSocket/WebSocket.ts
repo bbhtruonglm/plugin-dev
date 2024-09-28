@@ -112,8 +112,11 @@ export function onSocketFromChatboxServer({
 
     /** nếu có tin nhắn. Popup đóng hoặc đang ở tab home */
     if (message && (!IS_SHOW_REF.current || TAB_REF.current !== 'message')) {
-      /** Không hiển thị tin nhắn hệ thống */
-      if (message?.message_type !== 'system') {
+      /** Không hiển thị tin nhắn hệ thống  và ghi chú*/
+      if (
+        message?.message_type !== 'system' &&
+        message?.message_type !== 'note'
+      ) {
         /** Check thời gian đóng QUICK_CHAT */
         if (REF_SHOW_QUICK_CHAT.current === 'hide_quick_chat') {
           /** Kiểm tra thời gian đóng QUICK_CHAT
