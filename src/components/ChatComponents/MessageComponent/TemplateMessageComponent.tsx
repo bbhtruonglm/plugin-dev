@@ -1,5 +1,5 @@
 import { BtnType, ElementType, MessageProps } from '../type'
-import { extractMessageId, formatDate } from '@/utils'
+import { extractMessageId, formatDate, isValidUrl } from '@/utils'
 
 import AudioPlayer from './AudioPlayer'
 import { ReactComponent as FileIcon } from '@/assets/document-text.svg'
@@ -11,27 +11,108 @@ function TemplateMessageComponent({ data }: MessageProps) {
     <div className={`flex flex-col rounded-lg group relative w-full h-full`}>
       {/* Tooltip */}
 
-      {/* Hiển thị data dạng ảnh */}
-      {data?.message_attachments?.[0]?.type === 'image' && (
-        <div className="flex justify-start items-center rounded-lg overflow-hidden w-full h-full">
-          <img
-            src={data?.message_attachments?.[0]?.payload?.url}
-            className="object-contain rounded-lg h-full w-full"
-            alt=""
-          />
-        </div>
-      )}
+      {/* Hiện thị data dạng text */}
+      {data?.message_text &&
+        data?.message_type !== 'system' &&
+        data?.message_type !== 'note' &&
+        (!data?.message_attachments?.length ||
+          !data?.message_attachments?.[0]?.type) && (
+          <div className="flex p-2">
+            <p className="text-sm min-h-4 break-words whitespace-pre-line">
+              {data?.message_text}
+            </p>
+          </div>
+        )}
+      {/* Hiển thị data dạng 1 ảnh */}
+      {data?.message_attachments?.length === 1 &&
+        data?.message_attachments?.[0]?.type === 'image' && (
+          <div className="flex rounded-lg">
+            <img
+              src={data?.message_attachments?.[0]?.payload?.url}
+              className="w-32 h-32 object-contain bg-slate-200 rounded-lg hover:cursor-pointer"
+              alt=""
+              onClick={() => {
+                // handleClickPreview(data?.message_attachments?.[0]?.payload?.url)
+              }}
+              loading="lazy"
+            />
+          </div>
+        )}
+
+      {/* Hiển thị data dạng nhiều ảnh */}
+      {data?.message_attachments?.length > 1 &&
+        data?.message_attachments?.[0]?.type === 'image' && (
+          <div className="overflow-x-auto p-2 bg-transparent rounded-lg max-h-[216px]">
+            <div
+              className={`grid gap-2 ${
+                /** Khi chỉ có 1 ảnh, grid có 1 cột và chiều rộng nhỏ hơn */
+                data?.message_attachments?.length === 1
+                  ? 'grid-cols-1 w-32 h-32'
+                  : /** Khi có 2 ảnh, grid có 2 cột */
+                  data?.message_attachments?.length === 2
+                  ? 'grid-cols-2 w-[200px]'
+                  : /** Khi có <= 3 ảnh, grid có 3 cột */
+                  data?.message_attachments?.length <= 3
+                  ? 'grid-cols-3 w-[304px]'
+                  : /** Khi có > 3 ảnh, chia thành 2 hàng */
+                    'grid-cols-3 grid-rows-2 w-[304px]'
+              }`}
+            >
+              {data?.message_attachments
+                ?.slice(0, 6) // Giới hạn chỉ hiển thị tối đa 6 ảnh
+                ?.map((attachment, index) => (
+                  <div
+                    key={attachment?.payload?.url}
+                    className="relative w-24 h-24 bg-slate-200 rounded-lg overflow-hidden border border-slate-100"
+                  >
+                    <img
+                      src={attachment?.payload?.url}
+                      className="object-cover w-full h-full"
+                      alt={`attachment ${index + 1}`}
+                      onClick={() => {
+                        /** Lưu vào STORE */
+                        // dispatch(setGlobalPreviewUrl(attachment?.payload?.url))
+                        /** Click vào ảnh thì gửi thông tin cho sdk
+                         * Có thể lưu data và STORE
+                         */
+                        // postMessageToParent(
+                        //   SHOW_POPUP,
+                        //   false,
+                        //   674,
+                        //   attachment?.payload?.url
+                        // )
+                      }}
+                      loading="lazy"
+                    />
+
+                    {index === 5 && data?.message_attachments?.length > 6 && (
+                      <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center text-white text-xl font-bold">
+                        +{data?.message_attachments?.length - 6}
+                      </div>
+                    )}
+                  </div>
+                ))}
+            </div>
+          </div>
+        )}
+
       {/* Hiển thị data dạng video */}
       {data?.message_attachments?.[0]?.type === 'video' && (
-        <VideoPlayer src={'https://www.w3schools.com/html/mov_bbb.mp4'} />
+        <div className="">
+          <VideoPlayer src={'https://www.w3schools.com/html/mov_bbb.mp4'} />
+        </div>
       )}
+
       {/* Hiển thị data dạng audio */}
       {data?.message_attachments?.[0]?.type === 'audio' && (
-        <AudioPlayer src={data?.message_attachments?.[0]?.payload?.url} />
+        <div className="p-2">
+          <AudioPlayer src={data?.message_attachments?.[0]?.payload?.url} />
+        </div>
       )}
+
       {/* Hiển thị data dạng file */}
       {data?.message_attachments?.[0]?.type === 'file' && (
-        <div className="bg-white rounded-lg p-2 gap-y-1 flex flex-col ">
+        <div className="bg-white rounded-lg p-2 gap-y-1 flex flex-col">
           <div className="flex h-9 w-9 items-center justify-center p-2 rounded-full bg-slate-300">
             <FileIcon className="h-5 w-5" />
           </div>
@@ -46,37 +127,35 @@ function TemplateMessageComponent({ data }: MessageProps) {
           </a>
         </div>
       )}
-      {/* Hiển thị data dạng Highlight */}
-      {data?.message_attachments?.[0]?.type === 'highlight' && (
-        <div className="">
-          <h4 className="font-semibold">Tiêu đề</h4>
-        </div>
-      )}
-      {/* Hiện thị data dạng text */}
+
+      {/* Hiện thị data dạng URL fallback */}
       {data?.message_text &&
         data?.message_type !== 'system' &&
-        !data?.message_attachments?.length && (
-          <p className="text-sm line-clamp-2 break-words whitespace-pre-line">
-            {data?.message_text}
-          </p>
-        )}
-      {/* Hiện thị data dạng lịch */}
-      {data?.message_attachments?.[0]?.type === 'schedule' && (
-        <div>
-          <div className="flex bg-bgBtnBold text-textYellow cursor-pointer py-2 gap-1 rounded-lg justify-center items-center">
-            Lập lịch
-            <IconArrow />
+        data?.message_attachments?.[0]?.type === 'fallback' && (
+          <div className="flex p-2">
+            <a
+              // className="text-sm min-h-4 break-words whitespace-pre-line underline hover:text-blue-500"
+              className="text-sm min-h-4 break-words whitespace-pre-line overflow-hidden break-all text-ellipsis underline hover:text-blue-500"
+              href={
+                data?.message_text && isValidUrl(data.message_text)
+                  ? data.message_text
+                  : 'about:blank'
+              }
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {data?.message_text || 'No link available'}
+            </a>
           </div>
-        </div>
-      )}
+        )}
       {/* Hiện thị data dạng buttom */}
       {data?.message_attachments?.[0]?.type === 'template' &&
         data?.message_attachments?.[0]?.payload?.template_type === 'button' && (
-          <div>
-            <h4 className="text-sm enter-line min-h-4 break-words whitespace-pre-line truncate">
+          <div className="flex flex-col p-2 gap-y-1">
+            <h4 className="text-sm font-medium enter-line min-h-4 truncate">
               {data?.message_attachments?.[0]?.title}
             </h4>
-            <div className="flex flex-col gap-y-1">
+            <div className="flex flex-col gap-y-2">
               {data?.message_attachments?.[0]?.payload?.buttons?.map(
                 (button: BtnType, index: number) => (
                   <div
@@ -89,7 +168,7 @@ function TemplateMessageComponent({ data }: MessageProps) {
                     className={`flex ${
                       button?.type === 'web_url'
                         ? 'bg-slate-800 cursor-pointer text-yellow-200'
-                        : 'bg-slate-600 text-slate-100 cursor-not-allowed'
+                        : 'bg-slate-200 text-black cursor-not-allowed'
                     }  px-4 py-2 gap-1 rounded-lg justify-center items-center text-sm font-medium`}
                   >
                     {button?.title}
@@ -119,24 +198,16 @@ function TemplateMessageComponent({ data }: MessageProps) {
       {data?.message_attachments?.[0]?.type === 'template' &&
         data?.message_attachments?.[0]?.payload?.template_type ===
           'generic' && (
-          // <div>
-          //   <h4 className="text-sm enter-line min-h-4 break-words whitespace-pre-line truncate">
-          //     {data?.message_attachments?.[0]?.title}
-          //   </h4>
-          //   <div className="flex bg-bgBtnLight text-white cursor-pointer py-2 gap-1 rounded-lg justify-center items-center">
-          //     slider
-          //   </div>
-          // </div>
-          <div className="flex gap-4 overflow-x-auto">
+          <div className="flex gap-x-1 overflow-x-auto">
             {data?.message_attachments?.[0]?.payload?.elements?.map(
               (element: ElementType, index) => (
                 <div
                   key={index}
-                  className="w-[300px] rounded-lg p-2 flex flex-col gap-4 bg-[#FFF8E1] flex-shrink-0"
+                  className="rounded-lg p-2 flex flex-col gap-x-2 flex-shrink-0 w-40"
                 >
                   {/* Hình ảnh */}
                   <div className="cursor-pointer hover:brightness-90 rounded-lg overflow-hidden">
-                    <div className="bg-gray-50 w-[160px] h-[160px]">
+                    <div className="bg-gray-50 rounded-lg w-[160px] h-[160px]">
                       <img
                         src={element?.image_url}
                         alt={element?.title}
@@ -147,8 +218,12 @@ function TemplateMessageComponent({ data }: MessageProps) {
 
                   {/* Tiêu đề và phụ đề */}
                   <div className="text-sm">
-                    <div className="font-semibold">{element?.title}</div>
-                    <div>{element?.subtitle}</div>
+                    <div className="font-medium text-black truncate">
+                      {element?.title}
+                    </div>
+                    <div className="text-slate-500 truncate">
+                      {element?.subtitle}
+                    </div>
                   </div>
 
                   {/* Các nút */}
@@ -156,12 +231,17 @@ function TemplateMessageComponent({ data }: MessageProps) {
                     {element?.buttons?.map((button, buttonIndex) => (
                       <button
                         key={buttonIndex}
+                        onClick={() => {
+                          if (button?.type === 'web_url') {
+                            window.open(button?.url, '_blank')
+                          }
+                        }}
                         className={`py-2 px-4 rounded-lg text-sm font-medium flex items-center justify-center gap-1 ${
                           button.type === 'web_url'
                             ? 'bg-slate-800 text-yellow-200'
                             : button.type === 'phone_number'
-                            ? 'bg-slate-600 text-slate-100'
-                            : 'bg-slate-600 text-slate-100 cursor-not-allowed'
+                            ? 'bg-slate-200 text-black'
+                            : 'bg-slate-200 text-black cursor-not-allowed'
                         }`}
                       >
                         {button?.title}

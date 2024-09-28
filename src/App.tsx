@@ -132,7 +132,7 @@ function App() {
           setShow(!is_show)
           if (!is_show) {
             /** Khi mở chỉ reset tin nhắn mới nhất trong store */
-            dispatch(setLatestMessageGlobal(null))
+            // dispatch(setLatestMessageGlobal(null))
             dispatch(setGlobalPreviewUrl(''))
             saveQuickChatLatestMessage(PAGE_ID, CLIENT_ID, null)
             // dispatch(setListUnreadMessage([]))

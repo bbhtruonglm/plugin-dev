@@ -1,6 +1,5 @@
 import { ChatScreenProps, Message } from './type'
 import { fetchAPI, useAPI } from '@/api/api'
-import { letterToColorCode, nameToLetter, renderAvatar } from '@/utils'
 import {
   selectGlobalUnreadCount,
   selectLatestMessage,
@@ -16,13 +15,13 @@ import { useDispatch, useSelector } from 'react-redux'
 import ChatHeader from './Header/ChatHeader'
 import { ReactComponent as Down } from '@/assets/arrow.svg'
 import InitClient from './Body/InitClient'
-// import InitClient from './InitClient'
 import InputChat from './Body/InputChat'
 import Loading from '../Loading/Loading'
 import LoadingDots from '../Loading/LoadingDot'
 import MessageBody from './Body/MessageBody'
-import MessageComponent from './MessageComponent/MessageComponent'
 import _ from 'lodash'
+import { renderAvatar } from '@/utils'
+// import InitClient from './InitClient'
 import { t } from 'i18next'
 
 /** Chi tiết component chat */
@@ -78,6 +77,8 @@ function DetailChat({
   const [has_more, setHasMore] = useState(true)
   const [scroll_at_bottom, setScrollAtBottom] = useState(true)
   const [show_jump_button, setShowJumpButton] = useState(false)
+
+  const CLIENT_ID = localStorage.getItem(`client_id_<${PAGE_ID}>`)
 
   /** Debounce để xử lý scroll
    * @param func
@@ -165,11 +166,21 @@ function DetailChat({
       }
     } catch (error) {
     } finally {
-      setTimeout(() => {
-        setLoadingMore(false)
-      }, 300)
     }
   }
+
+  // Inside your component
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoadingMore(false)
+    }, 200)
+
+    // Cleanup function to clear the timeout
+    return () => {
+      clearTimeout(timer)
+    }
+  }, [LIST_MESSAGE])
+
   /** Function kéo xuống dưới cùng */
   const scrollToBottom = () => {
     MESSAGE_END_REF.current?.scrollIntoView({ behavior: 'smooth' })
@@ -181,10 +192,9 @@ function DetailChat({
     /** Nếu không có REF thì bỏ qua */
     if (!CONTAINER) return
     /** Tính toàn vị trí top */
-    const SCROLL_THRESH_HOLD = CONTAINER.scrollHeight * 0.2 // 30% chiều cao
 
     /** Scroll lên top ( Theo vị trí tính toán) thì load thêm data cũ */
-    if (CONTAINER.scrollTop <= 200 && !loading_more && has_more) {
+    if (CONTAINER.scrollTop <= 342 && !loading_more && has_more) {
       fetchMessage()
     }
     /**  vị trí bottom*/
@@ -202,7 +212,7 @@ function DetailChat({
 
     if (CONTAINER && !loading_more) {
       /** Sử dụng debounce */
-      const debouncedScroll = debounce(handleScroll, 300)
+      const debouncedScroll = debounce(handleScroll, 200)
       CONTAINER.addEventListener('scroll', debouncedScroll)
       return () => {
         CONTAINER.removeEventListener('scroll', debouncedScroll)
@@ -229,7 +239,7 @@ function DetailChat({
         /**  Gọi API sau khi đợi 1 giây */
         fetchMessage()
         console.log('API called after 1 second because is_init is true')
-      }, 100)
+      }, 10)
     }
 
     /** Khi user_id thay đổi, Trạng thái đã Khởi tạo thì gọi fetchMessage ngay lập tức */
@@ -337,7 +347,7 @@ function DetailChat({
       {/* header */}
       <ChatHeader
         onCancel={() => onCancel()}
-        user_id={user_id}
+        user_id={CLIENT_ID}
         setHideForMobile={setHideForMobile}
         page_name={page_name}
         staff_avatar={staff_avatar}

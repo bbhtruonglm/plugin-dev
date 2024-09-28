@@ -93,7 +93,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
 
   /** Tin nhắn mới nhất */
   const LATEST_MESSAGE = useSelector(selectLatestMessage)
-
+  console.log(LATEST_MESSAGE, 'LATEST_MESSAGE')
   /** Số lượng tin nhắn chưa đọc */
   const GLOBAL_UNREAD_MESSAGE_COUNT = useSelector(selectGlobalUnreadCount)
 
@@ -603,9 +603,9 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
         'generic'
     ) {
       /** Call postMessageToParent */
-      postMessageToParent(false, true, 540)
+      postMessageToParent(false, true, 510)
       /** Trả về giao diện video */
-      return 'w-[302px] h-[540px] items-end justify-between pb-4 px-2'
+      return 'w-[302px] h-[540px] items-end justify-between pb-11 px-2'
     }
     /**
      * - Popup đóng,
@@ -755,7 +755,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
       }
       if (hasSlideAttachment) {
         /** Hiện thị slide */
-        return 'flex flex-col w-[286px] h-[468px] justify-between'
+        return 'flex flex-col w-[286px] h-[438px] justify-between '
       }
 
       /** Hiện thị text */
@@ -769,6 +769,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     dispatch(setGlobalPreviewUrl(null))
     postMessageToParent(SHOW_POPUP, false, 674, '')
   }
+
   return (
     // JSX component using the function
     <div

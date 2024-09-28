@@ -66,7 +66,7 @@ interface ChatHeaderProps {
   /** Thoát ra màn home */
   onCancel: () => void
   /** client_id */
-  user_id: string
+  user_id: string | null
   /** Tắt popup trạng thái mobile */
   setHideForMobile?: () => void
 
