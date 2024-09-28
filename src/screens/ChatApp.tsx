@@ -41,10 +41,10 @@ import { Employee } from '@/components/ChatComponents/type'
 import Home from '@/screens/Home'
 import { ReactComponent as Logo } from '@/assets/logo-retion.svg'
 import { MessageInfo } from '@/utils/type'
-import Modal from '@/components/ChatComponents/Modal'
+import Modal from '@/components/ChatComponents/Modal/Modal'
 import OnlineStaff from '@/components/Container/OnlineStaff'
 import { ReactComponent as RetionLogo } from '@/assets/retion-logo.svg'
-import TemplateMessageComponent from '@/components/ChatComponents/TemplateMessageComponent'
+import TemplateMessageComponent from '@/components/ChatComponents/MessageComponent/TemplateMessageComponent'
 import _ from 'lodash'
 import { ReactComponent as activeHome } from '@/assets/home-active.svg'
 import { ReactComponent as activeMessage } from '@/assets/messageA.svg'
@@ -512,7 +512,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
   /** Lấy ra thời gian đóng popup gần nhất từ trong localStorage */
   // const LAST_TIME_CLOSE = localStorage.getItem(`last_time_close__${PAGE_ID}`)
 
-  const [hasExitedPreview, setHasExitedPreview] = useState(false)
+  const [has_exited_preview, setHasExitedPreview] = useState(false)
 
   // Theo dõi khi GLOBAL_PREVIEW_URL thay đổi và trạng thái preview đã được reset
   useEffect(() => {
@@ -687,7 +687,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
       !show && GLOBAL_UNREAD_MESSAGE_COUNT === 0
         ? 'hidden'
         : `flex flex-col ${
-            !hasExitedPreview ? 'animate-zoomInBottomRight' : ''
+            !has_exited_preview ? 'animate-zoomInBottomRight' : ''
           } transition-transform duration-200 ease-in-out`
 
     return `${BASE_CLASSES} ${SIZE_CLASSES} ${VISIBILITY_CLASSES}`

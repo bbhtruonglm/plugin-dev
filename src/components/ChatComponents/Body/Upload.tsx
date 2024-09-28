@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react'
 
 import { ReactComponent as IconExtract } from '@/assets/extract.svg'
-import { UploadProps } from './type'
+import { UploadProps } from '../type'
 
 function Upload({ setPreviewUrl }: UploadProps) {
   /** ref của ô upload */

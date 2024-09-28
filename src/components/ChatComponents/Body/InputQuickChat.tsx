@@ -1,10 +1,7 @@
 import { ReactComponent as Arrow } from '../../assets/Icon_up_circle.svg'
 import { ReactComponent as ArrowSlate } from '../../assets/Icon_up_circle_slate.svg'
-import { InputQuickProps } from './type'
-import { selectPageId } from '@/stores/appSlice'
+import { InputQuickProps } from '../type'
 import { t } from 'i18next'
-import { useAPI } from '@/api/api'
-import { useSelector } from 'react-redux'
 import { useState } from 'react'
 
 function InputQuickChat({

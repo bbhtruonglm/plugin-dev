@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 
 import { ReactComponent as Pause } from '@/assets/pause-circle.svg'
 import { ReactComponent as Play } from '@/assets/play-btn.svg'
-import { VideoPlayerProps } from './type'
+import { VideoPlayerProps } from '../type'
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, width, height }) => {
   const VIDEO_REF = useRef<HTMLVideoElement>(null)

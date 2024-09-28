@@ -1,4 +1,4 @@
-import { BtnType, ElementType, MessageProps } from './type'
+import { BtnType, ElementType, MessageProps } from '../type'
 import { extractMessageId, formatDate } from '@/utils'
 
 import AudioPlayer from './AudioPlayer'

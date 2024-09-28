@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 
-import { AudioPlayerProps } from './type'
+import { AudioPlayerProps } from '../type'
 import { ReactComponent as Pause } from '@/assets/pause-circle.svg'
 import { ReactComponent as Play } from '@/assets/play-btn.svg'
 
