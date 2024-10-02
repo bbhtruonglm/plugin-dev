@@ -164,6 +164,7 @@ export function onSocketFromChatboxServer({
       /** Không nhận tin nhắn từ hệ thống */
       if (message?.message_type !== 'system') {
         dispatch(setLatestMessageGlobal(message))
+
         /** Cần lưu ý (với data của redux, WS đang lưu giá trị [] ban đầu)
          * Vì Latest mesage chỉ gọi hàm setListMessage
          * còn setList message thì lấy giá trị LIST_MESSAGE và push thêm tin nhắn vào.

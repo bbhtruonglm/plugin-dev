@@ -41,6 +41,7 @@ function DetailChat({
   client_name,
   employee_list,
   is_init,
+  setIsInit,
 }: ChatScreenProps) {
   /** Bắt vị trí end scroll ở bottom */
   const MESSAGE_END_REF = useRef<HTMLDivElement | null>(null)
@@ -60,6 +61,7 @@ function DetailChat({
 
   /** List tin nhắn được lấy từ store */
   const LIST_MESSAGE = useSelector(selectListMessage)
+  console.log(LIST_MESSAGE, 'LIST_MESSAGE')
 
   /** Số tin nhắn chưa đọc lấy trong STORE */
   const GLOBAL_UNREAD_COUNT = useSelector(selectGlobalUnreadCount)
@@ -238,8 +240,10 @@ function DetailChat({
       timeoutId = setTimeout(() => {
         /**  Gọi API sau khi đợi 1 giây */
         fetchMessage()
+        /** Khi khởi tạo và call API sau 0.1 giây . set lại trạng thái Không là tin nhắn khởi tạo nữa */
+        setIsInit()
         console.log('API called after 1 second because is_init is true')
-      }, 10)
+      }, 100)
     }
 
     /** Khi user_id thay đổi, Trạng thái đã Khởi tạo thì gọi fetchMessage ngay lập tức */
@@ -288,16 +292,16 @@ function DetailChat({
      * Thì sẽ thêm vào store
      */
 
-    if (_.keys(LATEST_MESSAGE).length !== 0) {
+    if (_.keys(LATEST_MESSAGE).length !== 0 && !is_init) {
       // Lưu tin nhắn mới từ socket vào store
       dispatch(setListMessage([...LIST_MESSAGE, LATEST_MESSAGE]))
 
       // Nếu có tin nhắn từ websocket, scroll xuống cuối trang
-      // setTimeout(() => {
-      //   scrollToBottom()
-      // }, 100)
+      setTimeout(() => {
+        scrollToBottom()
+      }, 100)
     }
-  }, [LATEST_MESSAGE])
+  }, [LATEST_MESSAGE, is_init])
 
   useEffect(() => {
     /**

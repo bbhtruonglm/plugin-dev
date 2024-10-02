@@ -36,6 +36,8 @@ interface ChatScreenProps {
   employee_list?: Employee[]
   /** có phải tin nhắn khởi tạo không ? */
   is_init: boolean
+  /** setInit */
+  setIsInit: () => void
 
   /** TIn nhắn mới nhất */
   // latest_message?: any

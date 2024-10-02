@@ -170,6 +170,7 @@ function ChatScreen({
         client_name={client_name}
         employee_list={employee_list}
         is_init={is_init}
+        setIsInit={() => setIsInit(false)}
       />
     </div>
   )
