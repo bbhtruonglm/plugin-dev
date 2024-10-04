@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { InitClientProps } from './type'
+import { InitClientProps } from '../type'
 import Input from './Input'
 import { t } from 'i18next'
 

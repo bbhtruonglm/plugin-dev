@@ -200,7 +200,10 @@ export const appSlice = createSlice({
       state.client_id = action.payload
     },
     /** lưu preview url */
-    setGlobalPreviewUrl: (state, action: PayloadAction<string | undefined>) => {
+    setGlobalPreviewUrl: (
+      state,
+      action: PayloadAction<string | undefined | null>
+    ) => {
       state.preview_url = action.payload
     },
 

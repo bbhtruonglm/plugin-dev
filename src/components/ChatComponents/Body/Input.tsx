@@ -1,6 +1,6 @@
+import { InputProps, InputPropsInit } from '../type'
 import React, { useState } from 'react'
 
-import { InputProps } from './type'
 import { useTranslation } from 'react-i18next'
 
 const Input = ({
@@ -9,7 +9,7 @@ const Input = ({
   onChange,
   required,
   type = 'text',
-}: InputProps) => {
+}: InputPropsInit) => {
   const { t } = useTranslation()
   const [value, setValue] = useState('')
   return (

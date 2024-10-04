@@ -1,7 +1,7 @@
 import { ReactComponent as BackArrow } from '@/assets/white-arrow.svg'
-import { ChatHeaderProps } from './type'
+import { ChatHeaderProps } from '../type'
 import { ReactComponent as Close } from '@/assets/close.svg'
-import OnlineStaff from '../Container/OnlineStaff'
+import OnlineStaff from '../../Container/OnlineStaff'
 import { selectCurrentWidth } from '@/stores/appSlice'
 import { t } from 'i18next'
 import { useSelector } from 'react-redux'
@@ -11,11 +11,9 @@ function ChatHeader({
   user_id,
   setHideForMobile,
   page_name,
-  staff_avatar,
   staff_name,
   loading_staff,
   employee_list,
-  loading_chat_data,
 }: ChatHeaderProps) {
   /** Độ rộng màn hình hiện tại */
   const CURRENT_WIDTH = useSelector(selectCurrentWidth)

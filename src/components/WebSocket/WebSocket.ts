@@ -112,8 +112,11 @@ export function onSocketFromChatboxServer({
 
     /** nếu có tin nhắn. Popup đóng hoặc đang ở tab home */
     if (message && (!IS_SHOW_REF.current || TAB_REF.current !== 'message')) {
-      /** Không hiển thị tin nhắn hệ thống */
-      if (message?.message_type !== 'system') {
+      /** Không hiển thị tin nhắn hệ thống  và ghi chú*/
+      if (
+        message?.message_type !== 'system' &&
+        message?.message_type !== 'note'
+      ) {
         /** Check thời gian đóng QUICK_CHAT */
         if (REF_SHOW_QUICK_CHAT.current === 'hide_quick_chat') {
           /** Kiểm tra thời gian đóng QUICK_CHAT
@@ -161,6 +164,7 @@ export function onSocketFromChatboxServer({
       /** Không nhận tin nhắn từ hệ thống */
       if (message?.message_type !== 'system') {
         dispatch(setLatestMessageGlobal(message))
+
         /** Cần lưu ý (với data của redux, WS đang lưu giá trị [] ban đầu)
          * Vì Latest mesage chỉ gọi hàm setListMessage
          * còn setList message thì lấy giá trị LIST_MESSAGE và push thêm tin nhắn vào.
@@ -171,21 +175,7 @@ export function onSocketFromChatboxServer({
     }
   }
 
-  // // Khi kết nối bị đóng
-  // WS.current.onclose = () => {
-  //   console.log('WebSocket Disconnected')
-  //   // Loại bỏ vòng lặp tự động ping soket cũ
-  //   clearInterval(ping_interval_id)
-
-  //   // nếu đóng hoàn toàn thì không cho kết nổi tự mở lại nữa
-  //   if (is_force_close_socket) return
-  //   setTimeout(() => onSocketFromChatboxServer(page_id, client_id), 100)
-  // }
-
-  // // Nếu xảy ra lỗi
-  // WS.current.onerror = () => {
-  //   WS.current?.close()
-  // }
+  /** Khi kết nối bị đóng */
   WS.current.onclose = () => {
     console.log('WebSocket Disconnected')
     clearInterval(ping_interval_id)
@@ -211,7 +201,7 @@ export function onSocketFromChatboxServer({
       100
     )
   }
-
+  /** Khi có lỗi */
   WS.current.onerror = () => {
     WS.current?.close()
   }
@@ -226,10 +216,10 @@ export function closeSocketConnect(
   WS: React.MutableRefObject<WebSocket | null>,
   setIsForceCloseSocket: React.Dispatch<React.SetStateAction<boolean>>
 ) {
-  // Gắn cờ ngăn chặn kết nối tự động mở lại
+  /** Gắn cờ ngăn chặn kết nối tự động mở lại */
   setIsForceCloseSocket(true)
 
-  // Đóng kết nối WebSocket hiện tại
+  /** Đóng kết nối WebSocket hiện tại */
   if (WS.current) {
     WS.current.close()
   }

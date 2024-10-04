@@ -41,10 +41,10 @@ import { Employee } from '@/components/ChatComponents/type'
 import Home from '@/screens/Home'
 import { ReactComponent as Logo } from '@/assets/logo-retion.svg'
 import { MessageInfo } from '@/utils/type'
-import Modal from '@/components/ChatComponents/Modal'
+import Modal from '@/components/ChatComponents/Modal/Modal'
 import OnlineStaff from '@/components/Container/OnlineStaff'
 import { ReactComponent as RetionLogo } from '@/assets/retion-logo.svg'
-import TemplateMessageComponent from '@/components/ChatComponents/TemplateMessageComponent'
+import TemplateMessageComponent from '@/components/ChatComponents/MessageComponent/TemplateMessageComponent'
 import _ from 'lodash'
 import { ReactComponent as activeHome } from '@/assets/home-active.svg'
 import { ReactComponent as activeMessage } from '@/assets/messageA.svg'
@@ -93,7 +93,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
 
   /** Tin nhắn mới nhất */
   const LATEST_MESSAGE = useSelector(selectLatestMessage)
-
+  console.log(LATEST_MESSAGE, 'LATEST_MESSAGE')
   /** Số lượng tin nhắn chưa đọc */
   const GLOBAL_UNREAD_MESSAGE_COUNT = useSelector(selectGlobalUnreadCount)
 
@@ -102,6 +102,8 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
 
   /** Tạo ref một để luu giữ giá trị LIST_UNREAD_MESSAGE */
   const REF_LIST_UNREAD_MESSAGE = useRef(LIST_UNREAD_MESSAGE)
+  /** Giá trị của preview URL */
+  const GLOBAL_PREVIEW_URL = useSelector(selectGlobalPreviewUrl)
 
   useEffect(() => {
     /** Cập nhật giá trị trong ref một khi LIST_UNREAD_MESSAGE thay đổi */
@@ -510,6 +512,17 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
   /** Lấy ra thời gian đóng popup gần nhất từ trong localStorage */
   // const LAST_TIME_CLOSE = localStorage.getItem(`last_time_close__${PAGE_ID}`)
 
+  const [has_exited_preview, setHasExitedPreview] = useState(false)
+
+  // Theo dõi khi GLOBAL_PREVIEW_URL thay đổi và trạng thái preview đã được reset
+  useEffect(() => {
+    if (GLOBAL_PREVIEW_URL === null) {
+      setHasExitedPreview(true) // Đã thoát khỏi trạng thái preview
+    } else {
+      setHasExitedPreview(false) // Đang trong trạng thái preview
+    }
+  }, [GLOBAL_PREVIEW_URL])
+
   /** Hàm xử lý điều kiện để trả về css render giao diện
    * @param {boolean} show Trạng thái đóng mở giao diện
    * @param {number} GLOBAL_UNREAD_MESSAGE_COUNT Tổng số tin nhắn chưa đọc
@@ -531,7 +544,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
      */
     if (GLOBAL_PREVIEW_URL) {
       // postMessageToParent(true, false, 674, GLOBAL_PREVIEW_URL)
-      return 'flex w-screen h-screen items-end justify-end px-11 pb-9'
+      return 'flex w-screen h-screen items-end justify-end px-2 pr-11 pb-[52px]'
     }
 
     /** Base condition:
@@ -590,9 +603,9 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
         'generic'
     ) {
       /** Call postMessageToParent */
-      postMessageToParent(false, true, 540)
+      postMessageToParent(false, true, 510)
       /** Trả về giao diện video */
-      return 'w-[302px] h-[540px] items-end justify-between pb-4 px-2'
+      return 'w-[302px] h-[540px] items-end justify-between pb-11 px-2'
     }
     /**
      * - Popup đóng,
@@ -642,7 +655,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
      * - trả về full kích thước */
     postMessageToParent(true, false)
     /**  Trả về kích thước Fixed */
-    return 'w-[416px] h-[674px] px-2 pb-4 justify-between items-end'
+    return 'w-[416px] h-[674px] px-2 pb-4 justify-between items-end bg-transparent'
   }
 
   /** Hàm xử lý điều kiện để trả về css render giao diện
@@ -657,9 +670,8 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     CURRENT_WIDTH: number
   ) => {
     /** CSS base */
-
     if (GLOBAL_PREVIEW_URL) {
-      return 'flex flex-col w-[400px] h-[600px] mb-2 rounded-[20px] relative bg-bg-gradient rounded-[20px] overflow-hidden shadow-md'
+      return 'flex flex-col w-[400px] h-[600px] mb-[10px] rounded-[20px] relative bg-bg-gradient overflow-hidden shadow-md'
     }
 
     const BASE_CLASSES = 'relative bg-bg-gradient overflow-hidden shadow-md'
@@ -670,10 +682,13 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
         ? 'w-screen h-screen rounded-none'
         : 'w-[400px] h-[600px] rounded-[20px]'
     /** Popup đang đóng, và không có tin nhắn chưa đọc */
+    /** Popup đang đóng, và không có tin nhắn chưa đọc */
     const VISIBILITY_CLASSES =
       !show && GLOBAL_UNREAD_MESSAGE_COUNT === 0
         ? 'hidden'
-        : 'flex flex-col animate-zoomInBottomRight transition-transform duration-200 ease-in-out'
+        : `flex flex-col ${
+            !has_exited_preview ? 'animate-zoomInBottomRight' : ''
+          } transition-transform duration-200 ease-in-out`
 
     return `${BASE_CLASSES} ${SIZE_CLASSES} ${VISIBILITY_CLASSES}`
   }
@@ -691,65 +706,70 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     GLOBAL_UNREAD_MESSAGE_COUNT: number,
     SHOW_QUICK_CHAT: string | null
   ) => {
-    // Base condition: Popup closed, message is from page, unread messages > 0
+    /** Base condition:
+     * Popup đóng,
+     * message được gửi từ page,
+     * unread messages > 0 */
     const baseCondition =
       SHOW_QUICK_CHAT === 'show_quick_chat' &&
       !show &&
       LATEST_MESSAGE?.message_type === 'page' &&
       GLOBAL_UNREAD_MESSAGE_COUNT > 0
 
-    // Additional condition: If the latest message has attachments and the first one is an image
+    /** Additional condition:
+     *  If the latest message has attachments
+     * the first one is an image */
     const hasImageAttachment =
       LATEST_MESSAGE?.message_attachments &&
       (LATEST_MESSAGE?.message_attachments[0]?.type === 'image' ||
         LATEST_MESSAGE?.message_attachments[0]?.type === 'video')
-    // Có file attachment
+    /** Có file attachment */
     const hasFileAttachment =
       LATEST_MESSAGE?.message_attachments &&
       LATEST_MESSAGE?.message_attachments[0]?.type === 'file'
-    // Có button attachment
+    /** Có button attachment */
     const hasButtonAttachment =
       LATEST_MESSAGE?.message_attachments &&
       LATEST_MESSAGE?.message_attachments[0]?.type === 'template' &&
       LATEST_MESSAGE?.message_attachments[0]?.payload?.template_type ===
         'button'
-    // Có slide attachment
+    /** Có slide attachment */
     const hasSlideAttachment =
       LATEST_MESSAGE?.message_attachments &&
       LATEST_MESSAGE?.message_attachments[0]?.type === 'template' &&
       LATEST_MESSAGE?.message_attachments[0]?.payload?.template_type ===
         'generic'
-    // Return appropriate class based on conditions
+    /** Return appropriate class based on conditions */
     if (baseCondition) {
       if (hasImageAttachment) {
-        // Adjust height for image case
+        /** Hiển thị ảnh | video */
         return 'flex flex-col w-[286px] h-[240px] justify-between'
       }
       if (hasFileAttachment) {
-        // Adjust height for File case
+        /** Hiện thị file */
         return 'flex flex-col w-[286px] h-[168px] justify-between'
       }
       if (hasButtonAttachment) {
-        // Adjust height for Button case
+        /** Hiện thị button */
         return 'flex flex-col w-[286px] h-[240px] justify-between'
       }
       if (hasSlideAttachment) {
-        // Adjust height for Button case
-        return 'flex flex-col w-[286px] h-[468px] justify-between'
+        /** Hiện thị slide */
+        return 'flex flex-col w-[286px] h-[438px] justify-between '
       }
 
-      // Adjust height for text case
+      /** Hiện thị text */
       return 'flex flex-col w-[286px] h-[142px] justify-between'
     }
-    // Popup đóng thì ẩn màn chat
+    /** Popup đóng thì ẩn màn chat */
     return 'hidden'
   }
-  const GLOBAL_PREVIEW_URL = useSelector(selectGlobalPreviewUrl)
 
   const handleCloseModal = () => {
-    dispatch(setGlobalPreviewUrl(''))
+    dispatch(setGlobalPreviewUrl(null))
     postMessageToParent(SHOW_POPUP, false, 674, '')
   }
+
   return (
     // JSX component using the function
     <div
@@ -814,10 +834,10 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
               <Home
                 onNavigate={() => {
                   setCurrentTab('message')
-                  // 1. Reset Số tin nhắn chưa đọc localStorage
+                  /** 1. Reset Số tin nhắn chưa đọc localStorage */
                   saveQuickChatCount(PAGE_ID, CLIENT_STORED, 0)
 
-                  // 2. Reset tin nhắn mới nhất trong localStorage
+                  /** 2. Reset tin nhắn mới nhất trong localStorage */
                   saveQuickChatLatestMessage(PAGE_ID, CLIENT_STORED, null)
                 }}
                 onError={() => {

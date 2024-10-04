@@ -10,6 +10,7 @@ import {
 import {
   selectPageId,
   setCurrentWidth,
+  setGlobalPreviewUrl,
   setGlobalUnreadCount,
   setLatestMessageGlobal,
   setPageId,
@@ -60,8 +61,8 @@ function App() {
       })
 
     /** Lấy page_id */
-    const STORED_PAGE_ID = URL_PARENT.searchParams.get('page_id')
-    // || '100179064765476'
+    const STORED_PAGE_ID =
+      URL_PARENT.searchParams.get('page_id') || '100179064765476'
 
     /** lưu page_id vào store */
     /** Example @value :bf425487afbe403895116dd9b585537b || 100179064765476 || 5c290e88a5304e8e84ce8a8804b764e4 */
@@ -75,6 +76,7 @@ function App() {
       dispatch(setCurrentWidth(Number(WIDTH_PARENT)))
     }
 
+    localStorage.setItem(`client_id_<${PAGE_ID}>`, '6131478076934694')
     /** CLIENT_ID từ localStorage thông qua PAGE_ID */
     const STORED_CLIENT_ID = localStorage.getItem(
       `client_id_<${STORED_PAGE_ID}>`
@@ -130,7 +132,8 @@ function App() {
           setShow(!is_show)
           if (!is_show) {
             /** Khi mở chỉ reset tin nhắn mới nhất trong store */
-            dispatch(setLatestMessageGlobal(null))
+            // dispatch(setLatestMessageGlobal(null))
+            dispatch(setGlobalPreviewUrl(''))
             saveQuickChatLatestMessage(PAGE_ID, CLIENT_ID, null)
             // dispatch(setListUnreadMessage([]))
             // dispatch(setListMessage([]))
@@ -142,6 +145,7 @@ function App() {
         show={is_show}
         setHideForMobile={() => {
           setShow(false)
+          dispatch(setGlobalPreviewUrl(''))
           /** Lưu thời gian vào localstorage Khi đóng popup */
           saveTimeClosePopup(PAGE_ID)
           handleOff()

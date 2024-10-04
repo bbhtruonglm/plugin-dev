@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 
-import { AudioPlayerProps } from './type'
+import { AudioPlayerProps } from '../type'
 import { ReactComponent as Pause } from '@/assets/pause-circle.svg'
 import { ReactComponent as Play } from '@/assets/play-btn.svg'
 
@@ -19,35 +19,37 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src }) => {
 
   useEffect(() => {
     /** Tạo phần tử audio */
-    const AUDIO = AUDIO_REF.current // Lấy tham chiếu đến phần tử audio hiện tại
+
+    /** Lấy tham chiếu đến phần tử audio hiện tại */
+    const AUDIO = AUDIO_REF.current
 
     if (AUDIO) {
-      // Thêm một trình lắng nghe sự kiện khi siêu dữ liệu của audio được tải
+      /** Thêm một trình lắng nghe sự kiện khi siêu dữ liệu của audio được tải */
       AUDIO.addEventListener('loadedmetadata', () => {
-        // Cập nhật trạng thái với độ dài của file audio sau khi siêu dữ liệu được tải
+        /** Cập nhật trạng thái với độ dài của file audio sau khi siêu dữ liệu được tải */
         setDuration(AUDIO.duration)
       })
 
-      // Thêm một trình lắng nghe sự kiện cập nhật thời gian khi audio đang phát
+      /** Thêm một trình lắng nghe sự kiện cập nhật thời gian khi audio đang phát */
       AUDIO.addEventListener('timeupdate', () => {
-        // Cập nhật trạng thái thời gian hiện tại của audio
+        /** Cập nhật trạng thái thời gian hiện tại của audio */
         setCurrentTime(AUDIO.currentTime)
       })
 
-      // Thêm một trình lắng nghe sự kiện khi audio kết thúc phát
+      /** Thêm một trình lắng nghe sự kiện khi audio kết thúc phát */
       AUDIO.addEventListener('ended', handleAudioEnd)
     }
 
-    // Cleanup function, loại bỏ các trình lắng nghe khi component bị unmount
+    /** Cleanup function, loại bỏ các trình lắng nghe khi component bị unmount */
     return () => {
       if (AUDIO) {
-        // Xóa bỏ trình lắng nghe sự kiện khi siêu dữ liệu được tải
+        /** Xóa bỏ trình lắng nghe sự kiện khi siêu dữ liệu được tải */
         AUDIO.removeEventListener('loadedmetadata', () => {})
 
-        // Xóa bỏ trình lắng nghe sự kiện cập nhật thời gian phát
+        /** Xóa bỏ trình lắng nghe sự kiện cập nhật thời gian phát */
         AUDIO.removeEventListener('timeupdate', () => {})
 
-        // Xóa bỏ trình lắng nghe sự kiện khi audio kết thúc
+        /** Xóa bỏ trình lắng nghe sự kiện khi audio kết thúc */
         AUDIO.removeEventListener('ended', handleAudioEnd)
       }
     }
@@ -56,8 +58,10 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src }) => {
   /** Hàm check xem audio đã kết thúc hay chưa */
   const handleAudioEnd = () => {
     setIsPlaying(false)
-    setCurrentTime(0) // Reset progress to the beginning
+    /** hàm kết thúc thì reset thời gian về 0 */
+    setCurrentTime(0)
   }
+
   /** Hàm play/pause */
   const handlePlayPause = () => {
     if (AUDIO_REF.current) {
@@ -69,6 +73,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src }) => {
       setIsPlaying(!is_playing)
     }
   }
+
   /** Hàm di chuyển progress bar */
   const handleSeek = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     const PROGRESS_BAR = e.currentTarget

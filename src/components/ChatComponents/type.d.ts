@@ -36,6 +36,8 @@ interface ChatScreenProps {
   employee_list?: Employee[]
   /** có phải tin nhắn khởi tạo không ? */
   is_init: boolean
+  /** setInit */
+  setIsInit: () => void
 
   /** TIn nhắn mới nhất */
   // latest_message?: any
@@ -66,7 +68,7 @@ interface ChatHeaderProps {
   /** Thoát ra màn home */
   onCancel: () => void
   /** client_id */
-  user_id: string
+  user_id: string | null
   /** Tắt popup trạng thái mobile */
   setHideForMobile?: () => void
 
@@ -278,7 +280,7 @@ interface InitClientProps {
   onInitClient: (e?: any) => void
 }
 /** Định nghĩa cấu trúc dữ liệu input */
-interface InputProps {
+interface InputPropsInit {
   /** Tiêu đề  */
   title?: string
   /** Placeholder */
