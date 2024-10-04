@@ -154,6 +154,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
 
     /** Lấy client_id từ localStorage, chỉ xử lý nếu hợp lệ */
     const STORED_CLIENT_ID = localStorage.getItem(`client_id_<${PAGE_ID}>`)
+
     // const STORED_CLIENT_ID = '6131478076934694'
 
     if (!STORED_CLIENT_ID) {
