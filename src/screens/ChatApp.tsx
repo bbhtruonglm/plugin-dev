@@ -1139,6 +1139,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
             <Down />
           ) : (
             <Logo
+              aria-label="Logo Retion"
               width={30}
               height={30}
             />

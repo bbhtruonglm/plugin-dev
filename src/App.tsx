@@ -61,8 +61,9 @@ function App() {
       })
 
     /** Lấy page_id */
-    const STORED_PAGE_ID =
-      URL_PARENT.searchParams.get('page_id') || '100179064765476'
+    const STORED_PAGE_ID = URL_PARENT.searchParams.get('page_id')
+    // ||
+    // '5c290e88a5304e8e84ce8a8804b764e4'
 
     /** lưu page_id vào store */
     /** Example @value :bf425487afbe403895116dd9b585537b || 100179064765476 || 5c290e88a5304e8e84ce8a8804b764e4 */
@@ -76,7 +77,7 @@ function App() {
       dispatch(setCurrentWidth(Number(WIDTH_PARENT)))
     }
 
-    localStorage.setItem(`client_id_<${PAGE_ID}>`, '6131478076934694')
+    // localStorage.setItem(`client_id_<${PAGE_ID}>`, '6131478076934694')
     /** CLIENT_ID từ localStorage thông qua PAGE_ID */
     const STORED_CLIENT_ID = localStorage.getItem(
       `client_id_<${STORED_PAGE_ID}>`

@@ -104,7 +104,6 @@ function DetailChat({
     const CONTAINER = MESSAGE_CONTAINER_REF.current
     /** Nếu không co REF thi return */
     if (!CONTAINER) return
-    setLoadingMore(true)
 
     /** Lưu vị trí scroll */
     const SCROLL_POSITION = CONTAINER.scrollHeight - CONTAINER.scrollTop
@@ -112,6 +111,7 @@ function DetailChat({
     /** set loading_more = true để không call liên tục */
 
     try {
+      setLoadingMore(true)
       /** Tạo đối tượng URL từ string */
       const URL_READ = new URL(READ_MESSAGE_API)
 
@@ -154,12 +154,13 @@ function DetailChat({
 
       dispatch(setListMessage([...FILTER_RES.reverse(), ...LIST_MESSAGE]))
 
-      setTimeout(() => {
+      /** Dùng request animation frame hoặc settimeout ( độ trễ 0ms) */
+      requestAnimationFrame(() => {
         if (CONTAINER) {
           /** Kiểm tra lại container trước khi sử dụng */
           CONTAINER.scrollTop = CONTAINER.scrollHeight - SCROLL_POSITION
         }
-      }, 10)
+      })
       /** Nếu data trả về < LIMIT thì đã hết tin nhắn cũ */
       /** Nếu load trên limit bản ghi thì hasmore == false */
       if (RESULT.data.length !== LIMIT) {
@@ -208,13 +209,17 @@ function DetailChat({
     setShowJumpButton(!AT_BOTTOM)
   }, [fetchMessage, loading_more, has_more])
 
+  const debouncedScroll = useCallback(debounce(handleScroll, 200), [
+    handleScroll,
+  ])
+
   useEffect(() => {
     /* Sử dụng debounce để xử lý scroll */
     const CONTAINER = MESSAGE_CONTAINER_REF.current
 
     if (CONTAINER && !loading_more) {
       /** Sử dụng debounce */
-      const debouncedScroll = debounce(handleScroll, 200)
+      // const debouncedScroll = debounce(handleScroll, 200)
       CONTAINER.addEventListener('scroll', debouncedScroll)
       return () => {
         CONTAINER.removeEventListener('scroll', debouncedScroll)
@@ -327,24 +332,27 @@ function DetailChat({
    * @string id: Nhan vao id của nhân sự
    * @returns {string} link avatar
    */
-  const checkStaffExist = (id: string) => {
-    /** Nếu không có staff Id thì trả về '' */
-    if (!id) return ''
+  const checkStaffExist = useCallback(
+    (id: string) => {
+      /** Nếu không có staff Id thì trả về '' */
+      if (!id) return ''
 
-    /** Xem nhân viên nhắn tin có tồn tại trong list nhân viên không */
-    const IS_STAFF_EXIST = employee_list?.find((item) =>
-      id.includes(item?.fb_staff_id)
-    )
+      /** Xem nhân viên nhắn tin có tồn tại trong list nhân viên không */
+      const IS_STAFF_EXIST = employee_list?.find((item) =>
+        id.includes(item?.fb_staff_id)
+      )
 
-    /** Nếu không tồn tại thì trả về '' */
-    if (!IS_STAFF_EXIST) {
-      return ''
-    }
+      /** Nếu không tồn tại thì trả về '' */
+      if (!IS_STAFF_EXIST) {
+        return ''
+      }
 
-    /** Lấy link avatar */
-    const LINK_AVATAR = renderAvatar(IS_STAFF_EXIST?.fb_staff_id)
-    return LINK_AVATAR
-  }
+      /** Lấy link avatar */
+      const LINK_AVATAR = renderAvatar(IS_STAFF_EXIST?.fb_staff_id)
+      return LINK_AVATAR
+    },
+    [employee_list]
+  )
 
   return (
     <div className="flex flex-col w-full h-full absolute top-0">
