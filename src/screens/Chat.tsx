@@ -32,6 +32,7 @@ function ChatScreen({
 
   useEffect(() => {
     /** Nếu có page_id thì mới xử lý tiếp */
+
     if (PAGE_ID) {
       /** Tạo client Id = page_id từ cha */
       const CLIENT_ID = localStorage.getItem(`client_id_<${PAGE_ID}>`)

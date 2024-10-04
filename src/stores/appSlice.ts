@@ -185,6 +185,7 @@ const initialState: AppState = {
   show_popup: false,
   is_init: false,
   preview_url: '',
+  loading_global: false,
 }
 
 export const appSlice = createSlice({
@@ -222,6 +223,10 @@ export const appSlice = createSlice({
     /** lưu dữ trạng thái đóng mở */
     setStatusPopup: (state, action: PayloadAction<boolean>) => {
       state.show_popup = action.payload
+    },
+    /** lưu dữ trạng thái đóng mở */
+    setLoadingGlobal: (state, action: PayloadAction<boolean>) => {
+      state.loading_global = action.payload
     },
     /** lưu dữ trạng thái khởi tạo */
     setStatusIsInit: (state, action: PayloadAction<boolean>) => {
@@ -265,6 +270,7 @@ export const {
   setStatusIsInit,
   setGlobalUnreadCount,
   setGlobalPreviewUrl,
+  setLoadingGlobal,
 } = appSlice.actions
 
 /** chọn đến page id */
@@ -292,6 +298,10 @@ export const selectLatestMessage = (state: RootState) =>
   state.app.latest_message
 /** chọn đầu trạng thái đóng mở popup */
 export const selectStatusPopup = (state: RootState) => state.app.show_popup
+/** chọn đầu trạng thái loading popup */
+export const selectLoadingGlobal = (state: RootState) =>
+  state.app.loading_global
+
 /** chọn đầu trạng thái Khởi tạo client */
 export const selectStatusIsInit = (state: RootState) => state.app.is_init
 /** Chọn đầu ra Preview Url */

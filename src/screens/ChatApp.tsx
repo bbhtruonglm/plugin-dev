@@ -28,6 +28,7 @@ import {
   setLatestMessageGlobal,
   setListMessage,
   setListUnreadMessage,
+  setLoadingGlobal,
   setStatusIsInit,
 } from '@/stores/appSlice'
 import { useDispatch, useSelector } from 'react-redux'
@@ -87,6 +88,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
 
   /** danh sách id page */
   const PAGE_ID = useSelector(selectPageId)
+  console.log(PAGE_ID, 'PAGE_ID')
 
   /** List tin nhắn được lấy từ store */
   const LIST_UNREAD_MESSAGE = useSelector(selectListUnreadMessage)
@@ -839,6 +841,8 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
 
                   /** 2. Reset tin nhắn mới nhất trong localStorage */
                   saveQuickChatLatestMessage(PAGE_ID, CLIENT_STORED, null)
+                  /** 3. Set loading global */
+                  dispatch(setLoadingGlobal(true))
                 }}
                 onError={() => {
                   setErrorMessage(t('errorMessage'))
@@ -903,6 +907,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
                            *  */
                           dispatch(setListUnreadMessage([]))
                           dispatch(setLatestMessageGlobal(null))
+                          dispatch(setLoadingGlobal(true))
                           /** 4. Reset Số tin nhắn chưa đọc localStorage */
                           saveQuickChatCount(PAGE_ID, CLIENT_STORED, 0)
 

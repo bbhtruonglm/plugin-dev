@@ -2,9 +2,14 @@ import { useEffect, useState } from 'react'
 
 import { InitClientProps } from '../type'
 import Input from './Input'
+import Loading from '@/components/Loading/Loading'
+import { selectLoadingGlobal } from '@/stores/appSlice'
 import { t } from 'i18next'
+import { useSelector } from 'react-redux'
 
 function InitClient({ resetData, onInitClient }: InitClientProps) {
+  /** Loading Global */
+  const LOADING_GLOBAL = useSelector(selectLoadingGlobal)
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
@@ -80,64 +85,74 @@ function InitClient({ resetData, onInitClient }: InitClientProps) {
 
   return (
     <div className="flex flex-col gap-4 w-full h-full justify-center items-center">
-      <div className="flex flex-col gap-4 bg-white w-full py-4 justify-center items-center px-4 rounded-md">
-        <div className="w-full">
-          <Input
-            title={t('your_name')}
-            placeholder={t('input_your_name')}
-            required
-            type="text"
-            onChange={handleNameChange}
-          />
-          {name_error && (
-            <span className="text-xs text-red-600">{name_error}</span>
-          )}
+      {LOADING_GLOBAL ? (
+        <div className={`flex w-full justify-center items-center h-60`}>
+          <Loading />
         </div>
+      ) : (
+        <div className="flex flex-col w-full gap-4 h-full justify-center items-center">
+          <div className="flex flex-col gap-4 bg-white w-full py-4 justify-center items-center px-4 rounded-md">
+            <div className="w-full">
+              <Input
+                title={t('your_name')}
+                placeholder={t('input_your_name')}
+                required
+                type="text"
+                onChange={handleNameChange}
+              />
+              {name_error && (
+                <span className="text-xs text-red-600">{name_error}</span>
+              )}
+            </div>
 
-        <div className="w-full">
-          <Input
-            title={t('your_phone')}
-            placeholder={t('input_your_phone')}
-            required
-            type="tel"
-            onChange={handlePhoneChange}
-          />
-          {phone_error && (
-            <span className="text-xs text-red-600">{phone_error}</span>
-          )}
+            <div className="w-full">
+              <Input
+                title={t('your_phone')}
+                placeholder={t('input_your_phone')}
+                required
+                type="tel"
+                onChange={handlePhoneChange}
+              />
+              {phone_error && (
+                <span className="text-xs text-red-600">{phone_error}</span>
+              )}
+            </div>
+
+            <div className="w-full">
+              <Input
+                title={'Email'}
+                placeholder={t('input_your_email')}
+                required={false}
+                type="email"
+                onChange={handleEmailChange}
+              />
+              {email_error && (
+                <span className="text-xs text-red-600">{email_error}</span>
+              )}
+            </div>
+          </div>
+
+          <button
+            className={`text-white ${
+              isButtonDisabled()
+                ? 'bg-slate-400 cursor-not-allowed'
+                : ' bg-black'
+            } rounded-md px-4 py-2 text-sm font-medium`}
+            // disabled={isButtonDisabled()}
+            onClick={() => {
+              if (!isButtonDisabled()) {
+                onInitClient({
+                  name,
+                  phone,
+                  email,
+                })
+              }
+            }}
+          >
+            {t('start_to_chat')}
+          </button>
         </div>
-
-        <div className="w-full">
-          <Input
-            title={'Email'}
-            placeholder={t('input_your_email')}
-            required={false}
-            type="email"
-            onChange={handleEmailChange}
-          />
-          {email_error && (
-            <span className="text-xs text-red-600">{email_error}</span>
-          )}
-        </div>
-      </div>
-
-      <button
-        className={`text-white ${
-          isButtonDisabled() ? 'bg-slate-400 cursor-not-allowed' : ' bg-black'
-        } rounded-md px-4 py-2 text-sm font-medium`}
-        // disabled={isButtonDisabled()}
-        onClick={() => {
-          if (!isButtonDisabled()) {
-            onInitClient({
-              name,
-              phone,
-              email,
-            })
-          }
-        }}
-      >
-        {t('start_to_chat')}
-      </button>
+      )}
     </div>
   )
 }

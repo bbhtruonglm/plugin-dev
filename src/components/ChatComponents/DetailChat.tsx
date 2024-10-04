@@ -4,10 +4,12 @@ import {
   selectGlobalUnreadCount,
   selectLatestMessage,
   selectListMessage,
+  selectLoadingGlobal,
   selectPageId,
   selectStatusPopup,
   setGlobalUnreadCount,
   setListMessage,
+  setLoadingGlobal,
 } from '@/stores/appSlice'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -68,6 +70,9 @@ function DetailChat({
 
   /** TIn nhắn mới nhất từ store */
   const LATEST_MESSAGE = useSelector(selectLatestMessage)
+
+  /** Loading global */
+  const LOADING_GLOBAL = useSelector(selectLoadingGlobal)
 
   /** Số bản ghi hiển thị trong 1 trang */
   const LIMIT = 20
@@ -175,6 +180,7 @@ function DetailChat({
   // Inside your component
   useEffect(() => {
     const timer = setTimeout(() => {
+      dispatch(setLoadingGlobal(false))
       setLoadingMore(false)
     }, 200)
 
@@ -300,6 +306,7 @@ function DetailChat({
     if (_.keys(LATEST_MESSAGE).length !== 0 && !is_init) {
       // Lưu tin nhắn mới từ socket vào store
       dispatch(setListMessage([...LIST_MESSAGE, LATEST_MESSAGE]))
+      setSkip(skip + 1)
 
       // Nếu có tin nhắn từ websocket, scroll xuống cuối trang
       setTimeout(() => {
@@ -375,14 +382,19 @@ function DetailChat({
           user_id ? 'my-16' : 'mt-44'
         }`}
       >
-        {user_id && loading_more && <Loading />}
+        {user_id && loading_more && (
+          <div className="fixed bg-white-300 top-[12%] left-[48%] p-2 rounded-full text-xs z-50">
+            <Loading />
+          </div>
+        )}
         {/* Không có page Id sẽ báo lỗi k kết nối với hệ thống */}
-        {!user_id && error_message && (
+        {!user_id && error_message && !loading_more && (
           <h4 className="flex justify-center font-semibold text-red-600 whitespace-pre-line">
             {error_message}
           </h4>
         )}
         {/* Không có page Id sẽ báo lỗi */}
+        {/* {!user_id && !error_message && Khi bấm vào chat lần đầu */}
         {!user_id && !error_message && (
           <div className="flex flex-col gap-2 ">
             <InitClient
@@ -402,6 +414,7 @@ function DetailChat({
 
         {/* render nội dung tin nhắn từ list có sẵn */}
         {user_id &&
+          !LOADING_GLOBAL &&
           LIST_MESSAGE &&
           LIST_MESSAGE.map((item: any, index: number) => (
             <div

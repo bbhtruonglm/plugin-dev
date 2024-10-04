@@ -21,4 +21,6 @@ export interface AppState {
   unread_count: number
   /** Url ảnh muốn xem preview  */
   preview_url?: string | null
+  /** loading global */
+  loading_global: boolean
 }

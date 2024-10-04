@@ -18,8 +18,10 @@ function Home({ onNavigate, onError, social_link }: HomeProps) {
         onError={onError}
       />
 
-      {/* Lựa chọn kênh liên lạc */}
-      <ChatOption social_link={social_link} />
+      {/* Lựa chọn kênh liên lạc . 
+        Nếu không có list social thì ẩn đi
+      */}
+      {!!social_link?.length && <ChatOption social_link={social_link} />}
       {/* Giới thiệu AI */}
       {/* <IntroAI /> */}
       {/* Tìm kiếm trợ giúp */}
