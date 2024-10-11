@@ -1,6 +1,7 @@
 import { ChatAppProps, EmployeeList } from './type'
 import {
   calculateTimeAgo,
+  hasAttachmentOfType,
   postMessageToParent,
   renderAvatar,
   saveQuickChatCount,
@@ -319,180 +320,6 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     return LINK_AVATAR
   }
 
-  /** Chỉ lấy tin nhắn chưa đọc từ page, không lấy từ client */
-  // const LIST_UNREAD_MESSAGE_FILTER = [
-  //   {
-  //     _id: '66f387d9271db2db8a88f4f4',
-  //     fb_page_id: '100179064765476',
-  //     fb_client_id: '6131478076934694',
-  //     platform_type: 'FB_MESS',
-  //     message_type: 'page',
-  //     sender_id: '100179064765476',
-  //     recipient_id: '6131478076934694',
-  //     time: '2024-09-25T03:47:37.059Z',
-  //     message_mid:
-  //       'm_hukRF2b55fWYOr0BCDLSEsw7jQrJjGjlxnapic_pyarVSe1_gWj4yEjcXoUL_kz7vMHzD9nzKjguLyqXmz9uug',
-  //     message_attachments: [
-  //       {
-  //         type: 'template',
-  //         title: 'tiêu đề của silder',
-  //         payload: {
-  //           template_type: 'generic',
-  //           sharable: false,
-  //           elements: [
-  //             {
-  //               title: 'tiêu đề của silder',
-  //               image_url:
-  //                 'https://static.botbanhang.vn/chatbot/100179064765476/slider/236168d4-e036-4038-aed7-9034fdfe94b5-1727235884975.jpg',
-  //               default_action: {
-  //                 type: 'web_url',
-  //                 url: 'https://google.com/',
-  //               },
-  //               buttons: [
-  //                 {
-  //                   type: 'postback',
-  //                   title: 'nút kịch bản',
-  //                   payload: '<FLOW>_db7867d2e25d46b8aac018d8adffa099',
-  //                 },
-  //                 {
-  //                   type: 'web_url',
-  //                   title: 'nút web',
-  //                   url: 'https://google.com/',
-  //                 },
-  //                 {
-  //                   type: 'phone_number',
-  //                   title: 'nút dtk',
-  //                   url: 'tel:+84839383938',
-  //                   payload: '+84839383938',
-  //                 },
-  //               ],
-  //               subtitle: 'phụ đề ở đây',
-  //             },
-  //             {
-  //               title: 'tiêu đề của silder',
-  //               image_url:
-  //                 'https://static.botbanhang.vn/chatbot/100179064765476/slider/236168d4-e036-4038-aed7-9034fdfe94b5-1727235884975.jpg',
-  //               default_action: {
-  //                 type: 'web_url',
-  //                 url: 'https://google.com/',
-  //               },
-  //               buttons: [
-  //                 {
-  //                   type: 'postback',
-  //                   title: 'nút kịch bản',
-  //                   payload: '<FLOW>_db7867d2e25d46b8aac018d8adffa099',
-  //                 },
-  //                 {
-  //                   type: 'web_url',
-  //                   title: 'nút web',
-  //                   url: 'https://google.com/',
-  //                 },
-  //                 {
-  //                   type: 'phone_number',
-  //                   title: 'nút dtk',
-  //                   url: 'tel:+84839383938',
-  //                   payload: '+84839383938',
-  //                 },
-  //               ],
-  //               subtitle: 'phụ đề ở đây',
-  //             },
-  //             {
-  //               title: 'tiêu đề của silder',
-  //               image_url:
-  //                 'https://static.botbanhang.vn/chatbot/100179064765476/slider/236168d4-e036-4038-aed7-9034fdfe94b5-1727235884975.jpg',
-  //               default_action: {
-  //                 type: 'web_url',
-  //                 url: 'https://google.com/',
-  //               },
-  //               buttons: [
-  //                 {
-  //                   type: 'postback',
-  //                   title: 'nút kịch bản',
-  //                   payload: '<FLOW>_db7867d2e25d46b8aac018d8adffa099',
-  //                 },
-  //                 {
-  //                   type: 'web_url',
-  //                   title: 'nút web',
-  //                   url: 'https://google.com/',
-  //                 },
-  //                 {
-  //                   type: 'phone_number',
-  //                   title: 'nút dtk',
-  //                   url: 'tel:+84839383938',
-  //                   payload: '+84839383938',
-  //                 },
-  //               ],
-  //               subtitle: 'phụ đề ở đây',
-  //             },
-  //             {
-  //               title: 'tiêu đề của silder',
-  //               image_url:
-  //                 'https://static.botbanhang.vn/chatbot/100179064765476/slider/236168d4-e036-4038-aed7-9034fdfe94b5-1727235884975.jpg',
-  //               default_action: {
-  //                 type: 'web_url',
-  //                 url: 'https://google.com/',
-  //               },
-  //               buttons: [
-  //                 {
-  //                   type: 'postback',
-  //                   title: 'nút kịch bản',
-  //                   payload: '<FLOW>_db7867d2e25d46b8aac018d8adffa099',
-  //                 },
-  //                 {
-  //                   type: 'web_url',
-  //                   title: 'nút web',
-  //                   url: 'https://google.com/',
-  //                 },
-  //                 {
-  //                   type: 'phone_number',
-  //                   title: 'nút dtk',
-  //                   url: 'tel:+84839383938',
-  //                   payload: '+84839383938',
-  //                 },
-  //               ],
-  //               subtitle: 'phụ đề ở đây',
-  //             },
-  //             {
-  //               title: 'tiêu đề của silder',
-  //               image_url:
-  //                 'https://static.botbanhang.vn/chatbot/100179064765476/slider/236168d4-e036-4038-aed7-9034fdfe94b5-1727235884975.jpg',
-  //               default_action: {
-  //                 type: 'web_url',
-  //                 url: 'https://google.com/',
-  //               },
-  //               buttons: [
-  //                 {
-  //                   type: 'postback',
-  //                   title: 'nút kịch bản',
-  //                   payload: '<FLOW>_db7867d2e25d46b8aac018d8adffa099',
-  //                 },
-  //                 {
-  //                   type: 'web_url',
-  //                   title: 'nút web',
-  //                   url: 'https://google.com/',
-  //                 },
-  //                 {
-  //                   type: 'phone_number',
-  //                   title: 'nút dtk',
-  //                   url: 'tel:+84839383938',
-  //                   payload: '+84839383938',
-  //                 },
-  //               ],
-  //               subtitle: 'phụ đề ở đây',
-  //             },
-  //           ],
-  //         },
-  //         _id: '66f387d9271db2db8a88f4f5',
-  //       },
-  //     ],
-  //     ai: [],
-  //     createdAt: '2024-09-25T03:47:37.677Z',
-  //     updatedAt: '2024-09-25T03:47:37.677Z',
-  //     __v: 0,
-  //     attachment_size: [],
-  //   },
-  // ]
-
   /** Trả về tên nhân viên
    * @param {string} message_metadata
    * @returns {string} Tên nhân viên
@@ -566,68 +393,109 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
       /** Trả về css chỉ hiện popup */
       return 'w-16 h-[72px] items-center justify-center pb-4 pt-2'
     }
+
+    /** =============================================================================== */
+
+    if (
+      SHOW_QUICK_CHAT === 'show_quick_chat' &&
+      !show &&
+      GLOBAL_UNREAD_MESSAGE_COUNT > 0 &&
+      LATEST_MESSAGE?.message_type === 'page'
+    ) {
+      /** Kiểm tra với type image / video */
+      if (
+        hasAttachmentOfType(LATEST_MESSAGE, 'image') ||
+        hasAttachmentOfType(LATEST_MESSAGE, 'video')
+      ) {
+        /** Call postMessageToParent */
+        postMessageToParent(false, true, 312)
+        return 'w-[302px] h-[312px] items-end justify-between pb-4 px-2'
+      }
+
+      /** Kiểm tra với type template && payload = button */
+      if (
+        LATEST_MESSAGE?.message_attachments &&
+        hasAttachmentOfType(LATEST_MESSAGE, 'template') &&
+        LATEST_MESSAGE?.message_attachments[0]?.payload?.template_type ===
+          'button'
+      ) {
+        /** Call postMessageToParent */
+        postMessageToParent(false, true, 312)
+        return 'w-[302px] h-[312px] items-end justify-between pb-4 px-2'
+      }
+
+      /** Kiểm tra với type file  ví dụ audio */
+      if (hasAttachmentOfType(LATEST_MESSAGE, 'file')) {
+        /** Call postMessageToParent */
+        postMessageToParent(false, true, 240)
+        return 'w-[302px] h-[240px] items-end justify-between pb-4 px-2'
+      }
+    }
+
+    /** =============================================================================== */
+
     /**
      * - Popup đóng ,
      * - Trạng thái Quick_chat đóng,
      * - tin nhắn từ page,
      * - có file attach,
      * Kiểu tin nhắn = image hoặc video || type = template && payload = button */
-    if (
-      SHOW_QUICK_CHAT === 'show_quick_chat' &&
-      !show &&
-      GLOBAL_UNREAD_MESSAGE_COUNT > 0 &&
-      LATEST_MESSAGE?.message_type === 'page' &&
-      LATEST_MESSAGE?.message_attachments &&
-      (LATEST_MESSAGE?.message_attachments[0]?.type === 'image' ||
-        LATEST_MESSAGE?.message_attachments[0]?.type === 'video' ||
-        (LATEST_MESSAGE?.message_attachments[0]?.type === 'template' &&
-          LATEST_MESSAGE?.message_attachments[0]?.payload?.template_type ===
-            'button'))
-    ) {
-      /** Call postMessageToParent */
-      postMessageToParent(false, true, 312)
-      /** Trả về giao diện video */
-      return 'w-[302px] h-[312px] items-end justify-between pb-4 px-2'
-    }
+    // if (
+    //   SHOW_QUICK_CHAT === 'show_quick_chat' &&
+    //   !show &&
+    //   GLOBAL_UNREAD_MESSAGE_COUNT > 0 &&
+    //   LATEST_MESSAGE?.message_type === 'page' &&
+    //   LATEST_MESSAGE?.message_attachments &&
+    //   (LATEST_MESSAGE?.message_attachments[0]?.type === 'image' ||
+    //     LATEST_MESSAGE?.message_attachments[0]?.type === 'video' ||
+    //     (LATEST_MESSAGE?.message_attachments[0]?.type === 'template' &&
+    //       LATEST_MESSAGE?.message_attachments[0]?.payload?.template_type ===
+    //         'button'))
+    // ) {
+    //   /** Call postMessageToParent */
+    //   postMessageToParent(false, true, 312)
+    //   /** Trả về giao diện video */
+    //   return 'w-[302px] h-[312px] items-end justify-between pb-4 px-2'
+    // }
     /**
      * - Popup đóng ,
      * - Trạng thái Quick_chat đóng,
      * - tin nhắn từ page,
      * - type = template && payload = generic */
-    if (
-      SHOW_QUICK_CHAT === 'show_quick_chat' &&
-      !show &&
-      GLOBAL_UNREAD_MESSAGE_COUNT > 0 &&
-      LATEST_MESSAGE?.message_type === 'page' &&
-      LATEST_MESSAGE?.message_attachments &&
-      LATEST_MESSAGE?.message_attachments[0]?.type === 'template' &&
-      LATEST_MESSAGE?.message_attachments[0]?.payload?.template_type ===
-        'generic'
-    ) {
-      /** Call postMessageToParent */
-      postMessageToParent(false, true, 510)
-      /** Trả về giao diện video */
-      return 'w-[302px] h-[540px] items-end justify-between pb-11 px-2'
-    }
+    // if (
+    //   SHOW_QUICK_CHAT === 'show_quick_chat' &&
+    //   !show &&
+    //   GLOBAL_UNREAD_MESSAGE_COUNT > 0 &&
+    //   LATEST_MESSAGE?.message_type === 'page' &&
+    //   LATEST_MESSAGE?.message_attachments &&
+    //   LATEST_MESSAGE?.message_attachments[0]?.type === 'template' &&
+    //   LATEST_MESSAGE?.message_attachments[0]?.payload?.template_type ===
+    //     'generic'
+    // ) {
+    //   /** Call postMessageToParent */
+    //   postMessageToParent(false, true, 510)
+    //   /** Trả về giao diện video */
+    //   return 'w-[302px] h-[540px] items-end justify-between pb-11 px-2'
+    // }
     /**
      * - Popup đóng,
      * - Trạng thái Quick_chat đóng,
      * - tin nhắn từ page,
      * - có file attach,
      * - Kiểu tin nhắn = file */
-    if (
-      SHOW_QUICK_CHAT === 'show_quick_chat' &&
-      !show &&
-      GLOBAL_UNREAD_MESSAGE_COUNT > 0 &&
-      LATEST_MESSAGE?.message_type === 'page' &&
-      LATEST_MESSAGE?.message_attachments &&
-      LATEST_MESSAGE?.message_attachments[0]?.type === 'file'
-    ) {
-      /** Call postMessageToParent */
-      postMessageToParent(false, true, 240)
-      /** Trả về giao diện file */
-      return 'w-[302px] h-[240px] items-end justify-between pb-4 px-2'
-    }
+    // if (
+    //   SHOW_QUICK_CHAT === 'show_quick_chat' &&
+    //   !show &&
+    //   GLOBAL_UNREAD_MESSAGE_COUNT > 0 &&
+    //   LATEST_MESSAGE?.message_type === 'page' &&
+    //   LATEST_MESSAGE?.message_attachments &&
+    //   LATEST_MESSAGE?.message_attachments[0]?.type === 'file'
+    // ) {
+    //   /** Call postMessageToParent */
+    //   postMessageToParent(false, true, 240)
+    //   /** Trả về giao diện file */
+    //   return 'w-[302px] h-[240px] items-end justify-between pb-4 px-2'
+    // }
 
     /**
      * - Popup đóng ,
@@ -695,10 +563,83 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     return `${BASE_CLASSES} ${SIZE_CLASSES} ${VISIBILITY_CLASSES}`
   }
 
-  /**  Utility function to determine the CSS classes for the popup
+  // /**  Utility function to determine the CSS classes for the popup
+  //  * @param {boolean} show Trạng thái đóng mở giao diện
+  //  * @param {MessageInfo} LATEST_MESSAGE Tin nhắn là nhất
+  //  * @param {number} GLOBAL_UNREAD_MESSAGE_COUNT So luong tin chưa đọc
+  //  * @param {string | null} SHOW_QUICK_CHAT Trạng thái ẩn hiện QUICK_CHAT
+  //  * @returns {string} CSS
+  //  */
+  // const getPopupClasses = (
+  //   show: boolean,
+  //   LATEST_MESSAGE: MessageInfo,
+  //   GLOBAL_UNREAD_MESSAGE_COUNT: number,
+  //   SHOW_QUICK_CHAT: string | null
+  // ) => {
+  //   /** Base condition:
+  //    * Popup đóng,
+  //    * message được gửi từ page,
+  //    * unread messages > 0 */
+  //   const baseCondition =
+  //     SHOW_QUICK_CHAT === 'show_quick_chat' &&
+  //     !show &&
+  //     LATEST_MESSAGE?.message_type === 'page' &&
+  //     GLOBAL_UNREAD_MESSAGE_COUNT > 0
+
+  //   /** Additional condition:
+  //    *  If the latest message has attachments
+  //    * the first one is an image */
+  //   const hasImageAttachment =
+  //     LATEST_MESSAGE?.message_attachments &&
+  //     (LATEST_MESSAGE?.message_attachments[0]?.type === 'image' ||
+  //       LATEST_MESSAGE?.message_attachments[0]?.type === 'video')
+  //   /** Có file attachment */
+  //   const hasFileAttachment =
+  //     LATEST_MESSAGE?.message_attachments &&
+  //     LATEST_MESSAGE?.message_attachments[0]?.type === 'file'
+  //   /** Có button attachment */
+  //   const hasButtonAttachment =
+  //     LATEST_MESSAGE?.message_attachments &&
+  //     LATEST_MESSAGE?.message_attachments[0]?.type === 'template' &&
+  //     LATEST_MESSAGE?.message_attachments[0]?.payload?.template_type ===
+  //       'button'
+  //   /** Có slide attachment */
+  //   const hasSlideAttachment =
+  //     LATEST_MESSAGE?.message_attachments &&
+  //     LATEST_MESSAGE?.message_attachments[0]?.type === 'template' &&
+  //     LATEST_MESSAGE?.message_attachments[0]?.payload?.template_type ===
+  //       'generic'
+  //   /** Return appropriate class based on conditions */
+  //   if (baseCondition) {
+  //     if (hasImageAttachment) {
+  //       /** Hiển thị ảnh | video */
+  //       return 'flex flex-col w-[286px] h-[240px] justify-between'
+  //     }
+  //     if (hasFileAttachment) {
+  //       /** Hiện thị file */
+  //       return 'flex flex-col w-[286px] h-[168px] justify-between'
+  //     }
+  //     if (hasButtonAttachment) {
+  //       /** Hiện thị button */
+  //       return 'flex flex-col w-[286px] h-[240px] justify-between'
+  //     }
+  //     if (hasSlideAttachment) {
+  //       /** Hiện thị slide */
+  //       return 'flex flex-col w-[286px] h-[438px] justify-between '
+  //     }
+
+  //     /** Hiện thị text */
+  //     return 'flex flex-col w-[286px] h-[142px] justify-between'
+  //   }
+  //   /** Popup đóng thì ẩn màn chat */
+  //   return 'hidden'
+  // }
+
+  /**
+   * Utility function to determine the CSS classes for the popup
    * @param {boolean} show Trạng thái đóng mở giao diện
-   * @param {MessageInfo} LATEST_MESSAGE Tin nhắn là nhất
-   * @param {number} GLOBAL_UNREAD_MESSAGE_COUNT So luong tin chưa đọc
+   * @param {MessageInfo} LATEST_MESSAGE Tin nhắn mới nhất
+   * @param {number} GLOBAL_UNREAD_MESSAGE_COUNT Số lượng tin chưa đọc
    * @param {string | null} SHOW_QUICK_CHAT Trạng thái ẩn hiện QUICK_CHAT
    * @returns {string} CSS
    */
@@ -707,63 +648,50 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     LATEST_MESSAGE: MessageInfo,
     GLOBAL_UNREAD_MESSAGE_COUNT: number,
     SHOW_QUICK_CHAT: string | null
-  ) => {
-    /** Base condition:
-     * Popup đóng,
-     * message được gửi từ page,
-     * unread messages > 0 */
-    const baseCondition =
+  ): string => {
+    /** Điều kiện cơ bản:
+     *  Popup đóng,
+     *  message được gửi từ page,
+     *  unread messages > 0 */
+    const BASE_CONDITION =
       SHOW_QUICK_CHAT === 'show_quick_chat' &&
       !show &&
       LATEST_MESSAGE?.message_type === 'page' &&
       GLOBAL_UNREAD_MESSAGE_COUNT > 0
 
-    /** Additional condition:
-     *  If the latest message has attachments
-     * the first one is an image */
-    const hasImageAttachment =
-      LATEST_MESSAGE?.message_attachments &&
-      (LATEST_MESSAGE?.message_attachments[0]?.type === 'image' ||
-        LATEST_MESSAGE?.message_attachments[0]?.type === 'video')
-    /** Có file attachment */
-    const hasFileAttachment =
-      LATEST_MESSAGE?.message_attachments &&
-      LATEST_MESSAGE?.message_attachments[0]?.type === 'file'
-    /** Có button attachment */
-    const hasButtonAttachment =
-      LATEST_MESSAGE?.message_attachments &&
-      LATEST_MESSAGE?.message_attachments[0]?.type === 'template' &&
-      LATEST_MESSAGE?.message_attachments[0]?.payload?.template_type ===
-        'button'
-    /** Có slide attachment */
-    const hasSlideAttachment =
-      LATEST_MESSAGE?.message_attachments &&
-      LATEST_MESSAGE?.message_attachments[0]?.type === 'template' &&
-      LATEST_MESSAGE?.message_attachments[0]?.payload?.template_type ===
-        'generic'
+    // Kiểm tra nếu có tệp đính kèm
+    const ATTACHMENT = _.get(LATEST_MESSAGE, 'message_attachments[0]', null)
+
+    // Object để ánh xạ kiểu file đính kèm với CSS tương ứng
+    const ATTACHMENT_TYPE_TO_CLASS_MAP: Record<string, string> = {
+      image: 'flex flex-col w-[286px] h-[240px] justify-between',
+      video: 'flex flex-col w-[286px] h-[240px] justify-between',
+      file: 'flex flex-col w-[286px] h-[168px] justify-between',
+      template_button: 'flex flex-col w-[286px] h-[240px] justify-between',
+      template_generic: 'flex flex-col w-[286px] h-[438px] justify-between',
+    }
+
     /** Return appropriate class based on conditions */
-    if (baseCondition) {
-      if (hasImageAttachment) {
-        /** Hiển thị ảnh | video */
-        return 'flex flex-col w-[286px] h-[240px] justify-between'
-      }
-      if (hasFileAttachment) {
-        /** Hiện thị file */
-        return 'flex flex-col w-[286px] h-[168px] justify-between'
-      }
-      if (hasButtonAttachment) {
-        /** Hiện thị button */
-        return 'flex flex-col w-[286px] h-[240px] justify-between'
-      }
-      if (hasSlideAttachment) {
-        /** Hiện thị slide */
-        return 'flex flex-col w-[286px] h-[438px] justify-between '
+    if (BASE_CONDITION && ATTACHMENT) {
+      // Kiểm tra nếu là template và xác định kiểu template
+      if (ATTACHMENT.type === 'template') {
+        const TEMPLATE_TYPE = _.get(ATTACHMENT, 'payload.template_type', null)
+        if (TEMPLATE_TYPE === 'button')
+          return ATTACHMENT_TYPE_TO_CLASS_MAP.template_button
+        if (TEMPLATE_TYPE === 'generic')
+          return ATTACHMENT_TYPE_TO_CLASS_MAP.template_generic
       }
 
-      /** Hiện thị text */
-      return 'flex flex-col w-[286px] h-[142px] justify-between'
+      // Kiểm tra attachment.type không phải là undefined
+      if (ATTACHMENT.type) {
+        const ATTACHMENT_CLASS =
+          ATTACHMENT_TYPE_TO_CLASS_MAP[ATTACHMENT.type] ||
+          'flex flex-col w-[286px] h-[142px] justify-between'
+        return ATTACHMENT_CLASS
+      }
     }
-    /** Popup đóng thì ẩn màn chat */
+
+    /** Popup đóng thì ẩn giao diện */
     return 'hidden'
   }
 

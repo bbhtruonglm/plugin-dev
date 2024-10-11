@@ -312,3 +312,19 @@ export function isValidUrl(string: string) {
     return false
   }
 }
+
+/** chat app check css function */
+
+/** Check tin nhắn có phải từ page không */
+export const isValidPageMessage = (message: MessageInfo) => {
+  return message?.message_type === 'page'
+}
+
+/** Check tin nhắn có file media kèm theo không */
+
+export const hasAttachmentOfType = (message: MessageInfo, type: string) => {
+  return (
+    message?.message_attachments &&
+    message.message_attachments[0]?.type === type
+  )
+}
