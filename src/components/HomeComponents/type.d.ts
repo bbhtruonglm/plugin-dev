@@ -4,4 +4,6 @@ interface SendMessageProps {
   onNavigate: () => void
   /** Hàm báo lỗi */
   onError: () => void
+  /** Client name */
+  client_name?: string | null
 }

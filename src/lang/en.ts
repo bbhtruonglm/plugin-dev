@@ -1,6 +1,7 @@
 export const en = {
   translation: {
     welcome: 'Hello,',
+    _hi: 'Hi',
     home: 'Home',
     message: 'Message',
     support: 'Support',
@@ -13,6 +14,8 @@ export const en = {
     m: 'm',
     now: 'Now',
     reply: 'Reply',
+    // Home
+
     your_options:
       'You can ask questions or provide feedback on service quality.',
     welcomeMessage: 'How can we assist you?',

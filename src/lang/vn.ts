@@ -16,6 +16,7 @@ export const vn = {
     reply: 'Trả lời',
     // Home
     welcome: 'Xin chào,',
+    _hi: 'Xin chào ',
     welcomeMessage: 'Chúng tôi có thể hỗ trợ được gì bạn?',
     sendUs: 'Gửi tin nhắn đến chúng tôi',
     we_are_online: 'Chúng tôi đang online',

@@ -8,6 +8,8 @@ interface ChatAppProps {
   show: boolean
   /** Ẩn popup màn điện thoại */
   setHideForMobile?: () => void
+  /** client name */
+  client_name?: string | null
 }
 
 // Định nghĩa kiểu dữ liệu cho danh sách nhân viên
@@ -41,4 +43,6 @@ interface HomeProps {
   onError: () => void
   /** Danh sách kênh liên lạc */
   social_link?: Array<any> | null
+  /** client name */
+  client_name?: string | null
 }

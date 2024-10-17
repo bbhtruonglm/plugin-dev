@@ -1,6 +1,7 @@
 import './App.css'
 import './i18n' // Import cấu hình i18n
 
+import { fetchAPI, useAPI } from './api/api'
 import {
   parsedString,
   postMessageToParent,
@@ -23,6 +24,7 @@ import ChatApp from './screens/ChatApp'
 import i18next from './i18n'
 
 function App() {
+  const { READ_CLIENT_INFO } = useAPI()
   /** Trạng thái hiển thị Popup */
   const [is_show, setShow] = useState(false)
   /** Page_id được lưu trong Store */
@@ -31,6 +33,9 @@ function App() {
   const CLIENT_ID = localStorage.getItem(`client_id_<${PAGE_ID}>`)
   /** Hàm dispatch */
   const dispatch = useDispatch()
+
+  /** Tên client */
+  const [client_name, setClientName] = useState(null as any)
 
   useEffect(() => {
     /** @type {string} Lấy url của page cha */
@@ -83,6 +88,8 @@ function App() {
       `client_id_<${STORED_PAGE_ID}>`
     )
 
+    fetchClientData(STORED_CLIENT_ID, STORED_PAGE_ID)
+
     /** Lấy từ localStorage một tin nhắn chưa đọc */
     const STORED_MESSAGE_LATEST = parsedString(
       localStorage.getItem(
@@ -125,6 +132,39 @@ function App() {
     postMessageToParent(false, false)
   }
 
+  /** Hàm đọc data khách hàng
+   * @param {string} client_id - ID khách hàng
+   * @param {string} page_id - ID trang
+   *
+   */
+  const fetchClientData = async (
+    client_id: string | null,
+    page_id: String | null
+  ) => {
+    if (!client_id || !page_id) {
+      setClientName(null)
+      return
+    }
+
+    /** Body lấy thông tin Client */
+    const BODY = {
+      client_id: client_id,
+      page_id: page_id,
+    }
+    /** Lấy URL */
+    const URL_READ = new URL(READ_CLIENT_INFO)
+
+    URL_READ.search = new URLSearchParams(BODY as any).toString()
+
+    /** Lấy thông tin client */
+    const RES = await fetchAPI(URL_READ.toString(), 'GET')
+
+    /** Lưu tên client */
+    setClientName(RES?.data?.client_name)
+
+    console.log(RES, 'RES client')
+  }
+
   return (
     <div className="flex flex-col justify-center items-center h-fit w-fit overflow-hidden">
       <ChatApp
@@ -151,6 +191,7 @@ function App() {
           saveTimeClosePopup(PAGE_ID)
           handleOff()
         }}
+        client_name={client_name}
       />
     </div>
   )

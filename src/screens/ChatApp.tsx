@@ -54,7 +54,12 @@ import { ReactComponent as inactiveHome } from '@/assets/home.svg'
 import { ReactComponent as inactiveMessage } from '@/assets/message.svg'
 import { useTranslation } from 'react-i18next'
 
-const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
+const ChatApp = ({
+  handleBtn,
+  show,
+  setHideForMobile,
+  client_name,
+}: ChatAppProps) => {
   /** Dịch ngôn ngữ */
   const { t, i18n } = useTranslation()
   /** Các đầu api */
@@ -277,6 +282,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
     setPageName(RES?.data?.name)
     // Lưu liên hệ với các kênh mạng xã hội
     setSocialLink(RES?.data?.config?.sosial_platform)
+
     // lưu ngôn ngữ hiện tại
     i18n.changeLanguage(RES?.data.config.locale)
     // Lưu danh sách nhân viên
@@ -373,7 +379,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
      */
     if (GLOBAL_PREVIEW_URL) {
       // postMessageToParent(true, false, 674, GLOBAL_PREVIEW_URL)
-      return 'flex w-screen h-screen items-end justify-end px-2 pr-11 pb-[52px]'
+      return 'flex w-screen h-screen items-end justify-end px-2 pr-11 pb-[52px] '
     }
 
     /** Base condition:
@@ -391,7 +397,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
       /** Call postMessageToParent */
       postMessageToParent(false, false)
       /** Trả về css chỉ hiện popup */
-      return 'w-16 h-[72px] items-center justify-center pb-4 pt-2'
+      return 'w-16 h-[72px] items-center justify-center pb-4 pt-2 '
     }
 
     /** =============================================================================== */
@@ -409,7 +415,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
       ) {
         /** Call postMessageToParent */
         postMessageToParent(false, true, 312)
-        return 'w-[302px] h-[312px] items-end justify-between pb-4 px-2'
+        return 'w-[302px] h-[312px] items-end justify-between pb-4 px-2 '
       }
 
       /** Kiểm tra với type template && payload = button */
@@ -421,14 +427,14 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
       ) {
         /** Call postMessageToParent */
         postMessageToParent(false, true, 312)
-        return 'w-[302px] h-[312px] items-end justify-between pb-4 px-2'
+        return 'w-[302px] h-[312px] items-end justify-between pb-4 px-2 '
       }
 
       /** Kiểm tra với type file  ví dụ audio */
       if (hasAttachmentOfType(LATEST_MESSAGE, 'file')) {
         /** Call postMessageToParent */
         postMessageToParent(false, true, 240)
-        return 'w-[302px] h-[240px] items-end justify-between pb-4 px-2'
+        return 'w-[302px] h-[240px] items-end justify-between pb-4 px-2 '
       }
     }
 
@@ -511,7 +517,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
       /** Call postMessageToParent */
       postMessageToParent(false, true, 224)
       /** Trả về giao diện Text thông thường */
-      return 'w-[302px] h-56 items-end justify-between pb-4 px-2'
+      return 'w-[302px] h-56 items-end justify-between pb-4 px-2 '
     }
 
     /**
@@ -525,7 +531,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
      * - trả về full kích thước */
     postMessageToParent(true, false)
     /**  Trả về kích thước Fixed */
-    return 'w-[416px] h-[674px] px-2 pb-4 justify-between items-end bg-transparent'
+    return 'w-[416px] h-[674px] px-2 pb-4 justify-between items-end'
   }
 
   /** Hàm xử lý điều kiện để trả về css render giao diện
@@ -670,7 +676,12 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
       template_button: 'flex flex-col w-[286px] h-[240px] justify-between',
       template_generic: 'flex flex-col w-[286px] h-[438px] justify-between',
     }
-
+    console.log(ATTACHMENT, 'ATTACHMENT')
+    if (BASE_CONDITION && !ATTACHMENT) {
+      const ATTACHMENT_CLASS =
+        'flex flex-col w-[286px] h-[142px] justify-between'
+      return ATTACHMENT_CLASS
+    }
     /** Return appropriate class based on conditions */
     if (BASE_CONDITION && ATTACHMENT) {
       // Kiểm tra nếu là template và xác định kiểu template
@@ -681,12 +692,11 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
         if (TEMPLATE_TYPE === 'generic')
           return ATTACHMENT_TYPE_TO_CLASS_MAP.template_generic
       }
+      console.log(ATTACHMENT, 'ATTACHMENT 2')
 
       // Kiểm tra attachment.type không phải là undefined
       if (ATTACHMENT.type) {
-        const ATTACHMENT_CLASS =
-          ATTACHMENT_TYPE_TO_CLASS_MAP[ATTACHMENT.type] ||
-          'flex flex-col w-[286px] h-[142px] justify-between'
+        const ATTACHMENT_CLASS = ATTACHMENT_TYPE_TO_CLASS_MAP[ATTACHMENT.type]
         return ATTACHMENT_CLASS
       }
     }
@@ -777,6 +787,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
                   setCurrentTab('message')
                 }}
                 social_link={social_link}
+                client_name={client_name}
               />
             )}
             {current_tab === 'message' && (
@@ -1047,7 +1058,7 @@ const ChatApp = ({ handleBtn, show, setHideForMobile }: ChatAppProps) => {
           handleBtn()
           setErrorMessage('')
         }}
-        className={`relative justify-center items-center  h-12 w-12 bg-white shadow-lg rounded-full  hover:scale-110  ${
+        className={`absolute justify-center items-center bottom-4 right-2  h-12 w-12 bg-white shadow-lg rounded-full  hover:scale-110  ${
           !show
             ? ' flex  '
             : CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0

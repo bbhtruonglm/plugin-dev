@@ -132,6 +132,8 @@ function ChatScreen({
     /** Lưu tên client */
     setClientName(RES?.data?.client_name)
 
+    console.log(RES, 'RES client')
+
     /** Lấy avatar staff từ fb_staff_id */
     if (RES?.data?.fb_staff_id) {
       const LINK_AVATAR = apiImage(
