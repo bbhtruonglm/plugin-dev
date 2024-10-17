@@ -1,4 +1,5 @@
 import { ChatAppProps, EmployeeList } from './type'
+import _, { set } from 'lodash'
 import {
   calculateTimeAgo,
   hasAttachmentOfType,
@@ -47,7 +48,6 @@ import Modal from '@/components/ChatComponents/Modal/Modal'
 import OnlineStaff from '@/components/Container/OnlineStaff'
 import { ReactComponent as RetionLogo } from '@/assets/retion-logo.svg'
 import TemplateMessageComponent from '@/components/ChatComponents/MessageComponent/TemplateMessageComponent'
-import _ from 'lodash'
 import { ReactComponent as activeHome } from '@/assets/home-active.svg'
 import { ReactComponent as activeMessage } from '@/assets/messageA.svg'
 import { ReactComponent as inactiveHome } from '@/assets/home.svg'
@@ -70,6 +70,19 @@ const ChatApp = ({
   const [social_link, setSocialLink] = useState<Array<any> | null>([])
   const [staff_list, setStaffList] = useState<EmployeeList>({})
   const [is_force_close_socket, setIsForceCloseSocket] = useState(false)
+  /** trigger hiện tin nhắn chào mừng */
+  const [show_welcome_message, setShowWelcomeMessage] = useState(false)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!show && !LATEST_MESSAGE.length) {
+        setShowWelcomeMessage(true)
+      }
+    }, 5000)
+
+    // Clear timer khi component unmount
+    return () => clearTimeout(timer)
+  }, [])
 
   /** Khởi tạo websocket */
   const WS = useRef<WebSocket | null>(null)
@@ -101,6 +114,11 @@ const ChatApp = ({
 
   /** Tin nhắn mới nhất */
   const LATEST_MESSAGE = useSelector(selectLatestMessage)
+  useEffect(() => {
+    if (LATEST_MESSAGE) {
+      setShowWelcomeMessage(false)
+    }
+  }, [LATEST_MESSAGE])
   console.log(LATEST_MESSAGE, 'LATEST_MESSAGE')
   /** Số lượng tin nhắn chưa đọc */
   const GLOBAL_UNREAD_MESSAGE_COUNT = useSelector(selectGlobalUnreadCount)
@@ -380,6 +398,12 @@ const ChatApp = ({
     if (GLOBAL_PREVIEW_URL) {
       // postMessageToParent(true, false, 674, GLOBAL_PREVIEW_URL)
       return 'flex w-screen h-screen items-end justify-end px-2 pr-11 pb-[52px] '
+    }
+    /** Popup đang đóng , không có tin nhắn mới, trigger welcome message */
+    if (!show && show_welcome_message && LATEST_MESSAGE === null) {
+      /** Call postMessageToParent */
+      postMessageToParent(false, true, 142)
+      return 'w-[302px] h-[142px] items-end justify-between pb-4 px-2'
     }
 
     /** Base condition:
@@ -676,7 +700,7 @@ const ChatApp = ({
       template_button: 'flex flex-col w-[286px] h-[240px] justify-between',
       template_generic: 'flex flex-col w-[286px] h-[438px] justify-between',
     }
-    console.log(ATTACHMENT, 'ATTACHMENT')
+
     if (BASE_CONDITION && !ATTACHMENT) {
       const ATTACHMENT_CLASS =
         'flex flex-col w-[286px] h-[142px] justify-between'
@@ -692,7 +716,6 @@ const ChatApp = ({
         if (TEMPLATE_TYPE === 'generic')
           return ATTACHMENT_TYPE_TO_CLASS_MAP.template_generic
       }
-      console.log(ATTACHMENT, 'ATTACHMENT 2')
 
       // Kiểm tra attachment.type không phải là undefined
       if (ATTACHMENT.type) {
@@ -1045,6 +1068,27 @@ const ChatApp = ({
           )}
         </div>
       </div>
+
+      {/* Hiển thị tin nhắn chào mừng */}
+      {show_welcome_message && (
+        <div className="flex bg-white shadow-lg justify-between w-full gap-x-2 rounded-xl h-16 px-3 py-3">
+          <h4 className="text-sm line-clamp-2">
+            Chào mừng bạn đến với app Retion
+          </h4>
+
+          {/* Nút đóng */}
+          <div
+            onClick={(event) => {
+              event.stopPropagation()
+              postMessageToParent(false, false)
+              setShowWelcomeMessage(false)
+            }}
+            className="h-6 w-6 cursor-pointer flex justify-center items-center hover:bg-gray-300 rounded-full p-2"
+          >
+            <CloseSlate className="h-3 w-3" />
+          </div>
+        </div>
+      )}
       {/*  Nút trigger hiện thị bong bóng chat */}
       <button
         onClick={() => {
@@ -1057,6 +1101,7 @@ const ChatApp = ({
           }
           handleBtn()
           setErrorMessage('')
+          setShowWelcomeMessage(false)
         }}
         className={`absolute justify-center items-center bottom-4 right-2  h-12 w-12 bg-white shadow-lg rounded-full  hover:scale-110  ${
           !show
