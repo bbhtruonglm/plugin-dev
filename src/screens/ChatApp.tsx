@@ -73,16 +73,19 @@ const ChatApp = ({
   /** trigger hiện tin nhắn chào mừng */
   const [show_welcome_message, setShowWelcomeMessage] = useState(false)
 
+  /** Tin nhắn mới nhất */
+  const LATEST_MESSAGE = useSelector(selectLatestMessage)
   useEffect(() => {
+    /** Chỉ khi tắt popup và không có tin nhắn mới nhất */
     const timer = setTimeout(() => {
-      if (!show && !LATEST_MESSAGE.length) {
+      if (!show && _.isEmpty(LATEST_MESSAGE)) {
         setShowWelcomeMessage(true)
       }
     }, 5000)
 
     // Clear timer khi component unmount
     return () => clearTimeout(timer)
-  }, [])
+  }, [show])
 
   /** Khởi tạo websocket */
   const WS = useRef<WebSocket | null>(null)
@@ -112,8 +115,6 @@ const ChatApp = ({
   /** List tin nhắn được lấy từ store */
   const LIST_UNREAD_MESSAGE = useSelector(selectListUnreadMessage)
 
-  /** Tin nhắn mới nhất */
-  const LATEST_MESSAGE = useSelector(selectLatestMessage)
   useEffect(() => {
     if (LATEST_MESSAGE) {
       setShowWelcomeMessage(false)

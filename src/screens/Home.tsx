@@ -8,7 +8,7 @@ function Home({ onNavigate, onError, social_link, client_name }: HomeProps) {
     <div className="flex flex-col px-5 py-3 gap-y-4">
       {/* Greeting */}
       <div className="">
-        <h1 className="text-2xl font-semibold">
+        <h1 className="text-2xl font-semibold truncate">
           {client_name ? t('_hi') + client_name + ',' : t('welcome')}
         </h1>
         <h2 className="text-xl font-medium">{t('welcomeMessage')}</h2>
