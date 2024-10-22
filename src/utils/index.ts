@@ -121,22 +121,35 @@ export function formatDate(isoString?: string) {
   return `${HOUR}:${MINUTE}:${SECONDS} ${DAY}/${MONTH}/${YEAR}`
 }
 
-/** Function tính thời gian cách hiện tại
- * @param {string} timeString: Thời gian chuyển đổi sang string
+/**
+ * Function để tính số lượng đơn vị thời gian (giây, phút, giờ, ngày, tuần)
+ * @param {number} seconds Tổng số giây cần chuyển đổi
+ * @param {number} unitInSeconds Số giây trong một đơn vị thời gian (60s, 3600s, 86400s, 604800s)
+ * @return {number} Số lượng đơn vị thời gian đã tính toán
+ */
+function calculateUnits(seconds: number, unitInSeconds: number) {
+  return Math.floor(seconds / unitInSeconds)
+}
+
+/**
+ * Function tính thời gian cách hiện tại
+ * @param {string} time_string: Thời gian chuyển đổi sang string
  * @return {string} thời gian cách hiện tại
  */
-export function calculateTimeAgo(timeString: string) {
-  console.log(timeString)
+export function calculateTimeAgo(time_string: string) {
   const NOW = new Date() // Thời gian hiện tại
-  const TIME = new Date(timeString) // Chuỗi thời gian được chuyển thành đối tượng Date
+  const TIME = new Date(time_string) // Chuỗi thời gian được chuyển thành đối tượng Date
   console.log(NOW.getTime(), TIME.getTime())
+
   // Sử dụng getTime() để chuyển Date thành số (mili-giây)
   const DIFF_IN_SEC = Math.floor((NOW.getTime() - TIME.getTime()) / 1000)
-  const MINUTES = Math.floor(DIFF_IN_SEC / 60)
-  const HOURS = Math.floor(DIFF_IN_SEC / 3600)
-  // const days = Math.floor(DIFF_IN_SEC / 86400)
-  // const weeks = Math.floor(DIFF_IN_SEC / 604800)
 
+  const MINUTES = calculateUnits(DIFF_IN_SEC, 60)
+  const HOURS = calculateUnits(DIFF_IN_SEC, 3600)
+  const DAYS = calculateUnits(DIFF_IN_SEC, 86400)
+  const WEEKS = calculateUnits(DIFF_IN_SEC, 604800)
+
+  /** Tính toán thời gian hiển thị */
   if (DIFF_IN_SEC < 60) {
     if (DIFF_IN_SEC < 10) return t('now')
     return `${DIFF_IN_SEC}s ${t('ago')}`
@@ -144,12 +157,11 @@ export function calculateTimeAgo(timeString: string) {
     return `${MINUTES}${t('m')} ${t('ago')}`
   } else if (HOURS < 24) {
     return `${HOURS}h ${t('ago')}`
+  } else if (DAYS < 7) {
+    return `${DAYS}d ${t('ago')}`
+  } else {
+    return `${WEEKS}w ${t('ago')}`
   }
-  // else if (days < 7) {
-  //   return `${days}d ${t('ago')}`
-  // } else {
-  //   return `${weeks}w ${t('ago')}`
-  // }
 }
 
 /** Hàm post message thông tin đến parent

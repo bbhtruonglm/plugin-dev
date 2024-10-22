@@ -75,17 +75,6 @@ const ChatApp = ({
 
   /** Tin nhắn mới nhất */
   const LATEST_MESSAGE = useSelector(selectLatestMessage)
-  useEffect(() => {
-    /** Chỉ khi tắt popup và không có tin nhắn mới nhất */
-    const timer = setTimeout(() => {
-      if (!show && _.isEmpty(LATEST_MESSAGE)) {
-        setShowWelcomeMessage(true)
-      }
-    }, 5000)
-
-    // Clear timer khi component unmount
-    return () => clearTimeout(timer)
-  }, [show])
 
   /** Khởi tạo websocket */
   const WS = useRef<WebSocket | null>(null)
@@ -175,6 +164,23 @@ const ChatApp = ({
   // localStorage.setItem(`client_id_<${PAGE_ID}>`, '6131478076934694')
   const CLIENT_STORED = localStorage.getItem(`client_id_<${PAGE_ID}>`)
 
+  useEffect(() => {
+    console.log(show, _.isEmpty(LATEST_MESSAGE), LATEST_MESSAGE, 'KKKKKKK')
+    console.log(SHOW_QUICK_CHAT, 'SHOW_QUICK_CHAT')
+    /** Chỉ khi tắt popup và không có tin nhắn mới nhất  và trạng thái show_quick_chat */
+    const TIMER = setTimeout(() => {
+      if (
+        !show &&
+        _.isEmpty(LATEST_MESSAGE) &&
+        SHOW_QUICK_CHAT === 'show_quick_chat'
+      ) {
+        setShowWelcomeMessage(true)
+      }
+    }, 5000)
+
+    // Clear timer khi component unmount
+    return () => clearTimeout(TIMER)
+  }, [show, LATEST_MESSAGE, SHOW_QUICK_CHAT])
   useEffect(() => {
     /**  Nếu không có PAGE_ID, thoát ngay*/
     if (!PAGE_ID) return
@@ -463,71 +469,6 @@ const ChatApp = ({
       }
     }
 
-    /** =============================================================================== */
-
-    /**
-     * - Popup đóng ,
-     * - Trạng thái Quick_chat đóng,
-     * - tin nhắn từ page,
-     * - có file attach,
-     * Kiểu tin nhắn = image hoặc video || type = template && payload = button */
-    // if (
-    //   SHOW_QUICK_CHAT === 'show_quick_chat' &&
-    //   !show &&
-    //   GLOBAL_UNREAD_MESSAGE_COUNT > 0 &&
-    //   LATEST_MESSAGE?.message_type === 'page' &&
-    //   LATEST_MESSAGE?.message_attachments &&
-    //   (LATEST_MESSAGE?.message_attachments[0]?.type === 'image' ||
-    //     LATEST_MESSAGE?.message_attachments[0]?.type === 'video' ||
-    //     (LATEST_MESSAGE?.message_attachments[0]?.type === 'template' &&
-    //       LATEST_MESSAGE?.message_attachments[0]?.payload?.template_type ===
-    //         'button'))
-    // ) {
-    //   /** Call postMessageToParent */
-    //   postMessageToParent(false, true, 312)
-    //   /** Trả về giao diện video */
-    //   return 'w-[302px] h-[312px] items-end justify-between pb-4 px-2'
-    // }
-    /**
-     * - Popup đóng ,
-     * - Trạng thái Quick_chat đóng,
-     * - tin nhắn từ page,
-     * - type = template && payload = generic */
-    // if (
-    //   SHOW_QUICK_CHAT === 'show_quick_chat' &&
-    //   !show &&
-    //   GLOBAL_UNREAD_MESSAGE_COUNT > 0 &&
-    //   LATEST_MESSAGE?.message_type === 'page' &&
-    //   LATEST_MESSAGE?.message_attachments &&
-    //   LATEST_MESSAGE?.message_attachments[0]?.type === 'template' &&
-    //   LATEST_MESSAGE?.message_attachments[0]?.payload?.template_type ===
-    //     'generic'
-    // ) {
-    //   /** Call postMessageToParent */
-    //   postMessageToParent(false, true, 510)
-    //   /** Trả về giao diện video */
-    //   return 'w-[302px] h-[540px] items-end justify-between pb-11 px-2'
-    // }
-    /**
-     * - Popup đóng,
-     * - Trạng thái Quick_chat đóng,
-     * - tin nhắn từ page,
-     * - có file attach,
-     * - Kiểu tin nhắn = file */
-    // if (
-    //   SHOW_QUICK_CHAT === 'show_quick_chat' &&
-    //   !show &&
-    //   GLOBAL_UNREAD_MESSAGE_COUNT > 0 &&
-    //   LATEST_MESSAGE?.message_type === 'page' &&
-    //   LATEST_MESSAGE?.message_attachments &&
-    //   LATEST_MESSAGE?.message_attachments[0]?.type === 'file'
-    // ) {
-    //   /** Call postMessageToParent */
-    //   postMessageToParent(false, true, 240)
-    //   /** Trả về giao diện file */
-    //   return 'w-[302px] h-[240px] items-end justify-between pb-4 px-2'
-    // }
-
     /**
      * - Popup đóng ,
      * - Trạng thái Quick_chat đóng,
@@ -593,78 +534,6 @@ const ChatApp = ({
 
     return `${BASE_CLASSES} ${SIZE_CLASSES} ${VISIBILITY_CLASSES}`
   }
-
-  // /**  Utility function to determine the CSS classes for the popup
-  //  * @param {boolean} show Trạng thái đóng mở giao diện
-  //  * @param {MessageInfo} LATEST_MESSAGE Tin nhắn là nhất
-  //  * @param {number} GLOBAL_UNREAD_MESSAGE_COUNT So luong tin chưa đọc
-  //  * @param {string | null} SHOW_QUICK_CHAT Trạng thái ẩn hiện QUICK_CHAT
-  //  * @returns {string} CSS
-  //  */
-  // const getPopupClasses = (
-  //   show: boolean,
-  //   LATEST_MESSAGE: MessageInfo,
-  //   GLOBAL_UNREAD_MESSAGE_COUNT: number,
-  //   SHOW_QUICK_CHAT: string | null
-  // ) => {
-  //   /** Base condition:
-  //    * Popup đóng,
-  //    * message được gửi từ page,
-  //    * unread messages > 0 */
-  //   const baseCondition =
-  //     SHOW_QUICK_CHAT === 'show_quick_chat' &&
-  //     !show &&
-  //     LATEST_MESSAGE?.message_type === 'page' &&
-  //     GLOBAL_UNREAD_MESSAGE_COUNT > 0
-
-  //   /** Additional condition:
-  //    *  If the latest message has attachments
-  //    * the first one is an image */
-  //   const hasImageAttachment =
-  //     LATEST_MESSAGE?.message_attachments &&
-  //     (LATEST_MESSAGE?.message_attachments[0]?.type === 'image' ||
-  //       LATEST_MESSAGE?.message_attachments[0]?.type === 'video')
-  //   /** Có file attachment */
-  //   const hasFileAttachment =
-  //     LATEST_MESSAGE?.message_attachments &&
-  //     LATEST_MESSAGE?.message_attachments[0]?.type === 'file'
-  //   /** Có button attachment */
-  //   const hasButtonAttachment =
-  //     LATEST_MESSAGE?.message_attachments &&
-  //     LATEST_MESSAGE?.message_attachments[0]?.type === 'template' &&
-  //     LATEST_MESSAGE?.message_attachments[0]?.payload?.template_type ===
-  //       'button'
-  //   /** Có slide attachment */
-  //   const hasSlideAttachment =
-  //     LATEST_MESSAGE?.message_attachments &&
-  //     LATEST_MESSAGE?.message_attachments[0]?.type === 'template' &&
-  //     LATEST_MESSAGE?.message_attachments[0]?.payload?.template_type ===
-  //       'generic'
-  //   /** Return appropriate class based on conditions */
-  //   if (baseCondition) {
-  //     if (hasImageAttachment) {
-  //       /** Hiển thị ảnh | video */
-  //       return 'flex flex-col w-[286px] h-[240px] justify-between'
-  //     }
-  //     if (hasFileAttachment) {
-  //       /** Hiện thị file */
-  //       return 'flex flex-col w-[286px] h-[168px] justify-between'
-  //     }
-  //     if (hasButtonAttachment) {
-  //       /** Hiện thị button */
-  //       return 'flex flex-col w-[286px] h-[240px] justify-between'
-  //     }
-  //     if (hasSlideAttachment) {
-  //       /** Hiện thị slide */
-  //       return 'flex flex-col w-[286px] h-[438px] justify-between '
-  //     }
-
-  //     /** Hiện thị text */
-  //     return 'flex flex-col w-[286px] h-[142px] justify-between'
-  //   }
-  //   /** Popup đóng thì ẩn màn chat */
-  //   return 'hidden'
-  // }
 
   /**
    * Utility function to determine the CSS classes for the popup

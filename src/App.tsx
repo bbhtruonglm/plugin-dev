@@ -38,6 +38,20 @@ function App() {
   const [client_name, setClientName] = useState(null as any)
 
   useEffect(() => {
+    const handleMessage = (event: any) => {
+      const RECEIVE_MESSAGE = event.data
+      console.log('Received message from parent:', RECEIVE_MESSAGE)
+      // setMessage(receivedMessage.content)
+    }
+
+    window.addEventListener('message', handleMessage)
+
+    return () => {
+      window.removeEventListener('message', handleMessage)
+    }
+  }, [])
+
+  useEffect(() => {
     /** @type {string} Lấy url của page cha */
     const FULL_SRC = window.location.href
 
@@ -165,7 +179,10 @@ function App() {
   }
 
   return (
-    <div className="flex flex-col justify-center items-center h-fit w-fit overflow-hidden">
+    <div
+      className="flex flex-col justify-center items-center h-fit w-fit overflow-hidden"
+      id="bbh-chart-plugin"
+    >
       <ChatApp
         handleBtn={() => {
           handleToggle()
