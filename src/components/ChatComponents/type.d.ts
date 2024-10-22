@@ -293,6 +293,8 @@ interface InputPropsInit {
   type?: 'text' | 'number' | 'email' | 'password' | 'tel'
   /** có bắt buộc hay không */
   required?: boolean
+  /** Value Input */
+  value_input?: string
 }
 /** Cấu trúc params của modal */
 interface ModalProps {

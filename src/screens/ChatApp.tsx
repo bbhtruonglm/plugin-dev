@@ -110,6 +110,7 @@ const ChatApp = ({
     }
   }, [LATEST_MESSAGE])
   console.log(LATEST_MESSAGE, 'LATEST_MESSAGE')
+
   /** Số lượng tin nhắn chưa đọc */
   const GLOBAL_UNREAD_MESSAGE_COUNT = useSelector(selectGlobalUnreadCount)
 

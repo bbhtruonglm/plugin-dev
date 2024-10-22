@@ -16,6 +16,7 @@ import {
   setLatestMessageGlobal,
   setPageId,
   setStatusPopup,
+  setUserInfo,
 } from './stores/appSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { useEffect, useState } from 'react'
@@ -38,14 +39,32 @@ function App() {
   const [client_name, setClientName] = useState(null as any)
 
   useEffect(() => {
-    const handleMessage = (event: any) => {
-      const RECEIVE_MESSAGE = event.data
-      console.log('Received message from parent:', RECEIVE_MESSAGE)
-      // setMessage(receivedMessage.content)
+    // Lắng nghe các thông điệp từ parent
+    const handleMessage = (event: MessageEvent) => {
+      console.log(event, 'event')
+      /** Kiểm tra thông tin từ app cha */
+      if (event.origin === 'http://localhost:5174') {
+        console.log(
+          'Nhận tin nhắn từ app cha. Thông tin nhận được là:',
+          event.data
+        )
+        /** Lấy thông tin user từ event */
+        const { user_name, user_email, user_phone } = event.data
+        /** Lưu thông tin user vào store */
+        dispatch(
+          setUserInfo({
+            user_name,
+            user_email,
+            user_phone,
+          })
+        )
+      }
     }
 
+    // Thêm event listener cho thông điệp
     window.addEventListener('message', handleMessage)
 
+    // Cleanup event listener khi component bị unmount
     return () => {
       window.removeEventListener('message', handleMessage)
     }
@@ -61,6 +80,7 @@ function App() {
      * @returns {URL} Đối tượng URL được tạo ra từ chuỗi đầu vào
      */
     const URL_PARENT = new URL(FULL_SRC)
+    console.log(URL_PARENT, 'URL_PARENT')
 
     const URL_PARAMS = new URLSearchParams(window.location.search)
 

@@ -1,21 +1,33 @@
+import { selectLoadingGlobal, selectUserInfo } from '@/stores/appSlice'
 import { useEffect, useState } from 'react'
 
 import { InitClientProps } from '../type'
 import Input from './Input'
 import Loading from '@/components/Loading/Loading'
-import { selectLoadingGlobal } from '@/stores/appSlice'
+import _ from 'lodash'
 import { t } from 'i18next'
 import { useSelector } from 'react-redux'
 
 function InitClient({ resetData, onInitClient }: InitClientProps) {
   /** Loading Global */
   const LOADING_GLOBAL = useSelector(selectLoadingGlobal)
+  /** Lấy thông tin user từ store */
+  const USER_INFO = useSelector(selectUserInfo)
+  console.log(USER_INFO)
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
   const [email_error, setEmailError] = useState('')
   const [phone_error, setPhoneError] = useState('')
   const [name_error, setNameError] = useState('')
+
+  useEffect(() => {
+    if (!_.isEmpty(USER_INFO)) {
+      setName(USER_INFO?.user_name)
+      setPhone(USER_INFO?.user_phone)
+      setEmail(USER_INFO?.user_email)
+    }
+  }, [USER_INFO])
 
   useEffect(() => {
     if (resetData) {
@@ -97,6 +109,7 @@ function InitClient({ resetData, onInitClient }: InitClientProps) {
                 title={t('your_name')}
                 placeholder={t('input_your_name')}
                 required
+                value_input={name}
                 type="text"
                 onChange={handleNameChange}
               />
@@ -110,6 +123,7 @@ function InitClient({ resetData, onInitClient }: InitClientProps) {
                 title={t('your_phone')}
                 placeholder={t('input_your_phone')}
                 required
+                value_input={phone}
                 type="tel"
                 onChange={handlePhoneChange}
               />
@@ -123,6 +137,7 @@ function InitClient({ resetData, onInitClient }: InitClientProps) {
                 title={'Email'}
                 placeholder={t('input_your_email')}
                 required={false}
+                value_input={email}
                 type="email"
                 onChange={handleEmailChange}
               />

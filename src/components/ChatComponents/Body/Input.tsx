@@ -7,6 +7,7 @@ const Input = ({
   title,
   placeholder,
   onChange,
+  value_input,
   required,
   type = 'text',
 }: InputPropsInit) => {
@@ -23,7 +24,7 @@ const Input = ({
           onChange && onChange(e)
           setValue(e.target.value)
         }}
-        value={value}
+        value={value_input || value}
         onKeyDown={(e) => {}}
         type={type}
         placeholder={placeholder || t('placeholder')}
