@@ -65,6 +65,9 @@ const ChatApp = ({
   /** Các đầu api */
   const { READ_PAGE_INFO, SOCKET_API } = useAPI()
 
+  /**
+   * State Khai báo thông tin
+   */
   const [error_message, setErrorMessage] = useState<string | null>('')
   const [page_name, setPageName] = useState<string>('')
   const [social_link, setSocialLink] = useState<Array<any> | null>([])
