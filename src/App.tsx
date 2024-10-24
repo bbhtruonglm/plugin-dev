@@ -54,7 +54,7 @@ function App() {
        * @type {string} from - Nguồn gửi tin nhắn
        */
       const { user_name, user_email, user_phone, from } = PAYLOAD
-
+      console.log(event, 'event')
       /** Kiểm tra thông tin từ app cha */
       if (from === 'parent-app') {
         console.log(
