@@ -28,28 +28,40 @@ function App() {
   const { READ_CLIENT_INFO } = useAPI()
   /** Trạng thái hiển thị Popup */
   const [is_show, setShow] = useState(false)
+
   /** Page_id được lưu trong Store */
   const PAGE_ID = useSelector(selectPageId)
+
   /** Client_id được lưu trong localStorage theo Page_id */
   const CLIENT_ID = localStorage.getItem(`client_id_<${PAGE_ID}>`)
-  /** Hàm dispatch */
+
+  /** Dispatch */
   const dispatch = useDispatch()
 
   /** Tên client */
   const [client_name, setClientName] = useState(null as any)
 
   useEffect(() => {
-    // Lắng nghe các thông điệp từ parent
+    /** Hàm xử lý thông điệp từ parent */
     const handleMessage = (event: MessageEvent) => {
-      console.log(event, 'event')
+      /** @type {Object} PAYLOAD - Dữ liệu từ event */
+      const PAYLOAD = event.data
+
+      /**
+       * @type {string} user_name - Tên người dùng
+       * @type {string} user_email - Email người dùng
+       * @type {string} user_phone - Số điện thoại người dùng
+       * @type {string} from - Nguồn gửi tin nhắn
+       */
+      const { user_name, user_email, user_phone, from } = PAYLOAD
+
       /** Kiểm tra thông tin từ app cha */
-      if (event.origin === 'http://localhost:5174') {
+      if (from === 'parent-app') {
         console.log(
           'Nhận tin nhắn từ app cha. Thông tin nhận được là:',
           event.data
         )
         /** Lấy thông tin user từ event */
-        const { user_name, user_email, user_phone } = event.data
         /** Lưu thông tin user vào store */
         dispatch(
           setUserInfo({
@@ -100,8 +112,8 @@ function App() {
       })
 
     /** Lấy page_id */
-    const STORED_PAGE_ID =
-      URL_PARENT.searchParams.get('page_id') || '388339911461476'
+    const STORED_PAGE_ID = URL_PARENT.searchParams.get('page_id')
+    // || '388339911461476'
 
     /** lưu page_id vào store */
     /** Example @value :bf425487afbe403895116dd9b585537b || 100179064765476 || 388339911461476 || 5c290e88a5304e8e84ce8a8804b764e4 */

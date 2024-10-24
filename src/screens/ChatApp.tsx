@@ -169,8 +169,6 @@ const ChatApp = ({
   const CLIENT_STORED = localStorage.getItem(`client_id_<${PAGE_ID}>`)
 
   useEffect(() => {
-    console.log(show, _.isEmpty(LATEST_MESSAGE), LATEST_MESSAGE, 'KKKKKKK')
-    console.log(SHOW_QUICK_CHAT, 'SHOW_QUICK_CHAT')
     /** Chỉ khi tắt popup và không có tin nhắn mới nhất  và trạng thái show_quick_chat */
     const TIMER = setTimeout(() => {
       if (
