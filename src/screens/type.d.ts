@@ -47,4 +47,6 @@ interface HomeProps {
   client_name?: string | null
   /** webform */
   web_form?: any
+  /** Mô tả kênh liên lạc */
+  social_description?: string | null
 }

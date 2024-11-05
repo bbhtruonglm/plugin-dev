@@ -71,6 +71,7 @@ const ChatApp = ({
   const [error_message, setErrorMessage] = useState<string | null>('')
   const [page_name, setPageName] = useState<string>('')
   const [social_link, setSocialLink] = useState<Array<any> | null>([])
+  const [social_description, setSocialDescription] = useState<string | null>('')
   const [staff_list, setStaffList] = useState<EmployeeList>({})
   const [is_force_close_socket, setIsForceCloseSocket] = useState(false)
   /** trigger hiện tin nhắn chào mừng */
@@ -331,8 +332,18 @@ const ChatApp = ({
     console.log(RES, 'RES page')
     // lưu tên page vào state
     setPageName(RES?.data?.name)
+
+    /** nếu cài đặt ở setting page is_active = false thì k lưu  */
+
+    if (!RES?.data?.social_platform?.is_active) {
+      setSocialLink(null)
+    } else {
+      setSocialLink(RES?.data?.social_platform?.data)
+      setSocialDescription(
+        RES?.data?.social_platform?.description?.[RES?.data?.default_language]
+      )
+    }
     // Lưu liên hệ với các kênh mạng xã hội
-    setSocialLink(RES?.data?.social_platform?.data)
 
     /** Lưu thông tin tin nhắn chào mừng */
     setWelcomeMessage({
@@ -722,6 +733,7 @@ const ChatApp = ({
                 social_link={social_link}
                 client_name={client_name}
                 web_form={web_form}
+                social_description={social_description}
               />
             )}
             {current_tab === 'message' && (

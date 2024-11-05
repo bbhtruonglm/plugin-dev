@@ -10,20 +10,19 @@ function Home({
   social_link,
   client_name,
   web_form,
+  social_description,
 }: HomeProps) {
-  const language = i18n.language
-  console.log(web_form, language)
   return (
     <div className="flex flex-col px-5 py-3 gap-y-4">
       {/* Greeting */}
-      {web_form?.source ? (
+      {web_form?.is_active ? (
         <div className="">
-          <h1 className="text-2xl font-semibold truncate">
+          <h1 className="text-2xl font-semibold">
             {client_name
               ? web_form?.source?.title + ' ' + client_name + ','
               : t('welcome')}
           </h1>
-          <h2 className="text-xl font-medium line-clamp-2">
+          <h2 className="text-xl font-medium">
             {web_form?.source
               ? web_form?.source?.description
               : t('welcomeMessage')}
@@ -48,7 +47,12 @@ function Home({
       {/* Lựa chọn kênh liên lạc . 
         Nếu không có list social thì ẩn đi
       */}
-      {!!social_link?.length && <ChatOption social_link={social_link} />}
+      {!!social_link?.length && (
+        <ChatOption
+          social_link={social_link}
+          social_description={social_description}
+        />
+      )}
       {/* Giới thiệu AI */}
       {/* <IntroAI /> */}
       {/* Tìm kiếm trợ giúp */}

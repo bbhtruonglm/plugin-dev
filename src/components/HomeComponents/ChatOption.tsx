@@ -25,11 +25,13 @@ import Zalo from '@/assets/Logo/Zalo'
 import { renderURLPrefix } from '@/utils'
 import { t } from 'i18next'
 
-function ChatOption({ social_link }: any) {
+function ChatOption({ social_link, social_description }: any) {
   return (
     <div className="bg-white p-3 rounded-xl flex justify-between items-center shadow-md">
       <div>
-        <h4 className="text-sm font-medium">{t('chatWithUs')}</h4>
+        <h4 className="text-sm font-medium">
+          {social_description || t('chatWithUs')}
+        </h4>
 
         <div className="flex max-h-24 overflow-y-auto w-full gap-6 mt-2 px-3 flex-wrap">
           {!!social_link?.length &&
