@@ -340,7 +340,9 @@ const ChatApp = ({
     } else {
       setSocialLink(RES?.data?.social_platform?.data)
       setSocialDescription(
-        RES?.data?.social_platform?.description?.[RES?.data?.default_language]
+        RES?.data?.social_platform?.description?.[
+          RES?.data?.default_language || 'vi'
+        ]
       )
     }
     // Lưu liên hệ với các kênh mạng xã hội
@@ -356,7 +358,9 @@ const ChatApp = ({
     /** Lưu thông tin biểu mẫu */
     setWebForm({
       is_active: RES?.data?.web_form?.is_active || false,
-      source: RES?.data?.web_form?.source?.[RES?.data?.default_language] || {},
+      source:
+        RES?.data?.web_form?.source?.[RES?.data?.default_language || 'vi'] ||
+        {},
     })
 
     // lưu ngôn ngữ hiện tại
