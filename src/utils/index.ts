@@ -357,7 +357,7 @@ export function renderURLPrefix(
     case 'FACEBOOK':
       return `https://www.facebook.com/${value}`
     case 'INSTAGRAM':
-      return `https://www.ig.com/${value}`
+      return `https://www.instagram.com/${value}`
     case 'WHATSAPP':
       return `https://wa.me/${value}`
     case 'ZALO':
