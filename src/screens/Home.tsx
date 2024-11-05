@@ -1,18 +1,42 @@
 import ChatOption from '@/components/HomeComponents/ChatOption'
 import { HomeProps } from './type'
 import SendMessage from '@/components/HomeComponents/SendMessage'
+import i18n from '@/i18n'
 import { t } from 'i18next'
 
-function Home({ onNavigate, onError, social_link, client_name }: HomeProps) {
+function Home({
+  onNavigate,
+  onError,
+  social_link,
+  client_name,
+  web_form,
+}: HomeProps) {
+  const language = i18n.language
+  console.log(web_form, language)
   return (
     <div className="flex flex-col px-5 py-3 gap-y-4">
       {/* Greeting */}
-      <div className="">
-        <h1 className="text-2xl font-semibold truncate">
-          {client_name ? t('_hi') + client_name + ',' : t('welcome')}
-        </h1>
-        <h2 className="text-xl font-medium">{t('welcomeMessage')}</h2>
-      </div>
+      {web_form?.source ? (
+        <div className="">
+          <h1 className="text-2xl font-semibold truncate">
+            {client_name
+              ? web_form?.source?.title + ' ' + client_name + ','
+              : t('welcome')}
+          </h1>
+          <h2 className="text-xl font-medium line-clamp-2">
+            {web_form?.source
+              ? web_form?.source?.description
+              : t('welcomeMessage')}
+          </h2>
+        </div>
+      ) : (
+        <div className="">
+          <h1 className="text-2xl font-semibold truncate">
+            {client_name ? t('_hi') + client_name + ',' : t('welcome')}
+          </h1>
+          <h2 className="text-xl font-medium">{t('welcomeMessage')}</h2>
+        </div>
+      )}
       {/* Send message */}
       <SendMessage
         // page_id={page_id}

@@ -333,10 +333,73 @@ export const isValidPageMessage = (message: MessageInfo) => {
 }
 
 /** Check tin nhắn có file media kèm theo không */
-
 export const hasAttachmentOfType = (message: MessageInfo, type: string) => {
   return (
     message?.message_attachments &&
     message.message_attachments[0]?.type === type
   )
+}
+
+/** Hàm nhận vào key và giá trị đầu vào, trả về URL đầy đủ cho liên hệ tương ứng
+ * @param key: string
+ * @param value: string
+ * @returns string
+ */
+export function renderURLPrefix(
+  key: string,
+  value: string
+): string | undefined {
+  switch (key) {
+    case 'PHONE':
+      return `tel:${value}`
+    case 'MAIL':
+      return `mailto:${value}`
+    case 'FACEBOOK':
+      return `https://www.facebook.com/${value}`
+    case 'INSTAGRAM':
+      return `https://www.ig.com/${value}`
+    case 'WHATSAPP':
+      return `https://wa.me/${value}`
+    case 'ZALO':
+      return `https://zalo.me/${value}`
+    case 'TIKTOK':
+      return `https://www.tiktok.com/@${value}`
+    case 'THREADS':
+      return `https://www.threads.net/@${value}`
+    case 'TWITTER':
+      return `https://x.com/${value}`
+    case 'TELEGRAM':
+      return `https://t.me/${value}`
+    case 'YOUTUBE':
+      return `https://www.youtube.com/@${value}`
+    case 'LINKEDIN':
+      return `https://www.linkedin.com/in/${value}`
+    case 'REDDIT':
+      return `https://www.reddit.com/user/${value}`
+    case 'MESSENGER':
+      return `https://m.me/${value}`
+    case 'GITHUB':
+      return `https://github.com/${value}`
+    case 'PINTEREST':
+      return `https://www.pinterest.com/${value}`
+    case 'LINE':
+      return `https://line.me/R/ti/p/${value}`
+    case 'VIBER':
+      return `viber://add?number=${value}`
+    case 'DISCORD':
+      return `https://discord.gg/${value}`
+    case 'VK':
+      return `https://vk.com/${value}`
+    case 'TWITCH':
+      return `https://www.twitch.tv/${value}`
+    case 'APP_STORE':
+      return `https://apps.apple.com/app/id${value}`
+    case 'GOOGLE_PLAY_STORE':
+      return `https://play.google.com/store/apps/details?id=${value}`
+    case 'LINK_WEB':
+      return value // Trả về giá trị trực tiếp nếu là một link web thông thường
+
+    default:
+      return key // Trả về key nếu không khớp với bất kỳ case nào
+  }
 }

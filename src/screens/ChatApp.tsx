@@ -168,9 +168,33 @@ const ChatApp = ({
   // localStorage.setItem(`client_id_<${PAGE_ID}>`, '6131478076934694')
   const CLIENT_STORED = localStorage.getItem(`client_id_<${PAGE_ID}>`)
 
+  /** Tin nhắn chào mừng  */
+  const [welcome_message, setWelcomeMessage] = useState<any>({
+    message: undefined,
+    delay: undefined,
+    is_active: undefined,
+  })
+
+  /** Cài đặt thông tin biểu mẫu */
+  const [web_form, setWebForm] = useState<any>({
+    is_active: false,
+    source: {},
+  })
+
   useEffect(() => {
     /** Chỉ khi tắt popup và không có tin nhắn mới nhất  và trạng thái show_quick_chat */
+
+    /**
+     * Điều kiện để hiển thị tin nhắn chào mừng:
+     * 1. Page có set up hiển thị tin nhắn chào mừng không ????
+     * 2. Nếu có hiển thị => tin nhắn có setup không, nếu có thì hiển thị nếu không hiển thị mặc định
+     * 3. Thời gian delay từ page setup, nếu không có thì hiển thị mặc định là 5s
+     */
     const TIMER = setTimeout(() => {
+      if (welcome_message?.is_active === false) {
+        setShowWelcomeMessage(false)
+        return
+      }
       if (
         !show &&
         _.isEmpty(LATEST_MESSAGE) &&
@@ -178,11 +202,11 @@ const ChatApp = ({
       ) {
         setShowWelcomeMessage(true)
       }
-    }, 5000)
+    }, welcome_message?.delay || 5000)
 
     // Clear timer khi component unmount
     return () => clearTimeout(TIMER)
-  }, [show, LATEST_MESSAGE, SHOW_QUICK_CHAT])
+  }, [show, LATEST_MESSAGE, SHOW_QUICK_CHAT, welcome_message])
   useEffect(() => {
     /**  Nếu không có PAGE_ID, thoát ngay*/
     if (!PAGE_ID) return
@@ -308,10 +332,24 @@ const ChatApp = ({
     // lưu tên page vào state
     setPageName(RES?.data?.name)
     // Lưu liên hệ với các kênh mạng xã hội
-    setSocialLink(RES?.data?.config?.sosial_platform)
+    setSocialLink(RES?.data?.social_platform?.data)
+
+    /** Lưu thông tin tin nhắn chào mừng */
+    setWelcomeMessage({
+      message:
+        RES?.data?.welcome_message?.message || 'Chào mừng bạn đến với Retion',
+      delay: RES?.data?.welcome_message?.delay * 1000 || 5000,
+      is_active: RES?.data?.welcome_message?.is_active || false,
+    })
+
+    /** Lưu thông tin biểu mẫu */
+    setWebForm({
+      is_active: RES?.data?.web_form?.is_active || false,
+      source: RES?.data?.web_form?.source?.[RES?.data?.default_language] || {},
+    })
 
     // lưu ngôn ngữ hiện tại
-    i18n.changeLanguage(RES?.data.config.locale)
+    i18n.changeLanguage(RES?.data?.default_language)
     // Lưu danh sách nhân viên
     setStaffList(RES?.data?.staffs)
   }
@@ -683,6 +721,7 @@ const ChatApp = ({
                 }}
                 social_link={social_link}
                 client_name={client_name}
+                web_form={web_form}
               />
             )}
             {current_tab === 'message' && (
@@ -944,9 +983,7 @@ const ChatApp = ({
       {/* Hiển thị tin nhắn chào mừng */}
       {show_welcome_message && (
         <div className="flex bg-white shadow-lg justify-between w-full gap-x-2 rounded-xl h-16 px-3 py-3">
-          <h4 className="text-sm line-clamp-2">
-            Chào mừng bạn đến với app Retion
-          </h4>
+          <h4 className="text-sm line-clamp-2">{welcome_message?.message}</h4>
 
           {/* Nút đóng */}
           <div

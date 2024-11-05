@@ -45,4 +45,6 @@ interface HomeProps {
   social_link?: Array<any> | null
   /** client name */
   client_name?: string | null
+  /** webform */
+  web_form?: any
 }
