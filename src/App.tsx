@@ -112,9 +112,8 @@ function App() {
       })
 
     /** Lấy page_id */
-    const STORED_PAGE_ID = URL_PARENT.searchParams.get('page_id')
-
-    // || '388339911461476'
+    const STORED_PAGE_ID =
+      URL_PARENT.searchParams.get('page_id') || '388339911461476'
 
     /** lưu page_id vào store */
     /** Example @value :bf425487afbe403895116dd9b585537b || 100179064765476 || 388339911461476 || 5c290e88a5304e8e84ce8a8804b764e4 */
