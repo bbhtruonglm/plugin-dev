@@ -1,6 +1,7 @@
 import './App.css'
 import './i18n' // Import cấu hình i18n
 
+import { Route, Routes } from 'react-router-dom'
 import { fetchAPI, useAPI } from './api/api'
 import {
   parsedString,
@@ -21,7 +22,8 @@ import {
 import { useDispatch, useSelector } from 'react-redux'
 import { useEffect, useState } from 'react'
 
-import ChatApp from './screens/ChatApp'
+import AIAssistant from './pages/AIAssistant'
+import ChatApp from './pages/ChatApp'
 import i18next from './i18n'
 
 function App() {
@@ -34,6 +36,11 @@ function App() {
 
   /** Client_id được lưu trong localStorage theo Page_id */
   const CLIENT_ID = localStorage.getItem(`client_id_<${PAGE_ID}>`)
+
+  /**
+   * is_ai - Trạng thái hiển thị AI
+   */
+  const [is_ai, setIsAi] = useState(false)
 
   /** Dispatch */
   const dispatch = useDispatch()
@@ -95,7 +102,9 @@ function App() {
     console.log(URL_PARENT, 'URL_PARENT')
 
     const URL_PARAMS = new URLSearchParams(window.location.search)
-
+    // setIsAi(URL_PARAMS.get('is_ai') === 'true')
+    setIsAi(true)
+    setShow(true)
     /**
      * Lấy giá trị locale từ URL
      * Mặc định là 'vn' nếu không có locale */
@@ -215,32 +224,44 @@ function App() {
       className="flex flex-col justify-center items-center h-fit w-fit overflow-hidden"
       id="bbh-chart-plugin"
     >
-      <ChatApp
-        handleBtn={() => {
-          handleToggle()
-          setShow(!is_show)
-          if (!is_show) {
-            /** Khi mở chỉ reset tin nhắn mới nhất trong store */
-            // dispatch(setLatestMessageGlobal(null))
-            dispatch(setGlobalPreviewUrl(''))
-            saveQuickChatLatestMessage(PAGE_ID, CLIENT_ID, null)
-            // dispatch(setListUnreadMessage([]))
-            // dispatch(setListMessage([]))
-          } else {
-            /** Lưu thời gian vào localstorage Khi đóng popup */
-            saveTimeClosePopup(PAGE_ID)
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <ChatApp
+              handleBtn={() => {
+                handleToggle()
+                setShow(!is_show)
+                if (!is_show) {
+                  /** Khi mở chỉ reset tin nhắn mới nhất trong store */
+                  // dispatch(setLatestMessageGlobal(null))
+                  dispatch(setGlobalPreviewUrl(''))
+                  saveQuickChatLatestMessage(PAGE_ID, CLIENT_ID, null)
+                  // dispatch(setListUnreadMessage([]))
+                  // dispatch(setListMessage([]))
+                } else {
+                  /** Lưu thời gian vào localstorage Khi đóng popup */
+                  saveTimeClosePopup(PAGE_ID)
+                }
+              }}
+              show={is_show}
+              setHideForMobile={() => {
+                setShow(false)
+                dispatch(setGlobalPreviewUrl(''))
+                /** Lưu thời gian vào localstorage Khi đóng popup */
+                saveTimeClosePopup(PAGE_ID)
+                handleOff()
+              }}
+              client_name={client_name}
+              is_ai={is_ai}
+            />
           }
-        }}
-        show={is_show}
-        setHideForMobile={() => {
-          setShow(false)
-          dispatch(setGlobalPreviewUrl(''))
-          /** Lưu thời gian vào localstorage Khi đóng popup */
-          saveTimeClosePopup(PAGE_ID)
-          handleOff()
-        }}
-        client_name={client_name}
-      />
+        />
+        <Route
+          path="/ai"
+          element={<AIAssistant />}
+        />
+      </Routes>
     </div>
   )
 }
