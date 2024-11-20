@@ -24,6 +24,7 @@ import {
   selectLatestMessage,
   selectListUnreadMessage,
   selectPageId,
+  selectStatusAI,
   selectStatusIsInit,
   selectStatusPopup,
   setGlobalPreviewUrl,
@@ -60,7 +61,6 @@ const ChatApp = ({
   show,
   setHideForMobile,
   client_name,
-  is_ai,
 }: ChatAppProps) => {
   /** Dịch ngôn ngữ */
   const { t, i18n } = useTranslation()
@@ -82,6 +82,9 @@ const ChatApp = ({
   /** Tin nhắn mới nhất */
   const LATEST_MESSAGE = useSelector(selectLatestMessage)
 
+  /**Status AI */
+  const AI_STATUS = useSelector(selectStatusAI)
+
   /** Khởi tạo websocket */
   const WS = useRef<WebSocket | null>(null)
 
@@ -102,10 +105,10 @@ const ChatApp = ({
 
   /** Kiểm tra nếu is_ai = true thì  chuyển luôn vào tab message */
   useEffect(() => {
-    if (is_ai) {
+    if (AI_STATUS) {
       setCurrentTab('message')
     }
-  }, [is_ai])
+  }, [AI_STATUS])
 
   /** hàm dispatch đến store */
   const dispatch = useDispatch()
@@ -387,7 +390,7 @@ const ChatApp = ({
       closeSocketConnect(WS, setIsForceCloseSocket)
     }
   }, [])
-
+  console.log(staff_list, 'staff_list')
   /** Chuyển từ Object thành mảng Array và lấy ra fb_staff_id và is_online */
   const EMPLOYEE_LIST: Employee[] = map(values(staff_list), (employee) => ({
     fb_staff_id: employee.fb_staff_id,
@@ -468,8 +471,8 @@ const ChatApp = ({
      * is_ai = true
      * Hiển thị full width-height và ẩn header
      */
-    if (is_ai) {
-      console.log('kkkkkkk')
+    if (AI_STATUS) {
+      postMessageToParent(true, false)
       return 'w-screen h-screen'
     }
 
@@ -479,7 +482,7 @@ const ChatApp = ({
      */
     if (GLOBAL_PREVIEW_URL) {
       // postMessageToParent(true, false, 674, GLOBAL_PREVIEW_URL)
-      return 'flex w-screen h-screen items-end justify-end px-2 pr-11 pb-[52px] '
+      return 'flex w-screen h-screen items-end justify-end px-2 pr-11 pb-[52px]'
     }
     /** Popup đang đóng , không có tin nhắn mới, trigger welcome message */
     if (!show && show_welcome_message && LATEST_MESSAGE === null) {
@@ -503,7 +506,7 @@ const ChatApp = ({
       /** Call postMessageToParent */
       postMessageToParent(false, false)
       /** Trả về css chỉ hiện popup */
-      return 'w-16 h-[72px] items-center justify-center pb-4 pt-2 '
+      return 'w-16 h-[72px] items-center justify-center pb-4 pt-2'
     }
 
     /** =============================================================================== */
@@ -590,13 +593,13 @@ const ChatApp = ({
      * is_ai = true
      * Hiển thị full width-height và ẩn header
      */
-    if (is_ai) {
+    if (AI_STATUS) {
       return 'flex flex-col w-screen h-screen bg-bg-gradient'
     }
 
     /** CSS base */
     if (GLOBAL_PREVIEW_URL) {
-      return 'flex flex-col w-[400px] h-[600px] mb-[10px] rounded-[20px] relative bg-bg-gradient overflow-hidden shadow-md'
+      return 'flex flex-col w-[400px] h-[600px] mb-2.5 rounded-[20px] relative bg-bg-gradient overflow-hidden shadow-md'
     }
 
     const BASE_CLASSES = 'relative bg-bg-gradient overflow-hidden shadow-md'
@@ -710,7 +713,7 @@ const ChatApp = ({
           {current_tab !== 'message' && (
             <div
               className={`flex justify-between items-center px-5 py-3 bg-slate-800 text-white ${
-                is_ai ? 'hidden' : 'flex'
+                AI_STATUS ? 'hidden' : 'flex'
               }`}
             >
               <div>
@@ -1057,7 +1060,7 @@ const ChatApp = ({
           setShowWelcomeMessage(false)
         }}
         className={`absolute justify-center items-center bottom-4 right-2  h-12 w-12 bg-white shadow-lg rounded-full  hover:scale-110 ${
-          is_ai ? 'hidden' : ''
+          AI_STATUS ? 'hidden' : ''
         }  ${
           !show
             ? ' flex  '

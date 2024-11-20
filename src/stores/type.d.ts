@@ -52,4 +52,6 @@ export interface AppState {
     /** Email user */
     user_email: string
   }
+  /** Trạng thái ai */
+  is_ai?: boolean
 }

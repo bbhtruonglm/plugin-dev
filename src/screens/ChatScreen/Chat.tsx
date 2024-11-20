@@ -1,6 +1,7 @@
 import { apiImage, fetchAPI, useAPI } from '@/api/api'
 import {
   selectPageId,
+  selectStatusAI,
   setGlobalClientId,
   setStatusIsInit,
 } from '@/stores/appSlice'
@@ -29,16 +30,23 @@ function ChatScreen({
   const [loading_staff, setLoadingStaff] = useState(false)
   const [client_name, setClientName] = useState(null as any)
   const [is_init, setIsInit] = useState(false)
+  /** AI_STATUS */
+  const AI_STATUS = useSelector(selectStatusAI)
+  /**
+   * Hàm khởi tạo client id
+   */
+  const CLIENT_ID = localStorage.getItem(`client_id_<${PAGE_ID}>`)
 
   useEffect(() => {
     /** Nếu có page_id thì mới xử lý tiếp */
 
     if (PAGE_ID) {
       /** Tạo client Id = page_id từ cha */
-      const CLIENT_ID = localStorage.getItem(`client_id_<${PAGE_ID}>`)
+      // const CLIENT_ID = localStorage.getItem(`client_id_<${PAGE_ID}>`)
       // Có CLIENT_ID mới set vào state
       if (CLIENT_ID && CLIENT_ID !== 'undefined') {
         setClientId(CLIENT_ID)
+      } else {
       }
     }
   }, [])
@@ -106,6 +114,15 @@ function ChatScreen({
       setLoading(false)
     }
   }
+  /**
+   * Nếu là case AI_STATUS và chưa có CLIENT_ID
+   */
+  useEffect(() => {
+    console.log(CLIENT_ID, 'client_id')
+    if (AI_STATUS && !CLIENT_ID) {
+      initGetClientId({ page_id: PAGE_ID })
+    }
+  }, [AI_STATUS, CLIENT_ID])
 
   /** Hàm đọc data khách hàng
    * @param {string} client_id - ID khách hàng

@@ -10,8 +10,6 @@ interface ChatAppProps {
   setHideForMobile?: () => void
   /** client name */
   client_name?: string | null
-  /** Is AI */
-  is_ai?: boolean
 }
 
 // Định nghĩa kiểu dữ liệu cho danh sách nhân viên

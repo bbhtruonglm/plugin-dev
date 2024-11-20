@@ -16,6 +16,7 @@ import {
   setGlobalUnreadCount,
   setLatestMessageGlobal,
   setPageId,
+  setStatusIsAI,
   setStatusPopup,
   setUserInfo,
 } from './stores/appSlice'
@@ -103,7 +104,13 @@ function App() {
 
     const URL_PARAMS = new URLSearchParams(window.location.search)
     // setIsAi(URL_PARAMS.get('is_ai') === 'true')
-    setIsAi(true)
+
+    // const IS_AI = URL_PARAMS.get('is_ai') === 'true'
+    const IS_AI = URL_PARENT?.pathname.includes('ai-assistant')
+
+    console.log(IS_AI, 'IS_AI')
+    dispatch(setStatusIsAI(IS_AI))
+
     setShow(true)
     /**
      * Lấy giá trị locale từ URL
@@ -122,8 +129,9 @@ function App() {
 
     /** Lấy page_id */
     const STORED_PAGE_ID =
-      URL_PARENT.searchParams.get('page_id') || '388339911461476'
-
+      URL_PARENT.searchParams.get('page_id') || '2204445623215564'
+    console.log(URL_PARENT, 'URL_PARENT')
+    console.log(URL_PARENT.searchParams.get('page_id'), 'page_id')
     /** lưu page_id vào store */
     /** Example @value :bf425487afbe403895116dd9b585537b || 100179064765476 || 388339911461476 || 5c290e88a5304e8e84ce8a8804b764e4 */
     dispatch(setPageId(STORED_PAGE_ID || ''))
@@ -253,13 +261,39 @@ function App() {
                 handleOff()
               }}
               client_name={client_name}
-              is_ai={is_ai}
             />
           }
         />
         <Route
-          path="/ai"
-          element={<AIAssistant />}
+          path="/ai-assistant"
+          element={
+            <ChatApp
+              handleBtn={() => {
+                handleToggle()
+                setShow(!is_show)
+                if (!is_show) {
+                  /** Khi mở chỉ reset tin nhắn mới nhất trong store */
+                  // dispatch(setLatestMessageGlobal(null))
+                  dispatch(setGlobalPreviewUrl(''))
+                  saveQuickChatLatestMessage(PAGE_ID, CLIENT_ID, null)
+                  // dispatch(setListUnreadMessage([]))
+                  // dispatch(setListMessage([]))
+                } else {
+                  /** Lưu thời gian vào localstorage Khi đóng popup */
+                  saveTimeClosePopup(PAGE_ID)
+                }
+              }}
+              show={is_show}
+              setHideForMobile={() => {
+                setShow(false)
+                dispatch(setGlobalPreviewUrl(''))
+                /** Lưu thời gian vào localstorage Khi đóng popup */
+                saveTimeClosePopup(PAGE_ID)
+                handleOff()
+              }}
+              client_name={client_name}
+            />
+          }
         />
       </Routes>
     </div>

@@ -1,4 +1,8 @@
-import { selectPageId, selectStatusPopup } from '@/stores/appSlice'
+import {
+  selectPageId,
+  selectStatusAI,
+  selectStatusPopup,
+} from '@/stores/appSlice'
 import { useEffect, useRef, useState } from 'react'
 
 import { ReactComponent as Arrow } from '@/assets/Icon_up_circle.svg'
@@ -93,9 +97,15 @@ function InputChat({
       setValue('')
     }
   }
+  /**Status AI */
+  const AI_STATUS = useSelector(selectStatusAI)
 
   return (
-    <div className="absolute bottom-4 flex justify-center items-center h-12 bg-transparent w-full px-5 gap-2">
+    <div
+      className={`absolute bottom-4 flex justify-center items-center h-12 bg-transparent w-full ${
+        AI_STATUS ? '' : 'px-5'
+      }  gap-2`}
+    >
       <div className="bg-white w-full flex justify-between gap-2 items-center h-full py-2 px-4 rounded-full">
         <Upload
           setPreviewUrl={(e: File) => {
