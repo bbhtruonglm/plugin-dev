@@ -6,6 +6,7 @@ import {
   selectListMessage,
   selectLoadingGlobal,
   selectPageId,
+  selectStatusAI,
   selectStatusPopup,
   setGlobalUnreadCount,
   setListMessage,
@@ -73,6 +74,9 @@ function DetailChat({
 
   /** Loading global */
   const LOADING_GLOBAL = useSelector(selectLoadingGlobal)
+
+  /** Trạng thái AI_STATUS */
+  const AI_STATUS = useSelector(selectStatusAI)
 
   /** Số bản ghi hiển thị trong 1 trang */
   const LIMIT = 20
@@ -364,22 +368,24 @@ function DetailChat({
   return (
     <div className="flex flex-col w-full h-full absolute top-0">
       {/* header */}
-      <ChatHeader
-        onCancel={() => onCancel()}
-        user_id={CLIENT_ID}
-        setHideForMobile={setHideForMobile}
-        page_name={page_name}
-        staff_avatar={staff_avatar}
-        staff_name={staff_name}
-        loading_staff={loading_staff}
-        employee_list={employee_list}
-        loading_chat_data={loading_more}
-      />
+      <div className={`${AI_STATUS ? 'hidden' : ''}`}>
+        <ChatHeader
+          onCancel={() => onCancel()}
+          user_id={CLIENT_ID}
+          setHideForMobile={setHideForMobile}
+          page_name={page_name}
+          staff_avatar={staff_avatar}
+          staff_name={staff_name}
+          loading_staff={loading_staff}
+          employee_list={employee_list}
+          loading_chat_data={loading_more}
+        />
+      </div>
       {/* body */}
       <div
         ref={MESSAGE_CONTAINER_REF}
         className={`px-5 py-3 gap-4 overflow-y-auto scrollbar-thin scrollbar-webkit flex flex-col relative ${
-          user_id ? 'my-16' : 'mt-44'
+          AI_STATUS ? 'mt-0' : user_id ? 'my-16' : 'mt-44'
         }`}
       >
         {user_id && loading_more && (
@@ -395,7 +401,7 @@ function DetailChat({
         )}
         {/* Không có page Id sẽ báo lỗi */}
         {/* {!user_id && !error_message && Khi bấm vào chat lần đầu */}
-        {!user_id && !error_message && (
+        {!AI_STATUS && !user_id && !error_message && (
           <div className="flex flex-col gap-2 ">
             <InitClient
               resetData={invalid_page_id}

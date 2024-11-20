@@ -2,6 +2,7 @@ import { AppState } from './type'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from '@/stores'
 import { createSlice } from '@reduxjs/toolkit'
+import { set } from 'lodash'
 
 const initialState: AppState = {
   page_id: '',
@@ -21,6 +22,7 @@ const initialState: AppState = {
     user_phone: '',
     user_email: '',
   },
+  is_ai: false,
 }
 
 export const appSlice = createSlice({
@@ -67,6 +69,10 @@ export const appSlice = createSlice({
     setStatusIsInit: (state, action: PayloadAction<boolean>) => {
       state.is_init = action.payload
     },
+    /** lưu dữ trạng thái Init */
+    setStatusIsAI: (state, action: PayloadAction<boolean>) => {
+      state.is_ai = action.payload
+    },
 
     /** lưu dữ liệu tin nhắn */
     setListMessage: (
@@ -111,6 +117,7 @@ export const {
   setGlobalPreviewUrl,
   setLoadingGlobal,
   setUserInfo,
+  setStatusIsAI,
 } = appSlice.actions
 
 /** chọn đến page id */
@@ -149,5 +156,7 @@ export const selectGlobalPreviewUrl = (state: RootState) =>
   state.app.preview_url
 /** Đầu ra user info */
 export const selectUserInfo = (state: RootState) => state.app.user_info
+/** Status AI */
+export const selectStatusAI = (state: RootState) => state.app.is_ai
 
 export default appSlice.reducer

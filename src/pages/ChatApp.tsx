@@ -1,5 +1,4 @@
 import { ChatAppProps, EmployeeList } from './type'
-import _, { set } from 'lodash'
 import {
   calculateTimeAgo,
   hasAttachmentOfType,
@@ -16,6 +15,7 @@ import {
   onSocketFromChatboxServer,
 } from '@/components/WebSocket/WebSocket'
 import { fetchAPI, useAPI } from '@/api/api'
+import { get, isEmpty, map, values } from 'lodash'
 import {
   selectCurrentWidth,
   selectGlobalClientId,
@@ -24,6 +24,7 @@ import {
   selectLatestMessage,
   selectListUnreadMessage,
   selectPageId,
+  selectStatusAI,
   selectStatusIsInit,
   selectStatusPopup,
   setGlobalPreviewUrl,
@@ -36,12 +37,12 @@ import {
 import { useDispatch, useSelector } from 'react-redux'
 import { useEffect, useRef, useState } from 'react'
 
-import ChatScreen from '@/screens/Chat'
+import ChatScreen from '@/screens/ChatScreen/Chat'
 import { ReactComponent as Close } from '@/assets/close.svg'
 import { ReactComponent as CloseSlate } from '@/assets/close-black.svg'
 import { ReactComponent as Down } from '@/assets/arrow.svg'
 import { Employee } from '@/components/ChatComponents/type'
-import Home from '@/screens/Home'
+import Home from '@/screens/ChatScreen/Home'
 import { ReactComponent as Logo } from '@/assets/logo-retion.svg'
 import { MessageInfo } from '@/utils/type'
 import Modal from '@/components/ChatComponents/Modal/Modal'
@@ -52,6 +53,7 @@ import { ReactComponent as activeHome } from '@/assets/home-active.svg'
 import { ReactComponent as activeMessage } from '@/assets/messageA.svg'
 import { ReactComponent as inactiveHome } from '@/assets/home.svg'
 import { ReactComponent as inactiveMessage } from '@/assets/message.svg'
+import { use } from 'i18next'
 import { useTranslation } from 'react-i18next'
 
 const ChatApp = ({
@@ -80,6 +82,9 @@ const ChatApp = ({
   /** Tin nhắn mới nhất */
   const LATEST_MESSAGE = useSelector(selectLatestMessage)
 
+  /**Status AI */
+  const AI_STATUS = useSelector(selectStatusAI)
+
   /** Khởi tạo websocket */
   const WS = useRef<WebSocket | null>(null)
 
@@ -97,6 +102,13 @@ const ChatApp = ({
     /** Cập nhật giá trị là show trong ref một khi show thay đổi */
     IS_SHOW_REF.current = show
   }, [current_tab, show])
+
+  /** Kiểm tra nếu is_ai = true thì  chuyển luôn vào tab message */
+  useEffect(() => {
+    if (AI_STATUS) {
+      setCurrentTab('message')
+    }
+  }, [AI_STATUS])
 
   /** hàm dispatch đến store */
   const dispatch = useDispatch()
@@ -198,7 +210,7 @@ const ChatApp = ({
       }
       if (
         !show &&
-        _.isEmpty(LATEST_MESSAGE) &&
+        isEmpty(LATEST_MESSAGE) &&
         SHOW_QUICK_CHAT === 'show_quick_chat'
       ) {
         setShowWelcomeMessage(true)
@@ -208,6 +220,7 @@ const ChatApp = ({
     // Clear timer khi component unmount
     return () => clearTimeout(TIMER)
   }, [show, LATEST_MESSAGE, SHOW_QUICK_CHAT, welcome_message])
+
   useEffect(() => {
     /**  Nếu không có PAGE_ID, thoát ngay*/
     if (!PAGE_ID) return
@@ -377,9 +390,9 @@ const ChatApp = ({
       closeSocketConnect(WS, setIsForceCloseSocket)
     }
   }, [])
-
+  console.log(staff_list, 'staff_list')
   /** Chuyển từ Object thành mảng Array và lấy ra fb_staff_id và is_online */
-  const EMPLOYEE_LIST: Employee[] = _.map(_.values(staff_list), (employee) => ({
+  const EMPLOYEE_LIST: Employee[] = map(values(staff_list), (employee) => ({
     fb_staff_id: employee.fb_staff_id,
     is_online: employee.is_online,
   }))
@@ -419,7 +432,7 @@ const ChatApp = ({
 
     if (ID_FROM_META_DATA) {
       /**  Kiểm tra ID có trong data không và lấy tên */
-      const STAFF_NAME = _.get(staff_list, ID_FROM_META_DATA, null)?.name
+      const STAFF_NAME = get(staff_list, ID_FROM_META_DATA, null)?.name
       return STAFF_NAME ? STAFF_NAME : 'Nhân viên'
     }
   }
@@ -453,13 +466,23 @@ const ChatApp = ({
     CURRENT_WIDTH: number,
     SHOW_QUICK_CHAT: string | null
   ) => {
+    /**
+     * Trường hợp chat AI
+     * is_ai = true
+     * Hiển thị full width-height và ẩn header
+     */
+    if (AI_STATUS) {
+      postMessageToParent(true, false)
+      return 'w-screen h-screen'
+    }
+
     /** Giả sử trường hợp User preview ảnh,
      * gọi post message để thay kích thước SDK ở cha
      * thay đổi kích thước ở bong bóng chat
      */
     if (GLOBAL_PREVIEW_URL) {
       // postMessageToParent(true, false, 674, GLOBAL_PREVIEW_URL)
-      return 'flex w-screen h-screen items-end justify-end px-2 pr-11 pb-[52px] '
+      return 'flex w-screen h-screen items-end justify-end px-2 pr-11 pb-[52px]'
     }
     /** Popup đang đóng , không có tin nhắn mới, trigger welcome message */
     if (!show && show_welcome_message && LATEST_MESSAGE === null) {
@@ -483,7 +506,7 @@ const ChatApp = ({
       /** Call postMessageToParent */
       postMessageToParent(false, false)
       /** Trả về css chỉ hiện popup */
-      return 'w-16 h-[72px] items-center justify-center pb-4 pt-2 '
+      return 'w-16 h-[72px] items-center justify-center pb-4 pt-2'
     }
 
     /** =============================================================================== */
@@ -566,9 +589,17 @@ const ChatApp = ({
     GLOBAL_UNREAD_MESSAGE_COUNT: number,
     CURRENT_WIDTH: number
   ) => {
+    /** Trường hợp chat AI
+     * is_ai = true
+     * Hiển thị full width-height và ẩn header
+     */
+    if (AI_STATUS) {
+      return 'flex flex-col w-screen h-screen bg-bg-gradient'
+    }
+
     /** CSS base */
     if (GLOBAL_PREVIEW_URL) {
-      return 'flex flex-col w-[400px] h-[600px] mb-[10px] rounded-[20px] relative bg-bg-gradient overflow-hidden shadow-md'
+      return 'flex flex-col w-[400px] h-[600px] mb-2.5 rounded-[20px] relative bg-bg-gradient overflow-hidden shadow-md'
     }
 
     const BASE_CLASSES = 'relative bg-bg-gradient overflow-hidden shadow-md'
@@ -615,7 +646,7 @@ const ChatApp = ({
       GLOBAL_UNREAD_MESSAGE_COUNT > 0
 
     // Kiểm tra nếu có tệp đính kèm
-    const ATTACHMENT = _.get(LATEST_MESSAGE, 'message_attachments[0]', null)
+    const ATTACHMENT = get(LATEST_MESSAGE, 'message_attachments[0]', null)
 
     // Object để ánh xạ kiểu file đính kèm với CSS tương ứng
     const ATTACHMENT_TYPE_TO_CLASS_MAP: Record<string, string> = {
@@ -635,7 +666,7 @@ const ChatApp = ({
     if (BASE_CONDITION && ATTACHMENT) {
       // Kiểm tra nếu là template và xác định kiểu template
       if (ATTACHMENT.type === 'template') {
-        const TEMPLATE_TYPE = _.get(ATTACHMENT, 'payload.template_type', null)
+        const TEMPLATE_TYPE = get(ATTACHMENT, 'payload.template_type', null)
         if (TEMPLATE_TYPE === 'button')
           return ATTACHMENT_TYPE_TO_CLASS_MAP.template_button
         if (TEMPLATE_TYPE === 'generic')
@@ -681,9 +712,9 @@ const ChatApp = ({
           {/* header */}
           {current_tab !== 'message' && (
             <div
-              className={
-                'flex justify-between items-center px-5 py-3 bg-slate-800 text-white'
-              }
+              className={`flex justify-between items-center px-5 py-3 bg-slate-800 text-white ${
+                AI_STATUS ? 'hidden' : 'flex'
+              }`}
             >
               <div>
                 <RetionLogo />
@@ -1028,7 +1059,9 @@ const ChatApp = ({
           setErrorMessage('')
           setShowWelcomeMessage(false)
         }}
-        className={`absolute justify-center items-center bottom-4 right-2  h-12 w-12 bg-white shadow-lg rounded-full  hover:scale-110  ${
+        className={`absolute justify-center items-center bottom-4 right-2  h-12 w-12 bg-white shadow-lg rounded-full  hover:scale-110 ${
+          AI_STATUS ? 'hidden' : ''
+        }  ${
           !show
             ? ' flex  '
             : CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0

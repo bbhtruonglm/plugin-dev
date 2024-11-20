@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite'
+import fs from 'fs'
 import path from 'path'
 import react from '@vitejs/plugin-react'
 import svgr from 'vite-plugin-svgr'
@@ -23,7 +24,11 @@ export default defineConfig({
     },
   },
   server: {
-    host: '0.0.0.0',
+    https: {
+      key: fs.readFileSync(path.resolve(__dirname, 'key.pem')), // Path to the private key
+      cert: fs.readFileSync(path.resolve(__dirname, 'cert.pem')), // Path to the certificate
+    },
+    host: true,
     port: 5173,
   },
 })

@@ -28,9 +28,9 @@ function OnlineStaff({ data, size = 'small' }: StaffProps) {
       )}
       {data &&
         data.length > 1 &&
-        data.slice(0, 3).map((employee) => (
+        data.slice(0, 3).map((employee, index) => (
           <img
-            key={employee.fb_staff_id}
+            key={employee.fb_staff_id + index}
             src={renderAvatar(employee.fb_staff_id)}
             alt="employee_avatar"
             className={` shadow border  ${

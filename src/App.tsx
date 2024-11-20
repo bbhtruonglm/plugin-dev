@@ -1,6 +1,7 @@
 import './App.css'
 import './i18n' // Import cấu hình i18n
 
+import { Route, Routes } from 'react-router-dom'
 import { fetchAPI, useAPI } from './api/api'
 import {
   parsedString,
@@ -15,13 +16,15 @@ import {
   setGlobalUnreadCount,
   setLatestMessageGlobal,
   setPageId,
+  setStatusIsAI,
   setStatusPopup,
   setUserInfo,
 } from './stores/appSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { useEffect, useState } from 'react'
 
-import ChatApp from './screens/ChatApp'
+import AIAssistant from './pages/AIAssistant'
+import ChatApp from './pages/ChatApp'
 import i18next from './i18n'
 
 function App() {
@@ -34,6 +37,11 @@ function App() {
 
   /** Client_id được lưu trong localStorage theo Page_id */
   const CLIENT_ID = localStorage.getItem(`client_id_<${PAGE_ID}>`)
+
+  /**
+   * is_ai - Trạng thái hiển thị AI
+   */
+  const [is_ai, setIsAi] = useState(false)
 
   /** Dispatch */
   const dispatch = useDispatch()
@@ -95,7 +103,14 @@ function App() {
     console.log(URL_PARENT, 'URL_PARENT')
 
     const URL_PARAMS = new URLSearchParams(window.location.search)
+    // setIsAi(URL_PARAMS.get('is_ai') === 'true')
 
+    // const IS_AI = URL_PARAMS.get('is_ai') === 'true'
+    const IS_AI = URL_PARENT?.pathname.includes('ai-assistant')
+
+    dispatch(setStatusIsAI(IS_AI))
+
+    setShow(true)
     /**
      * Lấy giá trị locale từ URL
      * Mặc định là 'vn' nếu không có locale */
@@ -113,8 +128,9 @@ function App() {
 
     /** Lấy page_id */
     const STORED_PAGE_ID =
-      URL_PARENT.searchParams.get('page_id') || '388339911461476'
-
+      URL_PARENT.searchParams.get('page_id') || '2204445623215564'
+    console.log(URL_PARENT, 'URL_PARENT')
+    console.log(URL_PARENT.searchParams.get('page_id'), 'page_id')
     /** lưu page_id vào store */
     /** Example @value :bf425487afbe403895116dd9b585537b || 100179064765476 || 388339911461476 || 5c290e88a5304e8e84ce8a8804b764e4 */
     dispatch(setPageId(STORED_PAGE_ID || ''))
@@ -215,32 +231,70 @@ function App() {
       className="flex flex-col justify-center items-center h-fit w-fit overflow-hidden"
       id="bbh-chart-plugin"
     >
-      <ChatApp
-        handleBtn={() => {
-          handleToggle()
-          setShow(!is_show)
-          if (!is_show) {
-            /** Khi mở chỉ reset tin nhắn mới nhất trong store */
-            // dispatch(setLatestMessageGlobal(null))
-            dispatch(setGlobalPreviewUrl(''))
-            saveQuickChatLatestMessage(PAGE_ID, CLIENT_ID, null)
-            // dispatch(setListUnreadMessage([]))
-            // dispatch(setListMessage([]))
-          } else {
-            /** Lưu thời gian vào localstorage Khi đóng popup */
-            saveTimeClosePopup(PAGE_ID)
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <ChatApp
+              handleBtn={() => {
+                handleToggle()
+                setShow(!is_show)
+                if (!is_show) {
+                  /** Khi mở chỉ reset tin nhắn mới nhất trong store */
+                  // dispatch(setLatestMessageGlobal(null))
+                  dispatch(setGlobalPreviewUrl(''))
+                  saveQuickChatLatestMessage(PAGE_ID, CLIENT_ID, null)
+                  // dispatch(setListUnreadMessage([]))
+                  // dispatch(setListMessage([]))
+                } else {
+                  /** Lưu thời gian vào localstorage Khi đóng popup */
+                  saveTimeClosePopup(PAGE_ID)
+                }
+              }}
+              show={is_show}
+              setHideForMobile={() => {
+                setShow(false)
+                dispatch(setGlobalPreviewUrl(''))
+                /** Lưu thời gian vào localstorage Khi đóng popup */
+                saveTimeClosePopup(PAGE_ID)
+                handleOff()
+              }}
+              client_name={client_name}
+            />
           }
-        }}
-        show={is_show}
-        setHideForMobile={() => {
-          setShow(false)
-          dispatch(setGlobalPreviewUrl(''))
-          /** Lưu thời gian vào localstorage Khi đóng popup */
-          saveTimeClosePopup(PAGE_ID)
-          handleOff()
-        }}
-        client_name={client_name}
-      />
+        />
+        <Route
+          path="/ai-assistant"
+          element={
+            <ChatApp
+              handleBtn={() => {
+                handleToggle()
+                setShow(!is_show)
+                if (!is_show) {
+                  /** Khi mở chỉ reset tin nhắn mới nhất trong store */
+                  // dispatch(setLatestMessageGlobal(null))
+                  dispatch(setGlobalPreviewUrl(''))
+                  saveQuickChatLatestMessage(PAGE_ID, CLIENT_ID, null)
+                  // dispatch(setListUnreadMessage([]))
+                  // dispatch(setListMessage([]))
+                } else {
+                  /** Lưu thời gian vào localstorage Khi đóng popup */
+                  saveTimeClosePopup(PAGE_ID)
+                }
+              }}
+              show={is_show}
+              setHideForMobile={() => {
+                setShow(false)
+                dispatch(setGlobalPreviewUrl(''))
+                /** Lưu thời gian vào localstorage Khi đóng popup */
+                saveTimeClosePopup(PAGE_ID)
+                handleOff()
+              }}
+              client_name={client_name}
+            />
+          }
+        />
+      </Routes>
     </div>
   )
 }
