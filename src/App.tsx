@@ -108,7 +108,6 @@ function App() {
     // const IS_AI = URL_PARAMS.get('is_ai') === 'true'
     const IS_AI = URL_PARENT?.pathname.includes('ai-assistant')
 
-    console.log(IS_AI, 'IS_AI')
     dispatch(setStatusIsAI(IS_AI))
 
     setShow(true)
