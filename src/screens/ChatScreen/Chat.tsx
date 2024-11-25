@@ -103,7 +103,6 @@ function ChatScreen({
         localStorage.setItem(`client_id_<${PAGE_ID}>`, RESULT.data)
         // localStorage.setItem(`client_id_<${PAGE_ID}>`, '6131478076934694')
 
-        console.log(RESULT.data)
         dispatch(setStatusIsInit(true))
         dispatch(setGlobalClientId(RESULT.data))
         setIsInit(true)
@@ -118,7 +117,6 @@ function ChatScreen({
    * Nếu là case AI_STATUS và chưa có CLIENT_ID
    */
   useEffect(() => {
-    console.log(CLIENT_ID, 'client_id')
     if (AI_STATUS && !CLIENT_ID) {
       initGetClientId({ page_id: PAGE_ID })
     }
@@ -148,8 +146,6 @@ function ChatScreen({
 
     /** Lưu tên client */
     setClientName(RES?.data?.client_name)
-
-    console.log(RES, 'RES client')
 
     /** Lấy avatar staff từ fb_staff_id */
     if (RES?.data?.fb_staff_id) {

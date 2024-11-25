@@ -116,7 +116,6 @@ const ChatApp = ({
 
   /** danh sách id page */
   const PAGE_ID = useSelector(selectPageId)
-  console.log(PAGE_ID, 'PAGE_ID')
 
   /** List tin nhắn được lấy từ store */
   const LIST_UNREAD_MESSAGE = useSelector(selectListUnreadMessage)
@@ -126,7 +125,6 @@ const ChatApp = ({
       setShowWelcomeMessage(false)
     }
   }, [LATEST_MESSAGE])
-  console.log(LATEST_MESSAGE, 'LATEST_MESSAGE')
 
   /** Số lượng tin nhắn chưa đọc */
   const GLOBAL_UNREAD_MESSAGE_COUNT = useSelector(selectGlobalUnreadCount)
@@ -346,12 +344,10 @@ const ChatApp = ({
     /** Thông tin page từ api */
     const RES = await fetchAPI(URL_READ.toString(), 'GET')
 
-    console.log(RES, 'RES page')
-    // lưu tên page vào state
+    /** lưu tên page vào state */
     setPageName(RES?.data?.name)
 
     /** nếu cài đặt ở setting page is_active = false thì k lưu  */
-
     if (!RES?.data?.social_platform?.is_active) {
       setSocialLink(null)
     } else {
@@ -362,7 +358,6 @@ const ChatApp = ({
         ]
       )
     }
-    // Lưu liên hệ với các kênh mạng xã hội
 
     /** Lưu thông tin tin nhắn chào mừng */
     setWelcomeMessage({
@@ -386,15 +381,13 @@ const ChatApp = ({
     setStaffList(RES?.data?.staffs)
   }
 
-  console.log(SHOW_QUICK_CHAT, 'SHOW_QUICK_CHAT')
-
   /** Ngăn kết nối mở lại */
   useEffect(() => {
     return () => {
       closeSocketConnect(WS, setIsForceCloseSocket)
     }
   }, [])
-  console.log(staff_list, 'staff_list')
+
   /** Chuyển từ Object thành mảng Array và lấy ra fb_staff_id và is_online */
   const EMPLOYEE_LIST: Employee[] = map(values(staff_list), (employee) => ({
     fb_staff_id: employee.fb_staff_id,
@@ -475,7 +468,7 @@ const ChatApp = ({
      */
     if (CURRENT_HEIGHT < 674 && show) {
       postMessageToParent(true, false)
-      return 'w-full h-screen px-2 py-2 justify-between'
+      return 'flex flex-col w-[416px] h-screen px-2 py-2 justify-between'
     }
 
     /**
@@ -605,7 +598,7 @@ const ChatApp = ({
      * Trường hợp màn hình nhỏ hơn
      */
     if (CURRENT_HEIGHT < 674 && show) {
-      return 'flex flex-col w-[400px] bg-bg-gradient h-screen rounded-[20px]'
+      return 'flex flex-col w-[400px] justify-between bg-bg-gradient rounded-[20px] h-full mb-[72px] overflow-hidden'
     }
 
     /** Trường hợp chat AI
@@ -712,7 +705,7 @@ const ChatApp = ({
   return (
     // JSX component using the function
     <div
-      className={`flex flex-col ${getChatBoxClasses(
+      className={`flex flex-col relative ${getChatBoxClasses(
         show,
         GLOBAL_UNREAD_MESSAGE_COUNT,
         LATEST_MESSAGE,
@@ -720,14 +713,14 @@ const ChatApp = ({
         SHOW_QUICK_CHAT
       )}`}
     >
-      {/* Popup tin nhắn */}
+      {/* Popup tin nhắn hiển thị nội dung chính */}
       {show && (
         <div
-          className={getBubbleClasses(
+          className={`flex flex-col ${getBubbleClasses(
             show,
             GLOBAL_UNREAD_MESSAGE_COUNT,
             CURRENT_WIDTH
-          )}
+          )}`}
         >
           {/* header */}
           {current_tab !== 'message' && (
@@ -748,8 +741,8 @@ const ChatApp = ({
                   onClick={setHideForMobile}
                   className={` cursor-pointer w-10 h-10 flex justify-center items-center  ${
                     CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
-                      ? ' flex'
-                      : ' hidden'
+                      ? 'flex'
+                      : 'hidden'
                   }`}
                 >
                   <Close />
@@ -757,17 +750,10 @@ const ChatApp = ({
               </div>
             </div>
           )}
-          {/* body check theo bien current tab de render data */}
 
+          {/* body check theo bien current tab de render data */}
           <div
-            className={
-              'flex flex-col resize-none outline-none scrollbar-thin scrollbar-webkit' +
-              `${
-                current_tab !== 'home'
-                  ? 'max-h-[480px] overflow-y-auto'
-                  : 'h-full max-h-[600px]'
-              }`
-            }
+            className={`flex flex-col h-full resize-none outline-none scrollbar-thin scrollbar-webkit overflow-y-auto overflow-x-hidden max-h-[600px]`}
           >
             {current_tab === 'home' && (
               <Home
@@ -824,7 +810,7 @@ const ChatApp = ({
           {/* Hiển thị Menu */}
           {/* Nếu tab hiện tại không phải chat thì hiển thị menu */}
           {current_tab !== 'message' && (
-            <div className=" w-[400px] flex flex-col justify-evenly bg-bg-gradient">
+            <div className=" w-[400px] flex flex-shrink-0 h-16 flex-col justify-evenly">
               <div className="p-2 h-16 w-full">
                 <div className="flex">
                   {MENU_LIST.map(
@@ -1115,7 +1101,7 @@ const ChatApp = ({
           )}
         </div>
       </button>
-
+      {/* Preview Ảnh */}
       <Modal
         is_open={!!GLOBAL_PREVIEW_URL}
         onClose={handleCloseModal}

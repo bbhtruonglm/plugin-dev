@@ -13,7 +13,7 @@ function InitClient({ resetData, onInitClient }: InitClientProps) {
   const LOADING_GLOBAL = useSelector(selectLoadingGlobal)
   /** Lấy thông tin user từ store */
   const USER_INFO = useSelector(selectUserInfo)
-  console.log(USER_INFO)
+  // console.log(USER_INFO)
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
