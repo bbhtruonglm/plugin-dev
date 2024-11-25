@@ -2,13 +2,13 @@ import { AppState } from './type'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from '@/stores'
 import { createSlice } from '@reduxjs/toolkit'
-import { set } from 'lodash'
 
 const initialState: AppState = {
   page_id: '',
   client_id: '',
   locale: 'vi',
   current_width: 0,
+  current_height: 0,
   list_message: [],
   list_unread_message: [],
   unread_count: 0,
@@ -52,6 +52,10 @@ export const appSlice = createSlice({
     /** lưu dữ Kích thước chiều rộng trang */
     setCurrentWidth: (state, action: PayloadAction<number>) => {
       state.current_width = action.payload
+    },
+    /** lưu dữ Kích thước chiều cao trang */
+    setCurrentHeight: (state, action: PayloadAction<number>) => {
+      state.current_height = action.payload
     },
     /** lưu dữ Số lượng tin nhắn chưa đọc */
     setGlobalUnreadCount: (state, action: PayloadAction<number>) => {
@@ -108,6 +112,7 @@ export const {
   setGlobalClientId,
   setLocale,
   setCurrentWidth,
+  setCurrentHeight,
   setListMessage,
   setListUnreadMessage,
   setLatestMessageGlobal,
@@ -131,6 +136,10 @@ export const selectLocale = (state: RootState) => state.app.locale
 
 /** chọn đầu dữ liệu kích thước chiều rộng */
 export const selectCurrentWidth = (state: RootState) => state.app.current_width
+/** chọn đầu dữ liệu kích thước chiều heidht */
+export const selectCurrentHeight = (state: RootState) =>
+  state.app.current_height
+
 /** chọn đầu dữ liệu tin nhắn chưa đọc */
 export const selectGlobalUnreadCount = (state: RootState) =>
   state.app.unread_count

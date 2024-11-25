@@ -17,6 +17,7 @@ import {
 import { fetchAPI, useAPI } from '@/api/api'
 import { get, isEmpty, map, values } from 'lodash'
 import {
+  selectCurrentHeight,
   selectCurrentWidth,
   selectGlobalClientId,
   selectGlobalPreviewUrl,
@@ -150,6 +151,9 @@ const ChatApp = ({
 
   /** Độ rộng hiện tại của màn hình */
   const CURRENT_WIDTH = useSelector(selectCurrentWidth)
+
+  /** Chiều cao hiện tại của màn hình */
+  const CURRENT_HEIGHT = useSelector(selectCurrentHeight)
 
   /** Trạng thái đóng mở QUICK_CHAT
    * Mặc định mở app là true, lưu vào localStorage = show_quick_chat
@@ -467,6 +471,14 @@ const ChatApp = ({
     SHOW_QUICK_CHAT: string | null
   ) => {
     /**
+     * Trường hợp màn hình có height nhỏ hơn 674px
+     */
+    if (CURRENT_HEIGHT < 674 && show) {
+      postMessageToParent(true, false)
+      return 'w-full h-screen px-2 py-2 justify-between'
+    }
+
+    /**
      * Trường hợp chat AI
      * is_ai = true
      * Hiển thị full width-height và ẩn header
@@ -589,12 +601,19 @@ const ChatApp = ({
     GLOBAL_UNREAD_MESSAGE_COUNT: number,
     CURRENT_WIDTH: number
   ) => {
+    /**
+     * Trường hợp màn hình nhỏ hơn
+     */
+    if (CURRENT_HEIGHT < 674 && show) {
+      return 'flex flex-col w-[400px] bg-bg-gradient h-screen rounded-[20px]'
+    }
+
     /** Trường hợp chat AI
      * is_ai = true
      * Hiển thị full width-height và ẩn header
      */
     if (AI_STATUS) {
-      return 'flex flex-col w-screen h-screen bg-bg-gradient'
+      return 'flex flex-col w-screen h-screen just-between bg-bg-gradient'
     }
 
     /** CSS base */
@@ -602,7 +621,8 @@ const ChatApp = ({
       return 'flex flex-col w-[400px] h-[600px] mb-2.5 rounded-[20px] relative bg-bg-gradient overflow-hidden shadow-md'
     }
 
-    const BASE_CLASSES = 'relative bg-bg-gradient overflow-hidden shadow-md'
+    const BASE_CLASSES =
+      'flex justify-between relative bg-bg-gradient overflow-hidden shadow-md '
 
     /** Màn Mobile / PC */
     const SIZE_CLASSES =
@@ -741,11 +761,11 @@ const ChatApp = ({
 
           <div
             className={
-              'flex flex-col resize-none outline-none scrollbar-thin scrollbar-webkit ' +
+              'flex flex-col resize-none outline-none scrollbar-thin scrollbar-webkit' +
               `${
                 current_tab !== 'home'
-                  ? ' h-[468px] overflow-y-auto'
-                  : ' h-[600px]'
+                  ? 'max-h-[480px] overflow-y-auto'
+                  : 'h-full max-h-[600px]'
               }`
             }
           >
@@ -804,81 +824,83 @@ const ChatApp = ({
           {/* Hiển thị Menu */}
           {/* Nếu tab hiện tại không phải chat thì hiển thị menu */}
           {current_tab !== 'message' && (
-            <div className="absolute bottom-0 w-full flex flex-col justify-evenly p-2 px-6 h-16 z-20  bg-bg-gradient">
-              <div className="flex">
-                {MENU_LIST.map(
-                  (
-                    { src: IconComponent, srcA: IconComponentA, value, name },
-                    index
-                  ) => (
-                    <div
-                      key={index}
-                      className="flex flex-col w-full h-full justify-center items-center cursor-pointer"
-                      onClick={() => {
-                        if (value !== 'message') {
-                          setCurrentTab(value)
-                        } else {
-                          setCurrentTab('message')
-                          /** Khi ấn vào tab message,
-                           * reset tin nhắn mới nhất
-                           * reset mảng tin nhắn chưa đọc
-                           * => Vì khi vào trong tab sẽ fetch api đọc tin nhắn,
-                           * => không cần các state này nữa
-                           *  */
-                          dispatch(setListUnreadMessage([]))
-                          dispatch(setLatestMessageGlobal(null))
-                          dispatch(setLoadingGlobal(true))
-                          /** 4. Reset Số tin nhắn chưa đọc localStorage */
-                          saveQuickChatCount(PAGE_ID, CLIENT_STORED, 0)
+            <div className=" w-[400px] flex flex-col justify-evenly bg-bg-gradient">
+              <div className="p-2 h-16 w-full">
+                <div className="flex">
+                  {MENU_LIST.map(
+                    (
+                      { src: IconComponent, srcA: IconComponentA, value, name },
+                      index
+                    ) => (
+                      <div
+                        key={index}
+                        className="flex flex-col w-full h-full justify-center items-center cursor-pointer"
+                        onClick={() => {
+                          if (value !== 'message') {
+                            setCurrentTab(value)
+                          } else {
+                            setCurrentTab('message')
+                            /** Khi ấn vào tab message,
+                             * reset tin nhắn mới nhất
+                             * reset mảng tin nhắn chưa đọc
+                             * => Vì khi vào trong tab sẽ fetch api đọc tin nhắn,
+                             * => không cần các state này nữa
+                             *  */
+                            dispatch(setListUnreadMessage([]))
+                            dispatch(setLatestMessageGlobal(null))
+                            dispatch(setLoadingGlobal(true))
+                            /** 4. Reset Số tin nhắn chưa đọc localStorage */
+                            saveQuickChatCount(PAGE_ID, CLIENT_STORED, 0)
 
-                          /** 5. Reset tin nhắn mới nhất trong localStorage */
-                          saveQuickChatLatestMessage(
-                            PAGE_ID,
-                            CLIENT_STORED,
-                            null
-                          )
+                            /** 5. Reset tin nhắn mới nhất trong localStorage */
+                            saveQuickChatLatestMessage(
+                              PAGE_ID,
+                              CLIENT_STORED,
+                              null
+                            )
 
-                          if (PAGE_ID === null) {
-                            /** Không có page_id thì tạo message Lỗi */
-                            setErrorMessage(t('errorMessage'))
+                            if (PAGE_ID === null) {
+                              /** Không có page_id thì tạo message Lỗi */
+                              setErrorMessage(t('errorMessage'))
+                            }
                           }
-                        }
-                      }}
-                    >
-                      <div className="relative">
-                        <div className="">
-                          {value === 'message' &&
-                            GLOBAL_UNREAD_MESSAGE_COUNT > 0 && (
-                              <div className="flex justify-center items-center text-xxs text-white border absolute right-0 top-0 w-4 h-4 bg-red-500 rounded-full translate-x-1 -translate-y-1">
-                                {GLOBAL_UNREAD_MESSAGE_COUNT < 10
-                                  ? GLOBAL_UNREAD_MESSAGE_COUNT
-                                  : '9+'}
-                              </div>
-                            )}
+                        }}
+                      >
+                        <div className="relative">
+                          <div className="">
+                            {value === 'message' &&
+                              GLOBAL_UNREAD_MESSAGE_COUNT > 0 && (
+                                <div className="flex justify-center items-center text-xxs text-white border absolute right-0 top-0 w-4 h-4 bg-red-500 rounded-full translate-x-1 -translate-y-1">
+                                  {GLOBAL_UNREAD_MESSAGE_COUNT < 10
+                                    ? GLOBAL_UNREAD_MESSAGE_COUNT
+                                    : '9+'}
+                                </div>
+                              )}
+                          </div>
+                          {/* active menu tab */}
+                          {current_tab === value ? (
+                            <IconComponentA />
+                          ) : (
+                            <IconComponent />
+                          )}
                         </div>
-                        {/* active menu tab */}
-                        {current_tab === value ? (
-                          <IconComponentA />
-                        ) : (
-                          <IconComponent />
-                        )}
+                        <p className={'text-sm font-medium'}>{name}</p>
                       </div>
-                      <p className={'text-sm font-medium'}>{name}</p>
-                    </div>
-                  )
-                )}
+                    )
+                  )}
+                </div>
+                {/* Thông tin đơn vị phát triển */}
+                <h4 className="text-xs text-center text-slate-700">
+                  powered by{' '}
+                  <a
+                    href="https://beta-bbh-vn-lac.vercel.app/vn"
+                    className="underline"
+                    target="_blank"
+                  >
+                    Retion.ai
+                  </a>
+                </h4>
               </div>
-              {/* Thông tin đơn vị phát triển */}
-              <h4 className="text-xs text-center text-slate-700">
-                powered by{' '}
-                <a
-                  href="https://beta-bbh-vn-lac.vercel.app/vn"
-                  className="underline"
-                  target="_blank"
-                >
-                  Retion.ai
-                </a>
-              </h4>
             </div>
           )}
         </div>
@@ -1063,10 +1085,10 @@ const ChatApp = ({
           AI_STATUS ? 'hidden' : ''
         }  ${
           !show
-            ? ' flex  '
+            ? ' flex z-30 '
             : CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
-            ? ' hidden '
-            : ' flex '
+            ? ' hidden'
+            : ' flex z-30'
         }`}
       >
         <div

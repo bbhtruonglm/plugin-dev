@@ -11,6 +11,7 @@ import {
 } from './utils'
 import {
   selectPageId,
+  setCurrentHeight,
   setCurrentWidth,
   setGlobalPreviewUrl,
   setGlobalUnreadCount,
@@ -128,19 +129,27 @@ function App() {
 
     /** Lấy page_id */
     const STORED_PAGE_ID =
-      URL_PARENT.searchParams.get('page_id') || '2204445623215564'
+      URL_PARENT.searchParams.get('page_id') || '100179064765476'
     console.log(URL_PARENT, 'URL_PARENT')
     console.log(URL_PARENT.searchParams.get('page_id'), 'page_id')
     /** lưu page_id vào store */
-    /** Example @value :bf425487afbe403895116dd9b585537b || 100179064765476 || 388339911461476 || 5c290e88a5304e8e84ce8a8804b764e4 */
+    /** Example @value :bf425487afbe403895116dd9b585537b || 2204445623215564 || 100179064765476 || 388339911461476 || 5c290e88a5304e8e84ce8a8804b764e4 */
     dispatch(setPageId(STORED_PAGE_ID || ''))
 
     /** Lấy Độ rộng của page cha từ URL */
     const WIDTH_PARENT = URL_PARENT.searchParams.get('parentWidth')
+    const HEIGHT_PARENT = URL_PARENT.searchParams.get('parentHeight')
+    console.log(WIDTH_PARENT, 'WIDTH_PARENT')
+    console.log(HEIGHT_PARENT, 'HEIGHT_PARENT')
 
     if (WIDTH_PARENT) {
       /** nếu có truyền width thì lưu vào store */
       dispatch(setCurrentWidth(Number(WIDTH_PARENT)))
+    }
+
+    if (HEIGHT_PARENT) {
+      /** nếu có truyền height thì lưu vào store */
+      dispatch(setCurrentHeight(Number(HEIGHT_PARENT)))
     }
 
     // localStorage.setItem(`client_id_<${PAGE_ID}>`, '6131478076934694')
