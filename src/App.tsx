@@ -11,6 +11,7 @@ import {
 } from './utils'
 import {
   selectPageId,
+  setCurrentHeight,
   setCurrentWidth,
   setGlobalPreviewUrl,
   setGlobalUnreadCount,
@@ -62,7 +63,7 @@ function App() {
        * @type {string} from - Nguồn gửi tin nhắn
        */
       const { user_name, user_email, user_phone, from } = PAYLOAD
-      console.log(event, 'event')
+      // console.log(event, 'event')
       /** Kiểm tra thông tin từ app cha */
       if (from === 'parent-app') {
         console.log(
@@ -100,7 +101,6 @@ function App() {
      * @returns {URL} Đối tượng URL được tạo ra từ chuỗi đầu vào
      */
     const URL_PARENT = new URL(FULL_SRC)
-    console.log(URL_PARENT, 'URL_PARENT')
 
     const URL_PARAMS = new URLSearchParams(window.location.search)
     // setIsAi(URL_PARAMS.get('is_ai') === 'true')
@@ -127,20 +127,24 @@ function App() {
       })
 
     /** Lấy page_id */
-    const STORED_PAGE_ID =
-      URL_PARENT.searchParams.get('page_id') || '2204445623215564'
-    console.log(URL_PARENT, 'URL_PARENT')
-    console.log(URL_PARENT.searchParams.get('page_id'), 'page_id')
+    const STORED_PAGE_ID = URL_PARENT.searchParams.get('page_id')
+
     /** lưu page_id vào store */
-    /** Example @value :bf425487afbe403895116dd9b585537b || 100179064765476 || 388339911461476 || 5c290e88a5304e8e84ce8a8804b764e4 */
+    /** Example @value :bf425487afbe403895116dd9b585537b || 2204445623215564 || 100179064765476 || 388339911461476 || 5c290e88a5304e8e84ce8a8804b764e4 */
     dispatch(setPageId(STORED_PAGE_ID || ''))
 
     /** Lấy Độ rộng của page cha từ URL */
     const WIDTH_PARENT = URL_PARENT.searchParams.get('parentWidth')
+    const HEIGHT_PARENT = URL_PARENT.searchParams.get('parentHeight')
 
     if (WIDTH_PARENT) {
       /** nếu có truyền width thì lưu vào store */
       dispatch(setCurrentWidth(Number(WIDTH_PARENT)))
+    }
+
+    if (HEIGHT_PARENT) {
+      /** nếu có truyền height thì lưu vào store */
+      dispatch(setCurrentHeight(Number(HEIGHT_PARENT)))
     }
 
     // localStorage.setItem(`client_id_<${PAGE_ID}>`, '6131478076934694')
@@ -222,13 +226,11 @@ function App() {
 
     /** Lưu tên client */
     setClientName(RES?.data?.client_name)
-
-    console.log(RES, 'RES client')
   }
 
   return (
     <div
-      className="flex flex-col justify-center items-center h-fit w-fit overflow-hidden"
+      className="flex flex-col justify-center items-center h-full w-full overflow-hidden max-w-[416px] max-h-[674px]"
       id="bbh-chart-plugin"
     >
       <Routes>

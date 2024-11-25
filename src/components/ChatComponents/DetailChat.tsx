@@ -64,7 +64,6 @@ function DetailChat({
 
   /** List tin nhắn được lấy từ store */
   const LIST_MESSAGE = useSelector(selectListMessage)
-  console.log(LIST_MESSAGE, 'LIST_MESSAGE')
 
   /** Số tin nhắn chưa đọc lấy trong STORE */
   const GLOBAL_UNREAD_COUNT = useSelector(selectGlobalUnreadCount)
@@ -153,13 +152,6 @@ function DetailChat({
         (item: any) =>
           item.message_type !== 'system' && item.message_type !== 'note'
       )
-      console.log(FILTER_RES, 'FILTER_RES')
-
-      /**
-      * lưu data vào Store. Lưu về phía trước do data đã bị reverse
-      // setNewData([...FILTER_RES.reverse(), ...new_data])
-      // console.log(FILTER_RES, 'FILTER_RES')
-      */
 
       dispatch(setListMessage([...FILTER_RES.reverse(), ...LIST_MESSAGE]))
 
@@ -366,7 +358,7 @@ function DetailChat({
   )
 
   return (
-    <div className="flex flex-col w-full h-full absolute top-0">
+    <div className="flex flex-col w-full h-full relative">
       {/* header */}
       <div className={`${AI_STATUS ? 'hidden' : ''}`}>
         <ChatHeader

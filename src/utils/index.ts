@@ -139,7 +139,7 @@ function calculateUnits(seconds: number, unitInSeconds: number) {
 export function calculateTimeAgo(time_string: string) {
   const NOW = new Date() // Thời gian hiện tại
   const TIME = new Date(time_string) // Chuỗi thời gian được chuyển thành đối tượng Date
-  console.log(NOW.getTime(), TIME.getTime())
+  // console.log(NOW.getTime(), TIME.getTime())
 
   // Sử dụng getTime() để chuyển Date thành số (mili-giây)
   const DIFF_IN_SEC = Math.floor((NOW.getTime() - TIME.getTime()) / 1000)
@@ -206,7 +206,7 @@ export const saveQuickChatCount = (
   client_id: String | null,
   count: number
 ) => {
-  console.log(page_id, client_id, count)
+  // console.log(page_id, client_id, count)
   if (!page_id || !client_id) return
   /** Lưu vào thời gian đóng popup */ /** Tính toán lưu count vào localStorage */
   localStorage.setItem(
@@ -306,7 +306,7 @@ export const checkTimeTillNow = (lastTime: number) => {
   const THIRTY_SECOND = 30 * 1000 // 1 giờ = 60 phút * 60 giây * 1000 milliseconds
   const NOW = Date.now()
 
-  console.log(lastTime, '>>>', NOW)
+  // console.log(lastTime, '>>>', NOW)
 
   // Kiểm tra nếu thời gian hiện tại lớn hơn lastTime + 1 giờ
   // return NOW > lastTime + ONE_HOUR
