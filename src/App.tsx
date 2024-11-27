@@ -110,7 +110,7 @@ function App() {
 
     dispatch(setStatusIsAI(IS_AI))
 
-    setShow(true)
+    setShow(IS_AI)
     /**
      * Lấy giá trị locale từ URL
      * Mặc định là 'vn' nếu không có locale */
@@ -127,7 +127,8 @@ function App() {
       })
 
     /** Lấy page_id */
-    const STORED_PAGE_ID = URL_PARENT.searchParams.get('page_id')
+    const STORED_PAGE_ID =
+      URL_PARENT.searchParams.get('page_id') || '388339911461476'
 
     /** lưu page_id vào store */
     /** Example @value :bf425487afbe403895116dd9b585537b || 2204445623215564 || 100179064765476 || 388339911461476 || 5c290e88a5304e8e84ce8a8804b764e4 */

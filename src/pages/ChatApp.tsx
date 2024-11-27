@@ -466,8 +466,9 @@ const ChatApp = ({
     /**
      * Trường hợp màn hình có height nhỏ hơn 674px
      */
-    if (CURRENT_HEIGHT < 674 && show) {
+    if (CURRENT_HEIGHT && CURRENT_HEIGHT < 674 && show) {
       postMessageToParent(true, false)
+      console.log('CURRENT_HEIGHT < 674')
       return 'flex flex-col w-[416px] h-screen px-2 py-2 justify-between'
     }
 
@@ -496,13 +497,18 @@ const ChatApp = ({
       return 'w-[302px] h-[142px] items-end justify-between pb-4 px-2'
     }
 
+    console.log(
+      show,
+      SHOW_QUICK_CHAT,
+      GLOBAL_UNREAD_MESSAGE_COUNT,
+      LATEST_MESSAGE
+    )
     /** Base condition:
      * - Popup closed,
      * - Trạng thái Quick_chat đóng,
      * - message is from page,
      * - unread messages > 0
      * */
-
     if (
       (!show && SHOW_QUICK_CHAT === 'hide_quick_chat') ||
       (!show && GLOBAL_UNREAD_MESSAGE_COUNT === 0) ||
@@ -575,6 +581,8 @@ const ChatApp = ({
     if (CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0) {
       return 'w-screen h-screen'
     }
+
+    console.log('case cuối')
     /**
      * - Popup mở,
      * - trả về full kích thước */
