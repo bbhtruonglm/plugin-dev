@@ -62,6 +62,7 @@ const ChatApp = ({
   show,
   setHideForMobile,
   client_name,
+  consultation,
 }: ChatAppProps) => {
   /** Dịch ngôn ngữ */
   const { t, i18n } = useTranslation()
@@ -106,10 +107,13 @@ const ChatApp = ({
 
   /** Kiểm tra nếu is_ai = true thì  chuyển luôn vào tab message */
   useEffect(() => {
-    if (AI_STATUS) {
+    /**
+     * Nếu trạng thái mở AI hoặc trạng thái consultation thì vào luôn tab message
+     */
+    if (AI_STATUS || consultation) {
       setCurrentTab('message')
     }
-  }, [AI_STATUS])
+  }, [AI_STATUS, consultation])
 
   /** hàm dispatch đến store */
   const dispatch = useDispatch()

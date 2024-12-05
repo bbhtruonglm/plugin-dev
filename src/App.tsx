@@ -24,7 +24,6 @@ import {
 import { useDispatch, useSelector } from 'react-redux'
 import { useEffect, useState } from 'react'
 
-import AIAssistant from './pages/AIAssistant'
 import ChatApp from './pages/ChatApp'
 import i18next from './i18n'
 
@@ -32,6 +31,7 @@ function App() {
   const { READ_CLIENT_INFO } = useAPI()
   /** Trạng thái hiển thị Popup */
   const [is_show, setShow] = useState(false)
+  const [type_consultation, setTypeConsultation] = useState(false)
 
   /** Page_id được lưu trong Store */
   const PAGE_ID = useSelector(selectPageId)
@@ -62,7 +62,7 @@ function App() {
        * @type {string} user_phone - Số điện thoại người dùng
        * @type {string} from - Nguồn gửi tin nhắn
        */
-      const { user_name, user_email, user_phone, from } = PAYLOAD
+      const { user_name, user_email, user_phone, from, action } = PAYLOAD
       // console.log(event, 'event')
       /** Kiểm tra thông tin từ app cha */
       if (from === 'parent-app') {
@@ -70,6 +70,11 @@ function App() {
           'Nhận tin nhắn từ app cha. Thông tin nhận được là:',
           event.data
         )
+        console.log(action, 'action consultation')
+        if (action) {
+          setTypeConsultation(true)
+          setShow(true)
+        }
         /** Lấy thông tin user từ event */
         /** Lưu thông tin user vào store */
         dispatch(
@@ -247,11 +252,13 @@ function App() {
                   // dispatch(setLatestMessageGlobal(null))
                   dispatch(setGlobalPreviewUrl(''))
                   saveQuickChatLatestMessage(PAGE_ID, CLIENT_ID, null)
+
                   // dispatch(setListUnreadMessage([]))
                   // dispatch(setListMessage([]))
                 } else {
                   /** Lưu thời gian vào localstorage Khi đóng popup */
                   saveTimeClosePopup(PAGE_ID)
+                  setTypeConsultation(false)
                 }
               }}
               show={is_show}
@@ -263,6 +270,7 @@ function App() {
                 handleOff()
               }}
               client_name={client_name}
+              consultation={type_consultation}
             />
           }
         />
