@@ -470,10 +470,16 @@ const ChatApp = ({
     /**
      * Trường hợp màn hình có height nhỏ hơn 674px
      */
-    if (CURRENT_HEIGHT && CURRENT_HEIGHT < 674 && show) {
+    if (
+      CURRENT_HEIGHT &&
+      CURRENT_HEIGHT < 674 &&
+      show &&
+      CURRENT_WIDTH > 768 &&
+      CURRENT_WIDTH !== 0
+    ) {
       postMessageToParent(true, false)
-      console.log('CURRENT_HEIGHT < 674')
-      return 'flex flex-col w-[416px] h-screen px-2 py-2 justify-between'
+
+      return 'flex flex-col md:w-[416px] h-screen px-2 py-2 justify-between'
     }
 
     /**
@@ -501,12 +507,6 @@ const ChatApp = ({
       return 'w-[302px] h-[142px] items-end justify-between pb-4 px-2'
     }
 
-    console.log(
-      show,
-      SHOW_QUICK_CHAT,
-      GLOBAL_UNREAD_MESSAGE_COUNT,
-      LATEST_MESSAGE
-    )
     /** Base condition:
      * - Popup closed,
      * - Trạng thái Quick_chat đóng,
@@ -583,10 +583,11 @@ const ChatApp = ({
      * - Popup mở,
      * - trạng thái Mobile hiện full màn hình */
     if (CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0) {
+      postMessageToParent(true, false)
       return 'w-screen h-screen'
     }
 
-    console.log('case cuối')
+    console.log('final case!!!')
     /**
      * - Popup mở,
      * - trả về full kích thước */
@@ -609,7 +610,12 @@ const ChatApp = ({
     /**
      * Trường hợp màn hình nhỏ hơn
      */
-    if (CURRENT_HEIGHT < 674 && show) {
+    if (
+      CURRENT_HEIGHT < 674 &&
+      show &&
+      CURRENT_WIDTH > 768 &&
+      CURRENT_WIDTH !== 0
+    ) {
       return 'flex flex-col w-[400px] justify-between bg-bg-gradient rounded-[20px] h-full mb-[72px] overflow-hidden'
     }
 
@@ -751,7 +757,7 @@ const ChatApp = ({
                 </div>
                 <div
                   onClick={setHideForMobile}
-                  className={` cursor-pointer w-10 h-10 flex justify-center items-center  ${
+                  className={`cursor-pointer w-10 h-10 flex justify-center items-center  ${
                     CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
                       ? 'flex'
                       : 'hidden'
@@ -822,7 +828,7 @@ const ChatApp = ({
           {/* Hiển thị Menu */}
           {/* Nếu tab hiện tại không phải chat thì hiển thị menu */}
           {current_tab !== 'message' && (
-            <div className=" w-[400px] flex flex-shrink-0 h-16 flex-col justify-evenly">
+            <div className="md:w-[400px] flex flex-shrink-0 h-16 flex-col justify-evenly">
               <div className="p-2 h-16 w-full">
                 <div className="flex">
                   {MENU_LIST.map(
