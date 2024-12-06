@@ -584,7 +584,7 @@ const ChatApp = ({
      * - trạng thái Mobile hiện full màn hình */
     if (CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0) {
       postMessageToParent(true, false)
-      return 'w-screen h-screen'
+      return 'w-screen_dvw h-screen_dvh'
     }
 
     console.log('final case!!!')
@@ -771,7 +771,7 @@ const ChatApp = ({
 
           {/* body check theo bien current tab de render data */}
           <div
-            className={`flex flex-col h-full resize-none outline-none scrollbar-thin scrollbar-webkit overflow-y-auto overflow-x-hidden max-h-[600px]`}
+            className={`flex flex-col h-full resize-none outline-none scrollbar-thin scrollbar-webkit overflow-y-auto overflow-x-hidden md:max-h-[600px]`}
           >
             {current_tab === 'home' && (
               <Home
@@ -938,7 +938,7 @@ const ChatApp = ({
                   )}
                 </div>
                 <div
-                  className="flex flex-col flex-grow min-w-0 h-full bg-white rounded-xl p-3 hover:bg-slate-50 cursor-pointer"
+                  className="flex flex-col flex-grow min-w-0 h-full bg-white rounded-xl p-3 hover:bg-slate-50 cursor-pointer shadow-md"
                   onClick={() => {
                     /** Khi click trả lời sẽ  reset hết data trong store */
                     dispatch(setLatestMessageGlobal(null))

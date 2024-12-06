@@ -240,11 +240,11 @@ function DetailChat({
   }, [scroll_at_bottom])
 
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout
+    let timeout_id: NodeJS.Timeout
     /** Nếu Mới khởi tạo client, call api fetch tin nhắn nhưng cần settimeout */
     if (is_init) {
       /** Đặt timeout để call API sau 0.1 giây */
-      timeoutId = setTimeout(() => {
+      timeout_id = setTimeout(() => {
         /**  Gọi API sau khi đợi 1 giây */
         fetchMessage()
         /** Khi khởi tạo và call API sau 0.1 giây . set lại trạng thái Không là tin nhắn khởi tạo nữa */
@@ -260,8 +260,8 @@ function DetailChat({
 
     /** Cleanup: Hủy bỏ timeout nếu is_init thay đổi hoặc component bị unmount */
     return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId)
+      if (timeout_id) {
+        clearTimeout(timeout_id)
       }
     }
   }, [user_id, is_init])

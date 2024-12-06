@@ -3,6 +3,12 @@ module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
   theme: {
     extend: {
+      height: {
+        screen_dvh: '100dvh', // Thay thế cho 100vh
+      },
+      width: {
+        screen_dvw: '100dvw', // Thay thế cho 100vw
+      },
       spacing: {
         '1px': '1px',
       },
