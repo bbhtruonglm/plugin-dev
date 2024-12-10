@@ -16,6 +16,7 @@ import {
   setGlobalPreviewUrl,
   setGlobalUnreadCount,
   setLatestMessageGlobal,
+  setListMessage,
   setPageId,
   setStatusIsAI,
   setStatusPopup,
@@ -73,7 +74,10 @@ function App() {
         console.log(action, 'action consultation')
         if (action) {
           setTypeConsultation(true)
-          setShow(true)
+          if (!is_show) {
+            dispatch(setListMessage([]))
+            setShow(true)
+          }
         }
         /** Lấy thông tin user từ event */
         /** Lưu thông tin user vào store */

@@ -1,4 +1,5 @@
 import { ChatScreenProps, Message } from './type'
+import _, { set } from 'lodash'
 import { fetchAPI, useAPI } from '@/api/api'
 import {
   selectGlobalUnreadCount,
@@ -16,13 +17,13 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import ChatHeader from './Header/ChatHeader'
+import { ReactComponent as Close } from '@/assets/close.svg'
 import { ReactComponent as Down } from '@/assets/arrow.svg'
 import InitClient from './Body/InitClient'
 import InputChat from './Body/InputChat'
 import Loading from '../Loading/Loading'
 import LoadingDots from '../Loading/LoadingDot'
 import MessageBody from './Body/MessageBody'
-import _ from 'lodash'
 import { renderAvatar } from '@/utils'
 // import InitClient from './InitClient'
 import { t } from 'i18next'
@@ -87,6 +88,8 @@ function DetailChat({
   const [has_more, setHasMore] = useState(true)
   const [scroll_at_bottom, setScrollAtBottom] = useState(true)
   const [show_jump_button, setShowJumpButton] = useState(false)
+
+  const [error_upload, setErrorUpload] = useState('')
 
   const CLIENT_ID = localStorage.getItem(`client_id_<${PAGE_ID}>`)
 
@@ -457,6 +460,22 @@ function DetailChat({
           />
         </button>
       )}
+      {/** Khi upload lỗi, thông báo cho user */}
+      {error_upload && (
+        <div className="absolute bottom-[20%] left-[35%] bg-white shadow-lg rounded-lg p-2 w-full max-w-40 h-fit max-h-40 group">
+          <div
+            className="flex justify-between cursor-pointer relative "
+            onClick={() => {
+              setErrorUpload('')
+            }}
+          >
+            <Close className="absolute top-0 right-0 bg-slate-500 p-1 rounded-full opacity-0 group-hover:opacity-100" />
+          </div>
+          <h4 className="text-red-500 text-sm break-words whitespace-pre-line">
+            {error_upload}
+          </h4>
+        </div>
+      )}
 
       {/* ô input  Khi có text trong input thì hiển thị thêm icon send */}
       {user_id && (
@@ -470,6 +489,9 @@ function DetailChat({
           page_name={page_name}
           client_id={user_id}
           setLoading={(e: boolean) => setLoading(e)}
+          handleError={(e: any) => {
+            setErrorUpload(e)
+          }}
         />
       )}
     </div>

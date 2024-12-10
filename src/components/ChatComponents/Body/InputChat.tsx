@@ -213,6 +213,7 @@ function InputChat({
   page_name,
   client_id,
   setLoading,
+  handleError,
 }: InputProps) {
   const INPUT_REF = useRef<HTMLInputElement>(null)
   const SHOW_POPUP = useSelector(selectStatusPopup)
@@ -235,7 +236,6 @@ function InputChat({
           // Focus vào input khi popup mở
           INPUT_REF.current.focus()
           INPUT_REF.current.scrollIntoView({ behavior: 'smooth' })
-          console.log(INPUT_REF.current, 'input')
         }
       }, 200)
 
@@ -257,17 +257,40 @@ function InputChat({
       FORM_DATA.append('file', file)
       FORM_DATA.append('page_id', PAGE_ID)
       FORM_DATA.append('client_id', client_id)
+      console.log(file, 'file')
 
+      // Kiểm tra kích thước file
+      if (file.size > 1 * 1024 * 1024) {
+        // 1MB = 1 * 1024 * 1024 bytes
+        // alert('Ảnh quá lớn, vui lòng chọn ảnh nhỏ hơn 1MB.')
+        handleError &&
+          handleError('Ảnh quá lớn, vui lòng chọn ảnh nhỏ hơn 1MB.')
+
+        setFile(null)
+        setPreviewUrl(null)
+        setLoading(false)
+        return
+      }
       try {
-        await fetch(SEND_MESSAGE_API, {
+        const RES = await fetch(SEND_MESSAGE_API, {
           method: 'POST',
           body: FORM_DATA,
         })
+        console.log(RES, 'res')
         setLoading(false)
         setFile(null)
         setPreviewUrl(null)
       } catch (error) {
         // Handle error
+        /** Gửi tin nhắn đi, reset các file
+         * Đoạn này cần check lại vì không có xử lý error
+         */
+
+        handleError && handleError('Có lỗi xảy ra, vui lòng thử lại sau.')
+
+        setLoading(false)
+        setFile(null)
+        setPreviewUrl(null)
       }
     }
   }
@@ -339,7 +362,7 @@ function InputChat({
             <img
               src={preview_url}
               alt="Preview"
-              className="w-16 h-16 object-contain  bg-gray-100 rounded-lg"
+              className="w-16 h-16 object-contain bg-gray-100 rounded-lg"
             />
           </div>
         )}

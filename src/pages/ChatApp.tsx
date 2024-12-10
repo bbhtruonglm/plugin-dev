@@ -112,6 +112,7 @@ const ChatApp = ({
      */
     if (AI_STATUS || consultation) {
       setCurrentTab('message')
+      setShowWelcomeMessage(false)
     }
   }, [AI_STATUS, consultation])
 
@@ -587,7 +588,7 @@ const ChatApp = ({
       return 'w-screen_dvw h-screen_dvh'
     }
 
-    console.log('final case!!!')
+    // console.log('final case!!!')
     /**
      * - Popup mở,
      * - trả về full kích thước */
