@@ -3,7 +3,6 @@ import {
   calculateTimeAgo,
   hasAttachmentOfType,
   postMessageToParent,
-  renderAvatar,
   renderAvatarCDN,
   saveQuickChatCount,
   saveQuickChatLatestMessage,
@@ -56,7 +55,6 @@ import { ReactComponent as activeHome } from '@/assets/home-active.svg'
 import { ReactComponent as activeMessage } from '@/assets/messageA.svg'
 import { ReactComponent as inactiveHome } from '@/assets/home.svg'
 import { ReactComponent as inactiveMessage } from '@/assets/message.svg'
-import { use } from 'i18next'
 import { useTranslation } from 'react-i18next'
 
 const ChatApp = ({
@@ -505,7 +503,7 @@ const ChatApp = ({
      */
     if (GLOBAL_PREVIEW_URL) {
       // postMessageToParent(true, false, 674, GLOBAL_PREVIEW_URL)
-      return 'flex w-screen h-screen items-end justify-end px-2 pr-11 pb-[52px]'
+      return 'flex w-screen h-screen items-end justify-end px-6 pr-5 pb-[68px]'
     }
     /** Popup đang đóng , không có tin nhắn mới, trigger welcome message */
     if (!show && show_welcome_message && LATEST_MESSAGE === null) {

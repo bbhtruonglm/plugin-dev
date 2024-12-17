@@ -241,7 +241,7 @@ function App() {
   return (
     <div
       // className="flex flex-col justify-center items-center h-full w-full overflow-hidden  bg-red-600"
-      className="flex flex-col justify-center items-center h-full w-full overflow-hidden md:max-w-[416px] md:max-h-[674px]"
+      className="flex flex-col justify-center items-center h-full w-full overflow-hidden"
       id="bbh-chart-plugin"
     >
       <Routes>

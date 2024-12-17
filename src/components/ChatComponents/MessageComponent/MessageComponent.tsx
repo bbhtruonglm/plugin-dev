@@ -44,7 +44,7 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
     /** Click vào ảnh thì gửi thông tin cho sdk
      * Có thể lưu data và STORE
      */
-    postMessageToParent(SHOW_POPUP, false, 674, url)
+    postMessageToParent(true, false, 674, url)
   }
   /** Trạng thái Đóng/ Mở Popup */
   const SHOW_POPUP = useSelector(selectStatusPopup)
