@@ -21,7 +21,7 @@ const MessageBody = React.memo(
         }`}
       >
         {item?.message_type === 'page' && (
-          <div className="flex rounded-lg">
+          <div className="flex rounded-lg bg-gray-300 w-6 h-6 items-center justify-center">
             <img
               src={
                 checkStaffExist(item?.message_metadata) || './images/earth.svg'

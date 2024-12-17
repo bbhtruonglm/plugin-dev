@@ -240,6 +240,7 @@ function App() {
 
   return (
     <div
+      // className="flex flex-col justify-center items-center h-full w-full overflow-hidden  bg-red-600"
       className="flex flex-col justify-center items-center h-full w-full overflow-hidden md:max-w-[416px] md:max-h-[674px]"
       id="bbh-chart-plugin"
     >
@@ -248,8 +249,13 @@ function App() {
           path="/"
           element={
             <ChatApp
-              handleBtn={() => {
-                handleToggle()
+              handleBtn={(e) => {
+                /**
+                 * Nếu e !== 'no_toggle' thì gọi hàm handleToggle
+                 */
+                if (e !== 'no_toggle') {
+                  handleToggle()
+                }
                 setShow(!is_show)
                 if (!is_show) {
                   /** Khi mở chỉ reset tin nhắn mới nhất trong store */
@@ -282,8 +288,14 @@ function App() {
           path="/ai-assistant"
           element={
             <ChatApp
-              handleBtn={() => {
-                handleToggle()
+              handleBtn={(e) => {
+                /**
+                 * Nếu e !== 'no_toggle' thì gọi hàm handleToggle
+                 */
+                if (e !== 'no_toggle') {
+                  handleToggle()
+                }
+
                 setShow(!is_show)
                 if (!is_show) {
                   /** Khi mở chỉ reset tin nhắn mới nhất trong store */

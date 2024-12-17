@@ -1,6 +1,7 @@
 import { ChatScreenProps, Message } from './type'
 import _, { set } from 'lodash'
 import { fetchAPI, useAPI } from '@/api/api'
+import { renderAvatar, renderAvatarCDN } from '@/utils'
 import {
   selectGlobalUnreadCount,
   selectLatestMessage,
@@ -24,7 +25,6 @@ import InputChat from './Body/InputChat'
 import Loading from '../Loading/Loading'
 import LoadingDots from '../Loading/LoadingDot'
 import MessageBody from './Body/MessageBody'
-import { renderAvatar } from '@/utils'
 // import InitClient from './InitClient'
 import { t } from 'i18next'
 
@@ -340,22 +340,26 @@ function DetailChat({
    */
   const checkStaffExist = useCallback(
     (id: string) => {
+      /** Lấy ID của nhân viên */
+      const ID_DETECT = id.split('__')[2]
+      console.log(ID_DETECT, 'ID_DETECT')
       /** Nếu không có staff Id thì trả về '' */
-      if (!id) return ''
+      if (!ID_DETECT) return ''
 
+      return renderAvatarCDN(ID_DETECT)
       /** Xem nhân viên nhắn tin có tồn tại trong list nhân viên không */
-      const IS_STAFF_EXIST = employee_list?.find((item) =>
-        id.includes(item?.fb_staff_id)
-      )
+      // const IS_STAFF_EXIST = employee_list?.find((item) =>
+      //   id.includes(item?.fb_staff_id)
+      // )
+      // console.log(IS_STAFF_EXIST, 'IS_STAFF_EXIST')
+      // /** Nếu không tồn tại thì trả về '' */
+      // if (!IS_STAFF_EXIST) {
+      //   return ''
+      // }
 
-      /** Nếu không tồn tại thì trả về '' */
-      if (!IS_STAFF_EXIST) {
-        return ''
-      }
-
-      /** Lấy link avatar */
-      const LINK_AVATAR = renderAvatar(IS_STAFF_EXIST?.fb_staff_id)
-      return LINK_AVATAR
+      // /** Lấy link avatar */
+      // const LINK_AVATAR = renderAvatar(IS_STAFF_EXIST?.fb_staff_id)
+      // return LINK_AVATAR
     },
     [employee_list]
   )

@@ -3,7 +3,7 @@ import { MessageInfo } from '@/utils/type'
 /** Cấu trúc dữ liệu Chat App */
 interface ChatAppProps {
   /** Nút trigger bật tắt popup */
-  handleBtn: () => void
+  handleBtn: (e?: string) => void
   /** Trạng thái hiển thị popup */
   show: boolean
   /** Ẩn popup màn điện thoại */

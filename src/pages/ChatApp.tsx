@@ -4,6 +4,7 @@ import {
   hasAttachmentOfType,
   postMessageToParent,
   renderAvatar,
+  renderAvatarCDN,
   saveQuickChatCount,
   saveQuickChatLatestMessage,
   saveTimeClosePopup,
@@ -29,14 +30,15 @@ import {
   selectStatusIsInit,
   selectStatusPopup,
   setGlobalPreviewUrl,
+  setGlobalUnreadCount,
   setLatestMessageGlobal,
   setListMessage,
   setListUnreadMessage,
   setLoadingGlobal,
   setStatusIsInit,
 } from '@/stores/appSlice'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useEffect, useRef, useState } from 'react'
 
 import ChatScreen from '@/screens/ChatScreen/Chat'
 import { ReactComponent as Close } from '@/assets/close.svg'
@@ -400,26 +402,30 @@ const ChatApp = ({
   }))
 
   /** Hàm kiểm tra nhân sự có tồn tại không
-   * @param {string} id: Nhận vào id của nhân sự
+   * @string id: Nhan vao id của nhân sự
    * @returns {string} link avatar
    */
-  const checkStaffExist = (id: string) => {
+  const checkStaffExist = useCallback((id: string) => {
+    const ID_DETECT = id.split('__')[2]
+    console.log(ID_DETECT, 'ID_DETECT')
     /** Nếu không có staff Id thì trả về '' */
-    if (!id) return ''
+    if (!ID_DETECT) return ''
+
+    return renderAvatarCDN(ID_DETECT)
     /** Xem nhân viên nhắn tin có tồn tại trong list nhân viên không */
-    const IS_STAFF_EXIST = EMPLOYEE_LIST?.find((item) =>
-      id.includes(item?.fb_staff_id)
-    )
+    // const IS_STAFF_EXIST = employee_list?.find((item) =>
+    //   id.includes(item?.fb_staff_id)
+    // )
+    // console.log(IS_STAFF_EXIST, 'IS_STAFF_EXIST')
+    // /** Nếu không tồn tại thì trả về '' */
+    // if (!IS_STAFF_EXIST) {
+    //   return ''
+    // }
 
-    /** Nếu không tồn tại thì trả về '' */
-    if (!IS_STAFF_EXIST) {
-      return ''
-    }
-
-    /** Lấy link avatar */
-    const LINK_AVATAR = renderAvatar(IS_STAFF_EXIST?.fb_staff_id)
-    return LINK_AVATAR
-  }
+    // /** Lấy link avatar */
+    // const LINK_AVATAR = renderAvatar(IS_STAFF_EXIST?.fb_staff_id)
+    // return LINK_AVATAR
+  }, [])
 
   /** Trả về tên nhân viên
    * @param {string} message_metadata
@@ -785,6 +791,11 @@ const ChatApp = ({
                   saveQuickChatLatestMessage(PAGE_ID, CLIENT_STORED, null)
                   /** 3. Set loading global */
                   dispatch(setLoadingGlobal(true))
+
+                  /** 4. Reset danh sách tin nhắn chưa đọc trong Store */
+                  dispatch(setListUnreadMessage([]))
+                  /** 5. Reset unread count */
+                  dispatch(setGlobalUnreadCount(0))
                 }}
                 onError={() => {
                   setErrorMessage(t('errorMessage'))
@@ -816,6 +827,9 @@ const ChatApp = ({
                   saveQuickChatLatestMessage(PAGE_ID, CLIENT_STORED, null)
                   /** 6. Reset danh sách tin nhắn chưa đọc trong Store */
                   dispatch(setListUnreadMessage([]))
+
+                  /** 7. Reset unread count */
+                  dispatch(setGlobalUnreadCount(0))
                 }}
                 error_message={error_message}
                 onError={() => setErrorMessage('')}
@@ -853,6 +867,7 @@ const ChatApp = ({
                              *  */
                             dispatch(setListUnreadMessage([]))
                             dispatch(setLatestMessageGlobal(null))
+                            dispatch(setGlobalUnreadCount(0))
                             dispatch(setLoadingGlobal(true))
                             /** 4. Reset Số tin nhắn chưa đọc localStorage */
                             saveQuickChatCount(PAGE_ID, CLIENT_STORED, 0)
@@ -898,7 +913,7 @@ const ChatApp = ({
                 <h4 className="text-xs text-center text-slate-700">
                   powered by{' '}
                   <a
-                    href="https://beta-bbh-vn-lac.vercel.app/vn"
+                    href="https://retion.ai"
                     className="underline"
                     target="_blank"
                   >
@@ -926,14 +941,14 @@ const ChatApp = ({
               <div
                 className={`flex gap-x-1 flex-grow min-h-0 justify-start items-end `}
               >
-                <div className="flex rounded-lg flex-shrink-0">
+                <div className="flex flex-shrink-0 ">
                   {LATEST_MESSAGE?.message_type === 'page' && (
                     <img
                       src={
                         checkStaffExist(LATEST_MESSAGE?.message_metadata) ||
                         './images/earth.svg'
                       }
-                      className="w-8 h-8  mask-rounded-oval"
+                      className="w-8 h-8  mask-rounded-oval bg-gray-200"
                       alt=""
                     />
                   )}
@@ -945,6 +960,7 @@ const ChatApp = ({
                     dispatch(setLatestMessageGlobal(null))
                     dispatch(setListUnreadMessage([]))
                     dispatch(setListMessage([]))
+                    dispatch(setGlobalUnreadCount(0))
                     /** Khi click vào trả lời, xoá unread_count */
                     saveQuickChatCount(PAGE_ID, CLIENT_STORED, 0)
 
@@ -989,6 +1005,9 @@ const ChatApp = ({
                         // dispatch(setListUnreadMessage([]))
                         // dispatch(setListMessage([]))
 
+                        /** Khi đóng tin nhắn mới, reset unread_count */
+                        dispatch(setGlobalUnreadCount(0))
+
                         /** Lưu thời gian vào localstorage Khi đóng tin nhắn mới */
                         saveTimeClosePopup(PAGE_ID)
                         /** Reset latest message trong store thành null */
@@ -1031,6 +1050,7 @@ const ChatApp = ({
                     dispatch(setLatestMessageGlobal(null))
                     dispatch(setListUnreadMessage([]))
                     dispatch(setListMessage([]))
+                    dispatch(setGlobalUnreadCount(0))
                     /** Khi click vào trả lời, xoá unread_count */
                     saveQuickChatCount(PAGE_ID, CLIENT_STORED, 0)
 
@@ -1080,9 +1100,10 @@ const ChatApp = ({
             dispatch(setLatestMessageGlobal(null))
             dispatch(setListUnreadMessage([]))
             dispatch(setListMessage([]))
+            dispatch(setGlobalUnreadCount(0))
             postMessageToParent(false, false)
           }
-          handleBtn()
+          handleBtn('no_toggle')
           setErrorMessage('')
           setShowWelcomeMessage(false)
         }}

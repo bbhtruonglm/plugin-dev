@@ -103,6 +103,18 @@ export const renderAvatar = (id: string) => {
   const LINK_AVATAR = apiImage(`/app/facebook/avatar/${id}?width=64&height=64`)
   return LINK_AVATAR
 }
+/** Trả về link avatar
+ * @param {string} id: Nhận vào id của nhân sự
+ * @returns {string} link avatar
+ */
+export const renderAvatarCDN = (id: string) => {
+  /**
+   * Link avatar của nhân sự
+   */
+  const LINK_AVATAR = `https://cdn.botbanhang.vn/media/s/${id}/user`
+  return LINK_AVATAR
+}
+
 /** Chuyển đổi giờ, phút, giây */
 export function formatDate(isoString?: string) {
   const DATE = new Date(isoString || '')
