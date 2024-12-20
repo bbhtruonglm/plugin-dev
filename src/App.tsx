@@ -17,6 +17,7 @@ import {
   setGlobalUnreadCount,
   setLatestMessageGlobal,
   setListMessage,
+  setNoViewport,
   setPageId,
   setStatusIsAI,
   setStatusPopup,
@@ -146,6 +147,18 @@ function App() {
     /** Lấy Độ rộng của page cha từ URL */
     const WIDTH_PARENT = URL_PARENT.searchParams.get('parentWidth')
     const HEIGHT_PARENT = URL_PARENT.searchParams.get('parentHeight')
+    /**
+     * @type {string} HAS_VIEWPORT - Trạng thái có viewport hay không
+     */
+    const HAS_VIEWPORT = URL_PARENT.searchParams.get('has_viewport')
+
+    console.log(HAS_VIEWPORT, 'HAS_VIEWPORT')
+
+    if (HAS_VIEWPORT === 'false') {
+      /** Nếu không có viewport thì set lại viewport */
+
+      dispatch(setNoViewport(true))
+    }
 
     if (WIDTH_PARENT) {
       /** nếu có truyền width thì lưu vào store */

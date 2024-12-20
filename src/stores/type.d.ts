@@ -56,4 +56,8 @@ export interface AppState {
   }
   /** Trạng thái ai */
   is_ai?: boolean
+  /**
+   * Thông tin trạng thái viewport của page cha
+   */
+  no_viewport?: boolean
 }

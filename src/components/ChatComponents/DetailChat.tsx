@@ -10,6 +10,7 @@ import {
   selectPageId,
   selectStatusAI,
   selectStatusPopup,
+  selectStatusViewport,
   setGlobalUnreadCount,
   setListMessage,
   setLoadingGlobal,
@@ -74,6 +75,11 @@ function DetailChat({
 
   /** Loading global */
   const LOADING_GLOBAL = useSelector(selectLoadingGlobal)
+
+  /**
+   * Trạng thái Viewport
+   */
+  const NO_VIEWPORT = useSelector(selectStatusViewport)
 
   /** Trạng thái AI_STATUS */
   const AI_STATUS = useSelector(selectStatusAI)
@@ -435,7 +441,7 @@ function DetailChat({
           ))}
 
         {/* Thẻ div này đóng vai trò là nơi đánh dấu để cuộn tới */}
-        <div ref={MESSAGE_END_REF} />
+        {!NO_VIEWPORT && <div ref={MESSAGE_END_REF} />}
 
         {/* Khi gửi tin nhắn sẽ hiển thị loading để call api */}
         {loading && (

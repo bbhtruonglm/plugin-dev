@@ -23,6 +23,7 @@ const initialState: AppState = {
     user_email: '',
   },
   is_ai: false,
+  no_viewport: false,
 }
 
 export const appSlice = createSlice({
@@ -103,6 +104,12 @@ export const appSlice = createSlice({
     setUserInfo: (state, action: PayloadAction<AppState['user_info']>) => {
       state.user_info = action.payload
     },
+    /**
+     * Lưu dữ trạng thái viewport của page cha
+     */
+    setNoViewport: (state, action: PayloadAction<boolean>) => {
+      state.no_viewport = action.payload
+    },
   },
 })
 
@@ -123,6 +130,7 @@ export const {
   setLoadingGlobal,
   setUserInfo,
   setStatusIsAI,
+  setNoViewport,
 } = appSlice.actions
 
 /** chọn đến page id */
@@ -167,5 +175,7 @@ export const selectGlobalPreviewUrl = (state: RootState) =>
 export const selectUserInfo = (state: RootState) => state.app.user_info
 /** Status AI */
 export const selectStatusAI = (state: RootState) => state.app.is_ai
+/** Status Viewport */
+export const selectStatusViewport = (state: RootState) => state.app.no_viewport
 
 export default appSlice.reducer
