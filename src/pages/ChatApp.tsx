@@ -752,7 +752,13 @@ const ChatApp = ({
               }`}
             >
               <div>
-                <RetionLogo />
+                {/* <RetionLogo /> */}
+                <img
+                  src="./images/Logo_retion_white.png"
+                  alt="Logo Retion"
+                  width={30}
+                  height={30}
+                />
               </div>
 
               <div className="flex items-center gap-x-5">
