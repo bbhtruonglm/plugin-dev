@@ -1137,7 +1137,7 @@ const ChatApp = ({
             // />
 
             <img
-              src="/src/assets/Logo_retion_embed.png"
+              src="./images/Logo_retion_embed.png"
               alt="Logo Retion"
               width={30}
               height={30}
