@@ -45,7 +45,7 @@ import { ReactComponent as CloseSlate } from '@/assets/close-black.svg'
 import { ReactComponent as Down } from '@/assets/arrow.svg'
 import { Employee } from '@/components/ChatComponents/type'
 import Home from '@/screens/ChatScreen/Home'
-import { ReactComponent as Logo } from '@/assets/logo-retion.svg'
+import { ReactComponent as Logo } from '@/assets/logo_embed.svg'
 import { MessageInfo } from '@/utils/type'
 import Modal from '@/components/ChatComponents/Modal/Modal'
 import OnlineStaff from '@/components/Container/OnlineStaff'
@@ -142,12 +142,12 @@ const ChatApp = ({
   /** Giá trị của preview URL */
   const GLOBAL_PREVIEW_URL = useSelector(selectGlobalPreviewUrl)
 
-  useEffect(() => {
-    /** Cập nhật giá trị trong ref một khi LIST_UNREAD_MESSAGE thay đổi */
-    REF_LIST_UNREAD_MESSAGE.current = LIST_UNREAD_MESSAGE
-    /** Cập nhật giá trị trong ref một khi GLOBAL_UNREAD_MESSAGE_COUNT thay đổi */
-    REF_GLOBAL_UNREAD_MESSAGE_COUNT.current = GLOBAL_UNREAD_MESSAGE_COUNT
-  }, [LIST_UNREAD_MESSAGE, GLOBAL_UNREAD_MESSAGE_COUNT])
+  // useEffect(() => {
+  //   /** Cập nhật giá trị trong ref một khi LIST_UNREAD_MESSAGE thay đổi */
+  //   REF_LIST_UNREAD_MESSAGE.current = LIST_UNREAD_MESSAGE
+  //   /** Cập nhật giá trị trong ref một khi GLOBAL_UNREAD_MESSAGE_COUNT thay đổi */
+  //   REF_GLOBAL_UNREAD_MESSAGE_COUNT.current = GLOBAL_UNREAD_MESSAGE_COUNT
+  // }, [LIST_UNREAD_MESSAGE, GLOBAL_UNREAD_MESSAGE_COUNT])
 
   /** Trạng thái đóng mở popup */
   const SHOW_POPUP = useSelector(selectStatusPopup)
@@ -173,12 +173,12 @@ const ChatApp = ({
   /** Tạo REF cho giá trị LAST_TIME_CLOSE_QUICK_CHAT */
   const REF_LAST_TIME_CLOSE_QUICK_CHAT = useRef(LAST_TIME_CLOSE_QUICK_CHAT)
 
-  useEffect(() => {
-    /** Cập nhật giá trị trong ref một khi SHOW_QUICK_CHAT thay đổi */
-    REF_SHOW_QUICK_CHAT.current = SHOW_QUICK_CHAT
-    /** Cập nhật giá trị trong ref một khi LAST_TIME_CLOSE_QUICK_CHAT thay đổi */
-    REF_LAST_TIME_CLOSE_QUICK_CHAT.current = LAST_TIME_CLOSE_QUICK_CHAT
-  }, [SHOW_QUICK_CHAT, LAST_TIME_CLOSE_QUICK_CHAT])
+  // useEffect(() => {
+  //   /** Cập nhật giá trị trong ref một khi SHOW_QUICK_CHAT thay đổi */
+  //   REF_SHOW_QUICK_CHAT.current = SHOW_QUICK_CHAT
+  //   /** Cập nhật giá trị trong ref một khi LAST_TIME_CLOSE_QUICK_CHAT thay đổi */
+  //   REF_LAST_TIME_CLOSE_QUICK_CHAT.current = LAST_TIME_CLOSE_QUICK_CHAT
+  // }, [SHOW_QUICK_CHAT, LAST_TIME_CLOSE_QUICK_CHAT])
 
   /** Trạng thái khởi tạo client */
   const IS_INIT_CLIENT = useSelector(selectStatusIsInit)
@@ -240,7 +240,6 @@ const ChatApp = ({
       /** Nếu không có client_id, khởi tạo lại hoặc đặt cờ khởi tạo socket */
     } else {
       /** Nếu có client_id hợp lệ, cập nhật vào state */
-
       onSocketFromChatboxServer({
         page_id: PAGE_ID,
         client_id: STORED_CLIENT_ID,
@@ -1131,8 +1130,15 @@ const ChatApp = ({
           {show ? (
             <Down />
           ) : (
-            <Logo
-              aria-label="Logo Retion"
+            // <Logo
+            //   aria-label="Logo Retion"
+            //   width={30}
+            //   height={30}
+            // />
+
+            <img
+              src="/src/assets/Logo_retion_embed.png"
+              alt="Logo Retion"
               width={30}
               height={30}
             />
