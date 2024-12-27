@@ -1,8 +1,8 @@
 import './index.css'
 
 import App from './App'
+import { NetworkProvider } from './components/NWProvider'
 import { Provider } from 'react-redux'
-import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter as Router } from 'react-router-dom'
 import reportWebVitals from './reportWebVitals'
@@ -13,7 +13,9 @@ root.render(
   <Provider store={store}>
     {/* <React.StrictMode> */}
     <Router>
-      <App />
+      <NetworkProvider>
+        <App />
+      </NetworkProvider>
     </Router>
     {/* </React.StrictMode> */}
   </Provider>

@@ -38,5 +38,6 @@ export const en = {
     send_message_to_us: 'Send a message to',
     invalid_format_phone: 'Invalid phone number format',
     invalid_format_email: 'Invalid email format',
+    no_internet_connection: 'No internet connection...',
   },
 }

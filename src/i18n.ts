@@ -4,27 +4,46 @@ import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import { vn } from '@/lang/vn'
 
-// Cấu hình i18next
+/**
+ * Cấu hình i18n
+ */
 i18n
-  .use(LanguageDetector) // Tự động phát hiện ngôn ngữ
-  .use(initReactI18next) // Tích hợp với React
+  /** Tự động phát hiện ngôn ngữ */
+  .use(LanguageDetector)
+  /** Tích hợp với React */
+  .use(initReactI18next)
   .init({
+    /** Cung cấp tài nguyên dịch */
     resources: {
       en: en,
       us: en,
       vn: vn,
       vi: vn,
-    }, // Cung cấp tài nguyên dịch
-    // lng: 'en', // Ngôn ngữ mặc định
-    fallbackLng: 'vn', // Ngôn ngữ fallback
-    interpolation: {
-      escapeValue: false, // React đã xử lý vấn đề bảo mật này
     },
+    /** Ngôn ngữ mặc định */
+    // lng: 'en',
+    /** Ngôn ngữ fallback */
+    fallbackLng: 'en',
+    /**
+     * Cấu hình cách dịch
+     */
+    interpolation: {
+      /** React đã xử lý vấn đề bảo mật này */
+      escapeValue: false,
+    },
+    /**
+     * Cấu hình phát hiện ngôn ngữ
+     */
     detection: {
-      order: ['querystring', 'localStorage', 'cookie', 'navigator'], // Thứ tự phát hiện ngôn ngữ
-      lookupQuerystring: 'locale', // Query string để lấy ngôn ngữ, ví dụ: ?lng=vi
-      // caches: ['localStorage'], // Lưu ngôn ngữ đã chọn
-      // Custom logic: Hợp nhất các giá trị 'vn' và 'vi' thành 'vi'
+      /** Thứ tự phát hiện ngôn ngữ */
+      order: ['querystring', 'localStorage', 'cookie', 'navigator'],
+      /** Query string để lấy ngôn ngữ, ví dụ: ?locale=vi */
+      lookupQuerystring: 'locale',
+      /** Lưu ngôn ngữ đã chọn */
+      // caches: ['localStorage'],
+      /**
+       * Lấy ngôn ngữ từ path, ví dụ: /vi/home
+       */
       lookupFromPathIndex: 0,
     },
   })

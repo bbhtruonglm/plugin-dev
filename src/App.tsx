@@ -1,5 +1,5 @@
 import './App.css'
-import './i18n' // Import cấu hình i18n
+import './i18n'
 
 import { Route, Routes } from 'react-router-dom'
 import { fetchAPI, useAPI } from './api/api'
@@ -30,9 +30,16 @@ import ChatApp from './pages/ChatApp'
 import i18next from './i18n'
 
 function App() {
+  /**
+   * @type {Object} API - API lấy thông tin khách hàng
+   * @type {string} READ_CLIENT_INFO - URL API lấy thông tin khách hàng
+   */
   const { READ_CLIENT_INFO } = useAPI()
   /** Trạng thái hiển thị Popup */
   const [is_show, setShow] = useState(false)
+  /**
+   * @type {boolean} type_consultation - Trạng thái hiển thị popup tư vấn
+   */
   const [type_consultation, setTypeConsultation] = useState(false)
 
   /** Page_id được lưu trong Store */
@@ -40,11 +47,6 @@ function App() {
 
   /** Client_id được lưu trong localStorage theo Page_id */
   const CLIENT_ID = localStorage.getItem(`client_id_<${PAGE_ID}>`)
-
-  /**
-   * is_ai - Trạng thái hiển thị AI
-   */
-  const [is_ai, setIsAi] = useState(false)
 
   /** Dispatch */
   const dispatch = useDispatch()
@@ -63,8 +65,11 @@ function App() {
        * @type {string} user_email - Email người dùng
        * @type {string} user_phone - Số điện thoại người dùng
        * @type {string} from - Nguồn gửi tin nhắn
+       * @type {string} action - Hành động
+       * @type {string} locale - Ngôn ngữ
        */
       const { user_name, user_email, user_phone, from, action } = PAYLOAD
+
       // console.log(event, 'event')
       /** Kiểm tra thông tin từ app cha */
       if (from === 'parent-app') {
@@ -72,15 +77,29 @@ function App() {
           'Nhận tin nhắn từ app cha. Thông tin nhận được là:',
           event.data
         )
-        console.log(action, 'action consultation')
+        /**
+         * Nếu có action thì hiển thị popup
+         */
         if (action) {
+          /**
+           * Lưu kiểu type_consultation
+           */
           setTypeConsultation(true)
+          /**
+           * Kiểm tra xem popup đã mở chưa
+           */
           if (!is_show) {
+            /**
+             * Nếu mở chỉ reset tin nhắn mới nhất trong store
+             */
             dispatch(setListMessage([]))
+            /**
+             *  Hiển thị popup
+             */
             setShow(true)
           }
         }
-        /** Lấy thông tin user từ event */
+
         /** Lưu thông tin user vào store */
         dispatch(
           setUserInfo({
@@ -111,21 +130,31 @@ function App() {
      * @returns {URL} Đối tượng URL được tạo ra từ chuỗi đầu vào
      */
     const URL_PARENT = new URL(FULL_SRC)
-
+    /**
+     * Lấy các tham số từ URL
+     */
     const URL_PARAMS = new URLSearchParams(window.location.search)
     // setIsAi(URL_PARAMS.get('is_ai') === 'true')
 
     // const IS_AI = URL_PARAMS.get('is_ai') === 'true'
+    /**
+     * @type {boolean} IS_AI - Trạng thái AI
+     */
     const IS_AI = URL_PARENT?.pathname.includes('ai-assistant')
 
+    /**
+     * Lưu trạng thái AI vào store
+     */
     dispatch(setStatusIsAI(IS_AI))
-
+    /**
+     * Lưu trạng thái AI vào state
+     */
     setShow(IS_AI)
     /**
      * Lấy giá trị locale từ URL
      * Mặc định là 'vn' nếu không có locale */
     const LOCALE = URL_PARAMS.get('locale') || 'vn'
-
+    // console.log(LOCALE, 'LOCALE')
     /** Thay đổi ngôn ngữ của SDK dựa trên locale từ URL */
     i18next
       .changeLanguage(LOCALE)
@@ -144,27 +173,36 @@ function App() {
     /** Example @value :bf425487afbe403895116dd9b585537b || 2204445623215564 || 100179064765476 || 388339911461476 || 5c290e88a5304e8e84ce8a8804b764e4 */
     dispatch(setPageId(STORED_PAGE_ID || ''))
 
-    /** Lấy Độ rộng của page cha từ URL */
+    /**
+     * @type {string} WIDTH_PARENT - Chiều rộng của page cha từ URL
+     */
     const WIDTH_PARENT = URL_PARENT.searchParams.get('parentWidth')
+    /**
+     * @type {string} HEIGHT_PARENT - Chiều cao của page cha từ URL
+     */
     const HEIGHT_PARENT = URL_PARENT.searchParams.get('parentHeight')
     /**
      * @type {string} HAS_VIEWPORT - Trạng thái có viewport hay không
      */
     const HAS_VIEWPORT = URL_PARENT.searchParams.get('has_viewport')
 
-    console.log(HAS_VIEWPORT, 'HAS_VIEWPORT')
-
+    /**
+     * Nếu không có viewport thì set lại viewport
+     */
     if (HAS_VIEWPORT === 'false') {
       /** Nếu không có viewport thì set lại viewport */
-
       dispatch(setNoViewport(true))
     }
-
+    /**
+     * Nếu có viewport thì set lại viewport
+     */
     if (WIDTH_PARENT) {
       /** nếu có truyền width thì lưu vào store */
       dispatch(setCurrentWidth(Number(WIDTH_PARENT)))
     }
-
+    /**
+     * Nếu có viewport thì set lại viewport
+     */
     if (HEIGHT_PARENT) {
       /** nếu có truyền height thì lưu vào store */
       dispatch(setCurrentHeight(Number(HEIGHT_PARENT)))
@@ -175,7 +213,9 @@ function App() {
     const STORED_CLIENT_ID = localStorage.getItem(
       `client_id_<${STORED_PAGE_ID}>`
     )
-
+    /**
+     * Nếu không có CLIENT_ID thì lưu CLIENT_ID vào localStorage
+     */
     fetchClientData(STORED_CLIENT_ID, STORED_PAGE_ID)
 
     /** Lấy từ localStorage một tin nhắn chưa đọc */
@@ -229,6 +269,9 @@ function App() {
     client_id: string | null,
     page_id: String | null
   ) => {
+    /**
+     * Nếu không có client_id hoặc page_id thì setClientName(null)
+     */
     if (!client_id || !page_id) {
       setClientName(null)
       return
@@ -241,7 +284,9 @@ function App() {
     }
     /** Lấy URL */
     const URL_READ = new URL(READ_CLIENT_INFO)
-
+    /**
+     * Thêm search vào URL
+     */
     URL_READ.search = new URLSearchParams(BODY as any).toString()
 
     /** Lấy thông tin client */

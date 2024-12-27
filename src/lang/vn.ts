@@ -38,5 +38,6 @@ export const vn = {
     send_message_to_us: 'Gửi tin nhắn đến',
     invalid_format_phone: 'Sai định dạng số điện thoại',
     invalid_format_email: 'Sai định dạng email',
+    no_internet_connection: 'Không có kết nối mạng...',
   },
 }

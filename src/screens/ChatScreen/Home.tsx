@@ -1,7 +1,6 @@
 import ChatOption from '@/components/HomeComponents/ChatOption'
 import { HomeProps } from './type'
 import SendMessage from '@/components/HomeComponents/SendMessage'
-import i18n from '@/i18n'
 import { t } from 'i18next'
 
 function Home({

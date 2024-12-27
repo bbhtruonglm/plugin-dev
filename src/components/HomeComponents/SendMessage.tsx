@@ -18,11 +18,14 @@ function SendMessage({ onNavigate, onError }: SendMessageProps) {
   return (
     <div
       onClick={() => {
+        /**
+         * Kiểm tra xem có page_id không
+         */
         if (PAGE_ID && PAGE_ID !== null) {
-          // Có page_id thì thêm page_id và url, sau đó chuyển trang
+          /** Có page_id thì thêm page_id và url, sau đó chuyển trang */
           onNavigate()
         } else {
-          // Không có page_id thì báo lỗi
+          /** Không có page_id thì báo lỗi */
           onError()
         }
       }}
