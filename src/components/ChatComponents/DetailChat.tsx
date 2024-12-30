@@ -1,7 +1,5 @@
 import { ChatScreenProps, Message } from './type'
-import _, { set } from 'lodash'
 import { fetchAPI, useAPI } from '@/api/api'
-import { renderAvatar, renderAvatarCDN } from '@/utils'
 import {
   selectGlobalUnreadCount,
   selectLatestMessage,
@@ -26,6 +24,8 @@ import InputChat from './Body/InputChat'
 import Loading from '../Loading/Loading'
 import LoadingDots from '../Loading/LoadingDot'
 import MessageBody from './Body/MessageBody'
+import _ from 'lodash'
+import { renderAvatarCDN } from '@/utils'
 // import InitClient from './InitClient'
 import { t } from 'i18next'
 
@@ -87,16 +87,37 @@ function DetailChat({
   /** Số bản ghi hiển thị trong 1 trang */
   const LIMIT = 20
 
+  /**
+   * State loading khi gửi tin nhắn
+   */
   const [skip, setSkip] = useState(0)
+  /**
+   * State loading khi gửi tin nhắn
+   */
   const [loading, setLoading] = useState(false)
-
+  /**
+   * State loading khi gửi tin nhắn
+   */
   const [loading_more, setLoadingMore] = useState(false)
+  /**
+   *  State có thêm tin nhắn không
+   */
   const [has_more, setHasMore] = useState(true)
+  /**
+   *  State lưu tin nhắn mới
+   */
   const [scroll_at_bottom, setScrollAtBottom] = useState(true)
+  /**
+   * State trạng thái nhanh chóng cuộn xuống dưới cùng
+   */
   const [show_jump_button, setShowJumpButton] = useState(false)
-
+  /**
+   * State lưu lỗi khi upload file
+   */
   const [error_upload, setErrorUpload] = useState('')
-
+  /**
+   * State lưu trạng thái loading khi khởi tạo client
+   */
   const CLIENT_ID = localStorage.getItem(`client_id_<${PAGE_ID}>`)
 
   /** Debounce để xử lý scroll
@@ -105,9 +126,18 @@ function DetailChat({
    * @returns setTimeout
    */
   const debounce = (func: Function, delay: number) => {
+    /**
+     * Khai báo biến timer
+     */
     let debounce_timer: ReturnType<typeof setTimeout>
+    /**
+     * Trả về hàm debounce
+     */
     return (...args: any[]) => {
       clearTimeout(debounce_timer)
+      /**
+       * Gọi hàm sau delay
+       */
       debounce_timer = setTimeout(() => func(...args), delay)
     }
   }
@@ -115,7 +145,6 @@ function DetailChat({
   /** Hàm gọi API để lấy tin nhắn */
   const fetchMessage = async () => {
     /** Đang loading hoặc không có thêm bản ghi sẽ không fetch data nữa */
-
     if (loading_more || !has_more) return
     /** Lấy vị trí scroll hiện tại, nếu k có thì return */
     const CONTAINER = MESSAGE_CONTAINER_REF.current
@@ -128,6 +157,7 @@ function DetailChat({
     /** set loading_more = true để không call liên tục */
 
     try {
+      /** Set loading more */
       setLoadingMore(true)
       /** Tạo đối tượng URL từ string */
       const URL_READ = new URL(READ_MESSAGE_API)
@@ -150,7 +180,9 @@ function DetailChat({
        * Lưu kết quả trả về
        */
       const RESULT = await RES
-
+      /**
+       * Nếu data trả về = LIMIT thì còn tin nhắn cũ
+       */
       if (RESULT.data.length === LIMIT) {
         /** set call api se skip bn ban ghi */
         setSkip(skip + RESULT.data.length)
@@ -219,7 +251,9 @@ function DetailChat({
     /** Set Hiển thị nút btn jump */
     setShowJumpButton(!AT_BOTTOM)
   }, [fetchMessage, loading_more, has_more])
-
+  /**
+   * Hàm debounce xử lý scroll
+   */
   const debouncedScroll = useCallback(debounce(handleScroll, 200), [
     handleScroll,
   ])
@@ -227,7 +261,9 @@ function DetailChat({
   useEffect(() => {
     /* Sử dụng debounce để xử lý scroll */
     const CONTAINER = MESSAGE_CONTAINER_REF.current
-
+    /**
+     * Nếu có container thì thêm event scroll
+     */
     if (CONTAINER && !loading_more) {
       /** Sử dụng debounce */
       // const debouncedScroll = debounce(handleScroll, 200)
@@ -242,7 +278,6 @@ function DetailChat({
     /** Cuộn xuống cuối mỗi khi danh sách tin nhắn thay đổi
      * Không check event khi đang scroll lên nữa, khi có tin nhắn mới auto scroll
      */
-
     if (scroll_at_bottom) {
       scrollToBottom()
     }

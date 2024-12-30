@@ -13,15 +13,38 @@ function InitClient({ resetData, onInitClient }: InitClientProps) {
   const LOADING_GLOBAL = useSelector(selectLoadingGlobal)
   /** Lấy thông tin user từ store */
   const USER_INFO = useSelector(selectUserInfo)
-  // console.log(USER_INFO)
-  const [name, setName] = useState('')
-  const [phone, setPhone] = useState('')
-  const [email, setEmail] = useState('')
-  const [email_error, setEmailError] = useState('')
-  const [phone_error, setPhoneError] = useState('')
-  const [name_error, setNameError] = useState('')
 
+  /**
+   * State tên
+   */
+  const [name, setName] = useState('')
+  /**
+   * State sđt
+   */
+  const [phone, setPhone] = useState('')
+  /**
+   * State email
+   */
+  const [email, setEmail] = useState('')
+  /**
+   * State lỗi email
+   */
+  const [email_error, setEmailError] = useState('')
+  /**
+   * State lỗi sđt
+   */
+  const [phone_error, setPhoneError] = useState('')
+  /**
+   * State lỗi tên
+   */
+  const [name_error, setNameError] = useState('')
+  /**
+   * Effect lấy thông tin user từ store
+   */
   useEffect(() => {
+    /**
+     * Nếu user info không rỗng
+     */
     if (!_.isEmpty(USER_INFO)) {
       setName(USER_INFO?.user_name)
       setPhone(USER_INFO?.user_phone)
@@ -30,6 +53,9 @@ function InitClient({ resetData, onInitClient }: InitClientProps) {
   }, [USER_INFO])
 
   useEffect(() => {
+    /**
+     * Nếu resetData = true
+     */
     if (resetData) {
       setEmail('')
       setName('')
@@ -53,36 +79,85 @@ function InitClient({ resetData, onInitClient }: InitClientProps) {
    * @param {any} e
    */
   const handleEmailChange = (e: any) => {
-    const value = e.target.value
-    setEmail(value)
-
-    if (!value || EMAIL_REGEX.test(value)) {
+    /**
+     * Lấy giá trị từ input
+     */
+    const VALUE = e.target.value
+    /**
+     * Set giá trị email
+     */
+    setEmail(VALUE)
+    /**
+     * Nếu không có giá trị hoặc giá trị tho
+     */
+    if (!VALUE || EMAIL_REGEX.test(VALUE)) {
+      /**
+       * Set lỗi email
+       */
       setEmailError('')
     } else {
+      /**
+       * Set lỗi email
+       */
       setEmailError(t('invalid_format_email'))
     }
   }
-  /** Hàm xử lý thay đổi sdt */
+  /** Hàm xử lý thay đổi sdt
+   * @param {any} e
+   */
   const handlePhoneChange = (e: any) => {
-    const value = e.target.value
-    setPhone(value)
-
-    if (!value) {
+    /**
+     * Lấy giá trị từ input
+     */
+    const VALUE = e.target.value
+    /**
+     * Set giá trị sđt
+     */
+    setPhone(VALUE)
+    /**
+     * Nếu không có giá trị hoặc giá trị tho
+     */
+    if (!VALUE) {
+      /**
+       * Set lỗi sđt
+       */
       setPhoneError(t('input_data')) // Thông báo bắt buộc nhập số điện thoại
-    } else if (VN_PHONE_REGEX.test(value) || UK_PHONE_REGEX.test(value)) {
+    } else if (VN_PHONE_REGEX.test(VALUE) || UK_PHONE_REGEX.test(VALUE)) {
+      /**
+       * Set lỗi sđt
+       */
       setPhoneError('')
     } else {
+      /**
+       * Set lỗi sđt
+       */
       setPhoneError(t('invalid_format_phone'))
     }
   }
-  /** Hàm xử lý thay đổi tên */
+  /** Hàm xử lý thay đổi tên
+   * @param {any} e
+   */
   const handleNameChange = (e: any) => {
-    const value = e.target.value
-    setName(value)
-
-    if (!value) {
+    /**
+     * Lấy giá trị từ input
+     */
+    const VALUE = e.target.value
+    /**
+     * Set giá trị tên
+     */
+    setName(VALUE)
+    /**
+     *  Nếu không có giá trị hoặc giá trị tho
+     */
+    if (!VALUE) {
+      /**
+       * Set lỗi tên
+       */
       setNameError(t('input_data')) // Thông báo bắt buộc nhập tên
     } else {
+      /**
+       * Set lỗi tên
+       */
       setNameError('')
     }
   }

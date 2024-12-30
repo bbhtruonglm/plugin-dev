@@ -444,6 +444,7 @@ const ChatApp = ({
 
     // lưu ngôn ngữ hiện tại
     // i18n.changeLanguage(RES?.data?.default_language)
+
     /** Lưu danh sách nhân viên */
     setStaffList(RES?.data?.staffs)
   }
@@ -458,7 +459,10 @@ const ChatApp = ({
     }
   }, [])
 
-  /** Chuyển từ Object thành mảng Array và lấy ra fb_staff_id và is_online */
+  /** Chuyển từ Object thành mảng Array và lấy ra fb_staff_id và is_online
+   * @param {Object} staff_list - Danh sách nhân viên
+   * @returns {Array} Mảng nhân viên
+   */
   const EMPLOYEE_LIST: Employee[] = map(values(staff_list), (employee) => ({
     fb_staff_id: employee.fb_staff_id,
     is_online: employee.is_online,

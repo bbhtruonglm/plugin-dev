@@ -111,10 +111,10 @@ function App() {
       }
     }
 
-    // Thêm event listener cho thông điệp
+    /** Thêm event listener cho thông điệp */
     window.addEventListener('message', handleMessage)
 
-    // Cleanup event listener khi component bị unmount
+    /** Cleanup event listener khi component bị unmount */
     return () => {
       window.removeEventListener('message', handleMessage)
     }

@@ -18,17 +18,48 @@ function ChatScreen({
   page_name,
   employee_list,
 }: ChatProps) {
+  /**
+   * Lấy API từ useAPI
+   */
   const { INIT_CLIENT_API, READ_CLIENT_INFO } = useAPI()
   /** ID trang được lấy từ store */
   const PAGE_ID = useSelector(selectPageId)
+  /**
+   * Lấy dữ liệu từ store
+   */
   const dispatch = useDispatch()
+  /**
+   * State client ID
+   */
   const [client_id, setClientId] = useState<String | null | any>('')
+  /**
+   * State báo sai page_id
+   */
   const [invalid_page_id, setInvalidPageId] = useState(false)
+  /**
+   * State loading init client
+   */
   const [loading, setLoading] = useState(false)
+  /**
+   * State avatar nhân viên
+   */
   const [staff_avatar, setStaffAvatar] = useState(null as any)
+  /**
+   * State tên nhân viên
+   */
   const [staff_name, setStaffName] = useState(null as any)
+  /**
+   * State loading staff
+   */
   const [loading_staff, setLoadingStaff] = useState(false)
+  /**
+   *  State tên khách hàng
+   */
   const [client_name, setClientName] = useState(null as any)
+
+  /**
+   *  State khởi tạo xong
+   */
   const [is_init, setIsInit] = useState(false)
   /** AI_STATUS */
   const AI_STATUS = useSelector(selectStatusAI)
@@ -50,16 +81,22 @@ function ChatScreen({
       }
     }
   }, [])
-
+  /**
+   * Hàm lấy dữ liệu khách hàng
+   */
   useEffect(() => {
+    /**
+     * Nếu có client_id thì mới gọi hàm đọc data khách hàng
+     */
     if (client_id) {
-      // Có client_id thì Gọi hàm đọc data khách hàng
+      /** Có client_id thì Gọi hàm đọc data khách hàng */
       fetchClientData(client_id, PAGE_ID)
-      // add url mới
     }
   }, [client_id])
 
-  /** hàm khởi tạo client id */
+  /** hàm khởi tạo client id
+   * @param {Object} value - Đối tượng chứa các tham số cần chuyển đổi thành chuỗi query string
+   */
   const initGetClientId = async (value: any) => {
     try {
       /** Tạo đối tượng URL từ chuỗi init URL client */
@@ -79,37 +116,54 @@ function ChatScreen({
        * // URL_CLIENT.search sẽ là "page=1&sort=asc"
        */
       const PARAMS = value
-
+      /**
+       * Gán chuỗi truy vấn vào URL
+       */
       URL_CLIENT.search = new URLSearchParams(PARAMS).toString()
       /** Lấy client_ID */
-      const res = await fetch(URL_CLIENT, {
+      const RES = await fetch(URL_CLIENT, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       })
-      const RESULT = await res.json()
+      /**
+       * Chuyển đổi dữ liệu trả về thành JSON
+       */
+      const RESULT = await RES.json()
 
       /** luu vao localStorage */
       setClientId(RESULT.data)
-
+      /**
+       *  Nếu lỗi 403 thì lưu lại chuỗi rỗng
+       */
       if (RESULT.code === 403) {
         /** Nếu lỗi thì lưu lại chuỗi rỗng */
         localStorage.setItem(`client_id_<${PAGE_ID}>`, '')
+        /**
+         * Báo lỗi page_id không hợp lệ
+         */
         setInvalidPageId(true)
       } else {
         /** Có data thì lưu vào local storage */
-
         localStorage.setItem(`client_id_<${PAGE_ID}>`, RESULT.data)
         // localStorage.setItem(`client_id_<${PAGE_ID}>`, '6131478076934694')
-
+        /**
+         * Set status init client thành true
+         */
         dispatch(setStatusIsInit(true))
+        /**
+         * Set global client id
+         */
         dispatch(setGlobalClientId(RESULT.data))
+        /**
+         * Set is init thành true
+         */
         setIsInit(true)
       }
     } catch (err) {
     } finally {
-      // Tắt loading init client
+      /** Tắt loading init client */
       setLoading(false)
     }
   }
@@ -117,8 +171,17 @@ function ChatScreen({
    * Nếu là case AI_STATUS và chưa có CLIENT_ID
    */
   useEffect(() => {
+    /**
+     * Nếu là case AI_STATUS và chưa có CLIENT_ID
+     */
     if (AI_STATUS && !CLIENT_ID) {
+      /**
+       * Gọi hàm khởi tạo client id
+       */
       initGetClientId({ page_id: PAGE_ID })
+      /**
+       * Set status AI_STATUS thành false
+       */
     }
   }, [AI_STATUS, CLIENT_ID])
 
@@ -138,7 +201,9 @@ function ChatScreen({
     }
     /** Lấy URL */
     const URL_READ = new URL(READ_CLIENT_INFO)
-
+    /**
+     * Gán chuỗi truy vấn vào URL
+     */
     URL_READ.search = new URLSearchParams(BODY as any).toString()
 
     /** Lấy thông tin client */
@@ -152,16 +217,30 @@ function ChatScreen({
       const LINK_AVATAR = apiImage(
         `/app/facebook/avatar/${RES.data.fb_staff_id}?width=64&height=64`
       )
-
+      /**
+       * Set avatar nhân viên
+       */
       setStaffAvatar(LINK_AVATAR)
+      /**
+       * Tắt loading staff
+       */
       setLoadingStaff(false)
     }
 
     /** Lấy Tên nhân viên */
     if (RES?.data?.snap_staff?.name) {
+      /**
+       * Set tên nhân viên
+       */
       setStaffName(RES.data.snap_staff.name)
+      /**
+       * Tắt loading staff
+       */
       setLoadingStaff(false)
     }
+    /**
+     * Tắt loading staff
+     */
     setLoadingStaff(false)
   }
 
