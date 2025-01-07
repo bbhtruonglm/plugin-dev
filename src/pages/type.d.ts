@@ -14,8 +14,11 @@ interface ChatAppProps {
   consultation?: boolean
 }
 
-// Định nghĩa kiểu dữ liệu cho danh sách nhân viên
+/** Định nghĩa kiểu dữ liệu cho danh sách nhân viên */
 interface EmployeeList {
+  /** Danh sách nhân viên
+   * @params {string} key - Mã nhân viên
+   */
   [key: string]: Employee
 }
 /** Cấu trúc dữ liệu Màn chat */

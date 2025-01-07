@@ -1,7 +1,7 @@
 export const en = {
   translation: {
     welcome: 'Hello,',
-    _hi: 'Hi',
+    _hi: 'Hi ',
     home: 'Home',
     message: 'Message',
     support: 'Support',

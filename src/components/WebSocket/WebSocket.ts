@@ -20,9 +20,10 @@ import { size } from 'lodash'
 const sendIdentifyMessage = (
   page_id: string | null,
   client_id: string | null,
-  WS: React.MutableRefObject<WebSocket | null> // Sử dụng Ref để giữ trạng thái WebSocket
+  /** Sử dụng Ref để giữ trạng thái WebSocket */
+  WS: React.MutableRefObject<WebSocket | null>
 ) => {
-  // Kiểm tra điều kiện khi nào WebSocket đang ở trạng thái OPEN thì mới gửi tin nhắn
+  /** Kiểm tra điều kiện khi nào WebSocket đang ở trạng thái OPEN thì mới gửi tin nhắn */
   if (WS.current?.readyState === WebSocket.OPEN) {
     WS.current?.send(
       JSON.stringify({
@@ -32,9 +33,10 @@ const sendIdentifyMessage = (
       })
     )
   } else {
-    // Nếu chưa kết nối, thử lại sau một khoảng thời gian nhất định
+    /** Nếu chưa kết nối, thử lại sau một khoảng thời gian nhất định */
     console.log('WebSocket is not open yet. Retrying...')
-    setTimeout(() => sendIdentifyMessage(page_id, client_id, WS), 100) // Thử lại sau 100ms nếu chưa kết nối
+    /** Thử lại sau 100ms nếu chưa kết nối */
+    setTimeout(() => sendIdentifyMessage(page_id, client_id, WS), 100)
   }
 }
 /**  Cấu hình websocket
@@ -59,28 +61,31 @@ export function onSocketFromChatboxServer({
   SOCKET_API,
   is_force_close_socket,
 }: WebSocketProps) {
-  // Kết nối tới WebSocket server
+  /** Kết nối tới WebSocket server */
   WS.current = new WebSocket(SOCKET_API || '')
   // WS.current = new WebSocket('https://chatbox-public-v2.botbanhang.vn/socket')
-  //Lưu lại id vòng lặp
+  /** Lưu lại id vòng lặp */
   let ping_interval_id: number | any
-  // kết nối được mở
+  /** kết nối được mở */
   WS.current.onopen = () => {
-    // Thông báo connect thành công
+    /** Thông báo connect thành công */
     console.log('WebSocket Connectedddd')
-    // Gửi tin nhắn khởi tạo socket
+    /** Gửi tin nhắn khởi tạo socket */
     sendIdentifyMessage(page_id, client_id, WS)
-    // Nếu socket đang readyState === websocket.OPEN thì được gọi tin nhắn
+    /** Nếu socket đang readyState === websocket.OPEN thì được gọi tin nhắn */
     if (WS.current?.readyState === WebSocket.OPEN) {
-      // tu dong ping socket lien tuc 30s
+      /** tu dong ping socket lien tuc 30s */
       ping_interval_id = setInterval(() => WS.current?.send('ping'), 1000 * 25)
     } else {
       console.log('WebSocket is not open yet. Retrying...')
-      // Thử lại sau 100ms nếu chưa kết nối
+      /** Thử lại sau 100ms nếu chưa kết nối */
       setTimeout(sendIdentifyMessage, 100)
     }
   }
-  // Khi có tin nhắn
+  /** Khi có tin nhắn
+   * - Kiểm tra dữ liệu nhận được
+   * @param {MessageEvent} data - Dữ liệu nhận được từ WebSocket
+   */
   WS.current.onmessage = ({ data }) => {
     if (!data || data === 'pong') return
     /**dữ liệu socket nhận được */
@@ -134,6 +139,15 @@ export function onSocketFromChatboxServer({
         dispatch(
           setListUnreadMessage([...REF_LIST_UNREAD_MESSAGE.current, message])
         )
+
+        console.log(REF_LIST_UNREAD_MESSAGE, 'REF_LIST_UNREAD_MESSAGE')
+        console.log(
+          REF_GLOBAL_UNREAD_MESSAGE_COUNT,
+          'REF_GLOBAL_UNREAD_MESSAGE_COUNT'
+        )
+        /**
+         * Cập nhật số lượng tin nhắn chưa đọc
+         */
         dispatch(
           setGlobalUnreadCount(REF_GLOBAL_UNREAD_MESSAGE_COUNT.current + 1)
         )

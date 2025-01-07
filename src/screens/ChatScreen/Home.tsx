@@ -11,41 +11,35 @@ function Home({
   web_form,
   social_description,
 }: HomeProps) {
+  /**
+   * Lấy thông tin từ web_form
+   */
+  const { is_active, source } = web_form || {}
+  /**
+   * Lấy title và description từ source
+   */
+  const { title, description } = source || {}
+
   return (
     <div className="flex flex-col px-5 py-3 gap-y-4">
       {/* Greeting */}
-      {web_form?.is_active ? (
-        <div className="">
-          <h1 className="text-2xl font-semibold">
-            {client_name
-              ? web_form?.source?.title + ' ' + client_name + ','
-              : t('welcome')}
-          </h1>
-          <h2 className="text-xl font-medium">
-            {web_form?.source
-              ? web_form?.source?.description
-              : t('welcomeMessage')}
-          </h2>
-        </div>
-      ) : (
-        <div className="">
-          <h1 className="text-2xl font-semibold truncate">
-            {client_name ? t('_hi') + client_name + ',' : t('welcome')}
-          </h1>
-          <h2 className="text-xl font-medium">{t('welcomeMessage')}</h2>
-        </div>
-      )}
+      <div className="">
+        <h1 className="text-2xl font-semibold">
+          {client_name ? title || `${t('_hi')} ${client_name},` : t('welcome')}
+        </h1>
+        <h2 className="text-xl font-medium">
+          {description || t('welcomeMessage')}
+        </h2>
+      </div>
+
       {/* Send message */}
       <SendMessage
-        // page_id={page_id}
         onNavigate={onNavigate}
         onError={onError}
         client_name={client_name}
       />
 
-      {/* Lựa chọn kênh liên lạc . 
-        Nếu không có list social thì ẩn đi
-      */}
+      {/* Lựa chọn kênh liên lạc. Nếu không có list social thì ẩn đi */}
       {!!social_link?.length && (
         <ChatOption
           social_link={social_link}

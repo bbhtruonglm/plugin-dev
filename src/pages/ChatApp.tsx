@@ -313,6 +313,8 @@ const ChatApp = ({
   }, [PAGE_ID])
 
   useEffect(() => {
+    console.log(GLOBAL_CLIENT_ID, 'GLOBAL_CLIENT_ID')
+    console.log(IS_INIT_CLIENT, 'IS_INIT_CLIENT')
     /** Khi có clientId hợp lệ và socket chưa được khởi tạo */
     /** Check từ global TH khởi tạo USER */
     if (GLOBAL_CLIENT_ID && IS_INIT_CLIENT) {
@@ -542,162 +544,205 @@ const ChatApp = ({
     LATEST_MESSAGE: MessageInfo,
     CURRENT_WIDTH: number,
     SHOW_QUICK_CHAT: string | null
-  ) => {
+  ): string => {
     /**
-     * Trường hợp màn hình có height nhỏ hơn 674px
+     * Xác định trạng thái thiết bị là mobile
      */
-    if (
-      CURRENT_HEIGHT &&
-      CURRENT_HEIGHT < 674 &&
-      show &&
-      CURRENT_WIDTH > 768 &&
-      CURRENT_WIDTH !== 0
-    ) {
+    const IS_MOBILE = CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
+    /**
+     * Xác định trạng thái chiều cao nhỏ
+     */
+    const IS_SMALL_HEIGHT = CURRENT_HEIGHT && CURRENT_HEIGHT < 674
+    /**
+     * Xác định trạng thái AI
+     */
+    const IS_AI = AI_STATUS
+    /**
+     * Xác định trạng thái xem trước ảnh
+     */
+    const IS_PREVIEWING_IMAGE = !!GLOBAL_PREVIEW_URL
+    /**
+     * Xác định có tin nhắn chưa đọc hay không
+     */
+    const HAS_UNREAD_MESSAGE = GLOBAL_UNREAD_MESSAGE_COUNT > 0
+    /**
+     * Xác định trạng thái ẩn hiện QUICK_CHAT
+     */
+    const IS_QUICKCHAT_HIDDEN = SHOW_QUICK_CHAT === 'hide_quick_chat'
+    /**
+     * Xác định trạng thái ẩn hiện QUICK_CHAT
+     */
+    const IS_QUICKCHAT_VISIBLE = SHOW_QUICK_CHAT === 'show_quick_chat'
+
+    /**
+     *  Hàm gọi postMessage
+     * @param popupOpen   Trạng thái popup mở
+     * @param triggerWelcome  Trạng thái hiển thị tin nhắn chào mừng
+     * @param height  Chiều cao popup
+     * @param previewUrl  Đường dẫn xem trước ảnh
+     * @returns
+     */
+    const callPostMessage = (
+      popupOpen: boolean,
+      triggerWelcome: boolean,
+      height?: number,
+      previewUrl?: string
+    ) => postMessageToParent(popupOpen, triggerWelcome, height, previewUrl)
+    /**
+     *  Hàm lấy chiều cao tin nhắn
+     * @param message  Tin nhắn
+     * @returns
+     */
+    const getMessageHeight = (
+      message: MessageInfo | null
+    ): number | undefined => {
       /**
-       * Call postMessageToParent
+       * Nếu không có tin nhắn thì trả về undefined
        */
-      postMessageToParent(true, false)
+      if (!message) return undefined
       /**
-       * Trả về css chỉ hiện popup
+       * Nếu có tệp đính kèm kiểu ảnh hoặc video thì trả về 312
+       */
+      if (
+        hasAttachmentOfType(message, 'image') ||
+        hasAttachmentOfType(message, 'video')
+      )
+        return 312
+      /**
+       * Nếu có tệp đính kèm kiểu file thì trả về 240
+       */
+      if (hasAttachmentOfType(message, 'file')) return 240
+      /**
+       * Nếu có tệp đính kèm kiểu template button thì trả về 312
+       */
+      if (
+        message.message_attachments &&
+        hasAttachmentOfType(message, 'template') &&
+        message.message_attachments[0]?.payload?.template_type === 'button'
+      )
+        return 312
+      /**
+       * Mặc định trả về 224
+       */
+      return 224
+    }
+    /**
+     * Trường hợp Chiều cao màn hình nhỏ hơn và popup đang mở và chiều rộng lớn hơn 768
+     */
+    if (IS_SMALL_HEIGHT && show && CURRENT_WIDTH > 768) {
+      /**
+       * Gọi hàm postMessage
+       */
+      callPostMessage(true, false)
+      /**
+       * Trả về css popup
        */
       return 'flex flex-col md:w-[416px] h-screen px-2 py-2 justify-between'
     }
-
     /**
      * Trường hợp chat AI
-     * is_ai = true
-     * Hiển thị full width-height và ẩn header
      */
-    if (AI_STATUS) {
+    if (IS_AI) {
       /**
-       * Call postMessageToParent
+       * Gọi hàm postMessage
        */
-      postMessageToParent(true, false)
+      callPostMessage(true, false)
       /**
-       * Trả về css AI
+       * Trả về css popup
        */
       return 'w-screen h-screen'
     }
-
-    /** Giả sử trường hợp User preview ảnh,
-     * gọi post message để thay kích thước SDK ở cha
-     * thay đổi kích thước ở bong bóng chat
+    /**
+     * Trường hợp xem trước ảnh
      */
-    if (GLOBAL_PREVIEW_URL) {
-      // postMessageToParent(true, false, 674, GLOBAL_PREVIEW_URL)
+    if (IS_PREVIEWING_IMAGE) {
+      /**
+       * Gọi hàm postMessage
+       */
+      callPostMessage(true, false, 674, GLOBAL_PREVIEW_URL)
+      /**
+       * Trả về css popup
+       */
       return 'flex w-screen h-screen items-end justify-end px-6 pr-5 pb-[68px]'
     }
-    /** Popup đang đóng , không có tin nhắn mới, trigger welcome message */
-    if (!show && show_welcome_message && LATEST_MESSAGE === null) {
-      /** Call postMessageToParent */
-      postMessageToParent(false, true, 142)
+    /**
+     * Trường hợp popup đóng, và không có tin nhắn chưa đọc
+     */
+    if (!show && show_welcome_message && !LATEST_MESSAGE) {
       /**
-       * Trả về css chỉ hiện popup
+       * Gọi hàm postMessage
+       */
+      callPostMessage(false, true, 142)
+      /**
+       * Trả về css popup
        */
       return 'w-[302px] h-[142px] items-end justify-between pb-4 px-2'
     }
-
-    /** Base condition:
-     * - Popup closed,
-     * - Trạng thái Quick_chat đóng,
-     * - message is from page,
-     * - unread messages > 0
-     * */
+    /**
+     * Trường hợp popup đóng, và không có tin nhắn chưa đọc
+     */
     if (
-      (!show && SHOW_QUICK_CHAT === 'hide_quick_chat') ||
-      (!show && GLOBAL_UNREAD_MESSAGE_COUNT === 0) ||
-      (!show && LATEST_MESSAGE === null && GLOBAL_UNREAD_MESSAGE_COUNT > 0)
+      !show &&
+      (IS_QUICKCHAT_HIDDEN ||
+        !HAS_UNREAD_MESSAGE ||
+        (!LATEST_MESSAGE && HAS_UNREAD_MESSAGE))
     ) {
-      /** Call postMessageToParent */
-      postMessageToParent(false, false)
-      /** Trả về css chỉ hiện popup */
+      /**
+       * Gọi hàm postMessage
+       */
+      callPostMessage(false, false)
+      /**
+       * Trả về css popup
+       */
       return 'w-16 h-[72px] items-center justify-center pb-4 pt-2'
     }
-
-    /** =============================================================================== */
-
-    if (
-      SHOW_QUICK_CHAT === 'show_quick_chat' &&
-      !show &&
-      GLOBAL_UNREAD_MESSAGE_COUNT > 0 &&
-      LATEST_MESSAGE?.message_type === 'page'
-    ) {
-      /** Kiểm tra với type image / video */
-      if (
-        hasAttachmentOfType(LATEST_MESSAGE, 'image') ||
-        hasAttachmentOfType(LATEST_MESSAGE, 'video')
-      ) {
-        /** Call postMessageToParent */
-        postMessageToParent(false, true, 312)
-        /**
-         * Trả về css chỉ hiện popup
-         */
-        return 'w-[302px] h-[312px] items-end justify-between pb-4 px-2 '
-      }
-
-      /** Kiểm tra với type template && payload = button */
-      if (
-        LATEST_MESSAGE?.message_attachments &&
-        hasAttachmentOfType(LATEST_MESSAGE, 'template') &&
-        LATEST_MESSAGE?.message_attachments[0]?.payload?.template_type ===
-          'button'
-      ) {
-        /** Call postMessageToParent */
-        postMessageToParent(false, true, 312)
-        /**
-         * Trả về css chỉ hiện popup
-         */
-        return 'w-[302px] h-[312px] items-end justify-between pb-4 px-2 '
-      }
-
-      /** Kiểm tra với type file  ví dụ audio */
-      if (hasAttachmentOfType(LATEST_MESSAGE, 'file')) {
-        /** Call postMessageToParent */
-        postMessageToParent(false, true, 240)
-        /**
-         *  Trả về css chỉ hiện popup
-         */
-        return 'w-[302px] h-[240px] items-end justify-between pb-4 px-2 '
-      }
-    }
-
     /**
-     * - Popup đóng ,
-     * - Trạng thái Quick_chat đóng,
-     * - tin nhắn từ page,
-     * - kiểu tin nhắn text */
-    if (
-      SHOW_QUICK_CHAT === 'show_quick_chat' &&
-      !show &&
-      GLOBAL_UNREAD_MESSAGE_COUNT > 0 &&
-      LATEST_MESSAGE?.message_type === 'page'
-    ) {
-      /** Call postMessageToParent */
-      postMessageToParent(false, true, 224)
-      /** Trả về giao diện Text thông thường */
-      return 'w-[302px] h-56 items-end justify-between pb-4 px-2 '
-    }
-
-    /**
-     * - Popup mở,
-     * - trạng thái Mobile hiện full màn hình */
-    if (CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0) {
+     * Trường hợp popup đóng, và có tin nhắn chưa đọc
+     */
+    if (IS_QUICKCHAT_VISIBLE && !show && HAS_UNREAD_MESSAGE) {
       /**
-       * Call postMessageToParent
+       * Lấy chiều cao tin nhắn
        */
-      postMessageToParent(true, false)
+      const HEIGHT = getMessageHeight(LATEST_MESSAGE)
       /**
-       * Trả về kích thước full
+       * Gọi hàm postMessage
+       */
+      if (HEIGHT) {
+        /**
+         * Gọi hàm postMessage
+         */
+        callPostMessage(false, true, HEIGHT)
+        /**
+         * Trả về css popup
+         * Vì chiều cao tin nhắn có thể thay đổi nên sử dụng biến HEIGHT
+         * để xác định chiều cao popup
+         * Nếu chiều cao tin nhắn là 224 thì chiều cao popup là 56
+         */
+        return `w-[302px] ${
+          HEIGHT === 224 ? 'h-56' : `h-[${HEIGHT}px]`
+        } items-end justify-between pb-4 px-2`
+      }
+    }
+    /**
+     * Trường hợp màn hình Mobile
+     */
+    if (IS_MOBILE) {
+      /**
+       * Gọi hàm postMessage
+       */
+      callPostMessage(true, false)
+      /**
+       * Trả về css popup
        */
       return 'w-screen_dvw h-screen_dvh'
     }
-
-    // console.log('final case!!!')
     /**
-     * - Popup mở,
-     * - trả về full kích thước */
-    postMessageToParent(true, false)
-    /**  Trả về kích thước Fixed */
+     * Trường hợp mở popup Màn hình PC bình thường
+     */
+    callPostMessage(true, false)
+    /**
+     * Trả về css popup
+     */
     return 'w-[416px] h-[674px] px-2 pb-4 justify-between items-end'
   }
 
@@ -711,63 +756,51 @@ const ChatApp = ({
     show: boolean,
     GLOBAL_UNREAD_MESSAGE_COUNT: number,
     CURRENT_WIDTH: number
-  ) => {
+  ): string => {
     /**
-     * Trường hợp màn hình nhỏ hơn
+     * Xác định trạng thái thiết bị là mobile
      */
-    if (
-      CURRENT_HEIGHT < 674 &&
-      show &&
-      CURRENT_WIDTH > 768 &&
-      CURRENT_WIDTH !== 0
-    ) {
-      /**
-       * Trả về css chỉ hiện popup
-       */
-      return 'flex flex-col w-[400px] justify-between bg-bg-gradient rounded-[20px] h-full mb-[72px] overflow-hidden'
-    }
-
-    /** Trường hợp chat AI
-     * is_ai = true
-     * Hiển thị full width-height và ẩn header
-     */
-    if (AI_STATUS) {
-      /**
-       * Trả về css AI
-       */
-      return 'flex flex-col w-screen h-screen just-between bg-bg-gradient'
-    }
-
-    /** CSS base */
-    if (GLOBAL_PREVIEW_URL) {
-      /**
-       * Trả về css chỉ hiện popup
-       */
-      return 'flex flex-col w-[400px] h-[600px] mb-2.5 rounded-[20px] relative bg-bg-gradient overflow-hidden shadow-md'
-    }
+    const IS_MOBILE = CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
     /**
-     * Popup đóng, và không có tin nhắn chưa đọc
+     * Xác định trạng thái chiều cao nhỏ
      */
+    const IS_SMALL_HEIGHT = CURRENT_HEIGHT < 674 && CURRENT_WIDTH > 768
+    /**
+     * Xác định trạng thái AI
+     */
+    const HAS_NO_UNREAD_MESSAGE = GLOBAL_UNREAD_MESSAGE_COUNT === 0
+
+    /** CSS Base */
     const BASE_CLASSES =
-      'flex justify-between relative bg-bg-gradient overflow-hidden shadow-md '
-
-    /** Màn Mobile / PC */
-    const SIZE_CLASSES =
-      CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
-        ? 'w-screen h-screen rounded-none'
-        : 'w-[400px] h-[600px] rounded-[20px]'
-
-    /** Popup đang đóng, và không có tin nhắn chưa đọc */
+      'flex justify-between relative bg-bg-gradient overflow-hidden shadow-md'
+    /** CSS Size */
+    const SIZE_CLASSES = IS_MOBILE
+      ? 'w-screen h-screen rounded-none'
+      : 'w-[400px] h-[600px] rounded-[20px]'
+    /** CSS Visibility */
     const VISIBILITY_CLASSES =
-      !show && GLOBAL_UNREAD_MESSAGE_COUNT === 0
+      !show && HAS_NO_UNREAD_MESSAGE
         ? 'hidden'
         : `flex flex-col ${
             !has_exited_preview ? 'animate-zoomInBottomRight' : ''
           } transition-transform duration-200 ease-in-out`
 
-    /**
-     * return Tông hợp các CSS
-     */
+    /** Điều kiện màn hình nhỏ và đang mở */
+    if (IS_SMALL_HEIGHT && show) {
+      return `${BASE_CLASSES} w-[400px] justify-between h-full mb-[72px] overflow-hidden rounded-[20px]`
+    }
+
+    /** Trường hợp AI */
+    if (AI_STATUS) {
+      return `${BASE_CLASSES} flex flex-col w-screen h-screen just-between`
+    }
+
+    /** Trường hợp đang xem trước */
+    if (GLOBAL_PREVIEW_URL) {
+      return `${BASE_CLASSES} w-[400px] h-[600px] mb-2.5 rounded-[20px] relative overflow-hidden`
+    }
+
+    /** Tổng hợp */
     return `${BASE_CLASSES} ${SIZE_CLASSES} ${VISIBILITY_CLASSES}`
   }
 
