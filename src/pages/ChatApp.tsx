@@ -717,17 +717,41 @@ const ChatApp = ({
          * để xác định chiều cao popup
          * Nếu chiều cao tin nhắn là 224 thì chiều cao popup là 56
          */
-        // Xử lý từng case cụ thể
+        /** Xử lý trường hợp HEIGHT = 224 */
         if (HEIGHT === 224) {
+          /**
+           * Gọi hàm postMessage
+           */
           callPostMessage(false, true, HEIGHT)
+          /**
+           * Trả về css popup
+           */
           return 'w-[302px] h-56 items-end justify-between pb-4 px-2'
         }
+        /**
+         * Xử lý trường hợp HEIGHT = 240 hoặc HEIGHT = 312
+         */
         if (HEIGHT === 240) {
+          /**
+           * Gọi hàm postMessage
+           */
           callPostMessage(false, true, HEIGHT)
+          /**
+           * Trả về css popup
+           */
           return 'w-[302px] h-60 items-end justify-between pb-4 px-2'
         }
+        /**
+         * Xử lý trường hợp HEIGHT = 312
+         */
         if (HEIGHT === 312) {
+          /**
+           * Gọi hàm postMessage
+           */
           callPostMessage(false, true, HEIGHT)
+          /**
+           * Trả về css popup
+           */
           return 'w-[302px] h-[312px] items-end justify-between pb-4 px-2'
         }
       }
