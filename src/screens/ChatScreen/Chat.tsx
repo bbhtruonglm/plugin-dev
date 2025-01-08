@@ -2,6 +2,7 @@ import { apiImage, fetchAPI, useAPI } from '@/api/api'
 import {
   selectPageId,
   selectStatusAI,
+  selectUserInfo,
   setGlobalClientId,
   setStatusIsInit,
 } from '@/stores/appSlice'
@@ -24,6 +25,10 @@ function ChatScreen({
   const { INIT_CLIENT_API, READ_CLIENT_INFO } = useAPI()
   /** ID trang được lấy từ store */
   const PAGE_ID = useSelector(selectPageId)
+
+  /** Lấy thông tin user từ store */
+  const USER_INFO = useSelector(selectUserInfo)
+
   /**
    * Lấy dữ liệu từ store
    */
@@ -178,12 +183,28 @@ function ChatScreen({
       /**
        * Gọi hàm khởi tạo client id
        */
-      initGetClientId({ page_id: PAGE_ID })
-      /**
-       * Set status AI_STATUS thành false
-       */
+      initGetClientId({
+        page_id: PAGE_ID,
+      })
     }
   }, [AI_STATUS, CLIENT_ID])
+
+  useEffect(() => {
+    /**
+     * Nếu có USER_INFO và chưa có CLIENT_ID
+     */
+    if (USER_INFO && !CLIENT_ID) {
+      /**
+       * Gọi hàm khởi tạo client id
+       */
+      initGetClientId({
+        page_id: PAGE_ID,
+        name: USER_INFO?.user_name,
+        phone: USER_INFO?.user_phone,
+        email: USER_INFO?.user_email,
+      })
+    }
+  }, [CLIENT_ID, USER_INFO])
 
   /** Hàm đọc data khách hàng
    * @param {string} client_id - ID khách hàng

@@ -180,8 +180,9 @@ function InitClient({ resetData, onInitClient }: InitClientProps) {
     if (!VALUE) {
       /**
        * Set lỗi tên
+       * Thông báo bắt buộc nhập tên
        */
-      setNameError(t('input_data')) // Thông báo bắt buộc nhập tên
+      setNameError(t('input_data'))
     } else {
       /**
        * Set lỗi tên

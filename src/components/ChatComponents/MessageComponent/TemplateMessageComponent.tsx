@@ -7,17 +7,17 @@ import VideoPlayer from './VideoPlayter'
 
 function TemplateMessageComponent({ data }: MessageProps) {
   return (
-    <div className={`flex flex-col rounded-lg group relative w-full h-full`}>
-      {/* Tooltip */}
-
+    <div
+      className={`flex flex-col rounded-lg group relative w-full h-full justify-center items-center`}
+    >
       {/* Hiện thị data dạng text */}
       {data?.message_text &&
         data?.message_type !== 'system' &&
         data?.message_type !== 'note' &&
         (!data?.message_attachments?.length ||
           !data?.message_attachments?.[0]?.type) && (
-          <div className="flex p-2">
-            <p className="text-sm min-h-4 break-words whitespace-pre-line">
+          <div className="flex w-full">
+            <p className="text-sm min-h-4 break-words whitespace-pre-line line-clamp-2 w-full">
               {data?.message_text}
             </p>
           </div>
@@ -99,7 +99,13 @@ function TemplateMessageComponent({ data }: MessageProps) {
       {/* Hiển thị data dạng video */}
       {data?.message_attachments?.[0]?.type === 'video' && (
         <div className="">
-          <VideoPlayer src={'https://www.w3schools.com/html/mov_bbb.mp4'} />
+          <VideoPlayer
+            src={
+              data?.message_attachments?.[0]?.payload?.url
+                ? data?.message_attachments?.[0]?.payload?.url
+                : 'https://www.w3schools.com/html/mov_bbb.mp4'
+            }
+          />
         </div>
       )}
 
@@ -134,7 +140,6 @@ function TemplateMessageComponent({ data }: MessageProps) {
         data?.message_attachments?.[0]?.type === 'fallback' && (
           <div className="flex p-2">
             <a
-              // className="text-sm min-h-4 break-words whitespace-pre-line underline hover:text-blue-500"
               className="text-sm min-h-4 break-words whitespace-pre-line overflow-hidden break-all text-ellipsis underline hover:text-blue-500"
               href={
                 data?.message_text && isValidUrl(data.message_text)

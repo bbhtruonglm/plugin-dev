@@ -1,6 +1,11 @@
 import { ChatAppProps, EmployeeList } from './type'
 import {
-  calculateTimeAgo,
+  closeSocketConnect,
+  onSocketFromChatboxServer,
+} from '@/components/WebSocket/WebSocket'
+import { fetchAPI, useAPI } from '@/api/api'
+import { get, isEmpty, map, values } from 'lodash'
+import {
   hasAttachmentOfType,
   postMessageToParent,
   renderAvatarCDN,
@@ -10,12 +15,6 @@ import {
   truncateSentences,
   truncateString,
 } from '@/utils'
-import {
-  closeSocketConnect,
-  onSocketFromChatboxServer,
-} from '@/components/WebSocket/WebSocket'
-import { fetchAPI, useAPI } from '@/api/api'
-import { get, isEmpty, map, values } from 'lodash'
 import {
   selectCurrentHeight,
   selectCurrentWidth,
@@ -426,7 +425,7 @@ const ChatApp = ({
         ]
       )
     }
-    console.log(RES.data, 'RES.data')
+
     /** Lưu thông tin tin nhắn chào mừng */
     setWelcomeMessage({
       message:
@@ -443,9 +442,6 @@ const ChatApp = ({
           I18N.language || RES?.data?.default_language || 'vi'
         ] || {},
     })
-
-    // lưu ngôn ngữ hiện tại
-    // i18n.changeLanguage(RES?.data?.default_language)
 
     /** Lưu danh sách nhân viên */
     setStaffList(RES?.data?.staffs)
@@ -479,7 +475,7 @@ const ChatApp = ({
      * Lấy ID từ message_metadata
      */
     const ID_DETECT = id.split('__')[2]
-    console.log('ID_DETECT::', ID_DETECT)
+
     /** Nếu không có staff Id thì trả về '' */
     if (!ID_DETECT) return ''
     /**
@@ -510,9 +506,6 @@ const ChatApp = ({
       return STAFF_NAME ? STAFF_NAME : 'Nhân viên'
     }
   }
-
-  /** Lấy ra thời gian đóng popup gần nhất từ trong localStorage */
-  // const LAST_TIME_CLOSE = localStorage.getItem(`last_time_close__${PAGE_ID}`)
 
   /**
    * Hàm xử lý khi click vào tab
@@ -944,7 +937,7 @@ const ChatApp = ({
      */
     postMessageToParent(SHOW_POPUP, false, 674, '')
   }
-  console.log('LATEST_MESSAGE::', LATEST_MESSAGE)
+
   return (
     /** JSX component using the function */
     <div
@@ -1287,7 +1280,7 @@ const ChatApp = ({
       {/* Hiển thị tin nhắn chào mừng */}
       {show_welcome_message && (
         <div
-          className="flex bg-white shadow-lg justify-between w-full gap-x-2 rounded-xl h-16 px-3 py-3 cursor-pointer"
+          className="flex bg-white shadow-lg justify-between w-full gap-x-2 rounded-xl h-16 px-3 py-3 cursor-pointer hover:bg-gray-100"
           onClick={() => {
             /** Khi click trả lời sẽ  reset hết data trong store */
             dispatch(setLatestMessageGlobal(null))
@@ -1323,27 +1316,33 @@ const ChatApp = ({
       {/*  Nút trigger hiện thị bong bóng chat */}
       <button
         onClick={() => {
-          if (!show && current_tab === 'message') {
-            /** Reset hết data trong store */
-            dispatch(setLatestMessageGlobal(null))
-            dispatch(setListUnreadMessage([]))
-            dispatch(setListMessage([]))
-            dispatch(setGlobalUnreadCount(0))
-            postMessageToParent(false, false)
-          }
-          /**
-           * Khi click vào nút trigger,
-           * nếu đang ở tab message thì reset tin nhắn mới nhất và tin nhắn chưa đọc
-           */
-          handleBtn('no_toggle')
-          /**
-           * Reset tin nhắn mới nhất trong store
-           */
-          setErrorMessage('')
-          /**
-           * Reset tin nhắn mới nhất trong store
-           */
-          setShowWelcomeMessage(false)
+          setTimeout(() => {
+            /**
+             * Khi click vào
+             */
+            if (!show && current_tab === 'message') {
+              /** Reset hết data trong store */
+              dispatch(setLatestMessageGlobal(null))
+              dispatch(setListUnreadMessage([]))
+              dispatch(setListMessage([]))
+              dispatch(setGlobalUnreadCount(0))
+              postMessageToParent(false, false)
+            }
+            /**
+             * Khi click vào nút trigger,
+             * nếu đang ở tab message thì reset tin nhắn mới nhất và tin nhắn chưa đọc
+             */
+            handleBtn('no_toggle')
+            /**
+             * Reset tin nhắn mới nhất trong store
+             */
+            setErrorMessage('')
+            /**
+             * Reset tin nhắn mới nhất trong store
+             */
+            setShowWelcomeMessage(false)
+            /** Delay 200ms */
+          }, 100)
         }}
         className={`absolute justify-center items-center bottom-4 right-2  h-12 w-12 bg-white shadow-lg rounded-full  hover:scale-110 ${
           AI_STATUS ? 'hidden' : ''
@@ -1388,7 +1387,7 @@ const ChatApp = ({
         {GLOBAL_PREVIEW_URL && (
           <img
             src={GLOBAL_PREVIEW_URL}
-            className="max-w-[880px] w-full h-auto object-contain rounded-lg"
+            className="max-w-[880px] min-w-80 w-full h-auto object-contain rounded-lg"
             alt="Full Attachment"
           />
         )}

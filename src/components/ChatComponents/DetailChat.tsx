@@ -360,11 +360,11 @@ function DetailChat({
      */
 
     if (keys(LATEST_MESSAGE).length !== 0 && !is_init) {
-      // Lưu tin nhắn mới từ socket vào store
+      /** Lưu tin nhắn mới từ socket vào store */
       dispatch(setListMessage([...LIST_MESSAGE, LATEST_MESSAGE]))
       setSkip(skip + 1)
 
-      // Nếu có tin nhắn từ websocket, scroll xuống cuối trang
+      /** Nếu có tin nhắn từ websocket, scroll xuống cuối trang */
       setTimeout(() => {
         scrollToBottom()
       }, 100)
@@ -400,7 +400,6 @@ function DetailChat({
     (id: string) => {
       /** Lấy ID của nhân viên */
       const ID_DETECT = id.split('__')[2]
-      console.log('ID_DETECT::', ID_DETECT)
       /** Nếu không có staff Id thì trả về '' */
       if (!ID_DETECT) return ''
       /** Nếu có staff Id thì trả về link avatar */

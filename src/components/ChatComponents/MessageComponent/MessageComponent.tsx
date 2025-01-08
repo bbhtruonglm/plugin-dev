@@ -48,7 +48,7 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
   const SHOW_POPUP = useSelector(selectStatusPopup)
   return (
     <div
-      className={`flex flex-col transition-all duration-300 ease-out overflow-hidden gap-y-4 rounded-lg group relative ${getMessageClasses(
+      className={`flex flex-col transition-all duration-300 ease-out gap-y-4 rounded-lg group relative ${getMessageClasses(
         data?.message_type
       )}`}
     >
@@ -67,7 +67,7 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
         (!data?.message_attachments?.length ||
           !data?.message_attachments?.[0]?.type) && (
           <div className="flex p-2">
-            <p className="text-sm min-h-4 break-words whitespace-pre-line">
+            <p className="text-sm min-h-4 break-words whitespace-pre-line overflow-hidden">
               {data?.message_text}
             </p>
           </div>
@@ -168,7 +168,8 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
 
           {/* Thẻ <a> để xử lý chức năng tải file */}
           <a
-            href={data?.message_attachments?.[0]?.payload?.url} // URL của tệp
+            /** URL của tệp */
+            href={data?.message_attachments?.[0]?.payload?.url}
             download // Thuộc tính download giúp tải tệp
             className="text-slate-700 truncate underline text-sm"
           >
@@ -183,7 +184,6 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
         data?.message_attachments?.[0]?.type === 'fallback' && (
           <div className="flex p-2">
             <a
-              // className="text-sm min-h-4 break-words whitespace-pre-line underline hover:text-blue-500"
               className="text-sm min-h-4 break-words whitespace-pre-line overflow-hidden break-all text-ellipsis underline hover:text-blue-500"
               href={
                 data?.message_text && isValidUrl(data.message_text)
@@ -323,9 +323,3 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
 })
 
 export default MessageComponent
-function dispatch(arg0: {
-  payload: string | null | undefined
-  type: 'app/setGlobalPreviewUrl'
-}) {
-  throw new Error('Function not implemented.')
-}
