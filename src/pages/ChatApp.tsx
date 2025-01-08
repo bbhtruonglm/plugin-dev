@@ -50,6 +50,7 @@ import Modal from '@/components/ChatComponents/Modal/Modal'
 import { NetworkContext } from '@/components/NWProvider'
 import OnlineStaff from '@/components/Container/OnlineStaff'
 import TemplateMessageComponent from '@/components/ChatComponents/MessageComponent/TemplateMessageComponent'
+import TimeAgo from '@/components/TimeAgo'
 import { ReactComponent as activeHome } from '@/assets/home-active.svg'
 import { ReactComponent as activeMessage } from '@/assets/messageA.svg'
 import { ReactComponent as inactiveHome } from '@/assets/home.svg'
@@ -478,7 +479,7 @@ const ChatApp = ({
      * Lấy ID từ message_metadata
      */
     const ID_DETECT = id.split('__')[2]
-    console.log(ID_DETECT, 'ID_DETECT')
+    console.log('ID_DETECT::', ID_DETECT)
     /** Nếu không có staff Id thì trả về '' */
     if (!ID_DETECT) return ''
     /**
@@ -943,7 +944,7 @@ const ChatApp = ({
      */
     postMessageToParent(SHOW_POPUP, false, 674, '')
   }
-
+  console.log('LATEST_MESSAGE::', LATEST_MESSAGE)
   return (
     /** JSX component using the function */
     <div
@@ -1211,13 +1212,17 @@ const ChatApp = ({
                       {/* Hiển thị thời gian tin nhắn */}
                       <span className="text-slate-500 text-xs font-medium truncate flex items-center flex-shrink-0">
                         <span className="mx-0.5">•</span>
-                        {calculateTimeAgo(LATEST_MESSAGE?.createdAt)}
+                        {/* {calculateTimeAgo(LATEST_MESSAGE?.createdAt)} */}
+                        <TimeAgo timestamp={LATEST_MESSAGE?.createdAt} />
                       </span>
                     </div>
 
                     {/* Nút đóng */}
                     <div
                       onClick={(event) => {
+                        /**
+                         * Ngăn chặn sự kiện lan truyền
+                         */
                         event.stopPropagation()
                         /** Reset hết data trong store */
                         dispatch(setLatestMessageGlobal(null))
@@ -1281,9 +1286,27 @@ const ChatApp = ({
 
       {/* Hiển thị tin nhắn chào mừng */}
       {show_welcome_message && (
-        <div className="flex bg-white shadow-lg justify-between w-full gap-x-2 rounded-xl h-16 px-3 py-3">
+        <div
+          className="flex bg-white shadow-lg justify-between w-full gap-x-2 rounded-xl h-16 px-3 py-3 cursor-pointer"
+          onClick={() => {
+            /** Khi click trả lời sẽ  reset hết data trong store */
+            dispatch(setLatestMessageGlobal(null))
+            dispatch(setListUnreadMessage([]))
+            dispatch(setListMessage([]))
+            dispatch(setGlobalUnreadCount(0))
+            /**
+             * Khi click vào ẩn tin nhắn chào mừng,
+             */
+            setShowWelcomeMessage(false)
+            /** Khi click vào trả lời, xoá unread_count */
+            saveQuickChatCount(PAGE_ID, CLIENT_STORED, 0)
+            /* Chuyển tab thành message */
+            setCurrentTab('message')
+            /** trigger hàm đóng mở popup */
+            handleBtn()
+          }}
+        >
           <h4 className="text-sm line-clamp-2">{welcome_message?.message}</h4>
-
           {/* Nút đóng */}
           <div
             onClick={(event) => {

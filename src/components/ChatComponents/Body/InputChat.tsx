@@ -121,7 +121,7 @@ function InputChat({
        */
       FORM_DATA.append('client_id', client_id)
 
-      console.log(file, 'file')
+      console.log('FILE::', file)
 
       /** Kiểm tra kích thước file */
       if (file.size > 1 * 1024 * 1024) {

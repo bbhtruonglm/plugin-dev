@@ -84,7 +84,7 @@ export function onSocketFromChatboxServer({
   /** kết nối được mở */
   WS.current.onopen = () => {
     /** Thông báo connect thành công */
-    console.log('WebSocket Connectedddd')
+    console.log('WebSocket Connected!')
     /** Gửi tin nhắn khởi tạo socket */
     sendIdentifyMessage(page_id, client_id, WS)
     /** Nếu socket đang readyState === websocket.OPEN thì được gọi tin nhắn */

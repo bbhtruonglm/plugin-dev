@@ -400,7 +400,7 @@ function DetailChat({
     (id: string) => {
       /** Lấy ID của nhân viên */
       const ID_DETECT = id.split('__')[2]
-      console.log(ID_DETECT, 'ID_DETECT')
+      console.log('ID_DETECT::', ID_DETECT)
       /** Nếu không có staff Id thì trả về '' */
       if (!ID_DETECT) return ''
       /** Nếu có staff Id thì trả về link avatar */

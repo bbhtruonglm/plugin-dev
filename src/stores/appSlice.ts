@@ -91,7 +91,6 @@ export const appSlice = createSlice({
       state,
       action: PayloadAction<AppState['list_unread_message']>
     ) => {
-      console.log(action.payload, 'message zzz action.payload')
       state.list_unread_message = action.payload
     },
     /** lưu dữ liệu tin nhắn */

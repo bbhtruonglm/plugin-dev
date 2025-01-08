@@ -156,7 +156,7 @@ function App() {
     i18next
       .changeLanguage(LOCALE)
       .then(() => {
-        console.log('Language changed to:', LOCALE)
+        console.log('Language changed to::', LOCALE)
       })
       .catch((error) => {
         console.error('Error changing language:', error)
