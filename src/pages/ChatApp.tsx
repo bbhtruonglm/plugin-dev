@@ -1342,7 +1342,7 @@ const ChatApp = ({
              */
             setShowWelcomeMessage(false)
             /** Delay 200ms */
-          }, 100)
+          }, 200)
         }}
         className={`absolute justify-center items-center bottom-4 right-2  h-12 w-12 bg-white shadow-lg rounded-full  hover:scale-110 ${
           AI_STATUS ? 'hidden' : ''
