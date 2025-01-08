@@ -13,14 +13,17 @@ function InputQuickChat({
 }: InputQuickProps) {
   /**
    * @param value: string
+   * Lưu giá trị của input
    */
   const [value, setValue] = useState('')
   /**
    * @param preview_url: string | null
+   * Lưu url của ảnh preview
    */
   const [preview_url, setPreviewUrl] = useState<string | null>(null)
   /**
    * @param file: File | null
+   * Lưu file ảnh
    */
   const [file, setFile] = useState<File | null>(null)
 

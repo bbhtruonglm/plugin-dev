@@ -55,9 +55,11 @@ function Upload({ setPreviewUrl }: UploadProps) {
         type="file"
         ref={FILE_INPUT_REF}
         onChange={handleFileChange}
-        /**  Hide the file input */
+        /**  Ẩn ô input */
         style={{ display: 'none' }}
-        // Only accept image files
+        /**
+         * Chỉ chấp nhận file ảnh
+         */
         accept="image/*"
       />
     </div>

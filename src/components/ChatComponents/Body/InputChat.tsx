@@ -24,39 +24,49 @@ function InputChat({
   handleError,
 }: InputProps) {
   /**
-   * @param INPUT_REF: React.RefObject<HTMLInputElement>
+   * Input Ref
    */
   const INPUT_REF = useRef<HTMLInputElement>(null)
   /**
    * @param SHOW_POPUP: boolean
+   * Lấy trạng thái của popup
    */
   const SHOW_POPUP = useSelector(selectStatusPopup)
   /**
    * @param value: string
+   * Lưu giá trị của input
    */
   const [value, setValue] = useState('')
   /**
    * @param preview_url: string | null
+   * Lưu url của ảnh preview
    */
   const [preview_url, setPreviewUrl] = useState<string | null>(null)
   /**
    * @param file: File | null
+   * Lưu file ảnh
    */
   const [file, setFile] = useState<File | null>(null)
   /**
    * @param AI_STATUS: boolean
+   * Lấy trạng thái của AI
    */
   const { SEND_MESSAGE_API } = useAPI()
   /**
    * @param PAGE_ID: string
+   * Lấy page_id
    */
   const PAGE_ID = useSelector(selectPageId)
   /**
    * @param AI_STATUS: boolean
+   * Lấy trạng thái của AI
    */
   const AI_STATUS = useSelector(selectStatusAI)
 
   useEffect(() => {
+    /**
+     * Nếu SHOW_POPUP = true thì focus vào input
+     */
     if (SHOW_POPUP) {
       /**
        * Focus vào input khi popup mở
@@ -68,8 +78,12 @@ function InputChat({
         if (INPUT_REF.current) {
           /** Focus vào input khi popup mở */
           INPUT_REF.current.focus()
+          /** Cuộn tới input */
           INPUT_REF.current.scrollIntoView({ behavior: 'smooth' })
         }
+        /**
+         * Delay 200ms để chắc chắn input đã được render
+         */
       }, 200)
 
       /** Chặn cuộn trang khi popup mở */
@@ -121,12 +135,12 @@ function InputChat({
        */
       FORM_DATA.append('client_id', client_id)
 
-      console.log('FILE::', file)
-
       /** Kiểm tra kích thước file */
       if (file.size > 1 * 1024 * 1024) {
         /** 1MB = 1 * 1024 * 1024 bytes */
-        // alert('Ảnh quá lớn, vui lòng chọn ảnh nhỏ hơn 1MB.')
+        /**
+         * Xử lý error
+         */
         handleError &&
           handleError('Ảnh quá lớn, vui lòng chọn ảnh nhỏ hơn 1MB.')
         /**

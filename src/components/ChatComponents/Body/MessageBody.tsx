@@ -9,14 +9,17 @@ import React from 'react'
 interface Props {
   /**
    * @param item: any
+   * Dữ liệu tin nhắn
    */
   item: any
   /**
    * @param checkStaffExist: (e: any) => string
+   * Kiểm tra xem staff có tồn tại không
    */
   checkStaffExist: (e: any) => string
   /**
    * @param client_name?: string
+   * Tên của khách hàng
    */
   client_name?: string
 }

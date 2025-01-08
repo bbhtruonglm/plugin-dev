@@ -14,7 +14,9 @@ import React from 'react'
 import VideoPlayer from './VideoPlayter'
 
 const MessageComponent = React.memo(({ data }: MessageProps) => {
-  /** Hàm render css khi check type tin nhắn */
+  /** Hàm render css khi check type tin nhắn
+   * @param {string} messageType - Loại tin nhắn
+   */
   const getMessageClasses = (messageType: string) => {
     /** Kiểm tra nếu messageType là 'page' */
     if (messageType === 'page') {
@@ -36,6 +38,9 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
    * @action gọi đến sdk để thay đổi kích thước hiển thị
    */
   const handleClickPreview = (url?: string) => {
+    /**
+     * Nếu không có url
+     */
     if (!url) return
     /** Lưu vào STORE */
     dispatch(setGlobalPreviewUrl(url))

@@ -14,14 +14,17 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src }) => {
   const AUDIO_REF = useRef<HTMLAudioElement>(null)
   /**
    * @param is_playing: boolean
+   * Trạng thái phát của audio
    */
   const [is_playing, setIsPlaying] = useState(false)
   /**
    * @param current_time: number
+   * Thời gian hiện tại của audio
    */
   const [current_time, setCurrentTime] = useState(0)
   /**
    * @param duration: number
+   * Độ dài của audio
    */
   const [duration, setDuration] = useState(0)
 
@@ -52,6 +55,9 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src }) => {
 
     /** Cleanup function, loại bỏ các trình lắng nghe khi component bị unmount */
     return () => {
+      /**
+       * Nếu phần tử audio tồn tại
+       */
       if (AUDIO) {
         /** Xóa bỏ trình lắng nghe sự kiện khi siêu dữ liệu được tải */
         AUDIO.removeEventListener('loadedmetadata', () => {})

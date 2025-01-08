@@ -4,7 +4,10 @@ import { ReactComponent as Close } from '@/assets/close.svg'
 import { ModalProps } from '../type'
 
 const Modal: React.FC<ModalProps> = ({ is_open, onClose, children }) => {
-  /** @param is_visible: boolean */
+  /**
+   * @param is_visible: boolean
+   * Trạng thái hiển thị của modal
+   */
   const [is_visible, setIsVisible] = useState(is_open)
   /**
    * @param is_open: boolean
@@ -16,7 +19,7 @@ const Modal: React.FC<ModalProps> = ({ is_open, onClose, children }) => {
     if (is_open) {
       setIsVisible(true)
     } else {
-      /** Delay to allow animation to complete before unmounting */
+      /** Delay Việc ẩn modal 300s */
       const TIMEOUT_ID = setTimeout(() => setIsVisible(false), 300)
       /**
        * Cleanup function, loại bỏ timeout khi component bị unmount
