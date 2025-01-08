@@ -3,9 +3,21 @@ import { letterToColorCode, nameToLetter } from '@/utils'
 import MessageComponent from '../MessageComponent/MessageComponent'
 import React from 'react'
 
+/**
+ * Props của MessageBody
+ */
 interface Props {
+  /**
+   * @param item: any
+   */
   item: any
+  /**
+   * @param checkStaffExist: (e: any) => string
+   */
   checkStaffExist: (e: any) => string
+  /**
+   * @param client_name?: string
+   */
   client_name?: string
 }
 const MessageBody = React.memo(

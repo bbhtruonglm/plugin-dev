@@ -16,6 +16,7 @@ import { size } from 'lodash'
  * Gọi API xác định danh tính khi mở WebSocket
  * @param {string | null} page_id - ID trang
  * @param {string | null} client_id - ID khách hàng
+ * @param {React.MutableRefObject<WebSocket | null>} WS - Ref WebSocket
  */
 const sendIdentifyMessage = (
   page_id: string | null,
@@ -25,6 +26,9 @@ const sendIdentifyMessage = (
 ) => {
   /** Kiểm tra điều kiện khi nào WebSocket đang ở trạng thái OPEN thì mới gửi tin nhắn */
   if (WS.current?.readyState === WebSocket.OPEN) {
+    /**
+     * Gửi tin nhắn xác định danh tính
+     */
     WS.current?.send(
       JSON.stringify({
         page_id: page_id,
@@ -45,6 +49,17 @@ const sendIdentifyMessage = (
  * - Tu dụng socket để nhận tin nhắn
  * @param {string} page_id - ID trang
  * @param {string} client_id - ID khách hàng
+ * @param {React.MutableRefObject<WebSocket | null>} WS - Ref WebSocket
+ * @param {React.Dispatch<any>} dispatch - Hàm dispatch của redux
+ * @param {React.MutableRefObject<MessageInfo[]>} REF_LIST_UNREAD_MESSAGE - Ref danh sách tin nhắn chưa đọc
+ * @param {React.MutableRefObject<number>} REF_GLOBAL_UNREAD_MESSAGE_COUNT - Ref số lượng tin nhắn chưa đọc
+ * @param {React.MutableRefObject<number>} REF_LAST_TIME_CLOSE_QUICK_CHAT - Ref thời gian đóng QUICK_CHAT cuối cùng
+ * @param {React.MutableRefObject<string>} REF_SHOW_QUICK_CHAT - Ref trạng thái hiển thị QUICK_CHAT
+ * @param {React.MutableRefObject<boolean>} IS_SHOW_REF - Ref trạng thái hiển thị QUICK_CHAT
+ * @param {React.MutableRefObject<string>} TAB_REF - Ref tab hiện tại
+ * @param {string} SOCKET_API - API của WebSocket
+ * @param {boolean} is_force_close_socket - Cờ đánh dấu đóng socket
+ * @returns {void} - Không có giá trị trả về
  *
  */
 export function onSocketFromChatboxServer({
@@ -87,6 +102,7 @@ export function onSocketFromChatboxServer({
    * @param {MessageEvent} data - Dữ liệu nhận được từ WebSocket
    */
   WS.current.onmessage = ({ data }) => {
+    /** Nếu không có dữ liệu hoặc dữ liệu là 'pong' thì không làm gì cả */
     if (!data || data === 'pong') return
     /**dữ liệu socket nhận được */
     let socket_data: {
@@ -95,6 +111,9 @@ export function onSocketFromChatboxServer({
     } = {}
     /**  cố gắng giải mã dữ liệu*/
     try {
+      /**
+       * Giải mã dữ liệu nhận được
+       */
       socket_data = JSON.parse(data)
     } catch (e) {}
     /** Kiểm tra socket_data có dữ liệu không */
@@ -140,11 +159,6 @@ export function onSocketFromChatboxServer({
           setListUnreadMessage([...REF_LIST_UNREAD_MESSAGE.current, message])
         )
 
-        console.log(REF_LIST_UNREAD_MESSAGE, 'REF_LIST_UNREAD_MESSAGE')
-        console.log(
-          REF_GLOBAL_UNREAD_MESSAGE_COUNT,
-          'REF_GLOBAL_UNREAD_MESSAGE_COUNT'
-        )
         /**
          * Cập nhật số lượng tin nhắn chưa đọc
          */

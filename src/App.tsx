@@ -70,7 +70,6 @@ function App() {
        */
       const { user_name, user_email, user_phone, from, action } = PAYLOAD
 
-      // console.log(event, 'event')
       /** Kiểm tra thông tin từ app cha */
       if (from === 'parent-app') {
         console.log(
@@ -134,9 +133,7 @@ function App() {
      * Lấy các tham số từ URL
      */
     const URL_PARAMS = new URLSearchParams(window.location.search)
-    // setIsAi(URL_PARAMS.get('is_ai') === 'true')
 
-    // const IS_AI = URL_PARAMS.get('is_ai') === 'true'
     /**
      * @type {boolean} IS_AI - Trạng thái AI
      */
@@ -154,7 +151,7 @@ function App() {
      * Lấy giá trị locale từ URL
      * Mặc định là 'vn' nếu không có locale */
     const LOCALE = URL_PARAMS.get('locale') || 'vn'
-    // console.log(LOCALE, 'LOCALE')
+
     /** Thay đổi ngôn ngữ của SDK dựa trên locale từ URL */
     i18next
       .changeLanguage(LOCALE)
@@ -208,7 +205,8 @@ function App() {
       dispatch(setCurrentHeight(Number(HEIGHT_PARENT)))
     }
 
-    // localStorage.setItem(`client_id_<${PAGE_ID}>`, '6131478076934694')
+    /** localStorage.setItem(`client_id_<${PAGE_ID}>`, '6131478076934694') */
+
     /** CLIENT_ID từ localStorage thông qua PAGE_ID */
     const STORED_CLIENT_ID = localStorage.getItem(
       `client_id_<${STORED_PAGE_ID}>`

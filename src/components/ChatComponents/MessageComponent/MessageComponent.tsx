@@ -21,9 +21,7 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
       /** Trả về các lớp CSS tương ứng nếu messageType là 'page' */
       return 'bg-white max-w-[60%]'
     }
-    // else if (messageType === 'note') {
-    //   return 'max-w-[60%] bg-[#D8F6CB]'
-    // }
+    /** Kiểm tra nếu messageType là 'client' */
     if (messageType === 'client') {
       /** Nếu messageType không phải là 'system' hay 'page' */
       /** Trả về các lớp CSS mặc định cho các loại message khác */

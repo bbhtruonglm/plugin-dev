@@ -14,7 +14,7 @@ export const vn = {
     m: 'p',
     now: 'Bây giờ',
     reply: 'Trả lời',
-    // Home
+    /** Home */
     welcome: 'Xin chào,',
     _hi: 'Xin chào ',
     welcomeMessage: 'Chúng tôi có thể hỗ trợ được gì bạn?',
@@ -23,7 +23,7 @@ export const vn = {
     we_will_reply_soon: 'Chúng tôi sẽ phản hồi từ 8h00 - 18h00',
     chatWithUs: 'hoặc liên lạc với chúng tôi qua kênh bạn sử dụng:',
 
-    // Message:
+    /** Message: */
     online: 'Đang online',
     placeholder: 'Nhập giá trị...',
     start_to_chat: 'Bắt đầu chat',

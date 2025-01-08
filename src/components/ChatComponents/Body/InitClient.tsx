@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { InitClientProps } from '../type'
 import Input from './Input'
 import Loading from '@/components/Loading/Loading'
-import _ from 'lodash'
+import { isEmpty } from 'lodash'
 import { t } from 'i18next'
 import { useSelector } from 'react-redux'
 
@@ -45,9 +45,18 @@ function InitClient({ resetData, onInitClient }: InitClientProps) {
     /**
      * Nếu user info không rỗng
      */
-    if (!_.isEmpty(USER_INFO)) {
+    if (!isEmpty(USER_INFO)) {
+      /**
+       * Set giá trị cho name
+       */
       setName(USER_INFO?.user_name)
+      /**
+       * Set giá trị cho phone
+       */
       setPhone(USER_INFO?.user_phone)
+      /**
+       * Set giá trị cho email
+       */
       setEmail(USER_INFO?.user_email)
     }
   }, [USER_INFO])
@@ -57,11 +66,29 @@ function InitClient({ resetData, onInitClient }: InitClientProps) {
      * Nếu resetData = true
      */
     if (resetData) {
+      /**
+       * Set giá trị cho email
+       */
       setEmail('')
+      /**
+       * Set giá trị cho name
+       */
       setName('')
+      /**
+       * Set giá trị cho phone
+       */
       setPhone('')
+      /**
+       * Set lỗi cho email
+       */
       setEmailError('')
+      /**
+       * Set lỗi cho phone
+       */
       setPhoneError('')
+      /**
+       * Set lỗi cho name
+       */
       setNameError('')
     }
   }, [resetData])
@@ -120,8 +147,9 @@ function InitClient({ resetData, onInitClient }: InitClientProps) {
     if (!VALUE) {
       /**
        * Set lỗi sđt
+       * Thông báo bắt buộc nhập số điện thoại
        */
-      setPhoneError(t('input_data')) // Thông báo bắt buộc nhập số điện thoại
+      setPhoneError(t('input_data'))
     } else if (VN_PHONE_REGEX.test(VALUE) || UK_PHONE_REGEX.test(VALUE)) {
       /**
        * Set lỗi sđt

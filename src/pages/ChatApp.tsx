@@ -67,12 +67,10 @@ const ChatApp = ({
   const { t, i18n: I18N } = useTranslation()
   /** Các đầu api */
   const { READ_PAGE_INFO, SOCKET_API } = useAPI()
-
   /**
    * trạng thái online
    */
   const IS_ONLINE = useContext(NetworkContext)
-
   /**
    * State Khai báo thông tin
    */
@@ -169,18 +167,20 @@ const ChatApp = ({
 
   /** Tạo ref một để luu giữ giá trị GLOBAL_UNREAD_MESSAGE_COUNT */
   const REF_GLOBAL_UNREAD_MESSAGE_COUNT = useRef(GLOBAL_UNREAD_MESSAGE_COUNT)
-
   /** Tạo ref một để luu giữ giá trị LIST_UNREAD_MESSAGE */
   const REF_LIST_UNREAD_MESSAGE = useRef(LIST_UNREAD_MESSAGE)
+
+  /** Tạo ref một để luu giữ giá trị LIST_UNREAD_MESSAGE */
+
   /** Giá trị của preview URL */
   const GLOBAL_PREVIEW_URL = useSelector(selectGlobalPreviewUrl)
 
-  // useEffect(() => {
-  //   /** Cập nhật giá trị trong ref một khi LIST_UNREAD_MESSAGE thay đổi */
-  //   REF_LIST_UNREAD_MESSAGE.current = LIST_UNREAD_MESSAGE
-  //   /** Cập nhật giá trị trong ref một khi GLOBAL_UNREAD_MESSAGE_COUNT thay đổi */
-  //   REF_GLOBAL_UNREAD_MESSAGE_COUNT.current = GLOBAL_UNREAD_MESSAGE_COUNT
-  // }, [LIST_UNREAD_MESSAGE, GLOBAL_UNREAD_MESSAGE_COUNT])
+  useEffect(() => {
+    /** Cập nhật giá trị trong ref một khi LIST_UNREAD_MESSAGE thay đổi */
+    REF_LIST_UNREAD_MESSAGE.current = LIST_UNREAD_MESSAGE
+    /** Cập nhật giá trị trong ref một khi GLOBAL_UNREAD_MESSAGE_COUNT thay đổi */
+    REF_GLOBAL_UNREAD_MESSAGE_COUNT.current = GLOBAL_UNREAD_MESSAGE_COUNT
+  }, [LIST_UNREAD_MESSAGE, GLOBAL_UNREAD_MESSAGE_COUNT])
 
   /** Trạng thái đóng mở popup */
   const SHOW_POPUP = useSelector(selectStatusPopup)
@@ -206,12 +206,12 @@ const ChatApp = ({
   /** Tạo REF cho giá trị LAST_TIME_CLOSE_QUICK_CHAT */
   const REF_LAST_TIME_CLOSE_QUICK_CHAT = useRef(LAST_TIME_CLOSE_QUICK_CHAT)
 
-  // useEffect(() => {
-  //   /** Cập nhật giá trị trong ref một khi SHOW_QUICK_CHAT thay đổi */
-  //   REF_SHOW_QUICK_CHAT.current = SHOW_QUICK_CHAT
-  //   /** Cập nhật giá trị trong ref một khi LAST_TIME_CLOSE_QUICK_CHAT thay đổi */
-  //   REF_LAST_TIME_CLOSE_QUICK_CHAT.current = LAST_TIME_CLOSE_QUICK_CHAT
-  // }, [SHOW_QUICK_CHAT, LAST_TIME_CLOSE_QUICK_CHAT])
+  useEffect(() => {
+    /** Cập nhật giá trị trong ref một khi SHOW_QUICK_CHAT thay đổi */
+    REF_SHOW_QUICK_CHAT.current = SHOW_QUICK_CHAT
+    /** Cập nhật giá trị trong ref một khi LAST_TIME_CLOSE_QUICK_CHAT thay đổi */
+    REF_LAST_TIME_CLOSE_QUICK_CHAT.current = LAST_TIME_CLOSE_QUICK_CHAT
+  }, [SHOW_QUICK_CHAT, LAST_TIME_CLOSE_QUICK_CHAT])
 
   /** Trạng thái khởi tạo client */
   const IS_INIT_CLIENT = useSelector(selectStatusIsInit)
@@ -283,6 +283,7 @@ const ChatApp = ({
     /** Lấy client_id từ localStorage, chỉ xử lý nếu hợp lệ */
     const STORED_CLIENT_ID = localStorage.getItem(`client_id_<${PAGE_ID}>`)
     // const STORED_CLIENT_ID = '6131478076934694'
+
     /**
      * Nếu không có client_id, khởi tạo lại hoặc đặt cờ khởi tạo socket
      */
@@ -313,8 +314,6 @@ const ChatApp = ({
   }, [PAGE_ID])
 
   useEffect(() => {
-    console.log(GLOBAL_CLIENT_ID, 'GLOBAL_CLIENT_ID')
-    console.log(IS_INIT_CLIENT, 'IS_INIT_CLIENT')
     /** Khi có clientId hợp lệ và socket chưa được khởi tạo */
     /** Check từ global TH khởi tạo USER */
     if (GLOBAL_CLIENT_ID && IS_INIT_CLIENT) {
@@ -718,9 +717,19 @@ const ChatApp = ({
          * để xác định chiều cao popup
          * Nếu chiều cao tin nhắn là 224 thì chiều cao popup là 56
          */
-        return `w-[302px] ${
-          HEIGHT === 224 ? 'h-56' : `h-[${HEIGHT}px]`
-        } items-end justify-between pb-4 px-2`
+        // Xử lý từng case cụ thể
+        if (HEIGHT === 224) {
+          callPostMessage(false, true, HEIGHT)
+          return 'w-[302px] h-56 items-end justify-between pb-4 px-2'
+        }
+        if (HEIGHT === 240) {
+          callPostMessage(false, true, HEIGHT)
+          return 'w-[302px] h-60 items-end justify-between pb-4 px-2'
+        }
+        if (HEIGHT === 312) {
+          callPostMessage(false, true, HEIGHT)
+          return 'w-[302px] h-[312px] items-end justify-between pb-4 px-2'
+        }
       }
     }
     /**
@@ -853,7 +862,9 @@ const ChatApp = ({
        */
       return ATTACHMENT_CLASS
     }
-    /** Return appropriate class based on conditions */
+    /**
+     * Kiểm tra điều kiện cơ bản và có tệp đính kèm
+     */
     if (BASE_CONDITION && ATTACHMENT) {
       /** Kiểm tra nếu là template và xác định kiểu template */
       if (ATTACHMENT.type === 'template') {
@@ -879,7 +890,7 @@ const ChatApp = ({
           return ATTACHMENT_TYPE_TO_CLASS_MAP.template_generic
       }
 
-      // Kiểm tra attachment.type không phải là undefined
+      /** Kiểm tra attachment.type không phải là undefined */
       if (ATTACHMENT.type) {
         /**
          * Kiểm tra attachment.type không phải là undefined
@@ -1008,15 +1019,13 @@ const ChatApp = ({
                   dispatch(setLatestMessageGlobal(null))
                   /** 2. Reset danh sách tin nhắn trong store */
                   dispatch(setListMessage([]))
-                  /** 3. Danh sách tin nhắn chưa đọc */
-
-                  /** 4. Reset Số tin nhắn chưa đọc localStorage */
+                  /** 3. Reset Số tin nhắn chưa đọc localStorage */
                   saveQuickChatCount(PAGE_ID, CLIENT_STORED, 0)
-                  /** 5. Reset tin nhắn mới nhất trong localStorage */
+                  /** 4. Reset tin nhắn mới nhất trong localStorage */
                   saveQuickChatLatestMessage(PAGE_ID, CLIENT_STORED, null)
-                  /** 6. Reset danh sách tin nhắn chưa đọc trong Store */
+                  /** 5. Reset danh sách tin nhắn chưa đọc trong Store */
                   dispatch(setListUnreadMessage([]))
-                  /** 7. Reset unread count */
+                  /** 6. Reset unread count */
                   dispatch(setGlobalUnreadCount(0))
                 }}
                 error_message={error_message}
@@ -1151,7 +1160,6 @@ const ChatApp = ({
                     dispatch(setGlobalUnreadCount(0))
                     /** Khi click vào trả lời, xoá unread_count */
                     saveQuickChatCount(PAGE_ID, CLIENT_STORED, 0)
-
                     /* Chuyển tab thành message */
                     setCurrentTab('message')
                     /** trigger hàm đóng mở popup */
@@ -1187,20 +1195,14 @@ const ChatApp = ({
                     <div
                       onClick={(event) => {
                         event.stopPropagation()
-
                         /** Reset hết data trong store */
                         dispatch(setLatestMessageGlobal(null))
-                        // dispatch(setListUnreadMessage([]))
-                        // dispatch(setListMessage([]))
-
                         /** Khi đóng tin nhắn mới, reset unread_count */
                         dispatch(setGlobalUnreadCount(0))
-
                         /** Lưu thời gian vào localstorage Khi đóng tin nhắn mới */
                         saveTimeClosePopup(PAGE_ID)
                         /** Reset latest message trong store thành null */
                         saveQuickChatLatestMessage(PAGE_ID, CLIENT_STORED, null)
-
                         /** Thay đổi trạng thái SHOW_QUICK_CHAT= 'hide_quick_chat' */
                         localStorage.setItem(
                           `status_quick_chat__${PAGE_ID}`,
@@ -1223,15 +1225,6 @@ const ChatApp = ({
               </div>
               <div className="flex gap-x-2 h-11">
                 <div className="w-8 h-8"></div>
-                {/* <InputQuickChat
-                  handleSend={(e: string) => {
-                    sendMessage(e)
-                  }}
-                  staff_name={truncateSentences(
-                    renderStaffName(LATEST_MESSAGE?.message_metadata),
-                    6
-                  )}
-                /> */}
                 <div
                   onClick={() => {
                     /** Khi click trả lời sẽ  reset hết data trong store */
@@ -1284,15 +1277,25 @@ const ChatApp = ({
       <button
         onClick={() => {
           if (!show && current_tab === 'message') {
-            // Reset hết data trong store
+            /** Reset hết data trong store */
             dispatch(setLatestMessageGlobal(null))
             dispatch(setListUnreadMessage([]))
             dispatch(setListMessage([]))
             dispatch(setGlobalUnreadCount(0))
             postMessageToParent(false, false)
           }
+          /**
+           * Khi click vào nút trigger,
+           * nếu đang ở tab message thì reset tin nhắn mới nhất và tin nhắn chưa đọc
+           */
           handleBtn('no_toggle')
+          /**
+           * Reset tin nhắn mới nhất trong store
+           */
           setErrorMessage('')
+          /**
+           * Reset tin nhắn mới nhất trong store
+           */
           setShowWelcomeMessage(false)
         }}
         className={`absolute justify-center items-center bottom-4 right-2  h-12 w-12 bg-white shadow-lg rounded-full  hover:scale-110 ${
@@ -1321,12 +1324,6 @@ const ChatApp = ({
           {show ? (
             <Down />
           ) : (
-            // <Logo
-            //   aria-label="Logo Retion"
-            //   width={30}
-            //   height={30}
-            // />
-
             <img
               src="./images/Logo_retion_embed.png"
               alt="Logo Retion"

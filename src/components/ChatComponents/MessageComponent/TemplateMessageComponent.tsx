@@ -1,9 +1,8 @@
 import { BtnType, ElementType, MessageProps } from '../type'
-import { extractMessageId, formatDate, isValidUrl } from '@/utils'
+import { extractMessageId, isValidUrl } from '@/utils'
 
 import AudioPlayer from './AudioPlayer'
 import { ReactComponent as FileIcon } from '@/assets/document-text.svg'
-import { ReactComponent as IconArrow } from '@/assets/arrow-up-right-square.svg'
 import VideoPlayer from './VideoPlayter'
 
 function TemplateMessageComponent({ data }: MessageProps) {
@@ -26,10 +25,10 @@ function TemplateMessageComponent({ data }: MessageProps) {
       {/* Hiển thị data dạng 1 ảnh */}
       {data?.message_attachments?.length === 1 &&
         data?.message_attachments?.[0]?.type === 'image' && (
-          <div className="flex rounded-lg">
+          <div className="flex rounded-lg w-full h-full">
             <img
               src={data?.message_attachments?.[0]?.payload?.url}
-              className="w-32 h-32 object-contain bg-slate-200 rounded-lg hover:cursor-pointer"
+              className="w-full h-full object-contain bg-slate-200 p-1 rounded-lg hover:cursor-pointer"
               alt=""
               onClick={() => {
                 // handleClickPreview(data?.message_attachments?.[0]?.payload?.url)
@@ -59,7 +58,8 @@ function TemplateMessageComponent({ data }: MessageProps) {
               }`}
             >
               {data?.message_attachments
-                ?.slice(0, 6) // Giới hạn chỉ hiển thị tối đa 6 ảnh
+                /** Giới hạn chỉ hiển thị tối đa 6 ảnh */
+                ?.slice(0, 6)
                 ?.map((attachment, index) => (
                   <div
                     key={attachment?.payload?.url}

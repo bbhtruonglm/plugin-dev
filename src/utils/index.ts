@@ -6,20 +6,27 @@ import { t } from 'i18next'
  * @returns {string} mặc định là 'en'
  */
 export function detectLocaleFromURL() {
-  const pathSegments = window.location.pathname.split('/').filter(Boolean) // Lấy tất cả các phần của URL
+  /** Lấy tất cả các phần của URL */
+  const PATH_SEGMENTS = window.location.pathname.split('/').filter(Boolean)
 
-  // Giả sử các locale hợp lệ là 'en' và 'vn'
-  const supportedLocales = ['en', 'vn']
+  /** Giả sử các locale hợp lệ là 'en' và 'vn' */
+  const SUPPORTED_LOCALES = ['en', 'vn']
 
-  // Kiểm tra xem có phần nào của URL khớp với một trong các locale không
-  for (const segment of pathSegments) {
-    if (supportedLocales.includes(segment)) {
-      return segment // Trả về locale nếu tìm thấy
+  /** Kiểm tra xem có phần nào của URL khớp với một trong các locale không */
+  for (const SEGMENT of PATH_SEGMENTS) {
+    /**
+     * Nếu SEGMENT khớp với một trong các locale hợp lệ
+     */
+    if (SUPPORTED_LOCALES.includes(SEGMENT)) {
+      /** Trả về locale nếu tìm thấy */
+      return SEGMENT
     }
   }
 
-  // Nếu không tìm thấy, trả về ngôn ngữ mặc định
-  return 'en' // 'en' là fallback
+  /** Nếu không tìm thấy, trả về ngôn ngữ mặc định
+   * 'en' là fallback
+   */
+  return 'en'
 }
 
 /** Hàm trích xuất locale từ cuối URL
@@ -27,23 +34,27 @@ export function detectLocaleFromURL() {
  * @return {string} mặc định là 'en'
  */
 export function getLocaleFromURL(path: any) {
-  // Lấy pathname từ URL
-  // Lấy phần cuối của pathname (sau dấu '/')
-  const PATH_SEGMENTS = path.split('/').filter(Boolean) // Loại bỏ các chuỗi rỗng
+  /** Lấy phần cuối của pathname (sau dấu '/') */
+  /** Loại bỏ các chuỗi rỗng */
+  const PATH_SEGMENTS = path.split('/').filter(Boolean)
 
-  // Giả sử các locale hợp lệ là 'en' và 'vn'
+  /** Giả sử các locale hợp lệ là 'en' và 'vn' */
   const SUPPORTED_LOCALES = ['en', 'vn']
 
-  // Lấy locale từ phần cuối cùng của pathname
+  /** Lấy locale từ phần cuối cùng của pathname */
   const LAST_SEGMENT = PATH_SEGMENTS[PATH_SEGMENTS.length - 1]
 
-  // Kiểm tra xem segment cuối cùng có phải là locale hợp lệ hay không
+  /** Kiểm tra xem segment cuối cùng có phải là locale hợp lệ hay không */
   if (SUPPORTED_LOCALES.includes(LAST_SEGMENT)) {
+    /**
+     * Trả về locale nếu tìm thấy
+     */
     return LAST_SEGMENT
   }
 
-  // Trả về ngôn ngữ mặc định nếu không tìm thấy locale hợp lệ
-  return 'vn' // 'en' là fallback
+  /** Trả về ngôn ngữ mặc định nếu không tìm thấy locale hợp lệ */
+  /** 'en' là fallback */
+  return 'vn'
 }
 
 /**tạo bg dựa trên chữ cái
@@ -51,17 +62,26 @@ export function getLocaleFromURL(path: any) {
  * @return {string} mã màu rgb
  */
 export function letterToColorCode(client_name?: string) {
+  /**
+   * Lấy ký tự đầu tiên trong tên người dùng
+   */
   let character = client_name
 
-  // lấy chữ cái đầu tiên và Chuyển ký tự thành chữ thường
+  /** lấy chữ cái đầu tiên và Chuyển ký tự thành chữ thường */
   const INPUT = character?.charAt(0).toLowerCase()
 
-  // Chuyển đổi ký tự thành mã màu, Lấy mã Unicode và trừ đi mã 'a' (97)
+  /** Chuyển đổi ký tự thành mã màu, Lấy mã Unicode và trừ đi mã 'a' (97) */
   let char_code = (INPUT?.charCodeAt(0) || 0) - 97
 
-  // Chuyển đổi số nguyên thành giá trị RGB
+  /** Chuyển đổi số nguyên thành giá trị RGB */
   var red = (char_code * 30) % 256
+  /**
+   * Chuyển đổi số nguyên thành giá trị RGB
+   */
   var green = (char_code * 20) % 256
+  /**
+   * Chuyển đổi số nguyên thành giá trị RGB
+   */
   var blue = (char_code * 10) % 256
 
   return 'rgb(' + red + ', ' + green + ', ' + blue + ')'
@@ -72,7 +92,7 @@ export function letterToColorCode(client_name?: string) {
  * @return {string} ký tự đầu và cuối
  */
 export const nameToLetter = (name?: string) => {
-  // Xử lý xoá dấu tiếng việt và lấy ký tự đầu cuối trong tên
+  /** Xử lý xoá dấu tiếng việt và lấy ký tự đầu cuối trong tên */
   return removeVietnameseTones(name)
     .match(/(\b\S)?/g)
     ?.join('')
@@ -86,13 +106,26 @@ export const nameToLetter = (name?: string) => {
  * @return {string} tên đã được xoá dấu
  */
 export const removeVietnameseTones = (str?: string) => {
+  /**
+   * Nếu không có chuỗi đầu vào, trả về chuỗi rỗng
+   */
   if (!str) return ''
-  return str
-    .normalize('NFD') // Tách các ký tự tiếng Việt thành dạng cơ bản
-    .replace(/[\u0300-\u036f]/g, '') // Loại bỏ các dấu
-    .replace(/đ/g, 'd') // Thay thế chữ "đ" thành "d"
-    .replace(/Đ/g, 'D') // Thay thế chữ "Đ" thành "D"
-    .toLowerCase() // Chuyển thành chữ thường để dễ so sánh
+  /**
+   * Xoá dấu tiếng việt
+   */
+  return (
+    str
+      /** Tách các ký tự tiếng Việt thành dạng cơ bản */
+      .normalize('NFD')
+      /** Loại bỏ các dấu */
+      .replace(/[\u0300-\u036f]/g, '')
+      /** Thay thế chữ "đ" thành "d" */
+      .replace(/đ/g, 'd')
+      /** Thay thế chữ "Đ" thành "D" */
+      .replace(/Đ/g, 'D')
+      /** Chuyển thành chữ thường để dễ so sánh */
+      .toLowerCase()
+  )
 }
 
 /** Trả về link avatar
@@ -100,7 +133,13 @@ export const removeVietnameseTones = (str?: string) => {
  * @returns {string} link avatar
  */
 export const renderAvatar = (id: string) => {
+  /**
+   * Link avatar của nhân sự
+   */
   const LINK_AVATAR = apiImage(`/app/facebook/avatar/${id}?width=64&height=64`)
+  /**
+   * Trả về link avatar
+   */
   return LINK_AVATAR
 }
 /** Trả về link avatar
@@ -112,24 +151,43 @@ export const renderAvatarCDN = (id: string) => {
    * Link avatar của nhân sự
    */
   const LINK_AVATAR = `https://cdn.botbanhang.vn/media/s/${id}/user`
+  /**
+   * Trả về link avatar
+   */
   return LINK_AVATAR
 }
 
 /** Chuyển đổi giờ, phút, giây */
 export function formatDate(isoString?: string) {
+  /**
+   * Tạo đối tượng Date từ chuỗi ISO
+   */
   const DATE = new Date(isoString || '')
 
-  // Lấy giờ, phút, giây
+  /** Lấy giờ */
   const HOUR = DATE.getHours().toString().padStart(2, '0')
+  /**
+   * Lấy phút
+   */
   const MINUTE = DATE.getMinutes().toString().padStart(2, '0')
+  /**
+   * Lấy giây
+   */
   const SECONDS = DATE.getSeconds().toString().padStart(2, '0')
 
-  // Lấy ngày, tháng, năm
+  /** Lấy ngày */
   const DAY = DATE.getDate().toString().padStart(2, '0')
-  const MONTH = (DATE.getMonth() + 1).toString().padStart(2, '0') // getMonth() trả về tháng từ 0-11
+  /**
+   * Lấy tháng
+   * getMonth() trả về tháng từ 0-11
+   */
+  const MONTH = (DATE.getMonth() + 1).toString().padStart(2, '0')
+  /**
+   * Lấy năm
+   */
   const YEAR = DATE.getFullYear()
 
-  // Kết hợp thành chuỗi theo định dạng mong muốn
+  /** Kết hợp thành chuỗi theo định dạng mong muốn */
   return `${HOUR}:${MINUTE}:${SECONDS} ${DAY}/${MONTH}/${YEAR}`
 }
 
@@ -140,6 +198,9 @@ export function formatDate(isoString?: string) {
  * @return {number} Số lượng đơn vị thời gian đã tính toán
  */
 function calculateUnits(seconds: number, unitInSeconds: number) {
+  /**
+   * Sử dụng hàm Math.floor để làm tròn xuống
+   */
   return Math.floor(seconds / unitInSeconds)
 }
 
@@ -149,29 +210,73 @@ function calculateUnits(seconds: number, unitInSeconds: number) {
  * @return {string} thời gian cách hiện tại
  */
 export function calculateTimeAgo(time_string: string) {
-  const NOW = new Date() // Thời gian hiện tại
-  const TIME = new Date(time_string) // Chuỗi thời gian được chuyển thành đối tượng Date
-  // console.log(NOW.getTime(), TIME.getTime())
+  /**
+   * Tạo đối tượng Date từ chuỗi thời gian
+   */
+  const NOW = new Date()
+  /** Chuỗi thời gian được chuyển thành đối tượng Date */
+  const TIME = new Date(time_string)
 
-  // Sử dụng getTime() để chuyển Date thành số (mili-giây)
+  /** Sử dụng getTime() để chuyển Date thành số (mili-giây) */
   const DIFF_IN_SEC = Math.floor((NOW.getTime() - TIME.getTime()) / 1000)
-
+  /**
+   * Tính toán số lượng đơn vị thời gian (giây, phút, giờ, ngày, tuần)
+   */
   const MINUTES = calculateUnits(DIFF_IN_SEC, 60)
+  /**
+   * Tính toán số lượng đơn vị thời gian ( giờ)
+   */
   const HOURS = calculateUnits(DIFF_IN_SEC, 3600)
+  /**
+   * Tính toán số lượng đơn vị thời gian (ngày)
+   */
   const DAYS = calculateUnits(DIFF_IN_SEC, 86400)
+  /**
+   * Tính toán số lượng đơn vị thời gian (tuần)
+   */
   const WEEKS = calculateUnits(DIFF_IN_SEC, 604800)
 
   /** Tính toán thời gian hiển thị */
   if (DIFF_IN_SEC < 60) {
+    /**
+     * Nếu thời gian cách hiện tại nhỏ hơn 10 giây, trả về 'now'
+     */
     if (DIFF_IN_SEC < 10) return t('now')
+    /**
+     * Trả về số giây cách hiện tại
+     */
     return `${DIFF_IN_SEC}s ${t('ago')}`
+    /**
+     * Trả về số phút cách hiện tại
+     */
   } else if (MINUTES < 60) {
+    /**
+     * Nếu số phút cách hiện tại nhỏ hơn 2 phút, trả về '1 phút trước'
+     */
     return `${MINUTES}${t('m')} ${t('ago')}`
+    /**
+     * Trả về số giờ cách hiện tại
+     */
   } else if (HOURS < 24) {
+    /**
+     * Nếu số giờ cách hiện tại nhỏ hơn 2 giờ, trả về '1 giờ trước'
+     */
     return `${HOURS}h ${t('ago')}`
+    /**
+     * Trả về số ngày cách hiện tại
+     */
   } else if (DAYS < 7) {
+    /**
+     * Nếu số ngày cách hiện tại nhỏ hơn 2 ngày, trả về '1 ngày trước'
+     */
     return `${DAYS}d ${t('ago')}`
+    /**
+     * Trả về số tuần cách hiện tại
+     */
   } else {
+    /**
+     * Nếu số tuần cách hiện tại nhỏ hơn 2 tuần, trả về '1 tuần trước'
+     */
     return `${WEEKS}w ${t('ago')}`
   }
 }
@@ -187,7 +292,7 @@ export const postMessageToParent = (
   height?: number,
   media_url?: string
 ) => {
-  // post message đến parent
+  /** post message đến parent */
   window.parent.postMessage(
     {
       from: 'BBH-EMBED-IFRAME',
@@ -218,7 +323,7 @@ export const saveQuickChatCount = (
   client_id: String | null,
   count: number
 ) => {
-  // console.log(page_id, client_id, count)
+  /** console.log(page_id, client_id, count) */
   if (!page_id || !client_id) return
   /** Lưu vào thời gian đóng popup */ /** Tính toán lưu count vào localStorage */
   localStorage.setItem(
@@ -246,29 +351,34 @@ export const saveQuickChatLatestMessage = (
 
 /** Hàm truncate
  * @param {string} str: Chuỗi cần truncate
- * @param {number} maxLength: Chiều dài chuỗi cần truncate
+ * @param {number} max_length: Chiều dài chuỗi cần truncate
  * @returns {string} Chuỗi đã truncate
  */
-export const truncateString = (str: string, maxLength: number) => {
-  if (!str) return '' // Trả về chuỗi rỗng nếu str là null hoặc undefined
-  return str.length > maxLength ? str.substring(0, maxLength) + '...' : str
+export const truncateString = (str: string, max_length: number) => {
+  /** Trả về chuỗi rỗng nếu str là null hoặc undefined */
+  if (!str) return ''
+  /** Truncate nếu độ dài chuỗi lớn hơn max_length */
+  return str.length > max_length ? str.substring(0, max_length) + '...' : str
 }
 
 /** Hàm truncate cho sentences
  * @param {string} str: Chuỗi cần truncate
  * • Lấy từ đầu tiên của trong tên
- * @param {number} maxLength: Chiều dài chuỗi cần truncate
+ * @param {number} max_length: Chiều dài chuỗi cần truncate
  * @returns {string} Chuỗi đã truncate
  */
-export const truncateSentences = (str: string, maxLength: number) => {
-  if (!str) return '' // Trả về chuỗi rỗng nếu str là null hoặc undefined
+export const truncateSentences = (str: string, max_length: number) => {
+  /** Trả về chuỗi rỗng nếu str là null hoặc undefined */
+  if (!str) return ''
 
-  const WORDS = str.split(' ') // Tách chuỗi thành mảng từ
-  const FIRST_WORD = WORDS[0] // Lấy từ đầu tiên
+  /** Tách chuỗi thành mảng từ */
+  const WORDS = str.split(' ')
+  /** Lấy từ đầu tiên */
+  const FIRST_WORD = WORDS[0]
 
-  // Truncate nếu từ đầu tiên dài hơn maxLength
-  return FIRST_WORD.length > maxLength
-    ? FIRST_WORD.substring(0, maxLength) + '...'
+  /** Truncate nếu từ đầu tiên dài hơn max_length */
+  return FIRST_WORD.length > max_length
+    ? FIRST_WORD.substring(0, max_length) + '...'
     : FIRST_WORD
 }
 /** Hàm lấy tên file từ URL
@@ -276,17 +386,21 @@ export const truncateSentences = (str: string, maxLength: number) => {
  * @return {string} Tên file
  */
 export function extractMessageId(url: string | undefined) {
+  /**
+   * Nếu không có URL, trả về null
+   */
   if (!url) return null
-  // Tìm vị trí của "message/" trong URL
+  /** Tìm vị trí của "message/" trong URL */
   const MESSAGE_INDEX = url.indexOf('message/')
 
-  // Kiểm tra xem chuỗi có chứa "message/" hay không
+  /** Kiểm tra xem chuỗi có chứa "message/" hay không */
   if (MESSAGE_INDEX !== -1) {
-    // Lấy phần chuỗi sau "message/" (cộng 8 vì "message/" có độ dài 8 ký tự)
+    /** Lấy phần chuỗi sau "message/" (cộng 8 vì "message/" có độ dài 8 ký tự) */
     const MESSAGE_ID = url.substring(MESSAGE_INDEX + 8)
-    return MESSAGE_ID // Trả về phần chuỗi sau "message/"
+    /** Trả về phần chuỗi sau "message/" */
+    return MESSAGE_ID
   } else {
-    // Nếu không tìm thấy "message/" trong URL, trả về null
+    /** Nếu không tìm thấy "message/" trong URL, trả về null */
     return null
   }
 }
@@ -297,32 +411,39 @@ export function extractMessageId(url: string | undefined) {
  */
 
 export const parsedString = (str: string): any => {
-  if (!str) return null // Trả về null nếu chuỗi rỗng hoặc không xác định
+  /** Trả về null nếu chuỗi rỗng hoặc không xác định */
+  if (!str) return null
 
   try {
-    return JSON.parse(str) // Thử parse chuỗi JSON
+    /** Thử parse chuỗi JSON */
+    return JSON.parse(str)
   } catch (error) {
-    console.error('Lỗi khi parse JSON:', error) // Log lỗi ra console
-    return null // Trả về null nếu parse không thành công
+    /** Log lỗi ra console */
+    console.error('Lỗi khi parse JSON:', error)
+    /** Trả về null nếu parse không thành công */
+    return null
   }
 }
 
 /**
  * Hàm kiểm tra nếu thời gian hiện tại lớn hơn last_time + 1 giờ
- * @param {number} lastTime - Thời gian trước đó (timestamp)
- * @return {boolean} - Trả về true nếu thời gian hiện tại lớn hơn lastTime 1 giờ, ngược lại trả về false
+ * @param {number} last_time - Thời gian trước đó (timestamp)
+ * @return {boolean} - Trả về true nếu thời gian hiện tại lớn hơn last_time 1 giờ, ngược lại trả về false
  */
-export const checkTimeTillNow = (lastTime: number) => {
-  // 1 giờ = 60 phút * 60 giây * 1000 milliseconds
+export const checkTimeTillNow = (last_time: number) => {
+  /** 1 giờ = 60 phút * 60 giây * 1000 milliseconds */
   const ONE_HOUR = 60 * 60 * 1000
-  const THIRTY_SECOND = 30 * 1000 // 1 giờ = 60 phút * 60 giây * 1000 milliseconds
+  /**
+   * Lấy thời gian hiện tại 30s
+   */
+  const THIRTY_SECOND = 30 * 1000
+  /**
+   * Lấy thời gian hiện tại
+   */
   const NOW = Date.now()
 
-  // console.log(lastTime, '>>>', NOW)
-
-  // Kiểm tra nếu thời gian hiện tại lớn hơn lastTime + 1 giờ
-  // return NOW > lastTime + ONE_HOUR
-  return NOW > lastTime + THIRTY_SECOND
+  /** Trả về true nếu thời gian hiện tại lớn hơn last_time + 1 giờ */
+  return NOW > last_time + ONE_HOUR
 }
 /** Hàm check URL có hợp lệ hay không
  * @param {string} string: Đường dẫn URL
@@ -330,7 +451,8 @@ export const checkTimeTillNow = (lastTime: number) => {
  */
 export function isValidUrl(string: string) {
   try {
-    new URL(string) // Nếu URL không hợp lệ, sẽ ném ra lỗi.
+    /** Nếu URL không hợp lệ, sẽ ném ra lỗi. */
+    new URL(string)
     return true
   } catch (_) {
     return false
@@ -339,13 +461,25 @@ export function isValidUrl(string: string) {
 
 /** chat app check css function */
 
-/** Check tin nhắn có phải từ page không */
+/** Check tin nhắn có phải từ page không
+ * @param {MessageInfo} message: Thông tin tin nhắn
+ */
 export const isValidPageMessage = (message: MessageInfo) => {
+  /**
+   * Trả về true nếu message_type là 'page'
+   */
   return message?.message_type === 'page'
 }
 
-/** Check tin nhắn có file media kèm theo không */
+/** Check tin nhắn có file media kèm theo không
+ * @param {MessageInfo} message: Thông tin tin nhắn
+ * @param {string} type: Loại file
+ */
 export const hasAttachmentOfType = (message: MessageInfo, type: string) => {
+  /**
+   * Trả về true nếu message_attachments là mảng và có ít nhất một phần tử
+   * và phần tử đầu tiên có type là type
+   */
   return (
     message?.message_attachments &&
     message.message_attachments[0]?.type === type
@@ -361,6 +495,9 @@ export function renderURLPrefix(
   key: string,
   value: string
 ): string | undefined {
+  /**
+   * Kiểm tra key và trả về URL tương ứng
+   */
   switch (key) {
     case 'PHONE':
       return `tel:${value}`
@@ -409,9 +546,11 @@ export function renderURLPrefix(
     case 'GOOGLE_PLAY_STORE':
       return `https://play.google.com/store/apps/details?id=${value}`
     case 'LINK_WEB':
-      return value // Trả về giá trị trực tiếp nếu là một link web thông thường
+      /** Trả về giá trị trực tiếp nếu là một link web thông thường */
+      return value
 
     default:
-      return key // Trả về key nếu không khớp với bất kỳ case nào
+      /** Trả về key nếu không khớp với bất kỳ case nào */
+      return key
   }
 }

@@ -1,8 +1,4 @@
-import {
-  selectGlobalUnreadCount,
-  selectListUnreadMessage,
-  selectPageId,
-} from '@/stores/appSlice'
+import { selectGlobalUnreadCount, selectPageId } from '@/stores/appSlice'
 
 import { ReactComponent as IconSend } from '@/assets/send.svg'
 import { t } from 'i18next'

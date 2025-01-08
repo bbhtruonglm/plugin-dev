@@ -2,7 +2,10 @@ import React from 'react'
 import blackArrow from '../../assets/black-arrow.svg'
 import searchIcon from '../../assets/search.svg'
 function Help() {
-  const questionList = [
+  /**
+   * Mock data
+   */
+  const QUESTION_LIST = [
     {
       name: 'Bot bán hàng là gì?',
     },
@@ -31,7 +34,7 @@ function Help() {
         />
       </div>
       <div>
-        {questionList.map((item, index) => (
+        {QUESTION_LIST.map((item, index) => (
           <div
             key={index}
             className="flex justify-between py-2 px-3 text-sm font-medium"

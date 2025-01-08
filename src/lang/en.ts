@@ -14,7 +14,7 @@ export const en = {
     m: 'm',
     now: 'Now',
     reply: 'Reply',
-    // Home
+    /** Home */
 
     your_options:
       'You can ask questions or provide feedback on service quality.',
@@ -22,8 +22,8 @@ export const en = {
     sendUs: 'Send us a message',
     we_are_online: 'We are online',
     chatWithUs: 'or contact us through the channel you use:',
-    // Message
-    // Message:
+
+    /** Message: */
     online: 'Online',
     placeholder: 'Enter value...',
     start_to_chat: 'Start to chat',

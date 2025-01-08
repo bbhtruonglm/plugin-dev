@@ -3,7 +3,7 @@ import type { PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from '@/stores'
 import { createSlice } from '@reduxjs/toolkit'
 
-const initialState: AppState = {
+const INITIAL_STATE: AppState = {
   page_id: '',
   client_id: '',
   locale: 'vi',
@@ -28,7 +28,7 @@ const initialState: AppState = {
 
 export const appSlice = createSlice({
   name: 'app',
-  initialState,
+  initialState: INITIAL_STATE,
   reducers: {
     /** lưu page_id */
     setPageId: (state, action: PayloadAction<string>) => {
@@ -91,6 +91,7 @@ export const appSlice = createSlice({
       state,
       action: PayloadAction<AppState['list_unread_message']>
     ) => {
+      console.log(action.payload, 'message zzz action.payload')
       state.list_unread_message = action.payload
     },
     /** lưu dữ liệu tin nhắn */

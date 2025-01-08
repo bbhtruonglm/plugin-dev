@@ -4,18 +4,29 @@ import { ReactComponent as Close } from '@/assets/close.svg'
 import { ModalProps } from '../type'
 
 const Modal: React.FC<ModalProps> = ({ is_open, onClose, children }) => {
+  /** @param is_visible: boolean */
   const [is_visible, setIsVisible] = useState(is_open)
-
+  /**
+   * @param is_open: boolean
+   */
   useEffect(() => {
+    /**
+     * Nếu modal mở
+     */
     if (is_open) {
       setIsVisible(true)
     } else {
-      // Delay to allow animation to complete before unmounting
-      const timeoutId = setTimeout(() => setIsVisible(false), 300)
-      return () => clearTimeout(timeoutId)
+      /** Delay to allow animation to complete before unmounting */
+      const TIMEOUT_ID = setTimeout(() => setIsVisible(false), 300)
+      /**
+       * Cleanup function, loại bỏ timeout khi component bị unmount
+       */
+      return () => clearTimeout(TIMEOUT_ID)
     }
   }, [is_open])
-
+  /**
+   * Nếu modal không hiển thị
+   */
   if (!is_visible) return null
 
   return (
@@ -29,7 +40,7 @@ const Modal: React.FC<ModalProps> = ({ is_open, onClose, children }) => {
         className={`relative transform transition-transform duration-100 ${
           is_open ? 'scale-100' : 'scale-90'
         }`}
-        // Ngăn chặn sự kiện đóng modal khi click vào nội dung
+        /** Ngăn chặn sự kiện đóng modal khi click vào nội dung */
         onClick={(e) => e.stopPropagation()}
       >
         {children}

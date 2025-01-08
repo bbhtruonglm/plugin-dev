@@ -19,15 +19,26 @@ function InputChat({
 }: InputProps) {
   /** Tạo ref cho ô input */
   const INPUT_REF = useRef<HTMLInputElement>(null)
-
+  /** Lấy trạng thái hiển thị popup */
   const [value, setValue] = useState('')
 
-  /** Cho phép ấn Enter để gửi */
+  /** Cho phép ấn Enter để gửi
+   * @param event: any
+   */
   const handleKeyDown = (event: any) => {
+    /**
+     * Nếu ấn Enter và có giá trị
+     */
     if (event.key === 'Enter' && value) {
       /** Cho phép ấn enter */
       event.preventDefault()
+      /**
+       * Gửi tin nhắn
+       */
       handleSend(value)
+      /**
+       * Reset giá trị
+       */
       setValue('')
     }
   }

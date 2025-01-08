@@ -1,12 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react'
-
-import { ReactComponent as Pause } from '@/assets/pause-circle.svg'
-import { ReactComponent as Play } from '@/assets/play-btn.svg'
+import React from 'react'
 import { VideoPlayerProps } from '../type'
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, width, height }) => {
-  const VIDEO_REF = useRef<HTMLVideoElement>(null)
-
   return (
     <div className="w-full h-full flex flex-col gap-y-1 rounded-lg relative">
       <div

@@ -219,5 +219,8 @@ export interface StaffSocket {
   online_status: boolean
 }
 
-/**tên sự kiện socket */
-export type SocketEvent = 'SYNC_DATA' // đồng bộ trạng thái dữ liệu, không đẩy lên đầu
+/**tên sự kiện socket 
+ 
+* đồng bộ trạng thái dữ liệu, không đẩy lên đầu
+*/
+export type SocketEvent = 'SYNC_DATA'

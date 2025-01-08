@@ -24,9 +24,8 @@ import InputChat from './Body/InputChat'
 import Loading from '../Loading/Loading'
 import LoadingDots from '../Loading/LoadingDot'
 import MessageBody from './Body/MessageBody'
-import _ from 'lodash'
+import { keys } from 'lodash'
 import { renderAvatarCDN } from '@/utils'
-// import InitClient from './InitClient'
 import { t } from 'i18next'
 
 /** Chi tiết component chat */
@@ -214,16 +213,27 @@ function DetailChat({
     }
   }
 
-  // Inside your component
+  /**
+   * Hàm debounce xử lý scroll
+   */
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const TIMER = setTimeout(() => {
+      /**
+       * Set loading more về false
+       */
       dispatch(setLoadingGlobal(false))
+      /**
+       * Set loading more về false
+       */
       setLoadingMore(false)
     }, 200)
 
-    // Cleanup function to clear the timeout
+    /** Cleanup function to clear the timeout */
     return () => {
-      clearTimeout(timer)
+      /**
+       * Clear timeout
+       */
+      clearTimeout(TIMER)
     }
   }, [LIST_MESSAGE])
 
@@ -279,6 +289,9 @@ function DetailChat({
      * Không check event khi đang scroll lên nữa, khi có tin nhắn mới auto scroll
      */
     if (scroll_at_bottom) {
+      /**
+       * Cuộn xuống dưới cùng
+       */
       scrollToBottom()
     }
   }, [scroll_at_bottom])
@@ -304,6 +317,9 @@ function DetailChat({
 
     /** Cleanup: Hủy bỏ timeout nếu is_init thay đổi hoặc component bị unmount */
     return () => {
+      /**
+       *  Clear timeout
+       */
       if (timeout_id) {
         clearTimeout(timeout_id)
       }
@@ -343,7 +359,7 @@ function DetailChat({
      * Thì sẽ thêm vào store
      */
 
-    if (_.keys(LATEST_MESSAGE).length !== 0 && !is_init) {
+    if (keys(LATEST_MESSAGE).length !== 0 && !is_init) {
       // Lưu tin nhắn mới từ socket vào store
       dispatch(setListMessage([...LIST_MESSAGE, LATEST_MESSAGE]))
       setSkip(skip + 1)
@@ -366,6 +382,7 @@ function DetailChat({
     /** Đoạn này chắc bỏ được */
 
     if (GLOBAL_UNREAD_COUNT && GLOBAL_UNREAD_COUNT > 0 && SHOW_POPUP) {
+      console.log('chatbox opened and has unread message')
       /** Khi mở vào tin nhắn, Reset lại số lượng tin nhắn chưa đọc */
       dispatch(setGlobalUnreadCount(0))
       setTimeout(() => {
@@ -386,21 +403,8 @@ function DetailChat({
       console.log(ID_DETECT, 'ID_DETECT')
       /** Nếu không có staff Id thì trả về '' */
       if (!ID_DETECT) return ''
-
+      /** Nếu có staff Id thì trả về link avatar */
       return renderAvatarCDN(ID_DETECT)
-      /** Xem nhân viên nhắn tin có tồn tại trong list nhân viên không */
-      // const IS_STAFF_EXIST = employee_list?.find((item) =>
-      //   id.includes(item?.fb_staff_id)
-      // )
-      // console.log(IS_STAFF_EXIST, 'IS_STAFF_EXIST')
-      // /** Nếu không tồn tại thì trả về '' */
-      // if (!IS_STAFF_EXIST) {
-      //   return ''
-      // }
-
-      // /** Lấy link avatar */
-      // const LINK_AVATAR = renderAvatar(IS_STAFF_EXIST?.fb_staff_id)
-      // return LINK_AVATAR
     },
     [employee_list]
   )
