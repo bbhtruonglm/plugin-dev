@@ -554,3 +554,20 @@ export function renderURLPrefix(
       return key
   }
 }
+/**
+ *  Hàm render locale
+ * @param value  giá trị locale
+ * @returns   giá trị locale
+ */
+export function renderLocale(value: string) {
+  /** Các map locale cần xử lý */
+  const LOCALE_MAP: { [key: string]: string } = {
+    vn: 'vi',
+    vi: 'vi',
+    us: 'en',
+    en: 'en',
+  }
+
+  /** Kiểm tra và trả về kết quả theo map */
+  return LOCALE_MAP[value.toLowerCase()] || value
+}

@@ -9,6 +9,7 @@ import {
   hasAttachmentOfType,
   postMessageToParent,
   renderAvatarCDN,
+  renderLocale,
   saveQuickChatCount,
   saveQuickChatLatestMessage,
   saveTimeClosePopup,
@@ -433,13 +434,14 @@ const ChatApp = ({
       delay: RES?.data?.welcome_message?.delay * 1000 || 5000,
       is_active: RES?.data?.welcome_message?.is_active || false,
     })
-
+    console.log(RES, 'ress')
+    console.log(I18N.language)
     /** Lưu thông tin biểu mẫu */
     setWebForm({
       is_active: RES?.data?.web_form?.is_active || false,
       source:
         RES?.data?.web_form?.source?.[
-          I18N.language || RES?.data?.default_language || 'vi'
+          renderLocale(I18N.language) || RES?.data?.default_language || 'vi'
         ] || {},
     })
 
