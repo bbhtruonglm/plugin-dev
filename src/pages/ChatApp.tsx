@@ -223,7 +223,7 @@ const ChatApp = ({
   /**
    * Lấy client_id từ localStorage
    */
-  const CLIENT_STORED = localStorage.getItem(`client_id_<${PAGE_ID}>`)
+  const CLIENT_STORED = localStorage.getItem(`client_id_${PAGE_ID}`)
 
   /** Tin nhắn chào mừng  */
   const [welcome_message, setWelcomeMessage] = useState<any>({
@@ -282,7 +282,7 @@ const ChatApp = ({
     if (!PAGE_ID) return
 
     /** Lấy client_id từ localStorage, chỉ xử lý nếu hợp lệ */
-    const STORED_CLIENT_ID = localStorage.getItem(`client_id_<${PAGE_ID}>`)
+    const STORED_CLIENT_ID = localStorage.getItem(`client_id_${PAGE_ID}`)
     // const STORED_CLIENT_ID = '6131478076934694'
 
     /**

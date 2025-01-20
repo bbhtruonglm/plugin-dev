@@ -12,6 +12,31 @@ import { useEffect, useState } from 'react'
 import { ChatProps } from './type'
 import DetailChat from '@/components/ChatComponents/DetailChat'
 
+/**
+ * Kiểu dữ liệu khởi tạo input
+ */
+type INIT_INPUT = {
+  /**
+   * ID trang
+   */
+  page_id: string
+  /**
+   * ID user = client_id
+   */
+  user_id?: string
+  /**
+   * Tên khách hàng
+   */
+  name?: string
+  /**
+   * Số điện thoại
+   */
+  phone?: string
+  /**
+   * Email
+   */
+  email?: string
+}
 function ChatScreen({
   userOutChat,
   error_message,
@@ -19,9 +44,7 @@ function ChatScreen({
   page_name,
   employee_list,
 }: ChatProps) {
-  /**
-   * Lấy API từ useAPI
-   */
+  /** Lấy API từ useAPI */
   const { INIT_CLIENT_API, READ_CLIENT_INFO } = useAPI()
   /** ID trang được lấy từ store */
   const PAGE_ID = useSelector(selectPageId)
@@ -29,29 +52,17 @@ function ChatScreen({
   /** Lấy thông tin user từ store */
   const USER_INFO = useSelector(selectUserInfo)
 
-  /**
-   * Lấy dữ liệu từ store
-   */
+  /** Lấy dữ liệu từ store */
   const dispatch = useDispatch()
-  /**
-   * State client ID
-   */
+  /** State client ID */
   const [client_id, setClientId] = useState<String | null | any>('')
-  /**
-   * State báo sai page_id
-   */
+  /** State báo sai page_id */
   const [invalid_page_id, setInvalidPageId] = useState(false)
-  /**
-   * State loading init client
-   */
+  /** State loading init client */
   const [loading, setLoading] = useState(false)
-  /**
-   * State avatar nhân viên
-   */
+  /** State avatar nhân viên */
   const [staff_avatar, setStaffAvatar] = useState(null as any)
-  /**
-   * State tên nhân viên
-   */
+  /** State tên nhân viên */
   const [staff_name, setStaffName] = useState(null as any)
   /**
    * State loading staff
@@ -71,15 +82,12 @@ function ChatScreen({
   /**
    * Hàm khởi tạo client id
    */
-  const CLIENT_ID = localStorage.getItem(`client_id_<${PAGE_ID}>`)
+  const CLIENT_ID = localStorage.getItem(`client_id_${PAGE_ID}`)
 
   useEffect(() => {
     /** Nếu có page_id thì mới xử lý tiếp */
-
     if (PAGE_ID) {
-      /** Tạo client Id = page_id từ cha */
-      // const CLIENT_ID = localStorage.getItem(`client_id_<${PAGE_ID}>`)
-      // Có CLIENT_ID mới set vào state
+      /** Nếu có CLIENT_ID thì set CLIENT_ID */
       if (CLIENT_ID && CLIENT_ID !== 'undefined') {
         setClientId(CLIENT_ID)
       } else {
@@ -102,7 +110,7 @@ function ChatScreen({
   /** hàm khởi tạo client id
    * @param {Object} value - Đối tượng chứa các tham số cần chuyển đổi thành chuỗi query string
    */
-  const initGetClientId = async (value: any) => {
+  const initGetClientId = async (value: INIT_INPUT) => {
     try {
       /** Tạo đối tượng URL từ chuỗi init URL client */
       const URL_CLIENT = new URL(INIT_CLIENT_API)
@@ -144,14 +152,14 @@ function ChatScreen({
        */
       if (RESULT.code === 403) {
         /** Nếu lỗi thì lưu lại chuỗi rỗng */
-        localStorage.setItem(`client_id_<${PAGE_ID}>`, '')
+        localStorage.setItem(`client_id_${PAGE_ID}`, '')
         /**
          * Báo lỗi page_id không hợp lệ
          */
         setInvalidPageId(true)
       } else {
         /** Có data thì lưu vào local storage */
-        localStorage.setItem(`client_id_<${PAGE_ID}>`, RESULT.data)
+        localStorage.setItem(`client_id_${PAGE_ID}`, RESULT.data)
         // localStorage.setItem(`client_id_<${PAGE_ID}>`, '6131478076934694')
         /**
          * Set status init client thành true
@@ -183,9 +191,17 @@ function ChatScreen({
       /**
        * Gọi hàm khởi tạo client id
        */
-      initGetClientId({
-        page_id: PAGE_ID,
-      })
+      const PARAMS: INIT_INPUT = { page_id: PAGE_ID }
+      /**
+       * Nếu có user_id thì thêm vào PARAMS
+       */
+      if (USER_INFO?.user_id) {
+        /**
+         * Thêm user_id vào PARAMS
+         */
+        PARAMS.user_id = USER_INFO.user_id
+      }
+      initGetClientId(PARAMS)
     }
   }, [AI_STATUS, CLIENT_ID])
 
@@ -197,12 +213,25 @@ function ChatScreen({
       /**
        * Gọi hàm khởi tạo client id
        */
-      initGetClientId({
+      const PARAMS: INIT_INPUT = {
         page_id: PAGE_ID,
         name: USER_INFO?.user_name,
         phone: USER_INFO?.user_phone,
         email: USER_INFO?.user_email,
-      })
+      }
+      /**
+       * Nếu có user_id thì thêm vào PARAMS
+       */
+      if (USER_INFO?.user_id) {
+        /**
+         * Thêm user_id vào PARAMS
+         */
+        PARAMS.user_id = USER_INFO.user_id
+      }
+      /**
+       * Gọi hàm khởi tạo client id
+       */
+      initGetClientId(PARAMS)
     }
   }, [CLIENT_ID, USER_INFO])
 
@@ -272,7 +301,7 @@ function ChatScreen({
           userOutChat(client_id)
         }}
         user_id={client_id}
-        onInitClient={(e: Object) => initGetClientId(e)}
+        onInitClient={(e: INIT_INPUT) => initGetClientId(e)}
         loading_init={loading}
         setLoadingInit={(e: boolean) => setLoading(e)}
         invalid_page_id={invalid_page_id}

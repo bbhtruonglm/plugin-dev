@@ -1,4 +1,5 @@
 import { ChatScreenProps, Message } from './type'
+import { debounce, keys } from 'lodash'
 import { fetchAPI, useAPI } from '@/api/api'
 import {
   selectGlobalUnreadCount,
@@ -24,7 +25,6 @@ import InputChat from './Body/InputChat'
 import Loading from '../Loading/Loading'
 import LoadingDots from '../Loading/LoadingDot'
 import MessageBody from './Body/MessageBody'
-import { keys } from 'lodash'
 import { renderAvatarCDN } from '@/utils'
 import { t } from 'i18next'
 
@@ -49,8 +49,10 @@ function DetailChat({
 }: ChatScreenProps) {
   /** Bắt vị trí end scroll ở bottom */
   const MESSAGE_END_REF = useRef<HTMLDivElement | null>(null)
+  // console.log(MESSAGE_END_REF, 'MESSAGE_END_REF')
   /** Bắt vị trí ref ở đầu tin nhắn */
   const MESSAGE_CONTAINER_REF = useRef<HTMLDivElement | null>(null)
+  // console.log(MESSAGE_CONTAINER_REF, 'MESSAGE_CONTAINER_REF')
   /** lấy Api từ hooks api */
   const { READ_MESSAGE_API, SEND_MESSAGE_API } = useAPI()
 
@@ -79,6 +81,7 @@ function DetailChat({
    * Trạng thái Viewport
    */
   const NO_VIEWPORT = useSelector(selectStatusViewport)
+  // console.log(NO_VIEWPORT, 'NO_VIEWPORT')
 
   /** Trạng thái AI_STATUS */
   const AI_STATUS = useSelector(selectStatusAI)
@@ -117,29 +120,29 @@ function DetailChat({
   /**
    * State lưu trạng thái loading khi khởi tạo client
    */
-  const CLIENT_ID = localStorage.getItem(`client_id_<${PAGE_ID}>`)
+  const CLIENT_ID = localStorage.getItem(`client_id_${PAGE_ID}`)
 
   /** Debounce để xử lý scroll
    * @param func
    * @param delay
    * @returns setTimeout
    */
-  const debounce = (func: Function, delay: number) => {
-    /**
-     * Khai báo biến timer
-     */
-    let debounce_timer: ReturnType<typeof setTimeout>
-    /**
-     * Trả về hàm debounce
-     */
-    return (...args: any[]) => {
-      clearTimeout(debounce_timer)
-      /**
-       * Gọi hàm sau delay
-       */
-      debounce_timer = setTimeout(() => func(...args), delay)
-    }
-  }
+  // const debounce = (func: Function, delay: number) => {
+  //   /**
+  //    * Khai báo biến timer
+  //    */
+  //   let debounce_timer: ReturnType<typeof setTimeout>
+  //   /**
+  //    * Trả về hàm debounce
+  //    */
+  //   return (...args: any[]) => {
+  //     clearTimeout(debounce_timer)
+  //     /**
+  //      * Gọi hàm sau delay
+  //      */
+  //     debounce_timer = setTimeout(() => func(...args), delay)
+  //   }
+  // }
 
   /** Hàm gọi API để lấy tin nhắn */
   const fetchMessage = async () => {
@@ -239,6 +242,8 @@ function DetailChat({
 
   /** Function kéo xuống dưới cùng */
   const scrollToBottom = () => {
+    console.log('run scroll to bottom')
+    /** Cuộn xuống dưới cùng */
     MESSAGE_END_REF.current?.scrollIntoView({ behavior: 'smooth' })
   }
   /** Fuction thực thi khi có hành động scroll */
@@ -264,10 +269,16 @@ function DetailChat({
   /**
    * Hàm debounce xử lý scroll
    */
-  const debouncedScroll = useCallback(debounce(handleScroll, 200), [
+  const DEBOUNCED_SCROLL = useCallback(debounce(handleScroll, 200), [
     handleScroll,
   ])
-
+  /**
+   * Hàm debounce xử lý scroll
+   */
+  const DEBOUNCED_SCROLL_TO_BOTTOM = useCallback(
+    debounce(scrollToBottom, 200),
+    [scrollToBottom]
+  )
   useEffect(() => {
     /* Sử dụng debounce để xử lý scroll */
     const CONTAINER = MESSAGE_CONTAINER_REF.current
@@ -276,10 +287,10 @@ function DetailChat({
      */
     if (CONTAINER && !loading_more) {
       /** Sử dụng debounce */
-      // const debouncedScroll = debounce(handleScroll, 200)
-      CONTAINER.addEventListener('scroll', debouncedScroll)
+      // const DEBOUNCED_SCROLL = debounce(handleScroll, 200)
+      CONTAINER.addEventListener('scroll', DEBOUNCED_SCROLL)
       return () => {
-        CONTAINER.removeEventListener('scroll', debouncedScroll)
+        CONTAINER.removeEventListener('scroll', DEBOUNCED_SCROLL)
       }
     }
   }, [handleScroll, loading_more])
@@ -292,9 +303,10 @@ function DetailChat({
       /**
        * Cuộn xuống dưới cùng
        */
-      scrollToBottom()
+
+      DEBOUNCED_SCROLL_TO_BOTTOM()
     }
-  }, [scroll_at_bottom])
+  }, [scroll_at_bottom, DEBOUNCED_SCROLL_TO_BOTTOM])
 
   useEffect(() => {
     let timeout_id: NodeJS.Timeout

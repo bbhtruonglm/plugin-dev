@@ -53,6 +53,10 @@ export interface AppState {
     user_phone: string
     /** Email user */
     user_email: string
+    /**
+     * Thông tin user_id
+     */
+    user_id: string
   }
   /** Trạng thái ai */
   is_ai?: boolean

@@ -327,7 +327,7 @@ export const saveQuickChatCount = (
   if (!page_id || !client_id) return
   /** Lưu vào thời gian đóng popup */ /** Tính toán lưu count vào localStorage */
   localStorage.setItem(
-    `count_unread__<${page_id}>__<${client_id}>`,
+    `count_unread__${page_id}__${client_id}`,
     count.toString()
   )
 }
@@ -344,7 +344,7 @@ export const saveQuickChatLatestMessage = (
 ) => {
   /** lưu tin nhắn mới nhất vào localStorage */
   localStorage.setItem(
-    `latest_message__<${page_id}>__<${client_id}>`,
+    `latest_message__${page_id}__${client_id}`,
     JSON.stringify(body)
   )
 }

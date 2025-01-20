@@ -55,7 +55,9 @@ function App() {
   const [client_name, setClientName] = useState(null as any)
 
   useEffect(() => {
-    /** Hàm xử lý thông điệp từ parent */
+    /** Hàm xử lý thông điệp từ parent
+     * @param {MessageEvent} event - Sự kiện tin nhắn
+     */
     const handleMessage = (event: MessageEvent) => {
       /** @type {Object} PAYLOAD - Dữ liệu từ event */
       const PAYLOAD = event.data
@@ -64,11 +66,13 @@ function App() {
        * @type {string} user_name - Tên người dùng
        * @type {string} user_email - Email người dùng
        * @type {string} user_phone - Số điện thoại người dùng
+       * @type {string} user_id - ID người dùng
        * @type {string} from - Nguồn gửi tin nhắn
        * @type {string} action - Hành động
        * @type {string} locale - Ngôn ngữ
        */
-      const { user_name, user_email, user_phone, from, action } = PAYLOAD
+      const { user_name, user_email, user_phone, user_id, from, action } =
+        PAYLOAD
 
       /** Kiểm tra thông tin từ app cha */
       if (from === 'parent-app') {
@@ -105,6 +109,7 @@ function App() {
             user_name,
             user_email,
             user_phone,
+            user_id,
           })
         )
       }
@@ -208,9 +213,7 @@ function App() {
     /** localStorage.setItem(`client_id_<${PAGE_ID}>`, '6131478076934694') */
 
     /** CLIENT_ID từ localStorage thông qua PAGE_ID */
-    const STORED_CLIENT_ID = localStorage.getItem(
-      `client_id_<${STORED_PAGE_ID}>`
-    )
+    const STORED_CLIENT_ID = localStorage.getItem(`client_id_${STORED_PAGE_ID}`)
     /**
      * Nếu không có CLIENT_ID thì lưu CLIENT_ID vào localStorage
      */
@@ -219,14 +222,14 @@ function App() {
     /** Lấy từ localStorage một tin nhắn chưa đọc */
     const STORED_MESSAGE_LATEST = parsedString(
       localStorage.getItem(
-        `latest_message__<${STORED_PAGE_ID}>__<${STORED_CLIENT_ID}>`
+        `latest_message__${STORED_PAGE_ID}__${STORED_CLIENT_ID}`
       ) || ''
     )
 
     /** Lấy số lượng tin nhắn chưa đọc */
     const STORED_UNREAD_COUNT = Number(
       localStorage.getItem(
-        `count_unread__<${STORED_PAGE_ID}>__<${STORED_CLIENT_ID}>`
+        `count_unread__${STORED_PAGE_ID}__${STORED_CLIENT_ID}`
       )
     )
 
@@ -267,10 +270,9 @@ function App() {
     client_id: string | null,
     page_id: String | null
   ) => {
-    /**
-     * Nếu không có client_id hoặc page_id thì setClientName(null)
-     */
+    /** Nếu không có client_id hoặc page_id thì setClientName(null) */
     if (!client_id || !page_id) {
+      /** Set tên client là null */
       setClientName(null)
       return
     }
@@ -282,14 +284,10 @@ function App() {
     }
     /** Lấy URL */
     const URL_READ = new URL(READ_CLIENT_INFO)
-    /**
-     * Thêm search vào URL
-     */
+    /** Thêm search vào URL */
     URL_READ.search = new URLSearchParams(BODY as any).toString()
-
     /** Lấy thông tin client */
     const RES = await fetchAPI(URL_READ.toString(), 'GET')
-
     /** Lưu tên client */
     setClientName(RES?.data?.client_name)
   }
