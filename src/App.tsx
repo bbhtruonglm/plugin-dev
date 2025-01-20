@@ -61,7 +61,7 @@ function App() {
     const handleMessage = (event: MessageEvent) => {
       /** @type {Object} PAYLOAD - Dữ liệu từ event */
       const PAYLOAD = event.data
-
+      console.log('EVENT::', event)
       /**
        * @type {string} user_name - Tên người dùng
        * @type {string} user_email - Email người dùng
@@ -73,7 +73,7 @@ function App() {
        */
       const { user_name, user_email, user_phone, user_id, from, action } =
         PAYLOAD
-
+      console.log('DATA::', PAYLOAD)
       /** Kiểm tra thông tin từ app cha */
       if (from === 'parent-app') {
         console.log(
