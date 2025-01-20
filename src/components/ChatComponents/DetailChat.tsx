@@ -490,8 +490,13 @@ function DetailChat({
             </div>
           ))}
 
-        {/* Thẻ div này đóng vai trò là nơi đánh dấu để cuộn tới */}
-        {!NO_VIEWPORT && <div ref={MESSAGE_END_REF} />}
+        {/* Thẻ div này đóng vai trò là nơi đánh dấu để cuộn tới
+         * khi có tin nhắn mới thì sẽ cuộn xuống dưới cùng
+         */}
+        {
+          // !NO_VIEWPORT &&
+          <div ref={MESSAGE_END_REF} />
+        }
 
         {/* Khi gửi tin nhắn sẽ hiển thị loading để call api */}
         {loading && (

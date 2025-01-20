@@ -26,7 +26,8 @@ function Home({
       <div className="">
         <h1 className="text-2xl font-semibold">
           {client_name
-            ? `${title} ${client_name},` || `${t('_hi')} ${client_name},`
+            ? `${title || t('_hi')} ${client_name},` ||
+              `${t('_hi')} ${client_name},`
             : t('welcome')}
         </h1>
         <h2 className="text-xl font-medium">

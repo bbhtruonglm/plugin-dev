@@ -103,13 +103,15 @@ function App() {
           }
         }
 
-        /** Lưu thông tin user vào store */
+        /** Lưu thông tin user vào store
+         * Chỉ lưu thông tin nếu có giá trị
+         */
         dispatch(
           setUserInfo({
-            user_name,
-            user_email,
-            user_phone,
-            client_id,
+            ...(user_name && { user_name }),
+            ...(user_email && { user_email }),
+            ...(user_phone && { user_phone }),
+            ...(client_id && { client_id }),
           })
         )
       }
@@ -295,7 +297,7 @@ function App() {
   return (
     <div
       className="flex flex-col justify-center items-center h-full w-full overflow-hidden "
-      id="bbh-chart-plugin"
+      id="bbh-chat-plugin"
     >
       <Routes>
         <Route

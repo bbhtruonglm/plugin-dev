@@ -206,18 +206,30 @@ function ChatScreen({
   }, [AI_STATUS, CLIENT_ID])
 
   useEffect(() => {
+    console.log(USER_INFO, 'USER_INFO')
+
+    /**
+     * Kiểm tra USER_INFO có chứa ít nhất một giá trị thực
+     */
+    const HAS_VALID_VALUE =
+      USER_INFO &&
+      (USER_INFO.user_name?.trim() ||
+        USER_INFO.user_phone?.trim() ||
+        USER_INFO.user_email?.trim() ||
+        USER_INFO.client_id?.trim())
+
     /**
      * Nếu có USER_INFO và chưa có CLIENT_ID
      */
-    if (USER_INFO && !CLIENT_ID) {
+    if (HAS_VALID_VALUE && !CLIENT_ID) {
       /**
        * Gọi hàm khởi tạo client id
        */
       const PARAMS: INIT_INPUT = {
         page_id: PAGE_ID,
-        name: USER_INFO?.user_name,
-        phone: USER_INFO?.user_phone,
-        email: USER_INFO?.user_email,
+        ...(USER_INFO?.user_name && { name: USER_INFO.user_name }),
+        ...(USER_INFO?.user_phone && { phone: USER_INFO.user_phone }),
+        ...(USER_INFO?.user_email && { email: USER_INFO.user_email }),
       }
       /**
        * Nếu có client_id thì thêm vào PARAMS
