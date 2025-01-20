@@ -23,7 +23,7 @@ type INIT_INPUT = {
   /**
    * ID user = client_id
    */
-  user_id?: string
+  client_id?: string
   /**
    * Tên khách hàng
    */
@@ -193,13 +193,13 @@ function ChatScreen({
        */
       const PARAMS: INIT_INPUT = { page_id: PAGE_ID }
       /**
-       * Nếu có user_id thì thêm vào PARAMS
+       * Nếu có client_id thì thêm vào PARAMS
        */
-      if (USER_INFO?.user_id) {
+      if (USER_INFO?.client_id) {
         /**
-         * Thêm user_id vào PARAMS
+         * Thêm client_id vào PARAMS
          */
-        PARAMS.user_id = USER_INFO.user_id
+        PARAMS.client_id = USER_INFO.client_id
       }
       initGetClientId(PARAMS)
     }
@@ -220,13 +220,13 @@ function ChatScreen({
         email: USER_INFO?.user_email,
       }
       /**
-       * Nếu có user_id thì thêm vào PARAMS
+       * Nếu có client_id thì thêm vào PARAMS
        */
-      if (USER_INFO?.user_id) {
+      if (USER_INFO?.client_id) {
         /**
-         * Thêm user_id vào PARAMS
+         * Thêm client_id vào PARAMS
          */
-        PARAMS.user_id = USER_INFO.user_id
+        PARAMS.client_id = USER_INFO.client_id
       }
       /**
        * Gọi hàm khởi tạo client id

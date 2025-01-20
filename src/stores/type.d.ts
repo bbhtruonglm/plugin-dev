@@ -56,7 +56,7 @@ export interface AppState {
     /**
      * Thông tin user_id
      */
-    user_id: string
+    client_id: string
   }
   /** Trạng thái ai */
   is_ai?: boolean

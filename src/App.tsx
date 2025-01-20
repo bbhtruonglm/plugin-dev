@@ -66,12 +66,12 @@ function App() {
        * @type {string} user_name - Tên người dùng
        * @type {string} user_email - Email người dùng
        * @type {string} user_phone - Số điện thoại người dùng
-       * @type {string} user_id - ID người dùng
+       * @type {string} client_id - ID người dùng
        * @type {string} from - Nguồn gửi tin nhắn
        * @type {string} action - Hành động
        * @type {string} locale - Ngôn ngữ
        */
-      const { user_name, user_email, user_phone, user_id, from, action } =
+      const { user_name, user_email, user_phone, client_id, from, action } =
         PAYLOAD
       console.log('DATA::', PAYLOAD)
       /** Kiểm tra thông tin từ app cha */
@@ -109,7 +109,7 @@ function App() {
             user_name,
             user_email,
             user_phone,
-            user_id,
+            client_id,
           })
         )
       }

@@ -21,7 +21,7 @@ const INITIAL_STATE: AppState = {
     user_name: '',
     user_phone: '',
     user_email: '',
-    user_id: '',
+    client_id: '',
   },
   is_ai: false,
   no_viewport: false,
