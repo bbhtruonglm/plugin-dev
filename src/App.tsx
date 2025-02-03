@@ -38,7 +38,7 @@ function App() {
   /** Trạng thái hiển thị Popup */
   const [is_show, setShow] = useState(false)
   /**
-   * @type {boolean} type_consultation - Trạng thái hiển thị popup tư vấn
+   * Trạng thái hiển thị Popup tư vấn
    */
   const [type_consultation, setTypeConsultation] = useState(false)
 
@@ -54,74 +54,75 @@ function App() {
   /** Tên client */
   const [client_name, setClientName] = useState(null as any)
 
-  useEffect(() => {
-    /** Hàm xử lý thông điệp từ parent
-     * @param {MessageEvent} event - Sự kiện tin nhắn
+  /** Hàm xử lý thông điệp từ parent
+   * @param {MessageEvent} event - Sự kiện tin nhắn
+   */
+  const handleMessage = (event: MessageEvent) => {
+    /** @type {Object} PAYLOAD - Dữ liệu từ event */
+    const PAYLOAD = event.data
+    console.log('EVENT::', event)
+    /**
+     * @type {string} user_name - Tên người dùng
+     * @type {string} user_email - Email người dùng
+     * @type {string} user_phone - Số điện thoại người dùng
+     * @type {string} client_id - ID người dùng
+     * @type {string} from - Nguồn gửi tin nhắn
+     * @type {string} action - Hành động từ app cha
+     * @type {string} locale - Ngôn ngữ
      */
-    const handleMessage = (event: MessageEvent) => {
-      /** @type {Object} PAYLOAD - Dữ liệu từ event */
-      const PAYLOAD = event.data
-      console.log('EVENT::', event)
+    const { user_name, user_email, user_phone, client_id, from, action } =
+      PAYLOAD
+    console.log('DATA::', PAYLOAD)
+    /** Kiểm tra thông tin từ app cha */
+    if (from === 'parent-app') {
+      console.log(
+        'Nhận tin nhắn từ app cha. Thông tin nhận được là:',
+        event.data
+      )
       /**
-       * @type {string} user_name - Tên người dùng
-       * @type {string} user_email - Email người dùng
-       * @type {string} user_phone - Số điện thoại người dùng
-       * @type {string} client_id - ID người dùng
-       * @type {string} from - Nguồn gửi tin nhắn
-       * @type {string} action - Hành động
-       * @type {string} locale - Ngôn ngữ
+       * Nếu có action thì hiển thị popup
        */
-      const { user_name, user_email, user_phone, client_id, from, action } =
-        PAYLOAD
-      console.log('DATA::', PAYLOAD)
-      /** Kiểm tra thông tin từ app cha */
-      if (from === 'parent-app') {
-        console.log(
-          'Nhận tin nhắn từ app cha. Thông tin nhận được là:',
-          event.data
-        )
+      if (action) {
         /**
-         * Nếu có action thì hiển thị popup
+         * Lưu kiểu type_consultation là true để hiển thị popup tư vấn
          */
-        if (action) {
+        setTypeConsultation(true)
+        /**
+         * Kiểm tra xem popup đã mở chưa
+         */
+        if (!is_show) {
           /**
-           * Lưu kiểu type_consultation
+           * Nếu mở chỉ reset tin nhắn mới nhất trong store
            */
-          setTypeConsultation(true)
+          dispatch(setListMessage([]))
           /**
-           * Kiểm tra xem popup đã mở chưa
+           *  Hiển thị popup
            */
-          if (!is_show) {
-            /**
-             * Nếu mở chỉ reset tin nhắn mới nhất trong store
-             */
-            dispatch(setListMessage([]))
-            /**
-             *  Hiển thị popup
-             */
-            setShow(true)
-          }
+          setShow(true)
         }
-
-        /** Lưu thông tin user vào store
-         * Chỉ lưu thông tin nếu có giá trị
-         */
-        dispatch(
-          setUserInfo({
-            ...(user_name && { user_name }),
-            ...(user_email && { user_email }),
-            ...(user_phone && { user_phone }),
-            ...(client_id && { client_id }),
-          })
-        )
       }
-    }
 
+      /** Lưu thông tin user vào store
+       * Chỉ lưu thông tin nếu có giá trị
+       */
+      dispatch(
+        setUserInfo({
+          ...(user_name && { user_name }),
+          ...(user_email && { user_email }),
+          ...(user_phone && { user_phone }),
+          ...(client_id && { client_id }),
+        })
+      )
+    }
+  }
+
+  useEffect(() => {
     /** Thêm event listener cho thông điệp */
     window.addEventListener('message', handleMessage)
 
-    /** Cleanup event listener khi component bị unmount */
+    /** Hàm cleanup */
     return () => {
+      /** Xóa event listener */
       window.removeEventListener('message', handleMessage)
     }
   }, [])
@@ -314,15 +315,15 @@ function App() {
                 setShow(!is_show)
                 if (!is_show) {
                   /** Khi mở chỉ reset tin nhắn mới nhất trong store */
-                  // dispatch(setLatestMessageGlobal(null))
                   dispatch(setGlobalPreviewUrl(''))
+                  /** Lưu tin nhắn mới nhất vào store */
                   saveQuickChatLatestMessage(PAGE_ID, CLIENT_ID, null)
-
-                  // dispatch(setListUnreadMessage([]))
-                  // dispatch(setListMessage([]))
                 } else {
                   /** Lưu thời gian vào localstorage Khi đóng popup */
                   saveTimeClosePopup(PAGE_ID)
+                  /**
+                   * Lưu trạng thái tư vấn là false
+                   */
                   setTypeConsultation(false)
                 }
               }}
@@ -354,11 +355,8 @@ function App() {
                 setShow(!is_show)
                 if (!is_show) {
                   /** Khi mở chỉ reset tin nhắn mới nhất trong store */
-                  // dispatch(setLatestMessageGlobal(null))
                   dispatch(setGlobalPreviewUrl(''))
                   saveQuickChatLatestMessage(PAGE_ID, CLIENT_ID, null)
-                  // dispatch(setListUnreadMessage([]))
-                  // dispatch(setListMessage([]))
                 } else {
                   /** Lưu thời gian vào localstorage Khi đóng popup */
                   saveTimeClosePopup(PAGE_ID)

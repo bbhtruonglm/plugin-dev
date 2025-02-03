@@ -4,7 +4,7 @@ import {
   VITE_APP_SOCKET_HOST as VITE_APP_SOCKET_HOST_STAGING,
 } from './env/staging'
 
-const apiEndpoints = {
+const API_END_POINTS = {
   production: {
     SOCKET_API: VITE_APP_SOCKET_HOST,
     READ_MESSAGE_API: `${VITE_APP_BE_HOST}/embed/message/read_message`,
@@ -28,7 +28,7 @@ const apiEndpoints = {
 export const useAPI = () => {
   const ENV = import.meta.env.VITE_APP_ENV || 'production'
 
-  return apiEndpoints[ENV] || apiEndpoints.production // mặc định là production nếu môi trường không hợp lệ
+  return API_END_POINTS[ENV] || API_END_POINTS.production // mặc định là production nếu môi trường không hợp lệ
 }
 /**
  * - Hàm xử lý gọi api:
@@ -50,7 +50,7 @@ export const fetchAPI = async (url: string, method: string, body?: any) => {
 /** api chung cho các api liên quan đến lấy ảnh */
 export function apiImage(end_point: any) {
   const ENV = import.meta.env.VITE_APP_ENV || 'production'
-  const URI = `${apiEndpoints[ENV]['IMAGE']}${end_point}`
+  const URI = `${API_END_POINTS[ENV]['IMAGE']}${end_point}`
 
   return URI
 }

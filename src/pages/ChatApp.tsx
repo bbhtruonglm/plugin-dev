@@ -171,8 +171,6 @@ const ChatApp = ({
   /** Tạo ref một để luu giữ giá trị LIST_UNREAD_MESSAGE */
   const REF_LIST_UNREAD_MESSAGE = useRef(LIST_UNREAD_MESSAGE)
 
-  /** Tạo ref một để luu giữ giá trị LIST_UNREAD_MESSAGE */
-
   /** Giá trị của preview URL */
   const GLOBAL_PREVIEW_URL = useSelector(selectGlobalPreviewUrl)
 
@@ -281,9 +279,10 @@ const ChatApp = ({
     /**  Nếu không có PAGE_ID, thoát ngay*/
     if (!PAGE_ID) return
 
-    /** Lấy client_id từ localStorage, chỉ xử lý nếu hợp lệ */
+    /** Lấy client_id từ localStorage, chỉ xử lý nếu hợp lệ
+     *@example const STORED_CLIENT_ID = '6131478076934694'
+     */
     const STORED_CLIENT_ID = localStorage.getItem(`client_id_${PAGE_ID}`)
-    // const STORED_CLIENT_ID = '6131478076934694'
 
     /**
      * Nếu không có client_id, khởi tạo lại hoặc đặt cờ khởi tạo socket
@@ -525,7 +524,7 @@ const ChatApp = ({
     }
   }, [GLOBAL_PREVIEW_URL])
 
-  /** Hàm xử lý điều kiện để trả về css render giao diện
+  /** Hàm xử lý điều kiện để trả về css render giao diện SDK
    * @param {boolean} show Trạng thái đóng mở giao diện
    * @param {number} GLOBAL_UNREAD_MESSAGE_COUNT Tổng số tin nhắn chưa đọc
    * @param {MessageInfo} LATEST_MESSAGE Tin nhắn mới nhất
@@ -533,7 +532,7 @@ const ChatApp = ({
    * @param {string} SHOW_QUICK_CHAT Trạng thái ẩn hiển QUICK_CHAT
    * @returns {string} CSS
    */
-  const getChatBoxClasses = (
+  const getContainerLayout = (
     show: boolean,
     GLOBAL_UNREAD_MESSAGE_COUNT: number,
     LATEST_MESSAGE: MessageInfo,
@@ -775,13 +774,13 @@ const ChatApp = ({
     return 'w-[416px] h-[674px] px-2 pb-4 justify-between items-end'
   }
 
-  /** Hàm xử lý điều kiện để trả về css render giao diện
+  /** Hàm xử lý điều kiện để trả về css render giao diện content khi mở popup
    * @param {boolean} show Trạng thái đóng mở giao diện
    * @param {number} GLOABAL_UNREAD_MESSAGE_COUNT So luong tin chưa đọc
    * @param {number} CURRENT_WIDTH Kích thước chiều rộng page cha
    * @returns {string} CSS
    */
-  const getBubbleClasses = (
+  const getMainPopupLayout = (
     show: boolean,
     GLOBAL_UNREAD_MESSAGE_COUNT: number,
     CURRENT_WIDTH: number
@@ -841,7 +840,7 @@ const ChatApp = ({
    * @param {string | null} SHOW_QUICK_CHAT Trạng thái ẩn hiện QUICK_CHAT
    * @returns {string} CSS
    */
-  const getPopupClasses = (
+  const getQuickchatLayout = (
     show: boolean,
     LATEST_MESSAGE: MessageInfo,
     GLOBAL_UNREAD_MESSAGE_COUNT: number,
@@ -941,9 +940,9 @@ const ChatApp = ({
   }
 
   return (
-    /** JSX component using the function */
+    /** Hiển thị thông tin Layout cả SDK */
     <div
-      className={`flex flex-col relative ${getChatBoxClasses(
+      className={`flex flex-col relative ${getContainerLayout(
         show,
         GLOBAL_UNREAD_MESSAGE_COUNT,
         LATEST_MESSAGE,
@@ -954,7 +953,7 @@ const ChatApp = ({
       {/* Popup tin nhắn hiển thị nội dung chính */}
       {show && (
         <div
-          className={`flex flex-col ${getBubbleClasses(
+          className={`flex flex-col ${getMainPopupLayout(
             show,
             GLOBAL_UNREAD_MESSAGE_COUNT,
             CURRENT_WIDTH
@@ -1144,7 +1143,7 @@ const ChatApp = ({
       )}
       {/* Quick chat */}
       <div
-        className={getPopupClasses(
+        className={getQuickchatLayout(
           show,
           LATEST_MESSAGE,
           GLOBAL_UNREAD_MESSAGE_COUNT,
