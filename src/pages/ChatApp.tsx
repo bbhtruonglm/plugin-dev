@@ -1,21 +1,23 @@
 import { ChatAppProps, EmployeeList } from './type'
 import {
-  closeSocketConnect,
-  onSocketFromChatboxServer,
-} from '@/components/WebSocket/WebSocket'
-import { fetchAPI, useAPI } from '@/api/api'
-import { get, isEmpty, map, values } from 'lodash'
-import {
+  checkStaffExist,
   hasAttachmentOfType,
   postMessageToParent,
   renderAvatarCDN,
   renderLocale,
+  renderStaffName,
   saveQuickChatCount,
   saveQuickChatLatestMessage,
   saveTimeClosePopup,
   truncateSentences,
   truncateString,
 } from '@/utils'
+import {
+  closeSocketConnect,
+  onSocketFromChatboxServer,
+} from '@/components/WebSocket/WebSocket'
+import { fetchAPI, useAPI } from '@/api/api'
+import { get, isEmpty, map, values } from 'lodash'
 import {
   selectCurrentHeight,
   selectCurrentWidth,
@@ -39,22 +41,22 @@ import {
 import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
+import { ReactComponent as ActiveHome } from '@/assets/home-active.svg'
+import { ReactComponent as ActiveMessage } from '@/assets/messageA.svg'
 import ChatScreen from '@/screens/ChatScreen/Chat'
 import { ReactComponent as Close } from '@/assets/close.svg'
 import { ReactComponent as CloseSlate } from '@/assets/close-black.svg'
 import { ReactComponent as Down } from '@/assets/arrow.svg'
 import { Employee } from '@/components/ChatComponents/type'
 import Home from '@/screens/ChatScreen/Home'
+import { ReactComponent as InactiveHome } from '@/assets/home.svg'
+import { ReactComponent as InactiveMessage } from '@/assets/message.svg'
 import { MessageInfo } from '@/utils/type'
 import Modal from '@/components/ChatComponents/Modal/Modal'
 import { NetworkContext } from '@/components/NWProvider'
 import OnlineStaff from '@/components/Container/OnlineStaff'
 import TemplateMessageComponent from '@/components/ChatComponents/MessageComponent/TemplateMessageComponent'
 import TimeAgo from '@/components/TimeAgo'
-import { ReactComponent as activeHome } from '@/assets/home-active.svg'
-import { ReactComponent as activeMessage } from '@/assets/messageA.svg'
-import { ReactComponent as inactiveHome } from '@/assets/home.svg'
-import { ReactComponent as inactiveMessage } from '@/assets/message.svg'
 import { useTranslation } from 'react-i18next'
 
 const ChatApp = ({
@@ -68,49 +70,34 @@ const ChatApp = ({
   const { t, i18n: I18N } = useTranslation()
   /** Các đầu api */
   const { READ_PAGE_INFO, SOCKET_API } = useAPI()
-  /**
-   * trạng thái online
-   */
+  /** Trạng thái online */
   const IS_ONLINE = useContext(NetworkContext)
-  /**
-   * State Khai báo thông tin
-   */
+  /** Tin nhắn mới nhất */
+  const LATEST_MESSAGE = useSelector(selectLatestMessage)
+  /** danh sách id page */
+  const PAGE_ID = useSelector(selectPageId)
+  /** List tin nhắn được lấy từ store */
+  const LIST_UNREAD_MESSAGE = useSelector(selectListUnreadMessage)
+  /**Status AI */
+  const AI_STATUS = useSelector(selectStatusAI)
+  /** Khởi tạo websocket */
+  const WS = useRef<WebSocket | null>(null)
+  /** State Khai báo thông tin */
   const [error_message, setErrorMessage] = useState<string | null>('')
-  /**
-   * State Khai báo thông tin trang
-   */
+  /** State Khai báo thông tin trang */
   const [page_name, setPageName] = useState<string>('')
-  /**
-   * State Khai báo thông tin mạng xã hội
-   */
+  /** State Khai báo thông tin mạng xã hội */
   const [social_link, setSocialLink] = useState<Array<any> | null>([])
-  /**
-   * State Khai báo thông tin mô tả mạng xã hội
-   */
+  /** State Khai báo thông tin mô tả mạng xã hội */
   const [social_description, setSocialDescription] = useState<string | null>('')
-  /**
-   * State Khai báo thông tin nhân viên
-   */
+  /** State Khai báo thông tin nhân viên */
   const [staff_list, setStaffList] = useState<EmployeeList>({})
-  /**
-   * State Khai báo thông tin tin nhắn chào mừng
-   */
+  /** State Khai báo thông tin tin nhắn chào mừng */
   const [is_force_close_socket, setIsForceCloseSocket] = useState(false)
   /** trigger hiện tin nhắn chào mừng */
   const [show_welcome_message, setShowWelcomeMessage] = useState(false)
-
-  /** Tin nhắn mới nhất */
-  const LATEST_MESSAGE = useSelector(selectLatestMessage)
-
-  /**Status AI */
-  const AI_STATUS = useSelector(selectStatusAI)
-
-  /** Khởi tạo websocket */
-  const WS = useRef<WebSocket | null>(null)
-
   /** Tạo tab hiện tại là HOME */
   const [current_tab, setCurrentTab] = useState<string>('home')
-
   /** Tạo ref để giữ giá trị của current_tab */
   const TAB_REF = useRef(current_tab)
   /** Tạo ref để giữ giá trị của is_show */
@@ -125,29 +112,17 @@ const ChatApp = ({
 
   /** Kiểm tra nếu is_ai = true thì  chuyển luôn vào tab message */
   useEffect(() => {
-    /**
-     * Nếu trạng thái mở AI hoặc trạng thái consultation thì vào luôn tab message
-     */
+    /** Nếu trạng thái mở AI hoặc trạng thái consultation thì vào luôn tab message */
     if (AI_STATUS || consultation) {
-      /**
-       * Set tab hiện tại là message
-       */
+      /** Set tab hiện tại là message */
       setCurrentTab('message')
-      /**
-       * Set show welcome message là false
-       */
+      /** Set show welcome message là false */
       setShowWelcomeMessage(false)
     }
   }, [AI_STATUS, consultation])
 
   /** hàm dispatch đến store */
   const dispatch = useDispatch()
-
-  /** danh sách id page */
-  const PAGE_ID = useSelector(selectPageId)
-
-  /** List tin nhắn được lấy từ store */
-  const LIST_UNREAD_MESSAGE = useSelector(selectListUnreadMessage)
 
   useEffect(() => {
     /**
@@ -165,12 +140,10 @@ const ChatApp = ({
    * Lấy từ store
    */
   const GLOBAL_UNREAD_MESSAGE_COUNT = useSelector(selectGlobalUnreadCount)
-
   /** Tạo ref một để luu giữ giá trị GLOBAL_UNREAD_MESSAGE_COUNT */
   const REF_GLOBAL_UNREAD_MESSAGE_COUNT = useRef(GLOBAL_UNREAD_MESSAGE_COUNT)
   /** Tạo ref một để luu giữ giá trị LIST_UNREAD_MESSAGE */
   const REF_LIST_UNREAD_MESSAGE = useRef(LIST_UNREAD_MESSAGE)
-
   /** Giá trị của preview URL */
   const GLOBAL_PREVIEW_URL = useSelector(selectGlobalPreviewUrl)
 
@@ -211,13 +184,10 @@ const ChatApp = ({
     /** Cập nhật giá trị trong ref một khi LAST_TIME_CLOSE_QUICK_CHAT thay đổi */
     REF_LAST_TIME_CLOSE_QUICK_CHAT.current = LAST_TIME_CLOSE_QUICK_CHAT
   }, [SHOW_QUICK_CHAT, LAST_TIME_CLOSE_QUICK_CHAT])
-
   /** Trạng thái khởi tạo client */
   const IS_INIT_CLIENT = useSelector(selectStatusIsInit)
-
   /** GLobal client_id */
   const GLOBAL_CLIENT_ID = useSelector(selectGlobalClientId)
-  // localStorage.setItem(`client_id_<${PAGE_ID}>`, '6131478076934694')
   /**
    * Lấy client_id từ localStorage
    */
@@ -256,6 +226,8 @@ const ChatApp = ({
         setShowWelcomeMessage(false)
         return
       }
+      console.log(isEmpty(LATEST_MESSAGE), 'isEmpty(LATEST_MESSAGE)')
+      console.log(SHOW_QUICK_CHAT, 'SHOW_QUICK_CHAT')
       /**
        * Nếu không có tin nhắn mới nhất và trạng thái show_quick_chat
        */
@@ -354,7 +326,7 @@ const ChatApp = ({
    *
    * @example
    * const MENU_LIST = [
-   *   { name: 'Trang chủ', src: inactiveHome, value: 'home', srcA: activeHome },
+   *   { name: 'Trang chủ', src: inactiveHome, value: 'home', srcA: A },
    *   { name: 'Tin nhắn', src: inactiveMessage, value: 'message', srcA: activeMessage },
    *   // Các tab Support và News đang bị ẩn trong đoạn mã
    * ];
@@ -362,15 +334,15 @@ const ChatApp = ({
   const MENU_LIST = [
     {
       name: t('home'),
-      src: inactiveHome,
+      src: InactiveHome,
       value: 'home',
-      srcA: activeHome,
+      srcA: ActiveHome,
     },
     {
       name: t('message'),
-      src: inactiveMessage,
+      src: InactiveMessage,
       value: 'message',
-      srcA: activeMessage,
+      srcA: ActiveMessage,
     },
     // {
     //   name: 'Hỗ trợ',
@@ -450,6 +422,7 @@ const ChatApp = ({
 
   /** Ngăn kết nối mở lại */
   useEffect(() => {
+    /** Nếu có kết nối socket thì đóng kết nối */
     return () => {
       /**
        * Nếu có kết nối socket thì đóng kết nối
@@ -466,47 +439,6 @@ const ChatApp = ({
     fb_staff_id: employee.fb_staff_id,
     is_online: employee.is_online,
   }))
-
-  /** Hàm kiểm tra nhân sự có tồn tại không
-   * @string id: Nhan vao id của nhân sự
-   * @returns {string} link avatar
-   */
-  const checkStaffExist = useCallback((id: string) => {
-    /**
-     * Lấy ID từ message_metadata
-     */
-    const ID_DETECT = id.split('__')[2]
-
-    /** Nếu không có staff Id thì trả về '' */
-    if (!ID_DETECT) return ''
-    /**
-     * Trả về link avatar
-     */
-    return renderAvatarCDN(ID_DETECT)
-  }, [])
-
-  /** Trả về tên nhân viên
-   * @param {string} message_metadata
-   * @returns {string} Tên nhân viên
-   */
-  const renderStaffName = (message_metadata?: string) => {
-    /**
-     * Lấy ID từ message_metadata
-     * Lấy phần sau cùng sau dấu '__'
-     * */
-    const ID_FROM_META_DATA = message_metadata?.split('__').pop()
-    /**
-     * Nếu không có ID thì trả về 'Nhân viên'
-     */
-    if (ID_FROM_META_DATA) {
-      /**  Kiểm tra ID có trong data không và lấy tên */
-      const STAFF_NAME = get(staff_list, ID_FROM_META_DATA, null)?.name
-      /**
-       * Trả về tên nhân viên
-       */
-      return STAFF_NAME ? STAFF_NAME : 'Nhân viên'
-    }
-  }
 
   /**
    * Hàm xử lý khi click vào tab
@@ -1192,7 +1124,10 @@ const ChatApp = ({
                         {/* Hiển thị tên nhân viên */}
                         <span className="">
                           {truncateSentences(
-                            renderStaffName(LATEST_MESSAGE?.message_metadata),
+                            renderStaffName(
+                              staff_list,
+                              LATEST_MESSAGE?.message_metadata
+                            ),
                             6
                           )}
                         </span>
@@ -1268,7 +1203,10 @@ const ChatApp = ({
                   {t('reply') +
                     ' ' +
                     truncateSentences(
-                      renderStaffName(LATEST_MESSAGE?.message_metadata),
+                      renderStaffName(
+                        staff_list,
+                        LATEST_MESSAGE?.message_metadata
+                      ),
                       6
                     )}
                 </div>

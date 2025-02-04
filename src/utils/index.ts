@@ -1,6 +1,9 @@
+import { EmployeeList } from '@/pages/type'
 import { MessageInfo } from './type'
 import { apiImage } from '@/api/api'
+import { get } from 'lodash'
 import { t } from 'i18next'
+import { useCallback } from 'react'
 
 /** Hàm tìm locale từ URL
  * @returns {string} mặc định là 'en'
@@ -570,4 +573,47 @@ export function renderLocale(value: string) {
 
   /** Kiểm tra và trả về kết quả theo map */
   return LOCALE_MAP[value.toLowerCase()] || value
+}
+
+/** Trả về tên nhân viên
+ * @param {string} message_metadata
+ * @returns {string} Tên nhân viên
+ */
+export const renderStaffName = (
+  staff_list: EmployeeList,
+  message_metadata?: string
+) => {
+  /**
+   * Lấy ID từ message_metadata
+   * Lấy phần sau cùng sau dấu '__'
+   * */
+  const ID_FROM_META_DATA = message_metadata?.split('__').pop()
+  /**
+   * Nếu không có ID thì trả về 'Nhân viên'
+   */
+  if (ID_FROM_META_DATA) {
+    /**  Kiểm tra ID có trong data không và lấy tên */
+    const STAFF_NAME = get(staff_list, ID_FROM_META_DATA, null)?.name
+    /**
+     * Trả về tên nhân viên
+     */
+    return STAFF_NAME ? STAFF_NAME : 'Nhân viên'
+  }
+}
+/** Hàm kiểm tra nhân sự có tồn tại không
+ * @string id: Nhan vao id của nhân sự
+ * @returns {string} link avatar
+ */
+export const checkStaffExist = (id: string) => {
+  /**
+   * Lấy ID từ message_metadata
+   */
+  const ID_DETECT = id.split('__')[2]
+
+  /** Nếu không có staff Id thì trả về '' */
+  if (!ID_DETECT) return ''
+  /**
+   * Trả về link avatar
+   */
+  return renderAvatarCDN(ID_DETECT)
 }

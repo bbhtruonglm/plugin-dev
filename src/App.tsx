@@ -150,7 +150,8 @@ function App() {
     /**
      * Lưu trạng thái AI vào store
      */
-    dispatch(setStatusIsAI(IS_AI))
+    // dispatch(setStatusIsAI(IS_AI))
+    dispatch(setStatusIsAI(true))
     /**
      * Lưu trạng thái AI vào state
      */

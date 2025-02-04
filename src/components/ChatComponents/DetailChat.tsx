@@ -49,13 +49,10 @@ function DetailChat({
 }: ChatScreenProps) {
   /** Bắt vị trí end scroll ở bottom */
   const MESSAGE_END_REF = useRef<HTMLDivElement | null>(null)
-  // console.log(MESSAGE_END_REF, 'MESSAGE_END_REF')
   /** Bắt vị trí ref ở đầu tin nhắn */
   const MESSAGE_CONTAINER_REF = useRef<HTMLDivElement | null>(null)
-  // console.log(MESSAGE_CONTAINER_REF, 'MESSAGE_CONTAINER_REF')
   /** lấy Api từ hooks api */
   const { READ_MESSAGE_API, SEND_MESSAGE_API } = useAPI()
-
   /** hàm dispatch đến store */
   const dispatch = useDispatch()
 
@@ -81,7 +78,6 @@ function DetailChat({
    * Trạng thái Viewport
    */
   const NO_VIEWPORT = useSelector(selectStatusViewport)
-  // console.log(NO_VIEWPORT, 'NO_VIEWPORT')
 
   /** Trạng thái AI_STATUS */
   const AI_STATUS = useSelector(selectStatusAI)
@@ -121,28 +117,6 @@ function DetailChat({
    * State lưu trạng thái loading khi khởi tạo client
    */
   const CLIENT_ID = localStorage.getItem(`client_id_${PAGE_ID}`)
-
-  /** Debounce để xử lý scroll
-   * @param func
-   * @param delay
-   * @returns setTimeout
-   */
-  // const debounce = (func: Function, delay: number) => {
-  //   /**
-  //    * Khai báo biến timer
-  //    */
-  //   let debounce_timer: ReturnType<typeof setTimeout>
-  //   /**
-  //    * Trả về hàm debounce
-  //    */
-  //   return (...args: any[]) => {
-  //     clearTimeout(debounce_timer)
-  //     /**
-  //      * Gọi hàm sau delay
-  //      */
-  //     debounce_timer = setTimeout(() => func(...args), delay)
-  //   }
-  // }
 
   /** Hàm gọi API để lấy tin nhắn */
   const fetchMessage = async () => {
@@ -242,7 +216,6 @@ function DetailChat({
 
   /** Function kéo xuống dưới cùng */
   const scrollToBottom = () => {
-    console.log('run scroll to bottom')
     /** Cuộn xuống dưới cùng */
     MESSAGE_END_REF.current?.scrollIntoView({ behavior: 'smooth' })
   }
@@ -421,7 +394,11 @@ function DetailChat({
   )
 
   return (
-    <div className="flex flex-col w-full h-full relative">
+    <div
+      className={`flex flex-col w-full h-full ${
+        AI_STATUS && 'bg-ai-bg'
+      }  relative`}
+    >
       {/* header */}
       <div className={`${AI_STATUS ? 'hidden' : ''}`}>
         <ChatHeader
@@ -440,7 +417,7 @@ function DetailChat({
       <div
         ref={MESSAGE_CONTAINER_REF}
         className={`px-5 py-3 gap-4 overflow-y-auto scrollbar-thin scrollbar-webkit flex flex-col relative ${
-          AI_STATUS ? 'mt-0' : user_id ? 'my-16' : 'mt-44'
+          AI_STATUS ? 'mt-0 mb-16' : user_id ? 'my-16' : 'mt-44'
         }`}
       >
         {user_id && loading_more && (

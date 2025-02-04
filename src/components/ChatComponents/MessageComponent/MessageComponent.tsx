@@ -1,4 +1,5 @@
 import { BtnType, ElementType, MessageProps } from '../type'
+import React, { useState } from 'react'
 import {
   extractMessageId,
   formatDate,
@@ -9,8 +10,8 @@ import { selectStatusPopup, setGlobalPreviewUrl } from '@/stores/appSlice'
 import { useDispatch, useSelector } from 'react-redux'
 
 import AudioPlayer from './AudioPlayer'
+import { ReactComponent as ChatBubble } from '@/assets/chat-bubble-oval-left-ellipsis.svg'
 import { ReactComponent as FileIcon } from '@/assets/document-text.svg'
-import React from 'react'
 import VideoPlayer from './VideoPlayter'
 
 const MessageComponent = React.memo(({ data }: MessageProps) => {
@@ -75,6 +76,32 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
             <p className="text-sm min-h-4 break-words whitespace-pre-line overflow-hidden">
               {data?.message_text}
             </p>
+          </div>
+        )}
+      {/* Hiện thị data dạng text AI và có BTN */}
+      {data?.message_text &&
+        // data?.message_type === 'ai-suggest' &&
+        data?.message_type !== 'system' &&
+        data?.message_type !== 'note' &&
+        (!data?.message_attachments?.length ||
+          !data?.message_attachments?.[0]?.type) && (
+          <div className="flex flex-col p-2">
+            <p className="text-sm min-h-4 break-words whitespace-pre-line overflow-hidden">
+              {data?.message_text}
+            </p>
+            <div className="flex flex-col gap-y-2">
+              <div
+                onClick={() => {
+                  // if (button?.type === 'web_url') {
+                  //   window.open(button?.url, '_blank')
+                  // }
+                }}
+                className={`flex ${'bg-slate-800 cursor-pointer text-yellow-200'}  px-4 py-2 gap-1 rounded-lg justify-center items-center text-sm font-medium`}
+              >
+                Thêm vào chat
+                <ChatBubble className="w-4 h-4" />
+              </div>
+            </div>
           </div>
         )}
       {/* Hiển thị data dạng 1 ảnh */}

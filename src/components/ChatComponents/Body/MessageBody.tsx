@@ -6,7 +6,7 @@ import React from 'react'
 /**
  * Props của MessageBody
  */
-interface Props {
+interface IProps {
   /**
    * @param item: any
    * Dữ liệu tin nhắn
@@ -24,7 +24,7 @@ interface Props {
   client_name?: string
 }
 const MessageBody = React.memo(
-  ({ item, checkStaffExist, client_name }: Props) => {
+  ({ item, checkStaffExist, client_name }: IProps) => {
     return (
       <div
         className={`flex w-full py-2 gap-1 transition-all duration-300 ease-out  ${

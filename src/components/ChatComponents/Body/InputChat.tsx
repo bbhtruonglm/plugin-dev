@@ -244,8 +244,8 @@ function InputChat({
 
   return (
     <div
-      className={`absolute bottom-4 flex justify-center items-center h-12 bg-transparent w-full ${
-        AI_STATUS ? '' : 'px-5'
+      className={`absolute  flex justify-center items-center h-12 bg-transparent w-full ${
+        AI_STATUS ? 'px-2 bottom-3' : 'px-5 bottom-4'
       } gap-2`}
       /** Thêm sự kiện click để trigger focus */
       onClick={handleClickPopup}
