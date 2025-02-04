@@ -3,7 +3,7 @@ import { extractMessageId, isValidUrl } from '@/utils'
 
 import AudioPlayer from './AudioPlayer'
 import { ReactComponent as FileIcon } from '@/assets/document-text.svg'
-import VideoPlayer from './VideoPlayter'
+import VideoPlayer from './VideoPlayer'
 
 function TemplateMessageComponent({ data }: MessageProps) {
   return (

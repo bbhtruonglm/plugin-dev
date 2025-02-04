@@ -155,7 +155,7 @@ function App() {
     /**
      * Lưu trạng thái AI vào state
      */
-    setShow(IS_AI)
+    setShow(true)
     /**
      * Lấy giá trị locale từ URL
      * Mặc định là 'vn' nếu không có locale */
