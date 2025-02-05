@@ -1,36 +1,60 @@
 import { BtnType, ElementType, MessageProps } from '../type'
+import React, { useState } from 'react'
 import {
   extractMessageId,
   formatDate,
   isValidUrl,
   postMessageToParent,
 } from '@/utils'
-import { selectStatusPopup, setGlobalPreviewUrl } from '@/stores/appSlice'
+import {
+  selectStatusAI,
+  selectStatusPopup,
+  setGlobalPreviewUrl,
+} from '@/stores/appSlice'
 import { useDispatch, useSelector } from 'react-redux'
 
 import AudioPlayer from './AudioPlayer'
+import { ReactComponent as BookOpen } from '@/assets/book-open.svg'
+import { ReactComponent as ChatBubble } from '@/assets/chat-bubble-oval-left-ellipsis.svg'
 import { ReactComponent as FileIcon } from '@/assets/document-text.svg'
-import React from 'react'
-import VideoPlayer from './VideoPlayter'
+import { ReactComponent as Share } from '@/assets/external-link.svg'
+import VideoPlayer from './VideoPlayer'
 
 const MessageComponent = React.memo(({ data }: MessageProps) => {
-  /** Hàm render css khi check type tin nhắn */
+  /** Trạng thái AI_STATUS */
+  const AI_STATUS = useSelector(selectStatusAI)
+  /** Hàm render css khi check type tin nhắn
+   * @param {string} messageType - Loại tin nhắn
+   */
   const getMessageClasses = (messageType: string) => {
     /** Kiểm tra nếu messageType là 'page' */
     if (messageType === 'page') {
       /** Trả về các lớp CSS tương ứng nếu messageType là 'page' */
+      if (AI_STATUS) {
+        return 'max-w-[80%]'
+      }
+      /**
+       * Mặc định trả về các lớp CSS cho messageType khác
+       */
       return 'bg-white max-w-[60%]'
     }
-    // else if (messageType === 'note') {
-    //   return 'max-w-[60%] bg-[#D8F6CB]'
-    // }
+    /** Kiểm tra nếu messageType là 'client' */
     if (messageType === 'client') {
+      /**
+       * Nếu AI_STATUS là true thì trả về các lớp CSS tương ứng
+       */
+      if (AI_STATUS) {
+        return 'max-w-[80%]'
+      }
       /** Nếu messageType không phải là 'system' hay 'page' */
       /** Trả về các lớp CSS mặc định cho các loại message khác */
       return 'bg-messBg max-w-[60%]'
     }
   }
 
+  /**
+   * Hàm dispatch action
+   */
   const dispatch = useDispatch()
   /** Hàm xử lý khi click xem preview ảnh
    * @param {string} url - Link preview
@@ -38,19 +62,22 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
    * @action gọi đến sdk để thay đổi kích thước hiển thị
    */
   const handleClickPreview = (url?: string) => {
+    /**
+     * Nếu không có url
+     */
     if (!url) return
     /** Lưu vào STORE */
     dispatch(setGlobalPreviewUrl(url))
     /** Click vào ảnh thì gửi thông tin cho sdk
      * Có thể lưu data và STORE
      */
-    postMessageToParent(SHOW_POPUP, false, 674, url)
+    postMessageToParent(true, false, 674, url)
   }
   /** Trạng thái Đóng/ Mở Popup */
   const SHOW_POPUP = useSelector(selectStatusPopup)
   return (
     <div
-      className={`flex flex-col transition-all duration-300 ease-out overflow-hidden gap-y-4 rounded-lg group relative ${getMessageClasses(
+      className={`flex flex-col transition-all duration-300 ease-out gap-y-4 rounded-lg group relative ${getMessageClasses(
         data?.message_type
       )}`}
     >
@@ -69,9 +96,63 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
         (!data?.message_attachments?.length ||
           !data?.message_attachments?.[0]?.type) && (
           <div className="flex p-2">
-            <p className="text-sm min-h-4 break-words whitespace-pre-line">
+            <p className="text-sm min-h-4 break-words whitespace-pre-line overflow-hidden">
               {data?.message_text}
             </p>
+          </div>
+        )}
+      {/* Hiện thị data dạng text AI và có BTN */}
+      {data?.message_text &&
+        // data?.message_type === 'ai-suggest' &&
+        data?.message_type !== 'system' &&
+        data?.message_type !== 'note' &&
+        (!data?.message_attachments?.length ||
+          !data?.message_attachments?.[0]?.type) && (
+          <div className="flex flex-col gap-y-2">
+            <div className="bg-white flex flex-col gap-y-2 p-2 rounded-lg shadow-sm">
+              <p className="text-sm min-h-4 break-words whitespace-pre-line overflow-hidden">
+                {data?.message_text}
+              </p>
+              <div className="flex flex-col gap-y-2">
+                <div
+                  onClick={() => {
+                    // if (button?.type === 'web_url') {
+                    //   window.open(button?.url, '_blank')
+                    // }
+                  }}
+                  className={`flex bg-slate-800 cursor-pointer text-yellow-200 hover:bg-slate-600 px-4 py-2 gap-1 rounded-lg justify-center items-center text-sm font-medium`}
+                >
+                  Thêm vào chat
+                  <ChatBubble className="w-4 h-4" />
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col gap-y-1 text-xs">
+              <div className="flex gap-x-1">
+                <BookOpen className="w-4 h-4" />
+                <p className="text-xs">Dựa trên 2 nguồn thông tin:</p>
+              </div>
+              <div className="pl-4">
+                <a
+                  href="http://www.google.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex gap-x-2 items-center hover:text-blue-500"
+                >
+                  •<span className="underline ">Chính sách hoàn tiền</span>
+                  <Share className="w-3 h-3 stroke-current" />
+                </a>
+                <a
+                  href="http://www.google.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex gap-x-2 items-center hover:text-blue-500"
+                >
+                  •<span className="underline ">Quy trình hoàn tiền</span>
+                  <Share className="w-3 h-3 stroke-current" />
+                </a>
+              </div>
+            </div>
           </div>
         )}
       {/* Hiển thị data dạng 1 ảnh */}
@@ -170,7 +251,8 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
 
           {/* Thẻ <a> để xử lý chức năng tải file */}
           <a
-            href={data?.message_attachments?.[0]?.payload?.url} // URL của tệp
+            /** URL của tệp */
+            href={data?.message_attachments?.[0]?.payload?.url}
             download // Thuộc tính download giúp tải tệp
             className="text-slate-700 truncate underline text-sm"
           >
@@ -185,7 +267,6 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
         data?.message_attachments?.[0]?.type === 'fallback' && (
           <div className="flex p-2">
             <a
-              // className="text-sm min-h-4 break-words whitespace-pre-line underline hover:text-blue-500"
               className="text-sm min-h-4 break-words whitespace-pre-line overflow-hidden break-all text-ellipsis underline hover:text-blue-500"
               href={
                 data?.message_text && isValidUrl(data.message_text)
@@ -325,9 +406,3 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
 })
 
 export default MessageComponent
-function dispatch(arg0: {
-  payload: string | null | undefined
-  type: 'app/setGlobalPreviewUrl'
-}) {
-  throw new Error('Function not implemented.')
-}

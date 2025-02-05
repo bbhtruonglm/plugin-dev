@@ -1,6 +1,5 @@
-import { InputProps, InputPropsInit } from '../type'
-import React, { useState } from 'react'
-
+import { InputPropsInit } from '../type'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 const Input = ({
@@ -11,7 +10,13 @@ const Input = ({
   required,
   type = 'text',
 }: InputPropsInit) => {
+  /**
+   * @param title: string
+   */
   const { t } = useTranslation()
+  /**
+   * @param value: string
+   */
   const [value, setValue] = useState('')
   return (
     <div className="flex flex-col w-full gap-1">

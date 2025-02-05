@@ -16,14 +16,19 @@ import { size } from 'lodash'
  * Gọi API xác định danh tính khi mở WebSocket
  * @param {string | null} page_id - ID trang
  * @param {string | null} client_id - ID khách hàng
+ * @param {React.MutableRefObject<WebSocket | null>} WS - Ref WebSocket
  */
 const sendIdentifyMessage = (
   page_id: string | null,
   client_id: string | null,
-  WS: React.MutableRefObject<WebSocket | null> // Sử dụng Ref để giữ trạng thái WebSocket
+  /** Sử dụng Ref để giữ trạng thái WebSocket */
+  WS: React.MutableRefObject<WebSocket | null>
 ) => {
-  // Kiểm tra điều kiện khi nào WebSocket đang ở trạng thái OPEN thì mới gửi tin nhắn
+  /** Kiểm tra điều kiện khi nào WebSocket đang ở trạng thái OPEN thì mới gửi tin nhắn */
   if (WS.current?.readyState === WebSocket.OPEN) {
+    /**
+     * Gửi tin nhắn xác định danh tính
+     */
     WS.current?.send(
       JSON.stringify({
         page_id: page_id,
@@ -32,9 +37,10 @@ const sendIdentifyMessage = (
       })
     )
   } else {
-    // Nếu chưa kết nối, thử lại sau một khoảng thời gian nhất định
+    /** Nếu chưa kết nối, thử lại sau một khoảng thời gian nhất định */
     console.log('WebSocket is not open yet. Retrying...')
-    setTimeout(() => sendIdentifyMessage(page_id, client_id, WS), 100) // Thử lại sau 100ms nếu chưa kết nối
+    /** Thử lại sau 100ms nếu chưa kết nối */
+    setTimeout(() => sendIdentifyMessage(page_id, client_id, WS), 100)
   }
 }
 /**  Cấu hình websocket
@@ -43,6 +49,17 @@ const sendIdentifyMessage = (
  * - Tu dụng socket để nhận tin nhắn
  * @param {string} page_id - ID trang
  * @param {string} client_id - ID khách hàng
+ * @param {React.MutableRefObject<WebSocket | null>} WS - Ref WebSocket
+ * @param {React.Dispatch<any>} dispatch - Hàm dispatch của redux
+ * @param {React.MutableRefObject<MessageInfo[]>} REF_LIST_UNREAD_MESSAGE - Ref danh sách tin nhắn chưa đọc
+ * @param {React.MutableRefObject<number>} REF_GLOBAL_UNREAD_MESSAGE_COUNT - Ref số lượng tin nhắn chưa đọc
+ * @param {React.MutableRefObject<number>} REF_LAST_TIME_CLOSE_QUICK_CHAT - Ref thời gian đóng QUICK_CHAT cuối cùng
+ * @param {React.MutableRefObject<string>} REF_SHOW_QUICK_CHAT - Ref trạng thái hiển thị QUICK_CHAT
+ * @param {React.MutableRefObject<boolean>} IS_SHOW_REF - Ref trạng thái hiển thị QUICK_CHAT
+ * @param {React.MutableRefObject<string>} TAB_REF - Ref tab hiện tại
+ * @param {string} SOCKET_API - API của WebSocket
+ * @param {boolean} is_force_close_socket - Cờ đánh dấu đóng socket
+ * @returns {void} - Không có giá trị trả về
  *
  */
 export function onSocketFromChatboxServer({
@@ -59,57 +76,55 @@ export function onSocketFromChatboxServer({
   SOCKET_API,
   is_force_close_socket,
 }: WebSocketProps) {
-  // Kết nối tới WebSocket server
+  /** Kết nối tới WebSocket server */
   WS.current = new WebSocket(SOCKET_API || '')
-
-  //Lưu lại id vòng lặp
+  // WS.current = new WebSocket('https://chatbox-public-v2.botbanhang.vn/socket')
+  /** Lưu lại id vòng lặp */
   let ping_interval_id: number | any
-
-  // kết nối được mở
+  /** kết nối được mở */
   WS.current.onopen = () => {
-    // Thông báo connect thành công
-    console.log('WebSocket Connectedddd')
-
-    // Gửi tin nhắn khởi tạo socket
+    /** Thông báo connect thành công */
+    console.log('WebSocket Connected!')
+    /** Gửi tin nhắn khởi tạo socket */
     sendIdentifyMessage(page_id, client_id, WS)
-
-    // Nếu socket đang readyState === websocket.OPEN thì được gọi tin nhắn
+    /** Nếu socket đang readyState === websocket.OPEN thì được gọi tin nhắn */
     if (WS.current?.readyState === WebSocket.OPEN) {
-      // tu dong ping socket lien tuc 30s
+      /** tu dong ping socket lien tuc 30s */
       ping_interval_id = setInterval(() => WS.current?.send('ping'), 1000 * 25)
     } else {
       console.log('WebSocket is not open yet. Retrying...')
-      // Thử lại sau 100ms nếu chưa kết nối
+      /** Thử lại sau 100ms nếu chưa kết nối */
       setTimeout(sendIdentifyMessage, 100)
     }
   }
-
-  // Khi có tin nhắn
+  /** Khi có tin nhắn
+   * - Kiểm tra dữ liệu nhận được
+   * @param {MessageEvent} data - Dữ liệu nhận được từ WebSocket
+   */
   WS.current.onmessage = ({ data }) => {
+    /** Nếu không có dữ liệu hoặc dữ liệu là 'pong' thì không làm gì cả */
     if (!data || data === 'pong') return
     /**dữ liệu socket nhận được */
     let socket_data: {
       /**dữ liệu tin nhắn mới */
       message?: MessageInfo
     } = {}
-
     /**  cố gắng giải mã dữ liệu*/
     try {
+      /**
+       * Giải mã dữ liệu nhận được
+       */
       socket_data = JSON.parse(data)
     } catch (e) {}
-
     /** Kiểm tra socket_data có dữ liệu không */
     if (!size(socket_data)) return
-
     /** Lấy tin nhắn từ socket */
     let { message } = socket_data
-
     /**
      * Phải lấy data trong REF,
      * Vì khi websocket, chỉ lưu giá trị lúc mới khởi tạo
      * Dù có thay đổi cũng không bắt được sự kiện
      */
-
     /** nếu có tin nhắn. Popup đóng hoặc đang ở tab home */
     if (message && (!IS_SHOW_REF.current || TAB_REF.current !== 'message')) {
       /** Không hiển thị tin nhắn hệ thống  và ghi chú*/
@@ -143,6 +158,10 @@ export function onSocketFromChatboxServer({
         dispatch(
           setListUnreadMessage([...REF_LIST_UNREAD_MESSAGE.current, message])
         )
+
+        /**
+         * Cập nhật số lượng tin nhắn chưa đọc
+         */
         dispatch(
           setGlobalUnreadCount(REF_GLOBAL_UNREAD_MESSAGE_COUNT.current + 1)
         )
@@ -152,7 +171,6 @@ export function onSocketFromChatboxServer({
           client_id,
           REF_GLOBAL_UNREAD_MESSAGE_COUNT.current + 1
         )
-
         /** lưu tin nhắn mới nhất vào localStorage */
         saveQuickChatLatestMessage(page_id, client_id, message)
         /** Lưu tin nhắn mới nhất vào store */
@@ -164,7 +182,6 @@ export function onSocketFromChatboxServer({
       /** Không nhận tin nhắn từ hệ thống */
       if (message?.message_type !== 'system') {
         dispatch(setLatestMessageGlobal(message))
-
         /** Cần lưu ý (với data của redux, WS đang lưu giá trị [] ban đầu)
          * Vì Latest mesage chỉ gọi hàm setListMessage
          * còn setList message thì lấy giá trị LIST_MESSAGE và push thêm tin nhắn vào.
@@ -174,14 +191,11 @@ export function onSocketFromChatboxServer({
       }
     }
   }
-
   /** Khi kết nối bị đóng */
   WS.current.onclose = () => {
     console.log('WebSocket Disconnected')
     clearInterval(ping_interval_id)
-
     if (is_force_close_socket) return
-
     setTimeout(
       () =>
         onSocketFromChatboxServer({
@@ -218,7 +232,6 @@ export function closeSocketConnect(
 ) {
   /** Gắn cờ ngăn chặn kết nối tự động mở lại */
   setIsForceCloseSocket(true)
-
   /** Đóng kết nối WebSocket hiện tại */
   if (WS.current) {
     WS.current.close()

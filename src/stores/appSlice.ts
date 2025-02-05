@@ -3,7 +3,7 @@ import type { PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from '@/stores'
 import { createSlice } from '@reduxjs/toolkit'
 
-const initialState: AppState = {
+const INITIAL_STATE: AppState = {
   page_id: '',
   client_id: '',
   locale: 'vi',
@@ -21,13 +21,15 @@ const initialState: AppState = {
     user_name: '',
     user_phone: '',
     user_email: '',
+    client_id: '',
   },
   is_ai: false,
+  no_viewport: false,
 }
 
 export const appSlice = createSlice({
   name: 'app',
-  initialState,
+  initialState: INITIAL_STATE,
   reducers: {
     /** lưu page_id */
     setPageId: (state, action: PayloadAction<string>) => {
@@ -103,6 +105,12 @@ export const appSlice = createSlice({
     setUserInfo: (state, action: PayloadAction<AppState['user_info']>) => {
       state.user_info = action.payload
     },
+    /**
+     * Lưu dữ trạng thái viewport của page cha
+     */
+    setNoViewport: (state, action: PayloadAction<boolean>) => {
+      state.no_viewport = action.payload
+    },
   },
 })
 
@@ -123,6 +131,7 @@ export const {
   setLoadingGlobal,
   setUserInfo,
   setStatusIsAI,
+  setNoViewport,
 } = appSlice.actions
 
 /** chọn đến page id */
@@ -167,5 +176,7 @@ export const selectGlobalPreviewUrl = (state: RootState) =>
 export const selectUserInfo = (state: RootState) => state.app.user_info
 /** Status AI */
 export const selectStatusAI = (state: RootState) => state.app.is_ai
+/** Status Viewport */
+export const selectStatusViewport = (state: RootState) => state.app.no_viewport
 
 export default appSlice.reducer

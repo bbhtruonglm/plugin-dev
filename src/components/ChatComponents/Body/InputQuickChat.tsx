@@ -11,21 +11,46 @@ function InputQuickChat({
   staff_name = '',
   setLoading,
 }: InputQuickProps) {
+  /**
+   * @param value: string
+   * Lưu giá trị của input
+   */
   const [value, setValue] = useState('')
+  /**
+   * @param preview_url: string | null
+   * Lưu url của ảnh preview
+   */
   const [preview_url, setPreviewUrl] = useState<string | null>(null)
+  /**
+   * @param file: File | null
+   * Lưu file ảnh
+   */
   const [file, setFile] = useState<File | null>(null)
 
-  /** Cho phép ấn Enter để gửi */
+  /** Cho phép ấn Enter để gửi
+   * @param event: any
+   */
   const handleKeyDown = (event: any) => {
+    /**
+     *  Nếu ấn Enter và có giá trị
+     */
     if (event.key === 'Enter' && value) {
+      /**
+       * Ngăn chặn sự kiện mặc định của form
+       */
       event.preventDefault()
+      /**
+       * Gửi tin nhắn
+       */
       handleSend(value)
+      /**
+       * Reset giá trị
+       */
       setValue('')
     }
   }
 
   return (
-    // <div className="absolute bottom-4 flex justify-center items-center h-12 bg-transparent w-full px-5 gap-2">
     <div className="bg-white w-full flex justify-between gap-2 items-center h-11 py-2 px-4 rounded-xl shadow-md">
       {/* ô input chat */}
       <input
@@ -49,7 +74,7 @@ function InputQuickChat({
           <div
             className="cursor-pointer"
             onClick={() => {
-              // Khi không có preview ảnh thì gửi text như bình thường
+              /** Khi không có preview ảnh thì gửi text như bình thường */
               if (!loading && !error_message && preview_url === null) {
                 handleSend(value)
                 setValue('')
@@ -63,7 +88,6 @@ function InputQuickChat({
         )}
       </div>
     </div>
-    // </div>
   )
 }
 

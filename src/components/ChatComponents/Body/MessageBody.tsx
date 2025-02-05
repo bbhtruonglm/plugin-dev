@@ -3,13 +3,28 @@ import { letterToColorCode, nameToLetter } from '@/utils'
 import MessageComponent from '../MessageComponent/MessageComponent'
 import React from 'react'
 
-interface Props {
+/**
+ * Props của MessageBody
+ */
+interface IProps {
+  /**
+   * @param item: any
+   * Dữ liệu tin nhắn
+   */
   item: any
+  /**
+   * @param checkStaffExist: (e: any) => string
+   * Kiểm tra xem staff có tồn tại không
+   */
   checkStaffExist: (e: any) => string
+  /**
+   * @param client_name?: string
+   * Tên của khách hàng
+   */
   client_name?: string
 }
 const MessageBody = React.memo(
-  ({ item, checkStaffExist, client_name }: Props) => {
+  ({ item, checkStaffExist, client_name }: IProps) => {
     return (
       <div
         className={`flex w-full py-2 gap-1 transition-all duration-300 ease-out  ${
@@ -21,7 +36,7 @@ const MessageBody = React.memo(
         }`}
       >
         {item?.message_type === 'page' && (
-          <div className="flex rounded-lg">
+          <div className="flex rounded-lg bg-gray-300 w-6 h-6 items-center justify-center">
             <img
               src={
                 checkStaffExist(item?.message_metadata) || './images/earth.svg'

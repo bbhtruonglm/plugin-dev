@@ -21,112 +21,261 @@ function InputChat({
   page_name,
   client_id,
   setLoading,
+  handleError,
 }: InputProps) {
-  /** Tạo ref cho ô input */
+  /**
+   * Input Ref
+   */
   const INPUT_REF = useRef<HTMLInputElement>(null)
-  /** Trạng thái đóng mở popup */
+  /**
+   * @param SHOW_POPUP: boolean
+   * Lấy trạng thái của popup
+   */
   const SHOW_POPUP = useSelector(selectStatusPopup)
+  /**
+   * @param value: string
+   * Lưu giá trị của input
+   */
+  const [value, setValue] = useState('')
+  /**
+   * @param preview_url: string | null
+   * Lưu url của ảnh preview
+   */
+  const [preview_url, setPreviewUrl] = useState<string | null>(null)
+  /**
+   * @param file: File | null
+   * Lưu file ảnh
+   */
+  const [file, setFile] = useState<File | null>(null)
+  /**
+   * @param AI_STATUS: boolean
+   * Lấy trạng thái của AI
+   */
+  const { SEND_MESSAGE_API } = useAPI()
+  /**
+   * @param PAGE_ID: string
+   * Lấy page_id
+   */
+  const PAGE_ID = useSelector(selectPageId)
+  /**
+   * @param AI_STATUS: boolean
+   * Lấy trạng thái của AI
+   */
+  const AI_STATUS = useSelector(selectStatusAI)
 
   useEffect(() => {
+    /**
+     * Nếu SHOW_POPUP = true thì focus vào input
+     */
     if (SHOW_POPUP) {
-      /** When the popup is open, focus the input */
-      const timer = setTimeout(() => {
+      /**
+       * Focus vào input khi popup mở
+       */
+      const TIMER = setTimeout(() => {
+        /**
+         * Nếu input tồn tại
+         */
         if (INPUT_REF.current) {
+          /** Focus vào input khi popup mở */
           INPUT_REF.current.focus()
+          /** Cuộn tới input */
+          INPUT_REF.current.scrollIntoView({ behavior: 'smooth' })
         }
-      }, 200) // Delay to ensure layout is stable
+        /**
+         * Delay 200ms để chắc chắn input đã được render
+         */
+      }, 200)
 
-      /** Disable body scroll when popup is open Mobile */
+      /** Chặn cuộn trang khi popup mở */
       document.body.style.overflow = 'hidden'
-
+      /**
+       * Clear timeout khi component unmount
+       */
       return () => {
-        clearTimeout(timer)
+        /**
+         * Clear timeout
+         */
+        clearTimeout(TIMER)
       }
     } else {
-      /** Enable body scroll when popup is closed Mobile */
+      /**
+       * Hiển thị cuộn trang khi popup đóng
+       */
       document.body.style.overflow = 'auto'
     }
   }, [SHOW_POPUP])
-
-  const [value, setValue] = useState('')
-  const [preview_url, setPreviewUrl] = useState<string | null>(null)
-  const [file, setFile] = useState<File | null>(null)
-
-  const { SEND_MESSAGE_API } = useAPI()
-
-  /** ID trang được lấy từ store */
-  const PAGE_ID = useSelector(selectPageId)
-
-  /** Upload file
-   * @param {File | null} file
+  /**
+   *  Hàm upload file
+   * @param file  File | null
+   * @returns  void
    */
   const uploadFile = async (file: File | null) => {
+    /**
+     * Nếu file tồn tại
+     */
     if (file) {
-      /** Set loading */
+      /**
+       * Set loading
+       */
       setLoading(true)
-      /** Khởi tạo form data */
+      /**
+       * Tạo form data
+       */
       const FORM_DATA = new FormData()
-      /** Thêm file ảnh vào form */
+      /**
+       * Thêm file vào form data
+       */
       FORM_DATA.append('file', file)
-      /** Thêm các trường còn lại vào form */
+      /**
+       * Thêm page_id vào form data
+       */
       FORM_DATA.append('page_id', PAGE_ID)
+      /**
+       * Thêm client_id vào form data
+       */
       FORM_DATA.append('client_id', client_id)
 
-      /** gửi tin nhắn đi */
+      /** Kiểm tra kích thước file */
+      if (file.size > 1 * 1024 * 1024) {
+        /** 1MB = 1 * 1024 * 1024 bytes */
+        /**
+         * Xử lý error
+         */
+        handleError &&
+          handleError('Ảnh quá lớn, vui lòng chọn ảnh nhỏ hơn 1MB.')
+        /**
+         * Reset file và preview_url
+         */
+        setFile(null)
+        /**
+         * Reset preview_url
+         */
+        setPreviewUrl(null)
+        /**
+         * Set loading
+         */
+        setLoading(false)
+        /**
+         * Return
+         */
+        return
+      }
       try {
-        await fetch(SEND_MESSAGE_API, {
+        /**
+         * Gửi tin nhắn đi
+         */
+        const RES = await fetch(SEND_MESSAGE_API, {
           method: 'POST',
           body: FORM_DATA,
         })
-        /** Gửi tin nhắn đi, reset các file */
+        console.log(RES, 'res')
+        /**
+         * set loading
+         */
         setLoading(false)
+        /**
+         * Reset file
+         */
         setFile(null)
+        /**
+         * Reset preview_url
+         */
         setPreviewUrl(null)
       } catch (error) {
-      } finally {
+        /** Gửi tin nhắn đi, reset các file
+         * Đoạn này cần check lại vì không có xử lý error
+         */
+        handleError && handleError('Có lỗi xảy ra, vui lòng thử lại sau.')
+        /**
+         * Set loading
+         */
+        setLoading(false)
+        /**
+         * Reset file
+         */
+        setFile(null)
+        /**
+         * Reset preview_url
+         */
+        setPreviewUrl(null)
       }
     }
   }
-
-  /** Cho phép ấn Enter để gửi */
+  /**
+   * Hàm xử lý keydown
+   * @param event any
+   * @returns void
+   */
   const handleKeyDown = (event: any) => {
+    /**
+     * Nếu key là enter và value tồn tại
+     */
     if (event.key === 'Enter' && value) {
-      /** Cho phép ấn enter */
+      /**
+       * Ngăn chặn mặc định của event
+       */
       event.preventDefault()
+      /**
+       * Gửi tin nhắn đi
+       */
       handleSend(value)
+      /**
+       * Reset value
+       */
       setValue('')
     }
   }
-  /**Status AI */
-  const AI_STATUS = useSelector(selectStatusAI)
+  /**
+   * Hàm xử lý click popup
+   */
+  const handleClickPopup = () => {
+    /** Chắc chắn focus vào input khi popup được mở và người dùng click vào popup */
+    if (INPUT_REF.current) {
+      /**
+       * Focus vào input khi popup mở
+       */
+      INPUT_REF.current.focus()
+      /**
+       * Cuộn tới input
+       */
+      INPUT_REF.current.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
 
   return (
     <div
-      className={`absolute bottom-4 flex justify-center items-center h-12 bg-transparent w-full ${
-        AI_STATUS ? '' : 'px-5'
-      }  gap-2`}
+      className={`absolute  flex justify-center items-center h-12 bg-transparent w-full ${
+        AI_STATUS ? 'px-2 bottom-3' : 'px-5 bottom-4'
+      } gap-2`}
+      /** Thêm sự kiện click để trigger focus */
+      onClick={handleClickPopup}
     >
       <div className="bg-white w-full flex justify-between gap-2 items-center h-full py-2 px-4 rounded-full">
         <Upload
           setPreviewUrl={(e: File) => {
-            /** Lưu file */
+            /**
+             * Set file
+             */
             setFile(e)
-            /** Tạo đối tượng READER */
+            /**
+             * Tạo đối tượng FileReader
+             */
             const READER = new FileReader()
+            /**
+             * Xử lý khi load xong file
+             */
             READER.onload = () => {
-              /** Lưu base64 để preview */
               setPreviewUrl(READER.result as string)
             }
-            /** Đọc file dưới dạng URL data */
+            /**
+             * Đọc file
+             */
             READER.readAsDataURL(e)
           }}
         />
-        {/* ô input chat */}
         <input
           ref={INPUT_REF}
-          onChange={(e) => {
-            setValue(e.target.value)
-          }}
+          onChange={(e) => setValue(e.target.value)}
           disabled={preview_url ? true : false}
           value={value}
           onKeyDown={(e) => {
@@ -134,6 +283,7 @@ function InputChat({
               handleKeyDown(e)
             }
           }}
+          id="input-embed-chat"
           type="text"
           placeholder={
             preview_url
@@ -142,13 +292,11 @@ function InputChat({
           }
           className="bg-transparent outline-none flex-grow placeholder:text-slate-500 text-sm font-medium"
         />
-        {/* Preview ảnh */}
         {!loading && preview_url && (
           <div className="absolute bottom-16 left-4 bg-white shadow-lg rounded-lg p-1">
             <div
               className="flex justify-between cursor-pointer relative"
               onClick={() => {
-                /** Xoá Preview url */
                 setPreviewUrl(null)
                 setFile(null)
               }}
@@ -158,17 +306,15 @@ function InputChat({
             <img
               src={preview_url}
               alt="Preview"
-              className="w-16 h-16 object-contain  bg-gray-100 rounded-lg"
+              className="w-16 h-16 object-contain bg-gray-100 rounded-lg"
             />
           </div>
         )}
-
         <div>
           {value || preview_url ? (
             <div
               className="cursor-pointer"
               onClick={() => {
-                /** Khi không có preview ảnh thì gửi text như bình thường */
                 if (!loading && !error_message && preview_url === null) {
                   handleSend(value)
                   setValue('')

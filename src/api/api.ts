@@ -4,7 +4,39 @@ import {
   VITE_APP_SOCKET_HOST as VITE_APP_SOCKET_HOST_STAGING,
 } from './env/staging'
 
-const apiEndpoints = {
+/**
+ * - Kiểu dữ liệu cho các đường dẫn API:
+ */
+type EndPointType = {
+  /**
+   * - Đường dẫn API cho môi trường production:
+   */
+  production: {
+    SOCKET_API: string
+    READ_MESSAGE_API: string
+    SEND_MESSAGE_API: string
+    INIT_CLIENT_API: string
+    READ_PAGE_INFO: string
+    READ_CLIENT_INFO: string
+    IMAGE: string
+  }
+  /**
+   * - Đường dẫn API cho môi trường staging:
+   */
+  staging: {
+    SOCKET_API: string
+    READ_MESSAGE_API: string
+    SEND_MESSAGE_API: string
+    INIT_CLIENT_API: string
+    READ_PAGE_INFO: string
+    READ_CLIENT_INFO: string
+    IMAGE: string
+  }
+}
+/**
+ * - Các đường dẫn API:
+ */
+const API_END_POINTS = {
   production: {
     SOCKET_API: VITE_APP_SOCKET_HOST,
     READ_MESSAGE_API: `${VITE_APP_BE_HOST}/embed/message/read_message`,
@@ -23,12 +55,20 @@ const apiEndpoints = {
     READ_CLIENT_INFO: `${VITE_APP_BE_HOST_STAGING}/embed/conversation/read_client`, // sử dụng BE_HOST của production
     IMAGE: `https://chatbox-static-v3.botbanhang.vn`,
   },
-}
-
+} as EndPointType
+/**
+ * - Hàm lấy api theo môi trường:
+ */
 export const useAPI = () => {
+  /**
+   *  Môi trường của ứng dụng:
+   */
   const ENV = import.meta.env.VITE_APP_ENV || 'production'
-
-  return apiEndpoints[ENV] || apiEndpoints.production // mặc định là production nếu môi trường không hợp lệ
+  /**
+   * - Trả về đường dẫn API theo môi trường:
+   * mặc định là production nếu môi trường không hợp lệ
+   */
+  return API_END_POINTS[ENV] || API_END_POINTS.production
 }
 /**
  * - Hàm xử lý gọi api:
@@ -37,6 +77,9 @@ export const useAPI = () => {
  * @param body - Đồi tượng dữ liệu gọi API
  */
 export const fetchAPI = async (url: string, method: string, body?: any) => {
+  /**
+   * - Gọi API:
+   */
   const RES = await fetch(url, {
     method: method,
     headers: {
@@ -44,13 +87,23 @@ export const fetchAPI = async (url: string, method: string, body?: any) => {
     },
     body: JSON.stringify(body),
   })
-
+  /**
+   * - Trả về dữ liệu API:
+   */
   return RES.json()
 }
 /** api chung cho các api liên quan đến lấy ảnh */
-export function apiImage(end_point: any) {
-  const ENV = import.meta.env.VITE_APP_ENV || 'production'
-  const URI = `${apiEndpoints[ENV]['IMAGE']}${end_point}`
-
+export function apiImage(end_point: string) {
+  /**
+   * Môi trường của ứng dụng:
+   */
+  const ENV = (import.meta.env.VITE_APP_ENV as string) || 'production'
+  /**
+   * - Đường dẫn API:
+   */
+  const URI = `${API_END_POINTS[ENV]['IMAGE']}${end_point}`
+  /**
+   * - Trả về đường dẫn API:
+   */
   return URI
 }

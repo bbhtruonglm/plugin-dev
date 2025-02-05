@@ -11,6 +11,9 @@ function Upload({ setPreviewUrl }: UploadProps) {
 
   /** Trigger option upload khi bấm vào icon */
   const handleIconClick = () => {
+    /**
+     * Nếu input tồn tại
+     */
     if (FILE_INPUT_REF.current) {
       /** Reset giá trị của input */
       FILE_INPUT_REF.current.value = ''
@@ -23,8 +26,11 @@ function Upload({ setPreviewUrl }: UploadProps) {
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
+    /** Lấy file đã chọn */
     const SELECTED_FILE = event.target.files?.[0]
-
+    /**
+     * Nếu file đã chọn
+     */
     if (SELECTED_FILE) {
       /** Truyền file đã select tới component cha */
       setPreviewUrl(SELECTED_FILE)
@@ -49,9 +55,11 @@ function Upload({ setPreviewUrl }: UploadProps) {
         type="file"
         ref={FILE_INPUT_REF}
         onChange={handleFileChange}
-        /**  Hide the file input */
+        /**  Ẩn ô input */
         style={{ display: 'none' }}
-        // Only accept image files
+        /**
+         * Chỉ chấp nhận file ảnh
+         */
         accept="image/*"
       />
     </div>

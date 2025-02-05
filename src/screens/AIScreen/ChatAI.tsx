@@ -2,6 +2,9 @@ import InputChat from './components/InputChat'
 import { useState } from 'react'
 
 const ChatAI = () => {
+  /**
+   * @param tab: string
+   */
   const [tab, setTab] = useState('chat')
   return (
     <div className="flex flex-col h-full justify-between w-96 relative border bg-bg-gradient">

@@ -1,24 +1,23 @@
 import { BtnType, ElementType, MessageProps } from '../type'
-import { extractMessageId, formatDate, isValidUrl } from '@/utils'
+import { extractMessageId, isValidUrl } from '@/utils'
 
 import AudioPlayer from './AudioPlayer'
 import { ReactComponent as FileIcon } from '@/assets/document-text.svg'
-import { ReactComponent as IconArrow } from '@/assets/arrow-up-right-square.svg'
-import VideoPlayer from './VideoPlayter'
+import VideoPlayer from './VideoPlayer'
 
 function TemplateMessageComponent({ data }: MessageProps) {
   return (
-    <div className={`flex flex-col rounded-lg group relative w-full h-full`}>
-      {/* Tooltip */}
-
+    <div
+      className={`flex flex-col rounded-lg group relative w-full h-full justify-center items-center`}
+    >
       {/* Hiện thị data dạng text */}
       {data?.message_text &&
         data?.message_type !== 'system' &&
         data?.message_type !== 'note' &&
         (!data?.message_attachments?.length ||
           !data?.message_attachments?.[0]?.type) && (
-          <div className="flex p-2">
-            <p className="text-sm min-h-4 break-words whitespace-pre-line">
+          <div className="flex w-full">
+            <p className="text-sm min-h-4 break-words whitespace-pre-line line-clamp-2 w-full">
               {data?.message_text}
             </p>
           </div>
@@ -26,10 +25,10 @@ function TemplateMessageComponent({ data }: MessageProps) {
       {/* Hiển thị data dạng 1 ảnh */}
       {data?.message_attachments?.length === 1 &&
         data?.message_attachments?.[0]?.type === 'image' && (
-          <div className="flex rounded-lg">
+          <div className="flex rounded-lg w-full h-full">
             <img
               src={data?.message_attachments?.[0]?.payload?.url}
-              className="w-32 h-32 object-contain bg-slate-200 rounded-lg hover:cursor-pointer"
+              className="w-full h-full object-contain bg-slate-200 p-1 rounded-lg hover:cursor-pointer"
               alt=""
               onClick={() => {
                 // handleClickPreview(data?.message_attachments?.[0]?.payload?.url)
@@ -59,7 +58,8 @@ function TemplateMessageComponent({ data }: MessageProps) {
               }`}
             >
               {data?.message_attachments
-                ?.slice(0, 6) // Giới hạn chỉ hiển thị tối đa 6 ảnh
+                /** Giới hạn chỉ hiển thị tối đa 6 ảnh */
+                ?.slice(0, 6)
                 ?.map((attachment, index) => (
                   <div
                     key={attachment?.payload?.url}
@@ -99,7 +99,13 @@ function TemplateMessageComponent({ data }: MessageProps) {
       {/* Hiển thị data dạng video */}
       {data?.message_attachments?.[0]?.type === 'video' && (
         <div className="">
-          <VideoPlayer src={'https://www.w3schools.com/html/mov_bbb.mp4'} />
+          <VideoPlayer
+            src={
+              data?.message_attachments?.[0]?.payload?.url
+                ? data?.message_attachments?.[0]?.payload?.url
+                : 'https://www.w3schools.com/html/mov_bbb.mp4'
+            }
+          />
         </div>
       )}
 
@@ -134,7 +140,6 @@ function TemplateMessageComponent({ data }: MessageProps) {
         data?.message_attachments?.[0]?.type === 'fallback' && (
           <div className="flex p-2">
             <a
-              // className="text-sm min-h-4 break-words whitespace-pre-line underline hover:text-blue-500"
               className="text-sm min-h-4 break-words whitespace-pre-line overflow-hidden break-all text-ellipsis underline hover:text-blue-500"
               href={
                 data?.message_text && isValidUrl(data.message_text)

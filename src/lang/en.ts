@@ -1,7 +1,7 @@
 export const en = {
   translation: {
     welcome: 'Hello,',
-    _hi: 'Hi',
+    _hi: 'Hi ',
     home: 'Home',
     message: 'Message',
     support: 'Support',
@@ -14,7 +14,7 @@ export const en = {
     m: 'm',
     now: 'Now',
     reply: 'Reply',
-    // Home
+    /** Home */
 
     your_options:
       'You can ask questions or provide feedback on service quality.',
@@ -22,8 +22,8 @@ export const en = {
     sendUs: 'Send us a message',
     we_are_online: 'We are online',
     chatWithUs: 'or contact us through the channel you use:',
-    // Message
-    // Message:
+
+    /** Message: */
     online: 'Online',
     placeholder: 'Enter value...',
     start_to_chat: 'Start to chat',
@@ -38,5 +38,6 @@ export const en = {
     send_message_to_us: 'Send a message to',
     invalid_format_phone: 'Invalid phone number format',
     invalid_format_email: 'Invalid email format',
+    no_internet_connection: 'No internet connection...',
   },
 }

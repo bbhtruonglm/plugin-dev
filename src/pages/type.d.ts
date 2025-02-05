@@ -3,17 +3,22 @@ import { MessageInfo } from '@/utils/type'
 /** Cấu trúc dữ liệu Chat App */
 interface ChatAppProps {
   /** Nút trigger bật tắt popup */
-  handleBtn: () => void
+  handleBtn: (e?: string) => void
   /** Trạng thái hiển thị popup */
   show: boolean
   /** Ẩn popup màn điện thoại */
   setHideForMobile?: () => void
   /** client name */
   client_name?: string | null
+  /** trạng thái consultation */
+  consultation?: boolean
 }
 
-// Định nghĩa kiểu dữ liệu cho danh sách nhân viên
+/** Định nghĩa kiểu dữ liệu cho danh sách nhân viên */
 interface EmployeeList {
+  /** Danh sách nhân viên
+   * @params {string} key - Mã nhân viên
+   */
   [key: string]: Employee
 }
 /** Cấu trúc dữ liệu Màn chat */

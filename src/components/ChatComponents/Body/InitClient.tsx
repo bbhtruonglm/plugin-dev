@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { InitClientProps } from '../type'
 import Input from './Input'
 import Loading from '@/components/Loading/Loading'
-import _ from 'lodash'
+import { isEmpty } from 'lodash'
 import { t } from 'i18next'
 import { useSelector } from 'react-redux'
 
@@ -13,29 +13,82 @@ function InitClient({ resetData, onInitClient }: InitClientProps) {
   const LOADING_GLOBAL = useSelector(selectLoadingGlobal)
   /** Lấy thông tin user từ store */
   const USER_INFO = useSelector(selectUserInfo)
-  // console.log(USER_INFO)
-  const [name, setName] = useState('')
-  const [phone, setPhone] = useState('')
-  const [email, setEmail] = useState('')
-  const [email_error, setEmailError] = useState('')
-  const [phone_error, setPhoneError] = useState('')
-  const [name_error, setNameError] = useState('')
 
+  /**
+   * State tên
+   */
+  const [name, setName] = useState('')
+  /**
+   * State sđt
+   */
+  const [phone, setPhone] = useState('')
+  /**
+   * State email
+   */
+  const [email, setEmail] = useState('')
+  /**
+   * State lỗi email
+   */
+  const [email_error, setEmailError] = useState('')
+  /**
+   * State lỗi sđt
+   */
+  const [phone_error, setPhoneError] = useState('')
+  /**
+   * State lỗi tên
+   */
+  const [name_error, setNameError] = useState('')
+  /**
+   * Effect lấy thông tin user từ store
+   */
   useEffect(() => {
-    if (!_.isEmpty(USER_INFO)) {
+    /**
+     * Nếu user info không rỗng
+     */
+    if (!isEmpty(USER_INFO)) {
+      /**
+       * Set giá trị cho name
+       */
       setName(USER_INFO?.user_name)
+      /**
+       * Set giá trị cho phone
+       */
       setPhone(USER_INFO?.user_phone)
+      /**
+       * Set giá trị cho email
+       */
       setEmail(USER_INFO?.user_email)
     }
   }, [USER_INFO])
 
   useEffect(() => {
+    /**
+     * Nếu resetData = true
+     */
     if (resetData) {
+      /**
+       * Set giá trị cho email
+       */
       setEmail('')
+      /**
+       * Set giá trị cho name
+       */
       setName('')
+      /**
+       * Set giá trị cho phone
+       */
       setPhone('')
+      /**
+       * Set lỗi cho email
+       */
       setEmailError('')
+      /**
+       * Set lỗi cho phone
+       */
       setPhoneError('')
+      /**
+       * Set lỗi cho name
+       */
       setNameError('')
     }
   }, [resetData])
@@ -53,36 +106,87 @@ function InitClient({ resetData, onInitClient }: InitClientProps) {
    * @param {any} e
    */
   const handleEmailChange = (e: any) => {
-    const value = e.target.value
-    setEmail(value)
-
-    if (!value || EMAIL_REGEX.test(value)) {
+    /**
+     * Lấy giá trị từ input
+     */
+    const VALUE = e.target.value
+    /**
+     * Set giá trị email
+     */
+    setEmail(VALUE)
+    /**
+     * Nếu không có giá trị hoặc giá trị tho
+     */
+    if (!VALUE || EMAIL_REGEX.test(VALUE)) {
+      /**
+       * Set lỗi email
+       */
       setEmailError('')
     } else {
+      /**
+       * Set lỗi email
+       */
       setEmailError(t('invalid_format_email'))
     }
   }
-  /** Hàm xử lý thay đổi sdt */
+  /** Hàm xử lý thay đổi sdt
+   * @param {any} e
+   */
   const handlePhoneChange = (e: any) => {
-    const value = e.target.value
-    setPhone(value)
-
-    if (!value) {
-      setPhoneError(t('input_data')) // Thông báo bắt buộc nhập số điện thoại
-    } else if (VN_PHONE_REGEX.test(value) || UK_PHONE_REGEX.test(value)) {
+    /**
+     * Lấy giá trị từ input
+     */
+    const VALUE = e.target.value
+    /**
+     * Set giá trị sđt
+     */
+    setPhone(VALUE)
+    /**
+     * Nếu không có giá trị hoặc giá trị tho
+     */
+    if (!VALUE) {
+      /**
+       * Set lỗi sđt
+       * Thông báo bắt buộc nhập số điện thoại
+       */
+      setPhoneError(t('input_data'))
+    } else if (VN_PHONE_REGEX.test(VALUE) || UK_PHONE_REGEX.test(VALUE)) {
+      /**
+       * Set lỗi sđt
+       */
       setPhoneError('')
     } else {
+      /**
+       * Set lỗi sđt
+       */
       setPhoneError(t('invalid_format_phone'))
     }
   }
-  /** Hàm xử lý thay đổi tên */
+  /** Hàm xử lý thay đổi tên
+   * @param {any} e
+   */
   const handleNameChange = (e: any) => {
-    const value = e.target.value
-    setName(value)
-
-    if (!value) {
-      setNameError(t('input_data')) // Thông báo bắt buộc nhập tên
+    /**
+     * Lấy giá trị từ input
+     */
+    const VALUE = e.target.value
+    /**
+     * Set giá trị tên
+     */
+    setName(VALUE)
+    /**
+     *  Nếu không có giá trị hoặc giá trị tho
+     */
+    if (!VALUE) {
+      /**
+       * Set lỗi tên
+       * Thông báo bắt buộc nhập tên
+       */
+      setNameError(t('input_data'))
     } else {
+      /**
+       * Set lỗi tên
+       */
       setNameError('')
     }
   }

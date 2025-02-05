@@ -100,6 +100,10 @@ interface InputProps {
   client_id: string
   /** Hàm set loading */
   setLoading: (e: boolean) => void
+  /**
+   * handle Error
+   */
+  handleError?: (e: any) => void
 }
 
 /** Cấu trúc dữ liệu input */

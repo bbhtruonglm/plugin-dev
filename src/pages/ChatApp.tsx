@@ -1,9 +1,11 @@
 import { ChatAppProps, EmployeeList } from './type'
 import {
-  calculateTimeAgo,
+  checkStaffExist,
   hasAttachmentOfType,
   postMessageToParent,
-  renderAvatar,
+  renderAvatarCDN,
+  renderLocale,
+  renderStaffName,
   saveQuickChatCount,
   saveQuickChatLatestMessage,
   saveTimeClosePopup,
@@ -29,32 +31,32 @@ import {
   selectStatusIsInit,
   selectStatusPopup,
   setGlobalPreviewUrl,
+  setGlobalUnreadCount,
   setLatestMessageGlobal,
   setListMessage,
   setListUnreadMessage,
   setLoadingGlobal,
   setStatusIsInit,
 } from '@/stores/appSlice'
+import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useEffect, useRef, useState } from 'react'
 
+import { ReactComponent as ActiveHome } from '@/assets/home-active.svg'
+import { ReactComponent as ActiveMessage } from '@/assets/messageA.svg'
 import ChatScreen from '@/screens/ChatScreen/Chat'
 import { ReactComponent as Close } from '@/assets/close.svg'
 import { ReactComponent as CloseSlate } from '@/assets/close-black.svg'
 import { ReactComponent as Down } from '@/assets/arrow.svg'
 import { Employee } from '@/components/ChatComponents/type'
 import Home from '@/screens/ChatScreen/Home'
-import { ReactComponent as Logo } from '@/assets/logo-retion.svg'
+import { ReactComponent as InactiveHome } from '@/assets/home.svg'
+import { ReactComponent as InactiveMessage } from '@/assets/message.svg'
 import { MessageInfo } from '@/utils/type'
 import Modal from '@/components/ChatComponents/Modal/Modal'
+import { NetworkContext } from '@/components/NWProvider'
 import OnlineStaff from '@/components/Container/OnlineStaff'
-import { ReactComponent as RetionLogo } from '@/assets/retion-logo.svg'
 import TemplateMessageComponent from '@/components/ChatComponents/MessageComponent/TemplateMessageComponent'
-import { ReactComponent as activeHome } from '@/assets/home-active.svg'
-import { ReactComponent as activeMessage } from '@/assets/messageA.svg'
-import { ReactComponent as inactiveHome } from '@/assets/home.svg'
-import { ReactComponent as inactiveMessage } from '@/assets/message.svg'
-import { use } from 'i18next'
+import TimeAgo from '@/components/TimeAgo'
 import { useTranslation } from 'react-i18next'
 
 const ChatApp = ({
@@ -62,36 +64,40 @@ const ChatApp = ({
   show,
   setHideForMobile,
   client_name,
+  consultation,
 }: ChatAppProps) => {
   /** Dịch ngôn ngữ */
-  const { t, i18n } = useTranslation()
+  const { t, i18n: I18N } = useTranslation()
   /** Các đầu api */
   const { READ_PAGE_INFO, SOCKET_API } = useAPI()
-
-  /**
-   * State Khai báo thông tin
-   */
+  /** Trạng thái online */
+  const IS_ONLINE = useContext(NetworkContext)
+  /** Tin nhắn mới nhất */
+  const LATEST_MESSAGE = useSelector(selectLatestMessage)
+  /** danh sách id page */
+  const PAGE_ID = useSelector(selectPageId)
+  /** List tin nhắn được lấy từ store */
+  const LIST_UNREAD_MESSAGE = useSelector(selectListUnreadMessage)
+  /**Status AI */
+  const AI_STATUS = useSelector(selectStatusAI)
+  /** Khởi tạo websocket */
+  const WS = useRef<WebSocket | null>(null)
+  /** State Khai báo thông tin */
   const [error_message, setErrorMessage] = useState<string | null>('')
+  /** State Khai báo thông tin trang */
   const [page_name, setPageName] = useState<string>('')
+  /** State Khai báo thông tin mạng xã hội */
   const [social_link, setSocialLink] = useState<Array<any> | null>([])
+  /** State Khai báo thông tin mô tả mạng xã hội */
   const [social_description, setSocialDescription] = useState<string | null>('')
+  /** State Khai báo thông tin nhân viên */
   const [staff_list, setStaffList] = useState<EmployeeList>({})
+  /** State Khai báo thông tin tin nhắn chào mừng */
   const [is_force_close_socket, setIsForceCloseSocket] = useState(false)
   /** trigger hiện tin nhắn chào mừng */
   const [show_welcome_message, setShowWelcomeMessage] = useState(false)
-
-  /** Tin nhắn mới nhất */
-  const LATEST_MESSAGE = useSelector(selectLatestMessage)
-
-  /**Status AI */
-  const AI_STATUS = useSelector(selectStatusAI)
-
-  /** Khởi tạo websocket */
-  const WS = useRef<WebSocket | null>(null)
-
   /** Tạo tab hiện tại là HOME */
   const [current_tab, setCurrentTab] = useState<string>('home')
-
   /** Tạo ref để giữ giá trị của current_tab */
   const TAB_REF = useRef(current_tab)
   /** Tạo ref để giữ giá trị của is_show */
@@ -106,32 +112,36 @@ const ChatApp = ({
 
   /** Kiểm tra nếu is_ai = true thì  chuyển luôn vào tab message */
   useEffect(() => {
-    if (AI_STATUS) {
+    /** Nếu trạng thái mở AI hoặc trạng thái consultation thì vào luôn tab message */
+    if (AI_STATUS || consultation) {
+      /** Set tab hiện tại là message */
       setCurrentTab('message')
+      /** Set show welcome message là false */
+      setShowWelcomeMessage(false)
     }
-  }, [AI_STATUS])
+  }, [AI_STATUS, consultation])
 
   /** hàm dispatch đến store */
   const dispatch = useDispatch()
 
-  /** danh sách id page */
-  const PAGE_ID = useSelector(selectPageId)
-
-  /** List tin nhắn được lấy từ store */
-  const LIST_UNREAD_MESSAGE = useSelector(selectListUnreadMessage)
-
   useEffect(() => {
+    /**
+     * Cập nhật giá trị trong ref một khi LIST_UNREAD_MESSAGE thay đổi
+     */
     if (LATEST_MESSAGE) {
+      /**
+       * Lưu tin nhắn mới nhất vào state
+       */
       setShowWelcomeMessage(false)
     }
   }, [LATEST_MESSAGE])
 
-  /** Số lượng tin nhắn chưa đọc */
+  /** Số lượng tin nhắn chưa đọc
+   * Lấy từ store
+   */
   const GLOBAL_UNREAD_MESSAGE_COUNT = useSelector(selectGlobalUnreadCount)
-
   /** Tạo ref một để luu giữ giá trị GLOBAL_UNREAD_MESSAGE_COUNT */
   const REF_GLOBAL_UNREAD_MESSAGE_COUNT = useRef(GLOBAL_UNREAD_MESSAGE_COUNT)
-
   /** Tạo ref một để luu giữ giá trị LIST_UNREAD_MESSAGE */
   const REF_LIST_UNREAD_MESSAGE = useRef(LIST_UNREAD_MESSAGE)
   /** Giá trị của preview URL */
@@ -174,14 +184,14 @@ const ChatApp = ({
     /** Cập nhật giá trị trong ref một khi LAST_TIME_CLOSE_QUICK_CHAT thay đổi */
     REF_LAST_TIME_CLOSE_QUICK_CHAT.current = LAST_TIME_CLOSE_QUICK_CHAT
   }, [SHOW_QUICK_CHAT, LAST_TIME_CLOSE_QUICK_CHAT])
-
   /** Trạng thái khởi tạo client */
   const IS_INIT_CLIENT = useSelector(selectStatusIsInit)
-
   /** GLobal client_id */
   const GLOBAL_CLIENT_ID = useSelector(selectGlobalClientId)
-  // localStorage.setItem(`client_id_<${PAGE_ID}>`, '6131478076934694')
-  const CLIENT_STORED = localStorage.getItem(`client_id_<${PAGE_ID}>`)
+  /**
+   * Lấy client_id từ localStorage
+   */
+  const CLIENT_STORED = localStorage.getItem(`client_id_${PAGE_ID}`)
 
   /** Tin nhắn chào mừng  */
   const [welcome_message, setWelcomeMessage] = useState<any>({
@@ -206,20 +216,34 @@ const ChatApp = ({
      * 3. Thời gian delay từ page setup, nếu không có thì hiển thị mặc định là 5s
      */
     const TIMER = setTimeout(() => {
+      /**
+       * Nếu không có tin nhắn chào mừng, thoát ngay
+       */
       if (welcome_message?.is_active === false) {
+        /**
+         * Nếu không có tin nhắn chào mừng, thoát ngay
+         */
         setShowWelcomeMessage(false)
         return
       }
+      console.log(isEmpty(LATEST_MESSAGE), 'isEmpty(LATEST_MESSAGE)')
+      console.log(SHOW_QUICK_CHAT, 'SHOW_QUICK_CHAT')
+      /**
+       * Nếu không có tin nhắn mới nhất và trạng thái show_quick_chat
+       */
       if (
         !show &&
         isEmpty(LATEST_MESSAGE) &&
         SHOW_QUICK_CHAT === 'show_quick_chat'
       ) {
+        /**
+         * Hiển thị tin nhắn chào mừng
+         */
         setShowWelcomeMessage(true)
       }
     }, welcome_message?.delay || 5000)
 
-    // Clear timer khi component unmount
+    /** Clear timer khi component unmount */
     return () => clearTimeout(TIMER)
   }, [show, LATEST_MESSAGE, SHOW_QUICK_CHAT, welcome_message])
 
@@ -227,15 +251,18 @@ const ChatApp = ({
     /**  Nếu không có PAGE_ID, thoát ngay*/
     if (!PAGE_ID) return
 
-    /** Lấy client_id từ localStorage, chỉ xử lý nếu hợp lệ */
-    const STORED_CLIENT_ID = localStorage.getItem(`client_id_<${PAGE_ID}>`)
-    // const STORED_CLIENT_ID = '6131478076934694'
+    /** Lấy client_id từ localStorage, chỉ xử lý nếu hợp lệ
+     *@example const STORED_CLIENT_ID = '6131478076934694'
+     */
+    const STORED_CLIENT_ID = localStorage.getItem(`client_id_${PAGE_ID}`)
 
+    /**
+     * Nếu không có client_id, khởi tạo lại hoặc đặt cờ khởi tạo socket
+     */
     if (!STORED_CLIENT_ID) {
       /** Nếu không có client_id, khởi tạo lại hoặc đặt cờ khởi tạo socket */
     } else {
       /** Nếu có client_id hợp lệ, cập nhật vào state */
-
       onSocketFromChatboxServer({
         page_id: PAGE_ID,
         client_id: STORED_CLIENT_ID,
@@ -277,6 +304,9 @@ const ChatApp = ({
         SOCKET_API,
         is_force_close_socket,
       })
+      /**
+       * Đặt cờ khởi tạo là false
+       */
       dispatch(setStatusIsInit(false))
     }
   }, [PAGE_ID, IS_INIT_CLIENT, GLOBAL_CLIENT_ID])
@@ -296,7 +326,7 @@ const ChatApp = ({
    *
    * @example
    * const MENU_LIST = [
-   *   { name: 'Trang chủ', src: inactiveHome, value: 'home', srcA: activeHome },
+   *   { name: 'Trang chủ', src: inactiveHome, value: 'home', srcA: A },
    *   { name: 'Tin nhắn', src: inactiveMessage, value: 'message', srcA: activeMessage },
    *   // Các tab Support và News đang bị ẩn trong đoạn mã
    * ];
@@ -304,15 +334,15 @@ const ChatApp = ({
   const MENU_LIST = [
     {
       name: t('home'),
-      src: inactiveHome,
+      src: InactiveHome,
       value: 'home',
-      srcA: activeHome,
+      srcA: ActiveHome,
     },
     {
       name: t('message'),
-      src: inactiveMessage,
+      src: InactiveMessage,
       value: 'message',
-      srcA: activeMessage,
+      srcA: ActiveMessage,
     },
     // {
     //   name: 'Hỗ trợ',
@@ -332,13 +362,13 @@ const ChatApp = ({
    * @param {string} page_id - ID trang
    */
   const fetchPageData = async (page_id: string) => {
-    // Tạo đối tượng URL từ string
+    /** Tạo đối tượng URL từ string */
     const URL_READ = new URL(READ_PAGE_INFO)
-    // body gồm page_id
+    /** body gồm page_id */
     const BODY = {
       page_id: page_id,
     }
-    // Đẩy params lên URL
+    /** Đẩy params lên URL */
     URL_READ.search = new URLSearchParams(BODY as any).toString()
 
     /** Thông tin page từ api */
@@ -349,12 +379,21 @@ const ChatApp = ({
 
     /** nếu cài đặt ở setting page is_active = false thì k lưu  */
     if (!RES?.data?.social_platform?.is_active) {
+      /**
+       * Nếu không có cài đặt mạng xã hội thì trả về null
+       */
       setSocialLink(null)
     } else {
+      /**
+       * Lưu thông tin mạng xã hội
+       */
       setSocialLink(RES?.data?.social_platform?.data)
+      /**
+       * Lưu thông tin mô tả mạng xã hội
+       */
       setSocialDescription(
         RES?.data?.social_platform?.description?.[
-          RES?.data?.default_language || 'vi'
+          I18N.language || RES?.data?.default_language || 'vi'
         ]
       )
     }
@@ -366,89 +405,58 @@ const ChatApp = ({
       delay: RES?.data?.welcome_message?.delay * 1000 || 5000,
       is_active: RES?.data?.welcome_message?.is_active || false,
     })
-
+    console.log(RES, 'ress')
+    console.log(I18N.language)
     /** Lưu thông tin biểu mẫu */
     setWebForm({
       is_active: RES?.data?.web_form?.is_active || false,
       source:
-        RES?.data?.web_form?.source?.[RES?.data?.default_language || 'vi'] ||
-        {},
+        RES?.data?.web_form?.source?.[
+          renderLocale(I18N.language) || RES?.data?.default_language || 'vi'
+        ] || {},
     })
 
-    // lưu ngôn ngữ hiện tại
-    i18n.changeLanguage(RES?.data?.default_language)
-    // Lưu danh sách nhân viên
+    /** Lưu danh sách nhân viên */
     setStaffList(RES?.data?.staffs)
   }
 
   /** Ngăn kết nối mở lại */
   useEffect(() => {
+    /** Nếu có kết nối socket thì đóng kết nối */
     return () => {
+      /**
+       * Nếu có kết nối socket thì đóng kết nối
+       */
       closeSocketConnect(WS, setIsForceCloseSocket)
     }
   }, [])
 
-  /** Chuyển từ Object thành mảng Array và lấy ra fb_staff_id và is_online */
+  /** Chuyển từ Object thành mảng Array và lấy ra fb_staff_id và is_online
+   * @param {Object} staff_list - Danh sách nhân viên
+   * @returns {Array} Mảng nhân viên
+   */
   const EMPLOYEE_LIST: Employee[] = map(values(staff_list), (employee) => ({
     fb_staff_id: employee.fb_staff_id,
     is_online: employee.is_online,
   }))
 
-  /** Hàm kiểm tra nhân sự có tồn tại không
-   * @param {string} id: Nhận vào id của nhân sự
-   * @returns {string} link avatar
+  /**
+   * Hàm xử lý khi click vào tab
    */
-  const checkStaffExist = (id: string) => {
-    /** Nếu không có staff Id thì trả về '' */
-    if (!id) return ''
-    /** Xem nhân viên nhắn tin có tồn tại trong list nhân viên không */
-    const IS_STAFF_EXIST = EMPLOYEE_LIST?.find((item) =>
-      id.includes(item?.fb_staff_id)
-    )
-
-    /** Nếu không tồn tại thì trả về '' */
-    if (!IS_STAFF_EXIST) {
-      return ''
-    }
-
-    /** Lấy link avatar */
-    const LINK_AVATAR = renderAvatar(IS_STAFF_EXIST?.fb_staff_id)
-    return LINK_AVATAR
-  }
-
-  /** Trả về tên nhân viên
-   * @param {string} message_metadata
-   * @returns {string} Tên nhân viên
-   */
-  const renderStaffName = (message_metadata?: string) => {
-    /**
-     * Lấy ID từ message_metadata
-     * Lấy phần sau cùng sau dấu '__'
-     * */
-    const ID_FROM_META_DATA = message_metadata?.split('__').pop()
-
-    if (ID_FROM_META_DATA) {
-      /**  Kiểm tra ID có trong data không và lấy tên */
-      const STAFF_NAME = get(staff_list, ID_FROM_META_DATA, null)?.name
-      return STAFF_NAME ? STAFF_NAME : 'Nhân viên'
-    }
-  }
-
-  /** Lấy ra thời gian đóng popup gần nhất từ trong localStorage */
-  // const LAST_TIME_CLOSE = localStorage.getItem(`last_time_close__${PAGE_ID}`)
-
   const [has_exited_preview, setHasExitedPreview] = useState(false)
 
-  // Theo dõi khi GLOBAL_PREVIEW_URL thay đổi và trạng thái preview đã được reset
+  /** Theo dõi khi GLOBAL_PREVIEW_URL thay đổi và trạng thái preview đã được reset */
   useEffect(() => {
     if (GLOBAL_PREVIEW_URL === null) {
-      setHasExitedPreview(true) // Đã thoát khỏi trạng thái preview
+      /** Đã thoát khỏi trạng thái preview */
+      setHasExitedPreview(true)
     } else {
-      setHasExitedPreview(false) // Đang trong trạng thái preview
+      /** Đang trong trạng thái preview */
+      setHasExitedPreview(false)
     }
   }, [GLOBAL_PREVIEW_URL])
 
-  /** Hàm xử lý điều kiện để trả về css render giao diện
+  /** Hàm xử lý điều kiện để trả về css render giao diện SDK
    * @param {boolean} show Trạng thái đóng mở giao diện
    * @param {number} GLOBAL_UNREAD_MESSAGE_COUNT Tổng số tin nhắn chưa đọc
    * @param {MessageInfo} LATEST_MESSAGE Tin nhắn mới nhất
@@ -456,181 +464,303 @@ const ChatApp = ({
    * @param {string} SHOW_QUICK_CHAT Trạng thái ẩn hiển QUICK_CHAT
    * @returns {string} CSS
    */
-  const getChatBoxClasses = (
+  const getContainerLayout = (
     show: boolean,
     GLOBAL_UNREAD_MESSAGE_COUNT: number,
     LATEST_MESSAGE: MessageInfo,
     CURRENT_WIDTH: number,
     SHOW_QUICK_CHAT: string | null
-  ) => {
+  ): string => {
     /**
-     * Trường hợp màn hình có height nhỏ hơn 674px
+     * Xác định trạng thái thiết bị là mobile
      */
-    if (CURRENT_HEIGHT < 674 && show) {
-      postMessageToParent(true, false)
-      return 'flex flex-col w-[416px] h-screen px-2 py-2 justify-between'
-    }
+    const IS_MOBILE = CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
+    /**
+     * Xác định trạng thái chiều cao nhỏ
+     */
+    const IS_SMALL_HEIGHT = CURRENT_HEIGHT && CURRENT_HEIGHT < 674
+    /**
+     * Xác định trạng thái AI
+     */
+    const IS_AI = AI_STATUS
+    /**
+     * Xác định trạng thái xem trước ảnh
+     */
+    const IS_PREVIEWING_IMAGE = !!GLOBAL_PREVIEW_URL
+    /**
+     * Xác định có tin nhắn chưa đọc hay không
+     */
+    const HAS_UNREAD_MESSAGE = GLOBAL_UNREAD_MESSAGE_COUNT > 0
+    /**
+     * Xác định trạng thái ẩn hiện QUICK_CHAT
+     */
+    const IS_QUICKCHAT_HIDDEN = SHOW_QUICK_CHAT === 'hide_quick_chat'
+    /**
+     * Xác định trạng thái ẩn hiện QUICK_CHAT
+     */
+    const IS_QUICKCHAT_VISIBLE = SHOW_QUICK_CHAT === 'show_quick_chat'
 
+    /**
+     *  Hàm gọi postMessage
+     * @param popupOpen   Trạng thái popup mở
+     * @param triggerWelcome  Trạng thái hiển thị tin nhắn chào mừng
+     * @param height  Chiều cao popup
+     * @param previewUrl  Đường dẫn xem trước ảnh
+     * @returns
+     */
+    const callPostMessage = (
+      popupOpen: boolean,
+      triggerWelcome: boolean,
+      height?: number,
+      previewUrl?: string
+    ) => postMessageToParent(popupOpen, triggerWelcome, height, previewUrl)
+    /**
+     *  Hàm lấy chiều cao tin nhắn
+     * @param message  Tin nhắn
+     * @returns
+     */
+    const getMessageHeight = (
+      message: MessageInfo | null
+    ): number | undefined => {
+      /**
+       * Nếu không có tin nhắn thì trả về undefined
+       */
+      if (!message) return undefined
+      /**
+       * Nếu có tệp đính kèm kiểu ảnh hoặc video thì trả về 312
+       */
+      if (
+        hasAttachmentOfType(message, 'image') ||
+        hasAttachmentOfType(message, 'video')
+      )
+        return 312
+      /**
+       * Nếu có tệp đính kèm kiểu file thì trả về 240
+       */
+      if (hasAttachmentOfType(message, 'file')) return 240
+      /**
+       * Nếu có tệp đính kèm kiểu template button thì trả về 312
+       */
+      if (
+        message.message_attachments &&
+        hasAttachmentOfType(message, 'template') &&
+        message.message_attachments[0]?.payload?.template_type === 'button'
+      )
+        return 312
+      /**
+       * Mặc định trả về 224
+       */
+      return 224
+    }
+    /**
+     * Trường hợp Chiều cao màn hình nhỏ hơn và popup đang mở và chiều rộng lớn hơn 768
+     */
+    if (IS_SMALL_HEIGHT && show && CURRENT_WIDTH > 768) {
+      /**
+       * Gọi hàm postMessage
+       */
+      callPostMessage(true, false)
+      /**
+       * Trả về css popup
+       */
+      return 'flex flex-col md:w-[416px] h-screen px-2 py-2 justify-between'
+    }
     /**
      * Trường hợp chat AI
-     * is_ai = true
-     * Hiển thị full width-height và ẩn header
      */
-    if (AI_STATUS) {
-      postMessageToParent(true, false)
+    if (IS_AI) {
+      /**
+       * Gọi hàm postMessage
+       */
+      callPostMessage(true, false)
+      /**
+       * Trả về css popup
+       */
       return 'w-screen h-screen'
     }
-
-    /** Giả sử trường hợp User preview ảnh,
-     * gọi post message để thay kích thước SDK ở cha
-     * thay đổi kích thước ở bong bóng chat
+    /**
+     * Trường hợp xem trước ảnh
      */
-    if (GLOBAL_PREVIEW_URL) {
-      // postMessageToParent(true, false, 674, GLOBAL_PREVIEW_URL)
-      return 'flex w-screen h-screen items-end justify-end px-2 pr-11 pb-[52px]'
+    if (IS_PREVIEWING_IMAGE) {
+      /**
+       * Gọi hàm postMessage
+       */
+      callPostMessage(true, false, 674, GLOBAL_PREVIEW_URL)
+      /**
+       * Trả về css popup
+       */
+      return 'flex w-screen h-screen items-end justify-end px-6 pr-5 pb-[68px]'
     }
-    /** Popup đang đóng , không có tin nhắn mới, trigger welcome message */
-    if (!show && show_welcome_message && LATEST_MESSAGE === null) {
-      /** Call postMessageToParent */
-      postMessageToParent(false, true, 142)
+    /**
+     * Trường hợp popup đóng, và không có tin nhắn chưa đọc
+     */
+    if (!show && show_welcome_message && !LATEST_MESSAGE) {
+      /**
+       * Gọi hàm postMessage
+       */
+      callPostMessage(false, true, 142)
+      /**
+       * Trả về css popup
+       */
       return 'w-[302px] h-[142px] items-end justify-between pb-4 px-2'
     }
-
-    /** Base condition:
-     * - Popup closed,
-     * - Trạng thái Quick_chat đóng,
-     * - message is from page,
-     * - unread messages > 0
-     * */
-
+    /**
+     * Trường hợp popup đóng, và không có tin nhắn chưa đọc
+     */
     if (
-      (!show && SHOW_QUICK_CHAT === 'hide_quick_chat') ||
-      (!show && GLOBAL_UNREAD_MESSAGE_COUNT === 0) ||
-      (!show && LATEST_MESSAGE === null && GLOBAL_UNREAD_MESSAGE_COUNT > 0)
+      !show &&
+      (IS_QUICKCHAT_HIDDEN ||
+        !HAS_UNREAD_MESSAGE ||
+        (!LATEST_MESSAGE && HAS_UNREAD_MESSAGE))
     ) {
-      /** Call postMessageToParent */
-      postMessageToParent(false, false)
-      /** Trả về css chỉ hiện popup */
+      /**
+       * Gọi hàm postMessage
+       */
+      callPostMessage(false, false)
+      /**
+       * Trả về css popup
+       */
       return 'w-16 h-[72px] items-center justify-center pb-4 pt-2'
     }
-
-    /** =============================================================================== */
-
-    if (
-      SHOW_QUICK_CHAT === 'show_quick_chat' &&
-      !show &&
-      GLOBAL_UNREAD_MESSAGE_COUNT > 0 &&
-      LATEST_MESSAGE?.message_type === 'page'
-    ) {
-      /** Kiểm tra với type image / video */
-      if (
-        hasAttachmentOfType(LATEST_MESSAGE, 'image') ||
-        hasAttachmentOfType(LATEST_MESSAGE, 'video')
-      ) {
-        /** Call postMessageToParent */
-        postMessageToParent(false, true, 312)
-        return 'w-[302px] h-[312px] items-end justify-between pb-4 px-2 '
-      }
-
-      /** Kiểm tra với type template && payload = button */
-      if (
-        LATEST_MESSAGE?.message_attachments &&
-        hasAttachmentOfType(LATEST_MESSAGE, 'template') &&
-        LATEST_MESSAGE?.message_attachments[0]?.payload?.template_type ===
-          'button'
-      ) {
-        /** Call postMessageToParent */
-        postMessageToParent(false, true, 312)
-        return 'w-[302px] h-[312px] items-end justify-between pb-4 px-2 '
-      }
-
-      /** Kiểm tra với type file  ví dụ audio */
-      if (hasAttachmentOfType(LATEST_MESSAGE, 'file')) {
-        /** Call postMessageToParent */
-        postMessageToParent(false, true, 240)
-        return 'w-[302px] h-[240px] items-end justify-between pb-4 px-2 '
+    /**
+     * Trường hợp popup đóng, và có tin nhắn chưa đọc
+     */
+    if (IS_QUICKCHAT_VISIBLE && !show && HAS_UNREAD_MESSAGE) {
+      /**
+       * Lấy chiều cao tin nhắn
+       */
+      const HEIGHT = getMessageHeight(LATEST_MESSAGE)
+      /**
+       * Gọi hàm postMessage
+       */
+      if (HEIGHT) {
+        /**
+         * Gọi hàm postMessage
+         */
+        callPostMessage(false, true, HEIGHT)
+        /**
+         * Trả về css popup
+         * Vì chiều cao tin nhắn có thể thay đổi nên sử dụng biến HEIGHT
+         * để xác định chiều cao popup
+         * Nếu chiều cao tin nhắn là 224 thì chiều cao popup là 56
+         */
+        /** Xử lý trường hợp HEIGHT = 224 */
+        if (HEIGHT === 224) {
+          /**
+           * Gọi hàm postMessage
+           */
+          callPostMessage(false, true, HEIGHT)
+          /**
+           * Trả về css popup
+           */
+          return 'w-[302px] h-56 items-end justify-between pb-4 px-2'
+        }
+        /**
+         * Xử lý trường hợp HEIGHT = 240 hoặc HEIGHT = 312
+         */
+        if (HEIGHT === 240) {
+          /**
+           * Gọi hàm postMessage
+           */
+          callPostMessage(false, true, HEIGHT)
+          /**
+           * Trả về css popup
+           */
+          return 'w-[302px] h-60 items-end justify-between pb-4 px-2'
+        }
+        /**
+         * Xử lý trường hợp HEIGHT = 312
+         */
+        if (HEIGHT === 312) {
+          /**
+           * Gọi hàm postMessage
+           */
+          callPostMessage(false, true, HEIGHT)
+          /**
+           * Trả về css popup
+           */
+          return 'w-[302px] h-[312px] items-end justify-between pb-4 px-2'
+        }
       }
     }
-
     /**
-     * - Popup đóng ,
-     * - Trạng thái Quick_chat đóng,
-     * - tin nhắn từ page,
-     * - kiểu tin nhắn text */
-    if (
-      SHOW_QUICK_CHAT === 'show_quick_chat' &&
-      !show &&
-      GLOBAL_UNREAD_MESSAGE_COUNT > 0 &&
-      LATEST_MESSAGE?.message_type === 'page'
-    ) {
-      /** Call postMessageToParent */
-      postMessageToParent(false, true, 224)
-      /** Trả về giao diện Text thông thường */
-      return 'w-[302px] h-56 items-end justify-between pb-4 px-2 '
-    }
-
-    /**
-     * - Popup mở,
-     * - trạng thái Mobile hiện full màn hình */
-    if (CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0) {
-      return 'w-screen h-screen'
+     * Trường hợp màn hình Mobile
+     */
+    if (IS_MOBILE) {
+      /**
+       * Gọi hàm postMessage
+       */
+      callPostMessage(true, false)
+      /**
+       * Trả về css popup
+       */
+      return 'w-screen_dvw h-screen_dvh'
     }
     /**
-     * - Popup mở,
-     * - trả về full kích thước */
-    postMessageToParent(true, false)
-    /**  Trả về kích thước Fixed */
+     * Trường hợp mở popup Màn hình PC bình thường
+     */
+    callPostMessage(true, false)
+    /**
+     * Trả về css popup
+     */
     return 'w-[416px] h-[674px] px-2 pb-4 justify-between items-end'
   }
 
-  /** Hàm xử lý điều kiện để trả về css render giao diện
+  /** Hàm xử lý điều kiện để trả về css render giao diện content khi mở popup
    * @param {boolean} show Trạng thái đóng mở giao diện
    * @param {number} GLOABAL_UNREAD_MESSAGE_COUNT So luong tin chưa đọc
    * @param {number} CURRENT_WIDTH Kích thước chiều rộng page cha
    * @returns {string} CSS
    */
-  const getBubbleClasses = (
+  const getMainPopupLayout = (
     show: boolean,
     GLOBAL_UNREAD_MESSAGE_COUNT: number,
     CURRENT_WIDTH: number
-  ) => {
+  ): string => {
     /**
-     * Trường hợp màn hình nhỏ hơn
+     * Xác định trạng thái thiết bị là mobile
      */
-    if (CURRENT_HEIGHT < 674 && show) {
-      return 'flex flex-col w-[400px] justify-between bg-bg-gradient rounded-[20px] h-full mb-[72px] overflow-hidden'
-    }
-
-    /** Trường hợp chat AI
-     * is_ai = true
-     * Hiển thị full width-height và ẩn header
+    const IS_MOBILE = CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
+    /**
+     * Xác định trạng thái chiều cao nhỏ
      */
-    if (AI_STATUS) {
-      return 'flex flex-col w-screen h-screen just-between bg-bg-gradient'
-    }
+    const IS_SMALL_HEIGHT = CURRENT_HEIGHT < 674 && CURRENT_WIDTH > 768
+    /**
+     * Xác định trạng thái AI
+     */
+    const HAS_NO_UNREAD_MESSAGE = GLOBAL_UNREAD_MESSAGE_COUNT === 0
 
-    /** CSS base */
-    if (GLOBAL_PREVIEW_URL) {
-      return 'flex flex-col w-[400px] h-[600px] mb-2.5 rounded-[20px] relative bg-bg-gradient overflow-hidden shadow-md'
-    }
-
+    /** CSS Base */
     const BASE_CLASSES =
-      'flex justify-between relative bg-bg-gradient overflow-hidden shadow-md '
-
-    /** Màn Mobile / PC */
-    const SIZE_CLASSES =
-      CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
-        ? 'w-screen h-screen rounded-none'
-        : 'w-[400px] h-[600px] rounded-[20px]'
-    /** Popup đang đóng, và không có tin nhắn chưa đọc */
-    /** Popup đang đóng, và không có tin nhắn chưa đọc */
+      'flex justify-between relative bg-bg-gradient overflow-hidden shadow-md'
+    /** CSS Size */
+    const SIZE_CLASSES = IS_MOBILE
+      ? 'w-screen h-screen rounded-none'
+      : 'w-[400px] h-[600px] rounded-[20px]'
+    /** CSS Visibility */
     const VISIBILITY_CLASSES =
-      !show && GLOBAL_UNREAD_MESSAGE_COUNT === 0
+      !show && HAS_NO_UNREAD_MESSAGE
         ? 'hidden'
         : `flex flex-col ${
             !has_exited_preview ? 'animate-zoomInBottomRight' : ''
           } transition-transform duration-200 ease-in-out`
 
+    /** Điều kiện màn hình nhỏ và đang mở */
+    if (IS_SMALL_HEIGHT && show) {
+      return `${BASE_CLASSES} w-[400px] justify-between h-full mb-[72px] overflow-hidden rounded-[20px]`
+    }
+
+    /** Trường hợp AI */
+    if (AI_STATUS) {
+      return `${BASE_CLASSES} flex flex-col w-screen h-screen just-between`
+    }
+
+    /** Trường hợp đang xem trước */
+    if (GLOBAL_PREVIEW_URL) {
+      return `${BASE_CLASSES} w-[400px] h-[600px] mb-2.5 rounded-[20px] relative overflow-hidden`
+    }
+
+    /** Tổng hợp */
     return `${BASE_CLASSES} ${SIZE_CLASSES} ${VISIBILITY_CLASSES}`
   }
 
@@ -642,7 +772,7 @@ const ChatApp = ({
    * @param {string | null} SHOW_QUICK_CHAT Trạng thái ẩn hiện QUICK_CHAT
    * @returns {string} CSS
    */
-  const getPopupClasses = (
+  const getQuickchatLayout = (
     show: boolean,
     LATEST_MESSAGE: MessageInfo,
     GLOBAL_UNREAD_MESSAGE_COUNT: number,
@@ -658,10 +788,10 @@ const ChatApp = ({
       LATEST_MESSAGE?.message_type === 'page' &&
       GLOBAL_UNREAD_MESSAGE_COUNT > 0
 
-    // Kiểm tra nếu có tệp đính kèm
+    /** Kiểm tra nếu có tệp đính kèm */
     const ATTACHMENT = get(LATEST_MESSAGE, 'message_attachments[0]', null)
 
-    // Object để ánh xạ kiểu file đính kèm với CSS tương ứng
+    /** Object để ánh xạ kiểu file đính kèm với CSS tương ứng */
     const ATTACHMENT_TYPE_TO_CLASS_MAP: Record<string, string> = {
       image: 'flex flex-col w-[286px] h-[240px] justify-between',
       video: 'flex flex-col w-[286px] h-[240px] justify-between',
@@ -669,26 +799,57 @@ const ChatApp = ({
       template_button: 'flex flex-col w-[286px] h-[240px] justify-between',
       template_generic: 'flex flex-col w-[286px] h-[438px] justify-between',
     }
-
+    /**
+     * Kiểm tra điều kiện cơ bản và không có tệp đính kèm
+     */
     if (BASE_CONDITION && !ATTACHMENT) {
+      /**
+       * Trả về css chỉ hiện popup
+       */
       const ATTACHMENT_CLASS =
         'flex flex-col w-[286px] h-[142px] justify-between'
+      /**
+       * Trả về css chỉ hiện popup
+       */
       return ATTACHMENT_CLASS
     }
-    /** Return appropriate class based on conditions */
+    /**
+     * Kiểm tra điều kiện cơ bản và có tệp đính kèm
+     */
     if (BASE_CONDITION && ATTACHMENT) {
-      // Kiểm tra nếu là template và xác định kiểu template
+      /** Kiểm tra nếu là template và xác định kiểu template */
       if (ATTACHMENT.type === 'template') {
+        /**
+         * Kiểm tra template_type và ánh xạ với class tương ứng
+         */
         const TEMPLATE_TYPE = get(ATTACHMENT, 'payload.template_type', null)
+        /**
+         * Kiểm tra template_type button hoặc generic
+         */
         if (TEMPLATE_TYPE === 'button')
+          /**
+           * Kiểm tra template_type button
+           */
           return ATTACHMENT_TYPE_TO_CLASS_MAP.template_button
+        /**
+         * Kiểm tra template_type generic
+         * */
         if (TEMPLATE_TYPE === 'generic')
+          /**
+           * Kiểm tra template_type generic
+           */
           return ATTACHMENT_TYPE_TO_CLASS_MAP.template_generic
       }
 
-      // Kiểm tra attachment.type không phải là undefined
+      /** Kiểm tra attachment.type không phải là undefined */
       if (ATTACHMENT.type) {
+        /**
+         * Kiểm tra attachment.type không phải là undefined
+         */
         const ATTACHMENT_CLASS = ATTACHMENT_TYPE_TO_CLASS_MAP[ATTACHMENT.type]
+        /**
+         * Trả về css chỉ hiện popup
+         */
         return ATTACHMENT_CLASS
       }
     }
@@ -696,16 +857,24 @@ const ChatApp = ({
     /** Popup đóng thì ẩn giao diện */
     return 'hidden'
   }
-
+  /**
+   * Hàm xử lý khi click vào tab
+   */
   const handleCloseModal = () => {
+    /**
+     * Gọi hàm đóng popup
+     */
     dispatch(setGlobalPreviewUrl(null))
+    /**
+     * Gọi hàm đến Parent
+     */
     postMessageToParent(SHOW_POPUP, false, 674, '')
   }
 
   return (
-    // JSX component using the function
+    /** Hiển thị thông tin Layout cả SDK */
     <div
-      className={`flex flex-col relative ${getChatBoxClasses(
+      className={`flex flex-col relative ${getContainerLayout(
         show,
         GLOBAL_UNREAD_MESSAGE_COUNT,
         LATEST_MESSAGE,
@@ -716,7 +885,7 @@ const ChatApp = ({
       {/* Popup tin nhắn hiển thị nội dung chính */}
       {show && (
         <div
-          className={`flex flex-col ${getBubbleClasses(
+          className={`flex flex-col ${getMainPopupLayout(
             show,
             GLOBAL_UNREAD_MESSAGE_COUNT,
             CURRENT_WIDTH
@@ -730,7 +899,13 @@ const ChatApp = ({
               }`}
             >
               <div>
-                <RetionLogo />
+                {/* <RetionLogo /> */}
+                <img
+                  src="./images/Logo_retion_white.png"
+                  alt="Logo Retion"
+                  width={30}
+                  height={30}
+                />
               </div>
 
               <div className="flex items-center gap-x-5">
@@ -739,7 +914,7 @@ const ChatApp = ({
                 </div>
                 <div
                   onClick={setHideForMobile}
-                  className={` cursor-pointer w-10 h-10 flex justify-center items-center  ${
+                  className={`cursor-pointer w-10 h-10 flex justify-center items-center  ${
                     CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
                       ? 'flex'
                       : 'hidden'
@@ -753,19 +928,27 @@ const ChatApp = ({
 
           {/* body check theo bien current tab de render data */}
           <div
-            className={`flex flex-col h-full resize-none outline-none scrollbar-thin scrollbar-webkit overflow-y-auto overflow-x-hidden max-h-[600px]`}
+            className={`flex flex-col h-full resize-none outline-none scrollbar-thin scrollbar-webkit overflow-y-auto overflow-x-hidden md:max-h-[600px] relative`}
           >
+            {!IS_ONLINE && (
+              <div className="absolute top-28 left-[30%] text-xs bg-blue-300 p-2 rounded-lg text-white z-10">
+                {t('no_internet_connection')}
+              </div>
+            )}
             {current_tab === 'home' && (
               <Home
                 onNavigate={() => {
                   setCurrentTab('message')
                   /** 1. Reset Số tin nhắn chưa đọc localStorage */
                   saveQuickChatCount(PAGE_ID, CLIENT_STORED, 0)
-
                   /** 2. Reset tin nhắn mới nhất trong localStorage */
                   saveQuickChatLatestMessage(PAGE_ID, CLIENT_STORED, null)
                   /** 3. Set loading global */
                   dispatch(setLoadingGlobal(true))
+                  /** 4. Reset danh sách tin nhắn chưa đọc trong Store */
+                  dispatch(setListUnreadMessage([]))
+                  /** 5. Reset unread count */
+                  dispatch(setGlobalUnreadCount(0))
                 }}
                 onError={() => {
                   setErrorMessage(t('errorMessage'))
@@ -785,18 +968,16 @@ const ChatApp = ({
                   /** Reset store khi thoát khỏi màn chat */
                   /** 1. Tin nhắn mới nhất */
                   dispatch(setLatestMessageGlobal(null))
-
                   /** 2. Reset danh sách tin nhắn trong store */
                   dispatch(setListMessage([]))
-                  /** 3. Danh sách tin nhắn chưa đọc */
-
-                  /** 4. Reset Số tin nhắn chưa đọc localStorage */
+                  /** 3. Reset Số tin nhắn chưa đọc localStorage */
                   saveQuickChatCount(PAGE_ID, CLIENT_STORED, 0)
-
-                  /** 5. Reset tin nhắn mới nhất trong localStorage */
+                  /** 4. Reset tin nhắn mới nhất trong localStorage */
                   saveQuickChatLatestMessage(PAGE_ID, CLIENT_STORED, null)
-                  /** 6. Reset danh sách tin nhắn chưa đọc trong Store */
+                  /** 5. Reset danh sách tin nhắn chưa đọc trong Store */
                   dispatch(setListUnreadMessage([]))
+                  /** 6. Reset unread count */
+                  dispatch(setGlobalUnreadCount(0))
                 }}
                 error_message={error_message}
                 onError={() => setErrorMessage('')}
@@ -810,7 +991,7 @@ const ChatApp = ({
           {/* Hiển thị Menu */}
           {/* Nếu tab hiện tại không phải chat thì hiển thị menu */}
           {current_tab !== 'message' && (
-            <div className=" w-[400px] flex flex-shrink-0 h-16 flex-col justify-evenly">
+            <div className="md:w-[400px] flex flex-shrink-0 h-16 flex-col justify-evenly">
               <div className="p-2 h-16 w-full">
                 <div className="flex">
                   {MENU_LIST.map(
@@ -834,6 +1015,7 @@ const ChatApp = ({
                              *  */
                             dispatch(setListUnreadMessage([]))
                             dispatch(setLatestMessageGlobal(null))
+                            dispatch(setGlobalUnreadCount(0))
                             dispatch(setLoadingGlobal(true))
                             /** 4. Reset Số tin nhắn chưa đọc localStorage */
                             saveQuickChatCount(PAGE_ID, CLIENT_STORED, 0)
@@ -879,7 +1061,7 @@ const ChatApp = ({
                 <h4 className="text-xs text-center text-slate-700">
                   powered by{' '}
                   <a
-                    href="https://beta-bbh-vn-lac.vercel.app/vn"
+                    href="https://retion.ai"
                     className="underline"
                     target="_blank"
                   >
@@ -893,7 +1075,7 @@ const ChatApp = ({
       )}
       {/* Quick chat */}
       <div
-        className={getPopupClasses(
+        className={getQuickchatLayout(
           show,
           LATEST_MESSAGE,
           GLOBAL_UNREAD_MESSAGE_COUNT,
@@ -907,28 +1089,28 @@ const ChatApp = ({
               <div
                 className={`flex gap-x-1 flex-grow min-h-0 justify-start items-end `}
               >
-                <div className="flex rounded-lg flex-shrink-0">
+                <div className="flex flex-shrink-0 ">
                   {LATEST_MESSAGE?.message_type === 'page' && (
                     <img
                       src={
                         checkStaffExist(LATEST_MESSAGE?.message_metadata) ||
                         './images/earth.svg'
                       }
-                      className="w-8 h-8  mask-rounded-oval"
+                      className="w-8 h-8  mask-rounded-oval bg-gray-200"
                       alt=""
                     />
                   )}
                 </div>
                 <div
-                  className="flex flex-col flex-grow min-w-0 h-full bg-white rounded-xl p-3 hover:bg-slate-50 cursor-pointer"
+                  className="flex flex-col flex-grow min-w-0 h-full bg-white rounded-xl p-3 hover:bg-slate-50 cursor-pointer shadow-md"
                   onClick={() => {
                     /** Khi click trả lời sẽ  reset hết data trong store */
                     dispatch(setLatestMessageGlobal(null))
                     dispatch(setListUnreadMessage([]))
                     dispatch(setListMessage([]))
+                    dispatch(setGlobalUnreadCount(0))
                     /** Khi click vào trả lời, xoá unread_count */
                     saveQuickChatCount(PAGE_ID, CLIENT_STORED, 0)
-
                     /* Chuyển tab thành message */
                     setCurrentTab('message')
                     /** trigger hàm đóng mở popup */
@@ -942,7 +1124,10 @@ const ChatApp = ({
                         {/* Hiển thị tên nhân viên */}
                         <span className="">
                           {truncateSentences(
-                            renderStaffName(LATEST_MESSAGE?.message_metadata),
+                            renderStaffName(
+                              staff_list,
+                              LATEST_MESSAGE?.message_metadata
+                            ),
                             6
                           )}
                         </span>
@@ -956,25 +1141,26 @@ const ChatApp = ({
                       {/* Hiển thị thời gian tin nhắn */}
                       <span className="text-slate-500 text-xs font-medium truncate flex items-center flex-shrink-0">
                         <span className="mx-0.5">•</span>
-                        {calculateTimeAgo(LATEST_MESSAGE?.createdAt)}
+                        {/* {calculateTimeAgo(LATEST_MESSAGE?.createdAt)} */}
+                        <TimeAgo timestamp={LATEST_MESSAGE?.createdAt} />
                       </span>
                     </div>
 
                     {/* Nút đóng */}
                     <div
                       onClick={(event) => {
+                        /**
+                         * Ngăn chặn sự kiện lan truyền
+                         */
                         event.stopPropagation()
-
                         /** Reset hết data trong store */
                         dispatch(setLatestMessageGlobal(null))
-                        // dispatch(setListUnreadMessage([]))
-                        // dispatch(setListMessage([]))
-
+                        /** Khi đóng tin nhắn mới, reset unread_count */
+                        dispatch(setGlobalUnreadCount(0))
                         /** Lưu thời gian vào localstorage Khi đóng tin nhắn mới */
                         saveTimeClosePopup(PAGE_ID)
                         /** Reset latest message trong store thành null */
                         saveQuickChatLatestMessage(PAGE_ID, CLIENT_STORED, null)
-
                         /** Thay đổi trạng thái SHOW_QUICK_CHAT= 'hide_quick_chat' */
                         localStorage.setItem(
                           `status_quick_chat__${PAGE_ID}`,
@@ -997,21 +1183,13 @@ const ChatApp = ({
               </div>
               <div className="flex gap-x-2 h-11">
                 <div className="w-8 h-8"></div>
-                {/* <InputQuickChat
-                  handleSend={(e: string) => {
-                    sendMessage(e)
-                  }}
-                  staff_name={truncateSentences(
-                    renderStaffName(LATEST_MESSAGE?.message_metadata),
-                    6
-                  )}
-                /> */}
                 <div
                   onClick={() => {
                     /** Khi click trả lời sẽ  reset hết data trong store */
                     dispatch(setLatestMessageGlobal(null))
                     dispatch(setListUnreadMessage([]))
                     dispatch(setListMessage([]))
+                    dispatch(setGlobalUnreadCount(0))
                     /** Khi click vào trả lời, xoá unread_count */
                     saveQuickChatCount(PAGE_ID, CLIENT_STORED, 0)
 
@@ -1025,7 +1203,10 @@ const ChatApp = ({
                   {t('reply') +
                     ' ' +
                     truncateSentences(
-                      renderStaffName(LATEST_MESSAGE?.message_metadata),
+                      renderStaffName(
+                        staff_list,
+                        LATEST_MESSAGE?.message_metadata
+                      ),
                       6
                     )}
                 </div>
@@ -1037,9 +1218,27 @@ const ChatApp = ({
 
       {/* Hiển thị tin nhắn chào mừng */}
       {show_welcome_message && (
-        <div className="flex bg-white shadow-lg justify-between w-full gap-x-2 rounded-xl h-16 px-3 py-3">
+        <div
+          className="flex bg-white shadow-lg justify-between w-full gap-x-2 rounded-xl h-16 px-3 py-3 cursor-pointer hover:bg-gray-100"
+          onClick={() => {
+            /** Khi click trả lời sẽ  reset hết data trong store */
+            dispatch(setLatestMessageGlobal(null))
+            dispatch(setListUnreadMessage([]))
+            dispatch(setListMessage([]))
+            dispatch(setGlobalUnreadCount(0))
+            /**
+             * Khi click vào ẩn tin nhắn chào mừng,
+             */
+            setShowWelcomeMessage(false)
+            /** Khi click vào trả lời, xoá unread_count */
+            saveQuickChatCount(PAGE_ID, CLIENT_STORED, 0)
+            /* Chuyển tab thành message */
+            setCurrentTab('message')
+            /** trigger hàm đóng mở popup */
+            handleBtn()
+          }}
+        >
           <h4 className="text-sm line-clamp-2">{welcome_message?.message}</h4>
-
           {/* Nút đóng */}
           <div
             onClick={(event) => {
@@ -1056,16 +1255,33 @@ const ChatApp = ({
       {/*  Nút trigger hiện thị bong bóng chat */}
       <button
         onClick={() => {
-          if (!show && current_tab === 'message') {
-            // Reset hết data trong store
-            dispatch(setLatestMessageGlobal(null))
-            dispatch(setListUnreadMessage([]))
-            dispatch(setListMessage([]))
-            postMessageToParent(false, false)
-          }
-          handleBtn()
-          setErrorMessage('')
-          setShowWelcomeMessage(false)
+          setTimeout(() => {
+            /**
+             * Khi click vào
+             */
+            if (!show && current_tab === 'message') {
+              /** Reset hết data trong store */
+              dispatch(setLatestMessageGlobal(null))
+              dispatch(setListUnreadMessage([]))
+              dispatch(setListMessage([]))
+              dispatch(setGlobalUnreadCount(0))
+              postMessageToParent(false, false)
+            }
+            /**
+             * Khi click vào nút trigger,
+             * nếu đang ở tab message thì reset tin nhắn mới nhất và tin nhắn chưa đọc
+             */
+            handleBtn('no_toggle')
+            /**
+             * Reset tin nhắn mới nhất trong store
+             */
+            setErrorMessage('')
+            /**
+             * Reset tin nhắn mới nhất trong store
+             */
+            setShowWelcomeMessage(false)
+            /** Delay 200ms */
+          }, 200)
         }}
         className={`absolute justify-center items-center bottom-4 right-2  h-12 w-12 bg-white shadow-lg rounded-full  hover:scale-110 ${
           AI_STATUS ? 'hidden' : ''
@@ -1093,8 +1309,9 @@ const ChatApp = ({
           {show ? (
             <Down />
           ) : (
-            <Logo
-              aria-label="Logo Retion"
+            <img
+              src="./images/Logo_retion_embed.png"
+              alt="Logo Retion"
               width={30}
               height={30}
             />
@@ -1109,7 +1326,7 @@ const ChatApp = ({
         {GLOBAL_PREVIEW_URL && (
           <img
             src={GLOBAL_PREVIEW_URL}
-            className="max-w-[880px] w-full h-auto object-contain rounded-lg"
+            className="max-w-[880px] min-w-80 w-full h-auto object-contain rounded-lg"
             alt="Full Attachment"
           />
         )}

@@ -1,4 +1,5 @@
 import { ChatScreenProps, Message } from './type'
+import { debounce, keys } from 'lodash'
 import { fetchAPI, useAPI } from '@/api/api'
 import {
   selectGlobalUnreadCount,
@@ -8,6 +9,7 @@ import {
   selectPageId,
   selectStatusAI,
   selectStatusPopup,
+  selectStatusViewport,
   setGlobalUnreadCount,
   setListMessage,
   setLoadingGlobal,
@@ -16,15 +18,14 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import ChatHeader from './Header/ChatHeader'
+import { ReactComponent as Close } from '@/assets/close.svg'
 import { ReactComponent as Down } from '@/assets/arrow.svg'
 import InitClient from './Body/InitClient'
 import InputChat from './Body/InputChat'
 import Loading from '../Loading/Loading'
 import LoadingDots from '../Loading/LoadingDot'
 import MessageBody from './Body/MessageBody'
-import _ from 'lodash'
-import { renderAvatar } from '@/utils'
-// import InitClient from './InitClient'
+import { renderAvatarCDN } from '@/utils'
 import { t } from 'i18next'
 
 /** Chi tiết component chat */
@@ -52,7 +53,6 @@ function DetailChat({
   const MESSAGE_CONTAINER_REF = useRef<HTMLDivElement | null>(null)
   /** lấy Api từ hooks api */
   const { READ_MESSAGE_API, SEND_MESSAGE_API } = useAPI()
-
   /** hàm dispatch đến store */
   const dispatch = useDispatch()
 
@@ -74,39 +74,53 @@ function DetailChat({
   /** Loading global */
   const LOADING_GLOBAL = useSelector(selectLoadingGlobal)
 
+  /**
+   * Trạng thái Viewport
+   */
+  const NO_VIEWPORT = useSelector(selectStatusViewport)
+
   /** Trạng thái AI_STATUS */
   const AI_STATUS = useSelector(selectStatusAI)
 
   /** Số bản ghi hiển thị trong 1 trang */
   const LIMIT = 20
 
-  const [skip, setSkip] = useState(0)
-  const [loading, setLoading] = useState(false)
-
-  const [loading_more, setLoadingMore] = useState(false)
-  const [has_more, setHasMore] = useState(true)
-  const [scroll_at_bottom, setScrollAtBottom] = useState(true)
-  const [show_jump_button, setShowJumpButton] = useState(false)
-
-  const CLIENT_ID = localStorage.getItem(`client_id_<${PAGE_ID}>`)
-
-  /** Debounce để xử lý scroll
-   * @param func
-   * @param delay
-   * @returns setTimeout
+  /**
+   * State loading khi gửi tin nhắn
    */
-  const debounce = (func: Function, delay: number) => {
-    let debounce_timer: ReturnType<typeof setTimeout>
-    return (...args: any[]) => {
-      clearTimeout(debounce_timer)
-      debounce_timer = setTimeout(() => func(...args), delay)
-    }
-  }
+  const [skip, setSkip] = useState(0)
+  /**
+   * State loading khi gửi tin nhắn
+   */
+  const [loading, setLoading] = useState(false)
+  /**
+   * State loading khi gửi tin nhắn
+   */
+  const [loading_more, setLoadingMore] = useState(false)
+  /**
+   *  State có thêm tin nhắn không
+   */
+  const [has_more, setHasMore] = useState(true)
+  /**
+   *  State lưu tin nhắn mới
+   */
+  const [scroll_at_bottom, setScrollAtBottom] = useState(true)
+  /**
+   * State trạng thái nhanh chóng cuộn xuống dưới cùng
+   */
+  const [show_jump_button, setShowJumpButton] = useState(false)
+  /**
+   * State lưu lỗi khi upload file
+   */
+  const [error_upload, setErrorUpload] = useState('')
+  /**
+   * State lưu trạng thái loading khi khởi tạo client
+   */
+  const CLIENT_ID = localStorage.getItem(`client_id_${PAGE_ID}`)
 
   /** Hàm gọi API để lấy tin nhắn */
   const fetchMessage = async () => {
     /** Đang loading hoặc không có thêm bản ghi sẽ không fetch data nữa */
-
     if (loading_more || !has_more) return
     /** Lấy vị trí scroll hiện tại, nếu k có thì return */
     const CONTAINER = MESSAGE_CONTAINER_REF.current
@@ -119,6 +133,7 @@ function DetailChat({
     /** set loading_more = true để không call liên tục */
 
     try {
+      /** Set loading more */
       setLoadingMore(true)
       /** Tạo đối tượng URL từ string */
       const URL_READ = new URL(READ_MESSAGE_API)
@@ -141,7 +156,9 @@ function DetailChat({
        * Lưu kết quả trả về
        */
       const RESULT = await RES
-
+      /**
+       * Nếu data trả về = LIMIT thì còn tin nhắn cũ
+       */
       if (RESULT.data.length === LIMIT) {
         /** set call api se skip bn ban ghi */
         setSkip(skip + RESULT.data.length)
@@ -173,21 +190,33 @@ function DetailChat({
     }
   }
 
-  // Inside your component
+  /**
+   * Hàm debounce xử lý scroll
+   */
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const TIMER = setTimeout(() => {
+      /**
+       * Set loading more về false
+       */
       dispatch(setLoadingGlobal(false))
+      /**
+       * Set loading more về false
+       */
       setLoadingMore(false)
     }, 200)
 
-    // Cleanup function to clear the timeout
+    /** Cleanup function to clear the timeout */
     return () => {
-      clearTimeout(timer)
+      /**
+       * Clear timeout
+       */
+      clearTimeout(TIMER)
     }
   }, [LIST_MESSAGE])
 
   /** Function kéo xuống dưới cùng */
   const scrollToBottom = () => {
+    /** Cuộn xuống dưới cùng */
     MESSAGE_END_REF.current?.scrollIntoView({ behavior: 'smooth' })
   }
   /** Fuction thực thi khi có hành động scroll */
@@ -210,21 +239,31 @@ function DetailChat({
     /** Set Hiển thị nút btn jump */
     setShowJumpButton(!AT_BOTTOM)
   }, [fetchMessage, loading_more, has_more])
-
-  const debouncedScroll = useCallback(debounce(handleScroll, 200), [
+  /**
+   * Hàm debounce xử lý scroll
+   */
+  const DEBOUNCED_SCROLL = useCallback(debounce(handleScroll, 200), [
     handleScroll,
   ])
-
+  /**
+   * Hàm debounce xử lý scroll
+   */
+  const DEBOUNCED_SCROLL_TO_BOTTOM = useCallback(
+    debounce(scrollToBottom, 200),
+    [scrollToBottom]
+  )
   useEffect(() => {
     /* Sử dụng debounce để xử lý scroll */
     const CONTAINER = MESSAGE_CONTAINER_REF.current
-
+    /**
+     * Nếu có container thì thêm event scroll
+     */
     if (CONTAINER && !loading_more) {
       /** Sử dụng debounce */
-      // const debouncedScroll = debounce(handleScroll, 200)
-      CONTAINER.addEventListener('scroll', debouncedScroll)
+      // const DEBOUNCED_SCROLL = debounce(handleScroll, 200)
+      CONTAINER.addEventListener('scroll', DEBOUNCED_SCROLL)
       return () => {
-        CONTAINER.removeEventListener('scroll', debouncedScroll)
+        CONTAINER.removeEventListener('scroll', DEBOUNCED_SCROLL)
       }
     }
   }, [handleScroll, loading_more])
@@ -233,18 +272,21 @@ function DetailChat({
     /** Cuộn xuống cuối mỗi khi danh sách tin nhắn thay đổi
      * Không check event khi đang scroll lên nữa, khi có tin nhắn mới auto scroll
      */
-
     if (scroll_at_bottom) {
-      scrollToBottom()
+      /**
+       * Cuộn xuống dưới cùng
+       */
+
+      DEBOUNCED_SCROLL_TO_BOTTOM()
     }
-  }, [scroll_at_bottom])
+  }, [scroll_at_bottom, DEBOUNCED_SCROLL_TO_BOTTOM])
 
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout
+    let timeout_id: NodeJS.Timeout
     /** Nếu Mới khởi tạo client, call api fetch tin nhắn nhưng cần settimeout */
     if (is_init) {
       /** Đặt timeout để call API sau 0.1 giây */
-      timeoutId = setTimeout(() => {
+      timeout_id = setTimeout(() => {
         /**  Gọi API sau khi đợi 1 giây */
         fetchMessage()
         /** Khi khởi tạo và call API sau 0.1 giây . set lại trạng thái Không là tin nhắn khởi tạo nữa */
@@ -260,8 +302,11 @@ function DetailChat({
 
     /** Cleanup: Hủy bỏ timeout nếu is_init thay đổi hoặc component bị unmount */
     return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId)
+      /**
+       *  Clear timeout
+       */
+      if (timeout_id) {
+        clearTimeout(timeout_id)
       }
     }
   }, [user_id, is_init])
@@ -299,12 +344,12 @@ function DetailChat({
      * Thì sẽ thêm vào store
      */
 
-    if (_.keys(LATEST_MESSAGE).length !== 0 && !is_init) {
-      // Lưu tin nhắn mới từ socket vào store
+    if (keys(LATEST_MESSAGE).length !== 0 && !is_init) {
+      /** Lưu tin nhắn mới từ socket vào store */
       dispatch(setListMessage([...LIST_MESSAGE, LATEST_MESSAGE]))
       setSkip(skip + 1)
 
-      // Nếu có tin nhắn từ websocket, scroll xuống cuối trang
+      /** Nếu có tin nhắn từ websocket, scroll xuống cuối trang */
       setTimeout(() => {
         scrollToBottom()
       }, 100)
@@ -322,6 +367,7 @@ function DetailChat({
     /** Đoạn này chắc bỏ được */
 
     if (GLOBAL_UNREAD_COUNT && GLOBAL_UNREAD_COUNT > 0 && SHOW_POPUP) {
+      console.log('chatbox opened and has unread message')
       /** Khi mở vào tin nhắn, Reset lại số lượng tin nhắn chưa đọc */
       dispatch(setGlobalUnreadCount(0))
       setTimeout(() => {
@@ -337,28 +383,22 @@ function DetailChat({
    */
   const checkStaffExist = useCallback(
     (id: string) => {
+      /** Lấy ID của nhân viên */
+      const ID_DETECT = id.split('__')[2]
       /** Nếu không có staff Id thì trả về '' */
-      if (!id) return ''
-
-      /** Xem nhân viên nhắn tin có tồn tại trong list nhân viên không */
-      const IS_STAFF_EXIST = employee_list?.find((item) =>
-        id.includes(item?.fb_staff_id)
-      )
-
-      /** Nếu không tồn tại thì trả về '' */
-      if (!IS_STAFF_EXIST) {
-        return ''
-      }
-
-      /** Lấy link avatar */
-      const LINK_AVATAR = renderAvatar(IS_STAFF_EXIST?.fb_staff_id)
-      return LINK_AVATAR
+      if (!ID_DETECT) return ''
+      /** Nếu có staff Id thì trả về link avatar */
+      return renderAvatarCDN(ID_DETECT)
     },
     [employee_list]
   )
 
   return (
-    <div className="flex flex-col w-full h-full relative">
+    <div
+      className={`flex flex-col w-full h-full ${
+        AI_STATUS && 'bg-ai-bg'
+      }  relative`}
+    >
       {/* header */}
       <div className={`${AI_STATUS ? 'hidden' : ''}`}>
         <ChatHeader
@@ -377,7 +417,7 @@ function DetailChat({
       <div
         ref={MESSAGE_CONTAINER_REF}
         className={`px-5 py-3 gap-4 overflow-y-auto scrollbar-thin scrollbar-webkit flex flex-col relative ${
-          AI_STATUS ? 'mt-0' : user_id ? 'my-16' : 'mt-44'
+          AI_STATUS ? 'mt-0 mb-16' : user_id ? 'my-16' : 'mt-44'
         }`}
       >
         {user_id && loading_more && (
@@ -427,8 +467,13 @@ function DetailChat({
             </div>
           ))}
 
-        {/* Thẻ div này đóng vai trò là nơi đánh dấu để cuộn tới */}
-        <div ref={MESSAGE_END_REF} />
+        {/* Thẻ div này đóng vai trò là nơi đánh dấu để cuộn tới
+         * khi có tin nhắn mới thì sẽ cuộn xuống dưới cùng
+         */}
+        {
+          // !NO_VIEWPORT &&
+          <div ref={MESSAGE_END_REF} />
+        }
 
         {/* Khi gửi tin nhắn sẽ hiển thị loading để call api */}
         {loading && (
@@ -457,6 +502,22 @@ function DetailChat({
           />
         </button>
       )}
+      {/** Khi upload lỗi, thông báo cho user */}
+      {error_upload && (
+        <div className="absolute bottom-[20%] left-[35%] bg-white shadow-lg rounded-lg p-2 w-full max-w-40 h-fit max-h-40 group">
+          <div
+            className="flex justify-between cursor-pointer relative "
+            onClick={() => {
+              setErrorUpload('')
+            }}
+          >
+            <Close className="absolute top-0 right-0 bg-slate-500 p-1 rounded-full opacity-0 group-hover:opacity-100" />
+          </div>
+          <h4 className="text-red-500 text-sm break-words whitespace-pre-line">
+            {error_upload}
+          </h4>
+        </div>
+      )}
 
       {/* ô input  Khi có text trong input thì hiển thị thêm icon send */}
       {user_id && (
@@ -470,6 +531,9 @@ function DetailChat({
           page_name={page_name}
           client_id={user_id}
           setLoading={(e: boolean) => setLoading(e)}
+          handleError={(e: any) => {
+            setErrorUpload(e)
+          }}
         />
       )}
     </div>

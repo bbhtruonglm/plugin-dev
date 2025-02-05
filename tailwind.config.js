@@ -3,21 +3,23 @@ module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
   theme: {
     extend: {
+      height: {
+        /** Thay thế cho 100vh */
+        screen_dvh: '100dvh',
+      },
+      width: {
+        /** Thay thế cho 100vw */
+        screen_dvw: '100dvw',
+      },
       spacing: {
         '1px': '1px',
       },
-      // Tạo tiện ích tùy chỉnh cho mask
+      /** Tạo tiện ích tùy chỉnh cho mask */
       maskImage: {
         'rounded-oval':
           "url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' fill='none'%3E%3Cpath fill='%23000' d='M100 0C20 0 0 20 0 100s20 100 100 100 100-20 100-100S180 0 100 0z'/%3E%3C/svg%3E\")",
       },
 
-      screens: {
-        xxs: '320px', // Custom extra extra small breakpoint
-        xs: '450px', // Custom extra small breakpoint
-        mds: '400px',
-        '2xl': '1440px', // Custom extra large breakpoint
-      },
       fontSize: {
         xxs: '10px',
       },
@@ -26,7 +28,7 @@ module.exports = {
           'linear-gradient(to right,  #EEEDF3 0%, #EFEEF4 7%,   #EFECF3 14%,   #F0EDF4 21%,   #F2ECF4 29%,   #EFECF3 36%,   #EEEBF6 43%,   #EBEAF9 50%,   #E8E8F8 57%,   #E6E7F8 64%,   #E4E5F9 71%,   #E3E4F8 79%,   #E2E3F8 86%,   #E0E0FC 93%,   #DCDFFC 100%);',
       },
       colors: {
-        primary: '#4a90e2', // Your custom color
+        primary: '#4a90e2',
         scrollbarTrack: '#f1f1f1',
         scrollbarThumb: '#4a90e2',
         colorOpacity: '#64748B',
@@ -39,10 +41,9 @@ module.exports = {
         'slate-500': '#64748b',
         'slate-100': '#e2e8f0',
         'blue-500': '#3b82f6',
+        'ai-bg': '#f5f5f5',
       },
-      // animation: {
-      //   spinSlow: 'spin 3s linear infinite', // Adding a slower spin animation
-      // },
+
       keyframes: {
         bounce: {
           '0%, 100%': { transform: 'translateY(0)' },

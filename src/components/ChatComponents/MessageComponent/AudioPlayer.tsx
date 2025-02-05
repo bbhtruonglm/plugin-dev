@@ -12,9 +12,20 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src }) => {
    * mỗi khi component render lại.
    *  */
   const AUDIO_REF = useRef<HTMLAudioElement>(null)
-
+  /**
+   * @param is_playing: boolean
+   * Trạng thái phát của audio
+   */
   const [is_playing, setIsPlaying] = useState(false)
+  /**
+   * @param current_time: number
+   * Thời gian hiện tại của audio
+   */
   const [current_time, setCurrentTime] = useState(0)
+  /**
+   * @param duration: number
+   * Độ dài của audio
+   */
   const [duration, setDuration] = useState(0)
 
   useEffect(() => {
@@ -22,7 +33,9 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src }) => {
 
     /** Lấy tham chiếu đến phần tử audio hiện tại */
     const AUDIO = AUDIO_REF.current
-
+    /**
+     * Nếu phần tử audio tồn tại
+     */
     if (AUDIO) {
       /** Thêm một trình lắng nghe sự kiện khi siêu dữ liệu của audio được tải */
       AUDIO.addEventListener('loadedmetadata', () => {
@@ -42,6 +55,9 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src }) => {
 
     /** Cleanup function, loại bỏ các trình lắng nghe khi component bị unmount */
     return () => {
+      /**
+       * Nếu phần tử audio tồn tại
+       */
       if (AUDIO) {
         /** Xóa bỏ trình lắng nghe sự kiện khi siêu dữ liệu được tải */
         AUDIO.removeEventListener('loadedmetadata', () => {})
@@ -53,10 +69,12 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src }) => {
         AUDIO.removeEventListener('ended', handleAudioEnd)
       }
     }
-  }, []) // Mảng phụ thuộc rỗng để đảm bảo useEffect chỉ chạy một lần khi component được mount
+    /** Mảng phụ thuộc rỗng để đảm bảo useEffect chỉ chạy một lần khi component được mount */
+  }, [])
 
   /** Hàm check xem audio đã kết thúc hay chưa */
   const handleAudioEnd = () => {
+    /** Khi audio kết thúc thì set is_playing về false */
     setIsPlaying(false)
     /** hàm kết thúc thì reset thời gian về 0 */
     setCurrentTime(0)
@@ -64,24 +82,62 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src }) => {
 
   /** Hàm play/pause */
   const handlePlayPause = () => {
+    /**
+     * Nếu audio đang phát thì dừng lại
+     */
     if (AUDIO_REF.current) {
+      /**
+       * Nếu đang phát thì dừng lại
+       */
       if (is_playing) {
+        /**
+         * Dừng audio
+         */
         AUDIO_REF.current.pause()
       } else {
+        /**
+         * Nếu không phát thì chơi
+         */
         AUDIO_REF.current.play()
       }
+      /**
+       * Toggle trạng thái phát
+       */
       setIsPlaying(!is_playing)
     }
   }
 
-  /** Hàm di chuyển progress bar */
+  /** Hàm di chuyển progress bar
+   * @param {React.MouseEvent<HTMLDivElement, MouseEvent>} e - sự kiện click chuột
+   */
   const handleSeek = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    /**
+     * Lấy phần tử progress bar
+     */
     const PROGRESS_BAR = e.currentTarget
+    /**
+     * Lấy kích thước của progress bar
+     */
     const RECT = PROGRESS_BAR.getBoundingClientRect()
+    /**
+     * Tính toán thời gian mới
+     */
     const CLICK_X = e.clientX - RECT.left
+    /**
+     * Tính toán thời gian mới
+     */
     const NEW_TIME = (CLICK_X / RECT.width) * duration
+    /**
+     * Nếu audio tồn tại
+     */
     if (AUDIO_REF.current) {
+      /**
+       * Set thời gian mới cho audio
+       */
       AUDIO_REF.current.currentTime = NEW_TIME
+      /**
+       * Set thời gian mới cho state
+       */
       setCurrentTime(NEW_TIME)
     }
   }
@@ -91,8 +147,17 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src }) => {
    * @return {string} time
    */
   const formatTime = (time: number) => {
+    /**
+     * Tính toán phút
+     */
     const MINUTES = Math.floor(time / 60)
+    /**
+     * Tính toán giây
+     */
     const SECONDS = Math.floor(time % 60)
+    /**
+     * Trả về chuỗi thời gian
+     */
     return `${MINUTES}:${SECONDS < 10 ? '0' : ''}${SECONDS}`
   }
 
