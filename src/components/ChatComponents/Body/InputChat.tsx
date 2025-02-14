@@ -258,7 +258,7 @@ function InputChat({
     /**
      * Nếu không có giá trị và là suggest của AI
      */
-    if (!value && is_ai_suggest) {
+    if (!value && !is_ai_suggest) {
       /**
        * Random index
        */
