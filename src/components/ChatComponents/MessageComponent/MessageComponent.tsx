@@ -23,6 +23,7 @@ import VideoPlayer from './VideoPlayer'
 const MessageComponent = React.memo(({ data }: MessageProps) => {
   /** Trạng thái AI_STATUS */
   const AI_STATUS = useSelector(selectStatusAI)
+
   /** Hàm render css khi check type tin nhắn
    * @param {string} messageType - Loại tin nhắn
    */
@@ -90,7 +91,6 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
         {formatDate(data?.time || data?.createdAt)}
       </div>
       {/* Hiện thị data dạng text */}
-
       {!AI_STATUS &&
         data?.message_text &&
         data?.message_type !== 'system' &&
