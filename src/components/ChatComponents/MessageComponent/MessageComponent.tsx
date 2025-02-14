@@ -102,57 +102,67 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
           </div>
         )} */}
       {/* Hiện thị data dạng text AI và có BTN */}
-      {data?.message_text &&
+
+      {AI_STATUS &&
+        data?.message_text &&
         // data?.message_type === 'ai-suggest' &&
         data?.message_type !== 'system' &&
         data?.message_type !== 'note' &&
         (!data?.message_attachments?.length ||
           !data?.message_attachments?.[0]?.type) && (
           <div className="flex flex-col gap-y-2">
-            <div className="bg-white flex flex-col gap-y-2 p-2 rounded-lg shadow-sm">
+            <div
+              className={`${
+                data?.message_type !== 'client' ? 'bg-white' : 'bg-yellow-100'
+              } flex flex-col gap-y-2 p-2 rounded-lg shadow-sm`}
+            >
               <p className="text-sm min-h-4 break-words whitespace-pre-line overflow-hidden">
                 {data?.message_text}
               </p>
-              <div className="flex flex-col gap-y-2">
-                <div
-                  onClick={() => {
-                    // if (button?.type === 'web_url') {
-                    //   window.open(button?.url, '_blank')
-                    // }
-                  }}
-                  className={`flex bg-slate-800 cursor-pointer text-yellow-200 hover:bg-slate-600 px-4 py-2 gap-1 rounded-lg justify-center items-center text-sm font-medium`}
-                >
-                  Thêm vào chat
-                  <ChatBubble className="w-4 h-4" />
+              {data?.message_type !== 'client' && (
+                <div className="flex flex-col gap-y-2">
+                  <div
+                    onClick={() => {
+                      // if (button?.type === 'web_url') {
+                      //   window.open(button?.url, '_blank')
+                      // }
+                    }}
+                    className={`flex bg-slate-800 cursor-pointer text-yellow-200 hover:bg-slate-600 px-4 py-2 gap-1 rounded-lg justify-center items-center text-sm font-medium`}
+                  >
+                    Thêm vào chat
+                    <ChatBubble className="w-4 h-4" />
+                  </div>
+                </div>
+              )}
+            </div>
+            {data?.message_type !== 'client' && (
+              <div className="flex flex-col gap-y-1 text-xs">
+                <div className="flex gap-x-1">
+                  <BookOpen className="w-4 h-4" />
+                  <p className="text-xs">Dựa trên 2 nguồn thông tin:</p>
+                </div>
+                <div className="pl-4">
+                  <a
+                    href="http://www.google.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex gap-x-2 items-center hover:text-blue-500"
+                  >
+                    •<span className="underline ">Chính sách hoàn tiền</span>
+                    <Share className="w-3 h-3 stroke-current" />
+                  </a>
+                  <a
+                    href="http://www.google.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex gap-x-2 items-center hover:text-blue-500"
+                  >
+                    •<span className="underline ">Quy trình hoàn tiền</span>
+                    <Share className="w-3 h-3 stroke-current" />
+                  </a>
                 </div>
               </div>
-            </div>
-            <div className="flex flex-col gap-y-1 text-xs">
-              <div className="flex gap-x-1">
-                <BookOpen className="w-4 h-4" />
-                <p className="text-xs">Dựa trên 2 nguồn thông tin:</p>
-              </div>
-              <div className="pl-4">
-                <a
-                  href="http://www.google.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex gap-x-2 items-center hover:text-blue-500"
-                >
-                  •<span className="underline ">Chính sách hoàn tiền</span>
-                  <Share className="w-3 h-3 stroke-current" />
-                </a>
-                <a
-                  href="http://www.google.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex gap-x-2 items-center hover:text-blue-500"
-                >
-                  •<span className="underline ">Quy trình hoàn tiền</span>
-                  <Share className="w-3 h-3 stroke-current" />
-                </a>
-              </div>
-            </div>
+            )}
           </div>
         )}
       {/* Hiển thị data dạng 1 ảnh */}
