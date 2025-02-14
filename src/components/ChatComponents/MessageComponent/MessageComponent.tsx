@@ -90,7 +90,9 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
         {formatDate(data?.time || data?.createdAt)}
       </div>
       {/* Hiện thị data dạng text */}
-      {/* {data?.message_text &&
+
+      {!AI_STATUS &&
+        data?.message_text &&
         data?.message_type !== 'system' &&
         data?.message_type !== 'note' &&
         (!data?.message_attachments?.length ||
@@ -100,7 +102,7 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
               {data?.message_text}
             </p>
           </div>
-        )} */}
+        )}
       {/* Hiện thị data dạng text AI và có BTN */}
 
       {AI_STATUS &&
