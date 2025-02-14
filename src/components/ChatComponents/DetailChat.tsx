@@ -260,7 +260,7 @@ function DetailChat({
      */
     if (CONTAINER && !loading_more) {
       /** Sử dụng debounce */
-      // const DEBOUNCED_SCROLL = debounce(handleScroll, 200)
+
       CONTAINER.addEventListener('scroll', DEBOUNCED_SCROLL)
       return () => {
         CONTAINER.removeEventListener('scroll', DEBOUNCED_SCROLL)
@@ -449,7 +449,26 @@ function DetailChat({
             )}
           </div>
         )}
-
+        {/* Hiển thị Phần chào mừng với AI */}
+        {AI_STATUS &&
+          LIST_MESSAGE.length == 1 &&
+          user_id &&
+          !LOADING_GLOBAL && (
+            <div className="flex flex-col items-center gap-2">
+              <img
+                src="./images/assistant_bot.svg"
+                alt=""
+              />
+              <h4 className="text-sm font-medium flex">
+                {t('_hi')}
+                {client_name}, {t('_im_your_virtual_assistant')}
+              </h4>
+              <h4 className="text-xs text-slate-500">
+                {t('_how_can_i_help_you')}
+              </h4>
+              <h4 className="text-xs text-slate-500">{t('asking_anything')}</h4>
+            </div>
+          )}
         {/* render nội dung tin nhắn từ list có sẵn */}
         {user_id &&
           !LOADING_GLOBAL &&

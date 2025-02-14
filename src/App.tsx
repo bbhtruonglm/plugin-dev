@@ -151,11 +151,11 @@ function App() {
      * Lưu trạng thái AI vào store
      */
     // dispatch(setStatusIsAI(IS_AI))
-    dispatch(setStatusIsAI(true))
+    dispatch(setStatusIsAI(IS_AI))
     /**
-     * Lưu trạng thái AI vào state
+     * Lưu trạng thái AI vào state Khi Trạng thái AI thì sẽ auto mở popup
      */
-    setShow(true)
+    setShow(IS_AI)
     /**
      * Lấy giá trị locale từ URL
      * Mặc định là 'vn' nếu không có locale */

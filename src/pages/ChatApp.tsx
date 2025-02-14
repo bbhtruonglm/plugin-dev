@@ -3,7 +3,6 @@ import {
   checkStaffExist,
   hasAttachmentOfType,
   postMessageToParent,
-  renderAvatarCDN,
   renderLocale,
   renderStaffName,
   saveQuickChatCount,
@@ -38,7 +37,7 @@ import {
   setLoadingGlobal,
   setStatusIsInit,
 } from '@/stores/appSlice'
-import { useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { ReactComponent as ActiveHome } from '@/assets/home-active.svg'

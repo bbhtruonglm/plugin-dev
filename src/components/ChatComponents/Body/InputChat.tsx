@@ -10,6 +10,7 @@ import { ReactComponent as ArrowSlate } from '@/assets/Icon_up_circle_slate.svg'
 import { ReactComponent as Close } from '@/assets/close.svg'
 import { InputProps } from '../type'
 import Upload from './Upload'
+import { set } from 'lodash'
 import { t } from 'i18next'
 import { useAPI } from '@/api/api'
 import { useSelector } from 'react-redux'
@@ -241,38 +242,101 @@ function InputChat({
       INPUT_REF.current.scrollIntoView({ behavior: 'smooth' })
     }
   }
-
+  /**
+   * State suggest của AI
+   */
+  const [is_ai_suggest, setIsAiSuggest] = useState(false)
+  /**
+   * Suggest của AI
+   */
+  const [data_suggest, setDataSuggest] = useState('')
+  /**
+   * Suggest của AI
+   */
+  useEffect(() => {
+    console.log('run')
+    /**
+     * Nếu không có giá trị và là suggest của AI
+     */
+    if (!value && is_ai_suggest) {
+      /**
+       * Random index
+       */
+      const RANDOM_INDEX = Math.floor(Math.random() * MOCK_SUGGEST.length)
+      /**
+       * Set data suggest
+       */
+      setDataSuggest(MOCK_SUGGEST[RANDOM_INDEX])
+      /**
+       * Delay 10s để hiển thị suggest
+       */
+      setTimeout(() => {
+        setIsAiSuggest(true)
+      }, 10000)
+    }
+  }, [is_ai_suggest, value])
+  /**
+   * Mock suggest
+   */
+  const MOCK_SUGGEST = [
+    'Chính sách hoàn hàng',
+    'Chính sách hoàn tiền',
+    'Chính sách hoàn tiền cho khách hàng',
+    'Làm sao để hoàn tiền cho khách hàng',
+  ]
   return (
     <div
-      className={`absolute  flex justify-center items-center h-12 bg-transparent w-full ${
+      className={`absolute flex justify-center items-center ${
+        is_ai_suggest ? 'h-20' : 'h-12'
+      } bg-transparent w-full ${
         AI_STATUS ? 'px-2 bottom-3' : 'px-5 bottom-4'
       } gap-2`}
       /** Thêm sự kiện click để trigger focus */
       onClick={handleClickPopup}
     >
-      <div className="bg-white w-full flex justify-between gap-2 items-center h-full py-2 px-4 rounded-full">
-        <Upload
-          setPreviewUrl={(e: File) => {
-            /**
-             * Set file
-             */
-            setFile(e)
-            /**
-             * Tạo đối tượng FileReader
-             */
-            const READER = new FileReader()
-            /**
-             * Xử lý khi load xong file
-             */
-            READER.onload = () => {
-              setPreviewUrl(READER.result as string)
-            }
-            /**
-             * Đọc file
-             */
-            READER.readAsDataURL(e)
-          }}
-        />
+      <div
+        className={`bg-white w-full flex shadow-sm ${
+          is_ai_suggest
+            ? 'flex-col rounded-xl gap-y-2'
+            : 'flex-row justify-between items-center rounded-full gap-2'
+        }   h-full py-2 px-4`}
+      >
+        {!AI_STATUS && (
+          <Upload
+            setPreviewUrl={(e: File) => {
+              /**
+               * Set file
+               */
+              setFile(e)
+              /**
+               * Tạo đối tượng FileReader
+               */
+              const READER = new FileReader()
+              /**
+               * Xử lý khi load xong file
+               */
+              READER.onload = () => {
+                setPreviewUrl(READER.result as string)
+              }
+              /**
+               * Đọc file
+               */
+              READER.readAsDataURL(e)
+            }}
+          />
+        )}
+        {is_ai_suggest && (
+          <div
+            onClick={() => {
+              setValue(data_suggest)
+              setDataSuggest('')
+              setIsAiSuggest(false)
+            }}
+            className=" h-6 border border-slate-200 rounded-full w-fit px-2 py-1 text-xs cursor-pointer"
+          >
+            {data_suggest}
+          </div>
+        )}
         <input
           ref={INPUT_REF}
           onChange={(e) => setValue(e.target.value)}
@@ -310,25 +374,27 @@ function InputChat({
             />
           </div>
         )}
-        <div>
-          {value || preview_url ? (
-            <div
-              className="cursor-pointer"
-              onClick={() => {
-                if (!loading && !error_message && preview_url === null) {
-                  handleSend(value)
-                  setValue('')
-                } else {
-                  uploadFile(file)
-                }
-              }}
-            >
-              <Arrow />
-            </div>
-          ) : (
-            <ArrowSlate />
-          )}
-        </div>
+        {!AI_STATUS && (
+          <div>
+            {value || preview_url ? (
+              <div
+                className="cursor-pointer"
+                onClick={() => {
+                  if (!loading && !error_message && preview_url === null) {
+                    handleSend(value)
+                    setValue('')
+                  } else {
+                    uploadFile(file)
+                  }
+                }}
+              >
+                <Arrow />
+              </div>
+            ) : (
+              <ArrowSlate />
+            )}
+          </div>
+        )}
       </div>
     </div>
   )
