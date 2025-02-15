@@ -39,5 +39,14 @@ export const en = {
     invalid_format_phone: 'Invalid phone number format',
     invalid_format_email: 'Invalid email format',
     no_internet_connection: 'No internet connection...',
+    /**
+     * AI
+     */
+
+    _im_your_virtual_assistant: 'I am your virtual assistant',
+    _how_can_i_help_you: 'How can I assist you with this customer?',
+    asking_anything: 'Ask me anything',
+
+    virtual_assistant: 'Virtual Assistant',
   },
 }

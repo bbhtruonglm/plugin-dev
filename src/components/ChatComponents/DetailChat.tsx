@@ -454,19 +454,25 @@ function DetailChat({
           LIST_MESSAGE.length == 1 &&
           user_id &&
           !LOADING_GLOBAL && (
-            <div className="flex flex-col items-center gap-2">
+            <div className="flex flex-col items-center gap-2.5">
               <img
                 src="./images/assistant_bot.svg"
                 alt=""
               />
-              <h4 className="text-sm font-medium flex">
-                {t('_hi')}
-                {client_name}, {t('_im_your_virtual_assistant')}
-              </h4>
-              <h4 className="text-xs text-slate-500">
-                {t('_how_can_i_help_you')}
-              </h4>
-              <h4 className="text-xs text-slate-500">{t('asking_anything')}</h4>
+              <div className="flex flex-col items-center gap-1">
+                <h4 className="text-sm font-medium flex">
+                  {t('_hi')}
+                  {client_name}, {t('_im_your_virtual_assistant')}
+                </h4>
+                <div>
+                  <h4 className="text-xs text-slate-500 text-center">
+                    {t('_how_can_i_help_you')}
+                  </h4>
+                  <h4 className="text-xs text-slate-500 text-center">
+                    {t('asking_anything')}
+                  </h4>
+                </div>
+              </div>
             </div>
           )}
         {/* render nội dung tin nhắn từ list có sẵn */}
@@ -512,7 +518,9 @@ function DetailChat({
       {show_jump_button && (
         <button
           onClick={scrollToBottom}
-          className="absolute flex justify-center items-center h-7 w-7 shadow-md bg-white rounded-full z-[999999] bottom-[13%] right-[45%]"
+          className={`absolute flex justify-center items-center h-7 w-7 shadow-md bg-white rounded-full z-[999999] ${
+            AI_STATUS ? 'bottom-[16%]' : 'bottom-[13%]'
+          } right-[45%]`}
         >
           <Down
             width={10}

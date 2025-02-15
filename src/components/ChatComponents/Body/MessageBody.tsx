@@ -36,12 +36,12 @@ const MessageBody = React.memo(
         }`}
       >
         {item?.message_type === 'page' && (
-          <div className="flex rounded-lg bg-gray-300 w-6 h-6 items-center justify-center">
+          <div className="flex mask-rounded-oval bg-gray-300 w-6 h-6 items-center justify-center">
             <img
               src={
                 checkStaffExist(item?.message_metadata) || './images/earth.svg'
               }
-              className="w-6 h-6 rounded-lg "
+              className="w-6 h-6 mask-rounded-oval"
               alt=""
             />
           </div>
@@ -52,7 +52,7 @@ const MessageBody = React.memo(
 
         {item?.message_type === 'client' && (
           <div
-            className="flex rounded-lg text-white text-sm items-center justify-center w-6 h-6"
+            className="flex mask-rounded-oval text-white text-sm items-center justify-center w-6 h-6"
             style={{ background: letterToColorCode(client_name) }}
           >
             {nameToLetter(client_name)}

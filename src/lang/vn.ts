@@ -47,5 +47,7 @@ export const vn = {
     _im_your_virtual_assistant: 'tôi là trợ lý ảo của bạn',
     _how_can_i_help_you: 'Tôi có thể hỗ trợ bạn gì về khách hàng này?',
     asking_anything: 'Hãy hỏi tôi bất kỳ điều gì',
+
+    virtual_assistant: 'Trợ lý ảo',
   },
 }

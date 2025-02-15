@@ -256,9 +256,9 @@ function InputChat({
   useEffect(() => {
     console.log('run')
     /**
-     * Nếu không có giá trị và là suggest của AI
+     * Nếu không có giá trị và là suggest của AI và AI đang hoạt động thì mới suggest
      */
-    if (!value && !is_ai_suggest) {
+    if (!value && !is_ai_suggest && AI_STATUS) {
       /**
        * Random index
        */
@@ -286,18 +286,16 @@ function InputChat({
   ]
   return (
     <div
-      className={`absolute flex justify-center items-center ${
-        is_ai_suggest ? 'h-20' : 'h-12'
-      } bg-transparent w-full ${
-        AI_STATUS ? 'px-2 bottom-3' : 'px-5 bottom-4'
-      } gap-2`}
+      className={`absolute flex justify-center items-center bg-transparent w-full ${
+        AI_STATUS ? 'px-2 gap-1  bottom-3' : 'px-5 bottom-4 gap-2'
+      } `}
       /** Thêm sự kiện click để trigger focus */
       onClick={handleClickPopup}
     >
       <div
         className={`bg-white w-full flex shadow-sm ${
           is_ai_suggest
-            ? 'flex-col rounded-xl gap-y-2'
+            ? 'flex-col rounded-xl gap-y-1'
             : 'flex-row justify-between items-center rounded-full gap-2'
         }   h-full py-2 px-4`}
       >
@@ -332,7 +330,7 @@ function InputChat({
               setDataSuggest('')
               setIsAiSuggest(false)
             }}
-            className=" h-6 border border-slate-200 rounded-full w-fit px-2 py-1 text-xs cursor-pointer"
+            className="outline outline-1 outline-slate-200 rounded-full w-fit px-2 p-1 text-xs cursor-pointer"
           >
             {data_suggest}
           </div>
@@ -352,9 +350,11 @@ function InputChat({
           placeholder={
             preview_url
               ? 'Đã chọn 1 ảnh'
-              : t('send_message_to_us') + ' ' + page_name
+              : t('send_message_to_us') +
+                (AI_STATUS ? ' ' + t('virtual_assistant') + ' ' : ' ') +
+                page_name
           }
-          className="bg-transparent outline-none flex-grow placeholder:text-slate-500 text-sm font-medium"
+          className="bg-transparent outline-none flex-grow placeholder:text-slate-500 text-sm font-medium py-1.5 px-1"
         />
         {!loading && preview_url && (
           <div className="absolute bottom-16 left-4 bg-white shadow-lg rounded-lg p-1">
