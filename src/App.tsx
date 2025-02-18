@@ -142,10 +142,14 @@ function App() {
      */
     const URL_PARAMS = new URLSearchParams(window.location.search)
 
+    console.log('URL_PARENT::', URL_PARENT)
+
     /**
      * @type {boolean} IS_AI - Trạng thái AI
      */
     const IS_AI = URL_PARENT?.pathname.includes('ai-assistant')
+    // const IS_AI = URL_PARAMS.has('is_ai')
+    // const IS_AI = URL_PARAMS.get('is_ai') === 'true'
 
     /**
      * Lưu trạng thái AI vào store
