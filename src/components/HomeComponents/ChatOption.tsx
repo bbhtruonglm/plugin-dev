@@ -26,7 +26,10 @@ import { renderURLPrefix } from '@/utils'
 import { t } from 'i18next'
 
 function ChatOption({ social_link, social_description }: any) {
-  const social_link_filter = social_link.filter((item: any) => item.is_active)
+  /**
+   * Filter social link by is_active
+   */
+  const SOCIAL_LINK_FILTER = social_link.filter((item: any) => item.is_active)
   return (
     <div className="bg-white p-3 rounded-xl flex justify-between items-center shadow-md w-full">
       <div className="flex flex-col w-full gap-y-2.5">
@@ -35,8 +38,8 @@ function ChatOption({ social_link, social_description }: any) {
         </h4>
 
         <div className="grid grid-cols-2 max-h-24 overflow-y-auto w-full gap-x-2.5 gap-y-1">
-          {!!social_link_filter?.length &&
-            social_link_filter.map((item: any, index: number) => (
+          {!!SOCIAL_LINK_FILTER?.length &&
+            SOCIAL_LINK_FILTER.map((item: any, index: number) => (
               <a
                 className="flex gap-1 items-center p-1 cursor-pointer"
                 key={index}
