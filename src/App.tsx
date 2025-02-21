@@ -220,7 +220,9 @@ function App() {
     /** localStorage.setItem(`client_id_<${PAGE_ID}>`, '6131478076934694') */
 
     /** CLIENT_ID từ localStorage thông qua PAGE_ID */
-    const STORED_CLIENT_ID = localStorage.getItem(`client_id_${STORED_PAGE_ID}`)
+    const STORED_CLIENT_ID =
+      localStorage.getItem(`client_id_${STORED_PAGE_ID}`) ||
+      'd5e8e54c214b49de87a8c860022a1478_1739985240563'
     /**
      * Nếu không có CLIENT_ID thì lưu CLIENT_ID vào localStorage
      */
