@@ -35,6 +35,7 @@ function App() {
    * @type {string} READ_CLIENT_INFO - URL API lấy thông tin khách hàng
    */
   const { READ_CLIENT_INFO } = useAPI()
+
   /** Trạng thái hiển thị Popup */
   const [is_show, setShow] = useState(false)
   /**
