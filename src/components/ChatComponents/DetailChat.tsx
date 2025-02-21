@@ -451,7 +451,7 @@ function DetailChat({
         )}
         {/* Hiển thị Phần chào mừng với AI */}
         {AI_STATUS &&
-          LIST_MESSAGE.length == 1 &&
+          LIST_MESSAGE.length == 0 &&
           user_id &&
           !LOADING_GLOBAL && (
             <div className="flex flex-col items-center gap-2.5">
@@ -461,8 +461,8 @@ function DetailChat({
               />
               <div className="flex flex-col items-center gap-1">
                 <h4 className="text-sm font-medium flex">
-                  {t('_hi')}
-                  {client_name}, {t('_im_your_virtual_assistant')}
+                  {client_name ? t('_hi') + client_name : t('_hi_')},{' '}
+                  {t('_im_your_virtual_assistant')}
                 </h4>
                 <div>
                   <h4 className="text-xs text-slate-500 text-center">

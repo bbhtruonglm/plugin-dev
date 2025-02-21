@@ -19,6 +19,29 @@ import { ReactComponent as ChatBubble } from '@/assets/chat-bubble-oval-left-ell
 import { ReactComponent as FileIcon } from '@/assets/document-text.svg'
 import { ReactComponent as Share } from '@/assets/external-link.svg'
 import VideoPlayer from './VideoPlayer'
+import { t } from 'i18next'
+
+/**
+ * Khai báo kiểu dữ liệu cho MessageComponent
+ */
+declare global {
+  /**
+   * Khai báo kiểu dữ liệu cho window
+   */
+  interface Window {
+    /**
+     * Khai báo kiểu dữ liệu cho ReactNativeWebView
+     */
+    ReactNativeWebView?: {
+      /**
+       *  Hàm postMessage
+       * @param message   - Tin nhắn
+       * @returns       - Trả về void
+       */
+      postMessage: (message: string) => void
+    }
+  }
+}
 
 const MessageComponent = React.memo(({ data }: MessageProps) => {
   /** Trạng thái AI_STATUS */
@@ -125,19 +148,22 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
                 <div className="flex flex-col gap-y-2">
                   <div
                     onClick={() => {
-                      // if (button?.type === 'web_url') {
-                      //   window.open(button?.url, '_blank')
-                      // }
+                      window.ReactNativeWebView?.postMessage(
+                        JSON.stringify({
+                          type: 'x',
+                          message: data?.message_text,
+                        })
+                      )
                     }}
                     className={`flex bg-slate-800 cursor-pointer text-yellow-200 hover:bg-slate-600 px-4 py-2 gap-1 rounded-lg justify-center items-center text-sm font-medium`}
                   >
-                    Thêm vào chat
+                    {t('add_to_chat')}
                     <ChatBubble className="w-4 h-4" />
                   </div>
                 </div>
               )}
             </div>
-            {data?.message_type !== 'client' && (
+            {/* {data?.message_type !== 'client' && (
               <div className="flex flex-col gap-y-1 text-xs">
                 <div className="flex gap-x-1">
                   <BookOpen className="w-4 h-4" />
@@ -164,7 +190,7 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
                   </a>
                 </div>
               </div>
-            )}
+            )} */}
           </div>
         )}
       {/* Hiển thị data dạng 1 ảnh */}

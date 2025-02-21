@@ -10,6 +10,7 @@ import { ReactComponent as ArrowSlate } from '@/assets/Icon_up_circle_slate.svg'
 import { ReactComponent as Close } from '@/assets/close.svg'
 import { InputProps } from '../type'
 import Upload from './Upload'
+import { render } from '@testing-library/react'
 import { set } from 'lodash'
 import { t } from 'i18next'
 import { useAPI } from '@/api/api'
@@ -284,6 +285,27 @@ function InputChat({
     'Chính sách hoàn tiền cho khách hàng',
     'Làm sao để hoàn tiền cho khách hàng',
   ]
+  /**
+   * Render page name
+   * @param page_name string
+   * @returns string
+   */
+  const renderPageName = (page_name?: string) => {
+    /**
+     * Nếu page_name tồn tại
+     */
+    if (page_name) {
+      /**
+       * Trả về page_name
+       */
+      return page_name
+    }
+    /**
+     * Trả về tên trang
+     */
+    return ''
+  }
+
   return (
     <div
       className={`absolute flex justify-center items-center bg-transparent w-full ${
@@ -352,7 +374,7 @@ function InputChat({
               ? 'Đã chọn 1 ảnh'
               : t('send_message_to_us') +
                 (AI_STATUS ? ' ' + t('virtual_assistant') + ' ' : ' ') +
-                page_name
+                renderPageName(page_name)
           }
           className="bg-transparent outline-none flex-grow placeholder:text-slate-500 text-sm font-medium py-1.5 px-1"
         />

@@ -1,7 +1,10 @@
+import { add } from 'lodash'
+
 export const en = {
   translation: {
     welcome: 'Hello,',
     _hi: 'Hi ',
+    _hi_: 'Hi',
     home: 'Home',
     message: 'Message',
     support: 'Support',
@@ -48,5 +51,6 @@ export const en = {
     asking_anything: 'Ask me anything',
 
     virtual_assistant: 'Virtual Assistant',
+    add_to_chat: 'Add to chat',
   },
 }

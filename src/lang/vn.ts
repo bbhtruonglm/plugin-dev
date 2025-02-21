@@ -17,6 +17,7 @@ export const vn = {
     /** Home */
     welcome: 'Xin chào,',
     _hi: 'Xin chào ',
+    _hi_: 'Xin chào',
     welcomeMessage: 'Chúng tôi có thể hỗ trợ được gì bạn?',
     sendUs: 'Gửi tin nhắn đến chúng tôi',
     we_are_online: 'Chúng tôi đang online',
@@ -49,5 +50,6 @@ export const vn = {
     asking_anything: 'Hãy hỏi tôi bất kỳ điều gì',
 
     virtual_assistant: 'Trợ lý ảo',
+    add_to_chat: 'Thêm vào chat',
   },
 }
