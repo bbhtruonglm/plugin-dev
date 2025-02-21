@@ -154,6 +154,13 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
                           message: data?.message_text,
                         })
                       )
+                      window.parent.postMessage(
+                        {
+                          content: data?.message_text,
+                          _type: 'WIDGET',
+                        },
+                        '*'
+                      )
                     }}
                     className={`flex bg-slate-800 cursor-pointer text-yellow-200 hover:bg-slate-600 px-4 py-2 gap-1 rounded-lg justify-center items-center text-sm font-medium`}
                   >
