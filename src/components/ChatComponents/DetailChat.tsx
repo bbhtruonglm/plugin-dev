@@ -116,6 +116,10 @@ function DetailChat({
   /**
    * State lưu trạng thái loading khi khởi tạo client
    */
+  const [is_generate_message, setIsGenerateMessage] = useState(true)
+  /**
+   * State lưu trạng thái loading khi khởi tạo client
+   */
   const CLIENT_ID = localStorage.getItem(`client_id_${PAGE_ID}`)
 
   /** Hàm gọi API để lấy tin nhắn */
@@ -449,6 +453,11 @@ function DetailChat({
             )}
           </div>
         )}
+        {AI_STATUS && invalid_page_id && (
+          <h4 className="flex justify-center font-semibold text-red-600">
+            {t('invalid_virtual_assistant')}
+          </h4>
+        )}
         {/* Hiển thị Phần chào mừng với AI */}
         {AI_STATUS &&
           LIST_MESSAGE.length == 0 &&
@@ -491,6 +500,13 @@ function DetailChat({
               />
             </div>
           ))}
+        <div>
+          {is_generate_message && user_id && (
+            <div className="flex p-2 rounded-full bg-slate-300 w-fit">
+              <LoadingDots />
+            </div>
+          )}
+        </div>
 
         {/* Thẻ div này đóng vai trò là nơi đánh dấu để cuộn tới
          * khi có tin nhắn mới thì sẽ cuộn xuống dưới cùng

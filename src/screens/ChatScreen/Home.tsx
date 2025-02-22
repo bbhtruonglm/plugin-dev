@@ -1,6 +1,7 @@
 import ChatOption from '@/components/HomeComponents/ChatOption'
 import { HomeProps } from './type'
 import SendMessage from '@/components/HomeComponents/SendMessage'
+import UnreadMessage from '@/components/HomeComponents/UnreadMessage'
 import { t } from 'i18next'
 
 function Home({
@@ -21,7 +22,7 @@ function Home({
   const { title, description } = source || {}
 
   return (
-    <div className="flex flex-col px-5 py-3 gap-y-4">
+    <div className="flex flex-col px-5 py-3 gap-y-5">
       {/* Greeting */}
       <div className="">
         <h1 className="text-2xl font-semibold">
@@ -35,6 +36,12 @@ function Home({
         </h2>
       </div>
 
+      {/* Send message */}
+      <UnreadMessage
+        onNavigate={onNavigate}
+        onError={onError}
+        client_name={client_name}
+      />
       {/* Send message */}
       <SendMessage
         onNavigate={onNavigate}

@@ -51,5 +51,8 @@ export const vn = {
 
     virtual_assistant: 'Trợ lý ảo',
     add_to_chat: 'Thêm vào chat',
+
+    invalid_virtual_assistant: 'Thông tin trợ lý ảo không đúng',
+    unread_message: 'Tin nhắn chưa đọc',
   },
 }
