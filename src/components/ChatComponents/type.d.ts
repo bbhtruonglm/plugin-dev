@@ -258,6 +258,19 @@ export interface MessageProps {
 
     /** Kích thước của các file đính kèm */
     attachment_size: any[]
+    /**
+     * Nguồn thông tin
+     */
+    llm_sources?: {
+      /**
+       * Link tài liệu
+       */
+      link?: string
+      /**
+       * Title tài liệu
+       */
+      title?: string
+    }[]
   }
 }
 /** ĐỊnh nghĩa cấu trúc dữ liệu audio */

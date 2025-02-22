@@ -288,7 +288,11 @@ const ChatApp = ({
   useEffect(() => {
     /** Khi có clientId hợp lệ và socket chưa được khởi tạo */
     /** Check từ global TH khởi tạo USER */
+    console.log(GLOBAL_CLIENT_ID, 'GLOBAL CLIENT IDĐ')
+    console.log(IS_INIT_CLIENT, 'IS_INIT_CLIENT')
     if (GLOBAL_CLIENT_ID && IS_INIT_CLIENT) {
+      closeSocketConnect(WS, setIsForceCloseSocket)
+
       /** Khởi tạo WebSocket */
       onSocketFromChatboxServer({
         page_id: PAGE_ID,

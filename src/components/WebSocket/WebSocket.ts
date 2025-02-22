@@ -230,6 +230,7 @@ export function closeSocketConnect(
   WS: React.MutableRefObject<WebSocket | null>,
   setIsForceCloseSocket: React.Dispatch<React.SetStateAction<boolean>>
 ) {
+  console.log('hehee')
   /** Gắn cờ ngăn chặn kết nối tự động mở lại */
   setIsForceCloseSocket(true)
   /** Đóng kết nối WebSocket hiện tại */

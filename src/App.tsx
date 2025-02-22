@@ -13,6 +13,7 @@ import {
   selectPageId,
   setCurrentHeight,
   setCurrentWidth,
+  setGlobalClientId,
   setGlobalPreviewUrl,
   setGlobalUnreadCount,
   setLatestMessageGlobal,
@@ -29,7 +30,6 @@ import { useEffect, useState } from 'react'
 
 import ChatApp from './pages/ChatApp'
 import WIDGET from 'bbh-chatbox-widget-js-sdk'
-import { current } from '@reduxjs/toolkit'
 import i18next from './i18n'
 
 function App() {
@@ -43,9 +43,37 @@ function App() {
    * @returns {Promise<Object>} - Dữ liệu khách hàng
    */
   const decodeClientData = async () => {
+    WIDGET.onEvent(async () => {
+      /** ghi lại thông tin khách hàng mới */
+      let client = await WIDGET.getClientInfo()
+      /**
+       * PAGE_ID mới
+       */
+      const N_PAGE_ID = client?.public_profile?.ai_agent_id
+      /**
+       * ID khách hàng mới
+       */
+      const N_CLIENT_ID =
+        client?.public_profile?.page_id +
+        '__' +
+        client?.public_profile?.fb_client_id
+      /**
+       * Lưu lại trong local_Storage
+       */
+      localStorage.setItem(`client_id_${N_PAGE_ID}`, N_CLIENT_ID)
+      dispatch(setGlobalClientId(N_CLIENT_ID))
+      dispatch(
+        setUserInfo({
+          user_name: '',
+          user_email: '',
+          user_phone: '',
+          client_id: N_CLIENT_ID,
+        })
+      )
+      console.log(client, 'client')
+    })
     /** khai báo biến lưu trữ dữ liệu khách hàng + init dữ liệu lần đầu */
     let client = await WIDGET.getClientInfo()
-
     return client
   }
 
@@ -93,6 +121,7 @@ function App() {
     const { user_name, user_email, user_phone, client_id, from, action } =
       PAYLOAD
     console.log('DATA::', PAYLOAD)
+
     /** Kiểm tra thông tin từ app cha */
     if (from === 'parent-app') {
       console.log(
@@ -185,7 +214,17 @@ function App() {
 
         /** Sử dụng await để lấy dữ liệu CLIENT_INFO */
         const CLIENT_INFO = await decodeClientData()
+
         console.log(CLIENT_INFO, 'CLIENT_INFO')
+        /**
+         * New CLIENT ID
+         */
+        const NEW_CLIENT_ID =
+          CLIENT_INFO?.public_profile?.page_id +
+          '__' +
+          CLIENT_INFO?.public_profile?.fb_client_id
+        console.log(NEW_CLIENT_ID, 'newclientid')
+        dispatch(setGlobalClientId(NEW_CLIENT_ID))
 
         /** Dữ liệu khách hàng */
         const DATA_CLIENT = {
