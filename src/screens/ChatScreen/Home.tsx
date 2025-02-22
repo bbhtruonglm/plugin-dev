@@ -2,7 +2,9 @@ import ChatOption from '@/components/HomeComponents/ChatOption'
 import { HomeProps } from './type'
 import SendMessage from '@/components/HomeComponents/SendMessage'
 import UnreadMessage from '@/components/HomeComponents/UnreadMessage'
+import { selectLatestMessage } from '@/stores/appSlice'
 import { t } from 'i18next'
+import { useSelector } from 'react-redux'
 
 function Home({
   onNavigate,
@@ -21,6 +23,11 @@ function Home({
    */
   const { title, description } = source || {}
 
+  /**
+   * Tin nhắn mới nhất
+   */
+  const LATEST_MESSAGE = useSelector(selectLatestMessage)
+
   return (
     <div className="flex flex-col px-5 py-3 gap-y-5">
       {/* Greeting */}
@@ -37,12 +44,16 @@ function Home({
       </div>
 
       {/* Send message */}
-      <UnreadMessage
-        onNavigate={onNavigate}
-        onError={onError}
-        client_name={client_name}
-      />
+      {LATEST_MESSAGE && (
+        <UnreadMessage
+          onNavigate={onNavigate}
+          onError={onError}
+          client_name={client_name}
+        />
+      )}
+
       {/* Send message */}
+
       <SendMessage
         onNavigate={onNavigate}
         onError={onError}

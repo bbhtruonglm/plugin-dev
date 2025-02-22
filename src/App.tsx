@@ -19,6 +19,7 @@ import {
   setListMessage,
   setNoViewport,
   setPageId,
+  setPageInfoAI,
   setStatusIsAI,
   setStatusPopup,
   setUserInfo,
@@ -27,9 +28,27 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useEffect, useState } from 'react'
 
 import ChatApp from './pages/ChatApp'
+import WIDGET from 'bbh-chatbox-widget-js-sdk'
+import { current } from '@reduxjs/toolkit'
 import i18next from './i18n'
 
 function App() {
+  /** [optional] kích hoạt chế độ debug */
+  WIDGET.debugOn()
+
+  /** nạp secret_key của widget */
+  WIDGET.load('00de4446885a43c5b58ef16dba0f5058')
+  /**
+   *  Hàm giải mã dữ liệu khách hàng
+   * @returns {Promise<Object>} - Dữ liệu khách hàng
+   */
+  const decodeClientData = async () => {
+    /** khai báo biến lưu trữ dữ liệu khách hàng + init dữ liệu lần đầu */
+    let client = await WIDGET.getClientInfo()
+
+    return client
+  }
+
   /**
    * @type {Object} API - API lấy thông tin khách hàng
    * @type {string} READ_CLIENT_INFO - URL API lấy thông tin khách hàng
@@ -129,133 +148,143 @@ function App() {
   }, [])
 
   useEffect(() => {
-    /** @type {string} Lấy url của page cha */
-    const FULL_SRC = window.location.href
-
     /**
-     * Chuyển từ chuỗi URL thành một đối tượng URL.
-     * @param {string} FULL_SRC - Chuỗi chứa URL đầy đủ
-     * @returns {URL} Đối tượng URL được tạo ra từ chuỗi đầu vào
+     * Hàm lấy dữ liệu
      */
-    const URL_PARENT = new URL(FULL_SRC)
-    /**
-     * Lấy các tham số từ URL
-     */
-    const URL_PARAMS = new URLSearchParams(window.location.search)
+    const fetchData = async () => {
+      try {
+        /** @type {string} Lấy url của page cha */
+        const FULL_SRC = window.location.href
+        /** @type {URL} URL_PARENT - URL của page cha */
+        const URL_PARENT = new URL(FULL_SRC)
+        /** @type {URLSearchParams} URL_PARAMS - Tham số của URL */
+        const URL_PARAMS = new URLSearchParams(window.location.search)
 
-    console.log('URL_PARENT::', URL_PARENT)
-
-    /**
-     * @type {boolean} IS_AI - Trạng thái AI
-     */
-    const IS_AI = URL_PARENT?.pathname.includes('ai-assistant')
-    // const IS_AI = URL_PARAMS.has('is_ai')
-    // const IS_AI = URL_PARAMS.get('is_ai') === 'true'
-
-    /**
-     * Lưu trạng thái AI vào store
-     */
-    dispatch(setStatusIsAI(IS_AI))
-    // dispatch(setStatusIsAI(true))
-    /**
-     * Lưu trạng thái AI vào state Khi Trạng thái AI thì sẽ auto mở popup
-     */
-    // setShow(true)
-    setShow(IS_AI)
-    /**
-     * Lấy giá trị locale từ URL
-     * Mặc định là 'vn' nếu không có locale */
-    const LOCALE = URL_PARAMS.get('locale') || 'vn'
-
-    /** Thay đổi ngôn ngữ của SDK dựa trên locale từ URL */
-    i18next
-      .changeLanguage(LOCALE)
-      .then(() => {
+        console.log('URL_PARENT::', URL_PARENT)
+        /**
+         * Kiểm tra xem có phải AI không
+         */
+        const IS_AI = URL_PARENT?.pathname.includes('ai-assistant')
+        /**
+         * Lưu trạng thái AI vào store
+         */
+        dispatch(setStatusIsAI(IS_AI))
+        /**
+         * Cập nhật trạng thái hiển thị popup
+         */
+        setShow(IS_AI)
+        /**
+         * Lấy ngôn ngữ từ URL
+         */
+        const LOCALE = URL_PARAMS.get('locale') || 'vn'
+        /**
+         * Thay đổi ngôn ngữ
+         */
+        await i18next.changeLanguage(LOCALE)
         console.log('Language changed to::', LOCALE)
-      })
-      .catch((error) => {
-        console.error('Error changing language:', error)
-      })
 
-    /** Lấy page_id */
-    const STORED_PAGE_ID =
-      URL_PARENT.searchParams.get('page_id') || '388339911461476'
-    // ||
-    // 'd5e8e54c214b49de87a8c860022a1478_1739985240563'
-    // ||
-    // '7e0a99983ec442dca06e38b5694a7ee1_1739722682228'
-    /** lưu page_id vào store */
-    /** Example @value :bf425487afbe403895116dd9b585537b || 2204445623215564 || 100179064765476 || 388339911461476 || 5c290e88a5304e8e84ce8a8804b764e4 */
-    dispatch(setPageId(STORED_PAGE_ID || ''))
+        /** Sử dụng await để lấy dữ liệu CLIENT_INFO */
+        const CLIENT_INFO = await decodeClientData()
+        console.log(CLIENT_INFO, 'CLIENT_INFO')
 
-    /**
-     * @type {string} WIDTH_PARENT - Chiều rộng của page cha từ URL
-     */
-    const WIDTH_PARENT = URL_PARENT.searchParams.get('parentWidth')
-    /**
-     * @type {string} HEIGHT_PARENT - Chiều cao của page cha từ URL
-     */
-    const HEIGHT_PARENT = URL_PARENT.searchParams.get('parentHeight')
-    /**
-     * @type {string} HAS_VIEWPORT - Trạng thái có viewport hay không
-     */
-    const HAS_VIEWPORT = URL_PARENT.searchParams.get('has_viewport')
+        /** Dữ liệu khách hàng */
+        const DATA_CLIENT = {
+          ai_agent_id: CLIENT_INFO?.public_profile?.ai_agent_id || '',
+          page_id: CLIENT_INFO?.public_profile?.page_id || '',
+          fb_client_id: CLIENT_INFO?.public_profile?.fb_client_id || '',
+          page_name: CLIENT_INFO?.public_profile?.page_name || '',
+          current_staff_name:
+            CLIENT_INFO?.public_profile?.current_staff_name || '',
+          is_active_ai_agent:
+            CLIENT_INFO?.public_profile?.is_active_ai_agent || false,
+        }
 
-    /**
-     * Nếu không có viewport thì set lại viewport
-     */
-    if (HAS_VIEWPORT === 'false') {
-      /** Nếu không có viewport thì set lại viewport */
-      dispatch(setNoViewport(true))
+        /** Lưu thông tin khách hàng vào store */
+        dispatch(setPageInfoAI(DATA_CLIENT))
+
+        /** Lấy page_id */
+        const STORED_PAGE_ID =
+          URL_PARENT.searchParams.get('page_id') ||
+          CLIENT_INFO?.public_profile?.ai_agent_id ||
+          ''
+
+        /**
+         * Lưu page_id vào store
+         */
+        dispatch(setPageId(STORED_PAGE_ID || ''))
+        /**
+         * Cập nhật thông tin kích thước của parent
+         */
+        /** 1. Width của parent */
+        const WIDTH_PARENT = URL_PARENT.searchParams.get('parentWidth')
+        /** 2. Height của parent */
+        const HEIGHT_PARENT = URL_PARENT.searchParams.get('parentHeight')
+        /** 3. Kiểm tra có viewport không */
+        const HAS_VIEWPORT = URL_PARENT.searchParams.get('has_viewport')
+        /**
+         * Nếu không có viewport thì setNoViewport(true)
+         */
+        if (HAS_VIEWPORT === 'false') {
+          dispatch(setNoViewport(true))
+        }
+        /**
+         * Nếu có WIDTH_PARENT thì cập nhật width
+         */
+        if (WIDTH_PARENT) {
+          dispatch(setCurrentWidth(Number(WIDTH_PARENT)))
+        }
+        /**
+         * Nếu có HEIGHT_PARENT thì cập nhật height
+         */
+        if (HEIGHT_PARENT) {
+          dispatch(setCurrentHeight(Number(HEIGHT_PARENT)))
+        }
+        /**
+         * Lấy client_id từ localStorage
+         */
+        const STORED_CLIENT_ID = localStorage.getItem(
+          `client_id_${STORED_PAGE_ID}`
+        )
+        /**
+         * Lấy dữ liệu khách hàng
+         */
+        fetchClientData(STORED_CLIENT_ID, STORED_PAGE_ID)
+        /**
+         * Lấy tin nhắn mới nhất
+         */
+        const STORED_MESSAGE_LATEST = parsedString(
+          localStorage.getItem(
+            `latest_message__${STORED_PAGE_ID}__${STORED_CLIENT_ID}`
+          ) || ''
+        )
+        /**
+         * Lấy số tin nhắn chưa đọc
+         */
+        const STORED_UNREAD_COUNT = Number(
+          localStorage.getItem(
+            `count_unread__${STORED_PAGE_ID}__${STORED_CLIENT_ID}`
+          )
+        )
+        /** Lưu trạng thái hiển thị popup */
+
+        localStorage.setItem(
+          `status_quick_chat__${STORED_PAGE_ID}`,
+          'show_quick_chat'
+        )
+        /**
+         * Lưu tin nhắn mới nhất vào store
+         */
+        dispatch(setLatestMessageGlobal(STORED_MESSAGE_LATEST))
+        /**
+         * Lưu số tin nhắn chưa đọc vào store
+         */
+        dispatch(setGlobalUnreadCount(STORED_UNREAD_COUNT || 0))
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      }
     }
-    /**
-     * Nếu có viewport thì set lại viewport
-     */
-    if (WIDTH_PARENT) {
-      /** nếu có truyền width thì lưu vào store */
-      dispatch(setCurrentWidth(Number(WIDTH_PARENT)))
-    }
-    /**
-     * Nếu có viewport thì set lại viewport
-     */
-    if (HEIGHT_PARENT) {
-      /** nếu có truyền height thì lưu vào store */
-      dispatch(setCurrentHeight(Number(HEIGHT_PARENT)))
-    }
 
-    /** localStorage.setItem(`client_id_<${PAGE_ID}>`, '6131478076934694') */
-
-    /** CLIENT_ID từ localStorage thông qua PAGE_ID */
-    const STORED_CLIENT_ID = localStorage.getItem(`client_id_${STORED_PAGE_ID}`)
-    /**
-     * Nếu không có CLIENT_ID thì lưu CLIENT_ID vào localStorage
-     */
-    fetchClientData(STORED_CLIENT_ID, STORED_PAGE_ID)
-
-    /** Lấy từ localStorage một tin nhắn chưa đọc */
-    const STORED_MESSAGE_LATEST = parsedString(
-      localStorage.getItem(
-        `latest_message__${STORED_PAGE_ID}__${STORED_CLIENT_ID}`
-      ) || ''
-    )
-
-    /** Lấy số lượng tin nhắn chưa đọc */
-    const STORED_UNREAD_COUNT = Number(
-      localStorage.getItem(
-        `count_unread__${STORED_PAGE_ID}__${STORED_CLIENT_ID}`
-      )
-    )
-
-    /** Bật show QUICK_CHAT lên */
-    localStorage.setItem(
-      `status_quick_chat__${STORED_PAGE_ID}`,
-      'show_quick_chat'
-    )
-
-    /** Lưu tin nhắn mới nhất từ localStorage vào Store */
-    dispatch(setLatestMessageGlobal(STORED_MESSAGE_LATEST))
-    /** Lưu số tin nhắn chưa đọc từ localStorage vào Store */
-    dispatch(setGlobalUnreadCount(STORED_UNREAD_COUNT || 0))
+    fetchData()
   }, [])
 
   /** Function tắt bật của popup dạng PC */
@@ -281,7 +310,7 @@ function App() {
    */
   const fetchClientData = async (
     client_id: string | null,
-    page_id: String | null
+    page_id: string | null
   ) => {
     /** Nếu không có client_id hoặc page_id thì setClientName(null) */
     if (!client_id || !page_id) {

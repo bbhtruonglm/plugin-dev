@@ -35,6 +35,7 @@ import {
   setListMessage,
   setListUnreadMessage,
   setLoadingGlobal,
+  setStaffListStore,
   setStatusIsInit,
 } from '@/stores/appSlice'
 import { useContext, useEffect, useRef, useState } from 'react'
@@ -417,6 +418,7 @@ const ChatApp = ({
 
     /** Lưu danh sách nhân viên */
     setStaffList(RES?.data?.staffs)
+    dispatch(setStaffListStore(RES?.data?.staffs))
   }
 
   /** Ngăn kết nối mở lại */

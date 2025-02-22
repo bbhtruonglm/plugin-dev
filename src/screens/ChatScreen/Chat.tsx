@@ -93,7 +93,7 @@ function ChatScreen({
       } else {
       }
     }
-  }, [])
+  }, [PAGE_ID])
   /**
    * Hàm lấy dữ liệu khách hàng
    */
@@ -187,7 +187,7 @@ function ChatScreen({
     /**
      * Nếu là case AI_STATUS và chưa có CLIENT_ID
      */
-    if (AI_STATUS && !CLIENT_ID) {
+    if (AI_STATUS && !CLIENT_ID && PAGE_ID) {
       /**
        * Gọi hàm khởi tạo client id
        */
@@ -203,7 +203,7 @@ function ChatScreen({
       }
       initGetClientId(PARAMS)
     }
-  }, [AI_STATUS, CLIENT_ID])
+  }, [AI_STATUS, CLIENT_ID, PAGE_ID])
 
   useEffect(() => {
     console.log(USER_INFO, 'USER_INFO')

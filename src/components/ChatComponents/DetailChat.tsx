@@ -7,6 +7,7 @@ import {
   selectListMessage,
   selectLoadingGlobal,
   selectPageId,
+  selectPageInfoAI,
   selectStatusAI,
   selectStatusPopup,
   selectStatusViewport,
@@ -73,6 +74,11 @@ function DetailChat({
 
   /** Loading global */
   const LOADING_GLOBAL = useSelector(selectLoadingGlobal)
+
+  /**
+   * Data client info
+   */
+  const CLIENT_INFO = useSelector(selectPageInfoAI)
 
   /**
    * Trạng thái Viewport
@@ -470,8 +476,10 @@ function DetailChat({
               />
               <div className="flex flex-col items-center gap-1">
                 <h4 className="text-sm font-medium flex">
-                  {client_name ? t('_hi') + client_name : t('_hi_')},{' '}
-                  {t('_im_your_virtual_assistant')}
+                  {CLIENT_INFO?.current_staff_name
+                    ? t('_hi') + CLIENT_INFO?.current_staff_name
+                    : t('_hi_')}
+                  , {t('_im_your_virtual_assistant')}
                 </h4>
                 <div>
                   <h4 className="text-xs text-slate-500 text-center">
@@ -500,13 +508,13 @@ function DetailChat({
               />
             </div>
           ))}
-        <div>
+        {/* <div>
           {is_generate_message && user_id && (
             <div className="flex p-2 rounded-full bg-slate-300 w-fit">
               <LoadingDots />
             </div>
           )}
-        </div>
+        </div> */}
 
         {/* Thẻ div này đóng vai trò là nơi đánh dấu để cuộn tới
          * khi có tin nhắn mới thì sẽ cuộn xuống dưới cùng

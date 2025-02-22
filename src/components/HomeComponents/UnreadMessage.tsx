@@ -9,12 +9,13 @@ import {
   selectGlobalUnreadCount,
   selectLatestMessage,
   selectPageId,
+  selectStaffList,
 } from '@/stores/appSlice'
+import { t, use } from 'i18next'
 
 import { ReactComponent as Arrow } from '@/assets/chevron-right.svg'
 import { EmployeeList } from '@/pages/type'
 import TimeAgo from '../TimeAgo'
-import { t } from 'i18next'
 import { useSelector } from 'react-redux'
 import { useState } from 'react'
 
@@ -29,13 +30,15 @@ function UnreadMessage({ onNavigate, onError }: SendMessageProps) {
    */
   const LATEST_MESSAGE = useSelector(selectLatestMessage)
 
-  /** State Khai báo thông tin nhân viên */
-  const [staff_list, setStaffList] = useState<EmployeeList>({})
-
+  /**
+   * Danh sách nhân viên
+   */
+  const STAFF_LIST = useSelector(selectStaffList)
   /**
    * Lấy client_id từ localStorage
    */
   const CLIENT_STORED = localStorage.getItem(`client_id_${PAGE_ID}`)
+  console.log(LATEST_MESSAGE)
 
   return (
     <div
@@ -114,7 +117,7 @@ function UnreadMessage({ onNavigate, onError }: SendMessageProps) {
                         {/* Hiển thị tên nhân viên */}
                         <span className="">
                           {renderStaffName(
-                            staff_list,
+                            STAFF_LIST as EmployeeList,
                             LATEST_MESSAGE?.message_metadata
                           )}
                         </span>

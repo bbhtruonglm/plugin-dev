@@ -1,5 +1,6 @@
 import {
   selectPageId,
+  selectPageInfoAI,
   selectStatusAI,
   selectStatusPopup,
 } from '@/stores/appSlice'
@@ -10,8 +11,6 @@ import { ReactComponent as ArrowSlate } from '@/assets/Icon_up_circle_slate.svg'
 import { ReactComponent as Close } from '@/assets/close.svg'
 import { InputProps } from '../type'
 import Upload from './Upload'
-import { render } from '@testing-library/react'
-import { set } from 'lodash'
 import { t } from 'i18next'
 import { useAPI } from '@/api/api'
 import { useSelector } from 'react-redux'
@@ -64,6 +63,10 @@ function InputChat({
    * Lấy trạng thái của AI
    */
   const AI_STATUS = useSelector(selectStatusAI)
+  /**
+   * Data client info
+   */
+  const CLIENT_INFO = useSelector(selectPageInfoAI)
 
   useEffect(() => {
     /**
@@ -267,12 +270,12 @@ function InputChat({
       /**
        * Set data suggest
        */
-      setDataSuggest(MOCK_SUGGEST[RANDOM_INDEX])
+      // setDataSuggest(MOCK_SUGGEST[RANDOM_INDEX])
       /**
        * Delay 10s để hiển thị suggest
        */
       setTimeout(() => {
-        setIsAiSuggest(true)
+        // setIsAiSuggest(true)
       }, 10000)
     }
   }, [is_ai_suggest, value])
@@ -375,7 +378,9 @@ function InputChat({
                 ? 'Đã chọn 1 ảnh'
                 : t('send_message_to_us') +
                   (AI_STATUS ? ' ' + t('virtual_assistant') + ' ' : ' ') +
-                  renderPageName(page_name)
+                  (renderPageName(page_name)
+                    ? renderPageName(page_name)
+                    : CLIENT_INFO?.page_name)
             }
             className="bg-transparent outline-none flex-grow placeholder:text-slate-500 text-sm font-medium py-1.5 px-1"
           />
