@@ -8,12 +8,14 @@ import {
   selectLoadingGlobal,
   selectPageId,
   selectPageInfoAI,
+  selectRefreshData,
   selectStatusAI,
   selectStatusPopup,
   selectStatusViewport,
   setGlobalUnreadCount,
   setListMessage,
   setLoadingGlobal,
+  setRefreshData,
 } from '@/stores/appSlice'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -56,9 +58,64 @@ function DetailChat({
   const { READ_MESSAGE_API, SEND_MESSAGE_API } = useAPI()
   /** hàm dispatch đến store */
   const dispatch = useDispatch()
+  /**
+   * THông tin Refresh Data
+   */
+  const REFRESH_DATA = useSelector(selectRefreshData)
 
   /** ID trang được lấy từ store */
   const PAGE_ID = useSelector(selectPageId)
+  /**
+   * CLIENT_ID
+   */
+  const CLIENT_ID = localStorage.getItem(`client_id_${PAGE_ID}`)
+  /**
+   * State loading khi gửi tin nhắn
+   */
+  const [skip, setSkip] = useState(0)
+  /** Dùng ref để giữ giá trị của skip */
+  const SKIP_REF = useRef(0)
+
+  useEffect(() => {
+    console.log('refresh detail chat')
+
+    console.log(CLIENT_ID, 'CLIENT_ID')
+    /**
+     * Kiểm tra REFRESH_DATA và !CLIENT_ID
+     */
+    if (REFRESH_DATA && !CLIENT_ID) {
+      /**
+       * Set lại các trạng thái của component
+       */
+      /**
+       * có data
+       */
+      setHasMore(true)
+      console.log(REFRESH_DATA, 'fetch data no CLIENT')
+      /**
+       * Set lại skip
+       */
+      SKIP_REF.current = 0
+      /**
+       * Set lại skip
+       */
+      setSkip(0)
+    }
+    /**
+     * Đoạn này cần sửa lại
+     */
+    if (REFRESH_DATA && CLIENT_ID) {
+      console.log('fetch data has CLIENT')
+      /**
+       * Fetch data với client id truyền vào
+       */
+      fetchMessage(CLIENT_ID)
+      /**
+       * Set lại trạng thái REFRESH_DATA
+       */
+      dispatch(setRefreshData(false))
+    }
+  }, [REFRESH_DATA, CLIENT_ID])
 
   /** Trạng thái đóng mở popup */
   const SHOW_POPUP = useSelector(selectStatusPopup)
@@ -94,10 +151,6 @@ function DetailChat({
   /**
    * State loading khi gửi tin nhắn
    */
-  const [skip, setSkip] = useState(0)
-  /**
-   * State loading khi gửi tin nhắn
-   */
   const [loading, setLoading] = useState(false)
   /**
    * State loading khi gửi tin nhắn
@@ -123,13 +176,10 @@ function DetailChat({
    * State lưu trạng thái loading khi khởi tạo client
    */
   const [is_generate_message, setIsGenerateMessage] = useState(true)
-  /**
-   * State lưu trạng thái loading khi khởi tạo client
-   */
-  const CLIENT_ID = localStorage.getItem(`client_id_${PAGE_ID}`)
 
   /** Hàm gọi API để lấy tin nhắn */
-  const fetchMessage = async () => {
+  const fetchMessage = async (client_iddd?: string) => {
+    console.log(client_iddd, 'hahahah')
     /** Đang loading hoặc không có thêm bản ghi sẽ không fetch data nữa */
     if (loading_more || !has_more) return
     /** Lấy vị trí scroll hiện tại, nếu k có thì return */
@@ -151,9 +201,11 @@ function DetailChat({
       /** setup params */
       const PARAMS = {
         page_id: PAGE_ID,
-        client_id: user_id,
+        client_id: client_iddd || user_id,
         limit: LIMIT.toString(),
-        skip: skip.toString(),
+        // skip: skip.toString(),
+        /** Lấy giá trị từ ref */
+        skip: SKIP_REF.current.toString(),
       }
 
       /** Thêm params vào URL */
@@ -170,6 +222,9 @@ function DetailChat({
        * Nếu data trả về = LIMIT thì còn tin nhắn cũ
        */
       if (RESULT.data.length === LIMIT) {
+        /** Cập nhật ref mà không gây re-render */
+        SKIP_REF.current += RESULT.data.length
+
         /** set call api se skip bn ban ghi */
         setSkip(skip + RESULT.data.length)
       }

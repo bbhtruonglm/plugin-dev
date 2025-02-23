@@ -26,6 +26,7 @@ import {
   selectLatestMessage,
   selectListUnreadMessage,
   selectPageId,
+  selectRefreshData,
   selectStatusAI,
   selectStatusIsInit,
   selectStatusPopup,
@@ -35,6 +36,7 @@ import {
   setListMessage,
   setListUnreadMessage,
   setLoadingGlobal,
+  setRefreshData,
   setStaffListStore,
   setStatusIsInit,
 } from '@/stores/appSlice'
@@ -102,6 +104,20 @@ const ChatApp = ({
   const TAB_REF = useRef(current_tab)
   /** Tạo ref để giữ giá trị của is_show */
   const IS_SHOW_REF = useRef(show)
+
+  /**
+   * THông tin Refresh Data
+   */
+  const REFRESH_DATA = useSelector(selectRefreshData)
+
+  useEffect(() => {
+    if (REFRESH_DATA) {
+      /**
+       * Tắt web socket
+       */
+      closeSocketConnect(WS, setIsForceCloseSocket)
+    }
+  }, [REFRESH_DATA])
 
   useEffect(() => {
     /** Cập nhật giá trị mới nhất của tab trong ref mỗi khi tab thay đổi */
@@ -262,6 +278,7 @@ const ChatApp = ({
     if (!STORED_CLIENT_ID) {
       /** Nếu không có client_id, khởi tạo lại hoặc đặt cờ khởi tạo socket */
     } else {
+      // if (!AI_STATUS) {
       /** Nếu có client_id hợp lệ, cập nhật vào state */
       onSocketFromChatboxServer({
         page_id: PAGE_ID,
@@ -277,6 +294,7 @@ const ChatApp = ({
         SOCKET_API,
         is_force_close_socket,
       })
+      // }
     }
 
     /** Gọi API để lấy dữ liệu trang (luôn gọi mỗi khi PAGE_ID thay đổi) */
@@ -290,9 +308,8 @@ const ChatApp = ({
     /** Check từ global TH khởi tạo USER */
     console.log(GLOBAL_CLIENT_ID, 'GLOBAL CLIENT IDĐ')
     console.log(IS_INIT_CLIENT, 'IS_INIT_CLIENT')
+    // closeSocketConnect(WS, setIsForceCloseSocket)
     if (GLOBAL_CLIENT_ID && IS_INIT_CLIENT) {
-      closeSocketConnect(WS, setIsForceCloseSocket)
-
       /** Khởi tạo WebSocket */
       onSocketFromChatboxServer({
         page_id: PAGE_ID,

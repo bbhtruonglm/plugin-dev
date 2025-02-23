@@ -28,6 +28,7 @@ const INITIAL_STATE: AppState = {
   no_viewport: false,
   staff_list: {},
   page_info_ai: {},
+  refresh_data: false,
 }
 
 export const appSlice = createSlice({
@@ -129,6 +130,12 @@ export const appSlice = createSlice({
     setPageInfoAI: (state, action: PayloadAction<AppState['page_info_ai']>) => {
       state.page_info_ai = action.payload
     },
+    /**
+     * set dữ liệu refresh
+     */
+    setRefreshData: (state, action: PayloadAction<boolean>) => {
+      state.refresh_data = action.payload
+    },
   },
 })
 
@@ -152,6 +159,7 @@ export const {
   setNoViewport,
   setStaffListStore,
   setPageInfoAI,
+  setRefreshData,
 } = appSlice.actions
 
 /** chọn đến page id */
@@ -206,5 +214,9 @@ export const selectStaffList = (state: RootState) => state.app.staff_list
  * Page AI
  */
 export const selectPageInfoAI = (state: RootState) => state.app.page_info_ai
+/**
+ * Refresh Data
+ */
+export const selectRefreshData = (state: RootState) => state.app.refresh_data
 
 export default appSlice.reducer

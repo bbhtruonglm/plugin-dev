@@ -21,6 +21,7 @@ import {
   setNoViewport,
   setPageId,
   setPageInfoAI,
+  setRefreshData,
   setStatusIsAI,
   setStatusPopup,
   setUserInfo,
@@ -47,6 +48,19 @@ function App() {
       /** ghi lại thông tin khách hàng mới */
       let client = await WIDGET.getClientInfo()
       /**
+       * dispatch để reset data
+       */
+      dispatch(setRefreshData(true))
+      /**
+       * Xoá danh sách tin nhắn
+       */
+      dispatch(setListMessage([]))
+      /**
+       * Xoá tin nhắn mới nhất
+       */
+      dispatch(setLatestMessageGlobal(null))
+
+      /**
        * PAGE_ID mới
        */
       const N_PAGE_ID = client?.public_profile?.ai_agent_id
@@ -57,11 +71,17 @@ function App() {
         client?.public_profile?.page_id +
         '__' +
         client?.public_profile?.fb_client_id
+
       /**
-       * Lưu lại trong local_Storage
+       * Reset lại client_id
        */
-      localStorage.setItem(`client_id_${N_PAGE_ID}`, N_CLIENT_ID)
-      dispatch(setGlobalClientId(N_CLIENT_ID))
+      localStorage.setItem(`client_id_${N_PAGE_ID}`, '')
+
+      console.log(N_CLIENT_ID, 'N_CLIENT_ID')
+      /**
+       * Gửi tin nhắn Cập nhật lại client_id
+       */
+
       dispatch(
         setUserInfo({
           user_name: '',
@@ -72,6 +92,12 @@ function App() {
       )
       console.log(client, 'client')
     })
+  }
+  /**
+   * Hàm giải mã dữ liệu khách hàng
+   * @returns {Promise<Object>} - Dữ liệu khách hàng
+   */
+  const decodeInitClientData = async () => {
     /** khai báo biến lưu trữ dữ liệu khách hàng + init dữ liệu lần đầu */
     let client = await WIDGET.getClientInfo()
     return client
@@ -168,11 +194,16 @@ function App() {
   useEffect(() => {
     /** Thêm event listener cho thông điệp */
     window.addEventListener('message', handleMessage)
+    /**
+     * Hàm giải mã dữ liệu khách hàng
+     */
+    decodeClientData()
 
     /** Hàm cleanup */
     return () => {
       /** Xóa event listener */
       window.removeEventListener('message', handleMessage)
+      decodeClientData()
     }
   }, [])
 
@@ -212,8 +243,10 @@ function App() {
         await i18next.changeLanguage(LOCALE)
         console.log('Language changed to::', LOCALE)
 
+        // await decodeClientData()
+
         /** Sử dụng await để lấy dữ liệu CLIENT_INFO */
-        const CLIENT_INFO = await decodeClientData()
+        const CLIENT_INFO = await decodeInitClientData()
 
         console.log(CLIENT_INFO, 'CLIENT_INFO')
         /**
@@ -224,7 +257,11 @@ function App() {
           '__' +
           CLIENT_INFO?.public_profile?.fb_client_id
         console.log(NEW_CLIENT_ID, 'newclientid')
-        dispatch(setGlobalClientId(NEW_CLIENT_ID))
+        // localStorage.setItem(
+        //   `client_id_${CLIENT_INFO?.public_profile?.ai_agent_id}`,
+        //   NEW_CLIENT_ID
+        // )
+        // dispatch(setGlobalClientId(NEW_CLIENT_ID))
 
         /** Dữ liệu khách hàng */
         const DATA_CLIENT = {
@@ -240,6 +277,17 @@ function App() {
 
         /** Lưu thông tin khách hàng vào store */
         dispatch(setPageInfoAI(DATA_CLIENT))
+        /**
+         * Cập nhạt thông tin user nếu chưa đăng ký
+         */
+        dispatch(
+          setUserInfo({
+            user_name: '',
+            user_email: '',
+            user_phone: '',
+            client_id: NEW_CLIENT_ID,
+          })
+        )
 
         /** Lấy page_id */
         const STORED_PAGE_ID =

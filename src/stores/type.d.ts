@@ -97,6 +97,10 @@ export interface AppState {
      */
     is_active_ai_agent?: boolean
   }
+  /**
+   * refresh data
+   */
+  refresh_data?: boolean
 }
 /** Định nghĩa kiểu dữ liệu cho danh sách nhân viên */
 interface EmployeeList {
