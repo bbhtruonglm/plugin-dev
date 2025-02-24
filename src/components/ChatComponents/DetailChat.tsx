@@ -57,6 +57,11 @@ function DetailChat({
   const MESSAGE_CONTAINER_REF = useRef<HTMLDivElement | null>(null)
   /** lấy Api từ hooks api */
   const { READ_MESSAGE_API, SEND_MESSAGE_API } = useAPI()
+  /**
+   * Global client ID
+   */
+  const CLIENT_ID_GLOBAL = useSelector(selectGlobalClientId)
+
   /** hàm dispatch đến store */
   const dispatch = useDispatch()
   /**
@@ -72,10 +77,6 @@ function DetailChat({
   const CLIENT_ID = localStorage.getItem(`client_id_${PAGE_ID}`)
 
   /**
-   * STORE CLIENT_ID
-   */
-  const STORED_CLIENT_ID = useSelector(selectGlobalClientId)
-  /**
    * State loading khi gửi tin nhắn
    */
   const [skip, setSkip] = useState(0)
@@ -83,13 +84,13 @@ function DetailChat({
   const SKIP_REF = useRef(0)
 
   useEffect(() => {
-    console.log('refresh detail chat')
+    console.log(REFRESH_DATA, 'refresh detail chat')
 
-    console.log(CLIENT_ID, 'CLIENT_ID')
+    console.log(CLIENT_ID_GLOBAL, 'CLIENT_ID_GLOBAL')
     /**
      * Kiểm tra REFRESH_DATA và !CLIENT_ID
      */
-    if (REFRESH_DATA && !CLIENT_ID) {
+    if (REFRESH_DATA && !CLIENT_ID_GLOBAL) {
       /**
        * Set lại các trạng thái của component
        */
@@ -110,18 +111,18 @@ function DetailChat({
     /**
      * Đoạn này cần sửa lại
      */
-    if (REFRESH_DATA && CLIENT_ID) {
+    if (REFRESH_DATA && CLIENT_ID_GLOBAL) {
       console.log('fetch data has CLIENT')
       /**
        * Fetch data với client id truyền vào
        */
-      fetchMessage(CLIENT_ID)
+      fetchMessage(CLIENT_ID_GLOBAL)
       /**
        * Set lại trạng thái REFRESH_DATA
        */
       dispatch(setRefreshData(false))
     }
-  }, [REFRESH_DATA, CLIENT_ID, STORED_CLIENT_ID])
+  }, [REFRESH_DATA, CLIENT_ID_GLOBAL])
 
   /** Trạng thái đóng mở popup */
   const SHOW_POPUP = useSelector(selectStatusPopup)
@@ -207,7 +208,7 @@ function DetailChat({
       /** setup params */
       const PARAMS = {
         page_id: PAGE_ID,
-        client_id: client_iddd || user_id,
+        client_id: client_iddd,
         limit: LIMIT.toString(),
         // skip: skip.toString(),
         /** Lấy giá trị từ ref */
@@ -300,7 +301,9 @@ function DetailChat({
 
     /** Scroll lên top ( Theo vị trí tính toán) thì load thêm data cũ */
     if (CONTAINER.scrollTop <= 342 && !loading_more && has_more) {
-      fetchMessage()
+      if (CLIENT_ID_GLOBAL) {
+        fetchMessage(CLIENT_ID_GLOBAL)
+      }
     }
     /**  vị trí bottom*/
     const AT_BOTTOM =
@@ -309,7 +312,7 @@ function DetailChat({
     setScrollAtBottom(AT_BOTTOM)
     /** Set Hiển thị nút btn jump */
     setShowJumpButton(!AT_BOTTOM)
-  }, [fetchMessage, loading_more, has_more])
+  }, [fetchMessage, loading_more, has_more, CLIENT_ID_GLOBAL])
   /**
    * Hàm debounce xử lý scroll
    */
@@ -359,7 +362,7 @@ function DetailChat({
       /** Đặt timeout để call API sau 0.1 giây */
       timeout_id = setTimeout(() => {
         /**  Gọi API sau khi đợi 1 giây */
-        fetchMessage()
+        fetchMessage(CLIENT_ID_GLOBAL)
         /** Khi khởi tạo và call API sau 0.1 giây . set lại trạng thái Không là tin nhắn khởi tạo nữa */
         setIsInit()
         console.log('API called after 1 second because is_init is true')
@@ -367,8 +370,8 @@ function DetailChat({
     }
 
     /** Khi user_id thay đổi, Trạng thái đã Khởi tạo thì gọi fetchMessage ngay lập tức */
-    if (user_id && !is_init) {
-      fetchMessage()
+    if (CLIENT_ID_GLOBAL && !is_init) {
+      fetchMessage(CLIENT_ID_GLOBAL)
     }
 
     /** Cleanup: Hủy bỏ timeout nếu is_init thay đổi hoặc component bị unmount */
@@ -380,7 +383,7 @@ function DetailChat({
         clearTimeout(timeout_id)
       }
     }
-  }, [user_id, is_init])
+  }, [CLIENT_ID_GLOBAL, is_init])
 
   /** Hàm Xử lý gửi tin nhắn
    * @param {string} input - Nội dung tin nhắn text

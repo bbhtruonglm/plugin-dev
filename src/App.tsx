@@ -81,7 +81,7 @@ function App() {
        */
       localStorage.setItem(`client_id_${N_PAGE_ID}`, '')
 
-      // dispatch(setGlobalClientId(''))
+      dispatch(setGlobalClientId(''))
 
       /**
        * Gửi tin nhắn Cập nhật lại client_id
@@ -235,6 +235,7 @@ function App() {
          * Lưu trạng thái AI vào store
          */
         dispatch(setStatusIsAI(IS_AI))
+
         /**
          * Cập nhật trạng thái hiển thị popup
          */
@@ -248,8 +249,6 @@ function App() {
          */
         await i18next.changeLanguage(LOCALE)
         console.log('Language changed to::', LOCALE)
-
-        // await decodeClientData()
 
         /** Sử dụng await để lấy dữ liệu CLIENT_INFO */
         const CLIENT_INFO = await decodeInitClientData()
@@ -283,6 +282,7 @@ function App() {
 
         /** Lưu thông tin khách hàng vào store */
         dispatch(setPageInfoAI(DATA_CLIENT))
+        dispatch(setRefreshData(true))
         /**
          * Cập nhạt thông tin user nếu chưa đăng ký
          */

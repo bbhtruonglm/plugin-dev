@@ -264,65 +264,17 @@ const ChatApp = ({
   }, [show, LATEST_MESSAGE, SHOW_QUICK_CHAT, welcome_message])
 
   useEffect(() => {
-    /**  Nếu không có PAGE_ID, thoát ngay*/
-
     if (!PAGE_ID) return
 
-    /** Lấy client_id từ localStorage, chỉ xử lý nếu hợp lệ
-     *@example const STORED_CLIENT_ID = '6131478076934694'
-     */
-    const STORED_CLIENT_ID = localStorage.getItem(`client_id_${PAGE_ID}`)
-    console.log('CHECKKKKKKKKK PAGE_ID', STORED_CLIENT_ID, 'TẠO websocket')
-    /**
-     * Nếu không có client_id, khởi tạo lại hoặc đặt cờ khởi tạo socket
-     */
-    if (!STORED_CLIENT_ID) {
-      /** Nếu không có client_id, khởi tạo lại hoặc đặt cờ khởi tạo socket */
-    } else {
-      console.log(
-        'CHECKKKKKKKKK PAGE_ID',
-        'KHông có client ID',
-        'TẠO websocket'
-      )
-      // if (!AI_STATUS) {
-      /** Nếu có client_id hợp lệ, cập nhật vào state */
-      onSocketFromChatboxServer({
-        page_id: PAGE_ID,
-        client_id: STORED_CLIENT_ID,
-        WS,
-        dispatch,
-        REF_LIST_UNREAD_MESSAGE,
-        REF_GLOBAL_UNREAD_MESSAGE_COUNT,
-        REF_LAST_TIME_CLOSE_QUICK_CHAT,
-        REF_SHOW_QUICK_CHAT,
-        IS_SHOW_REF,
-        TAB_REF,
-        SOCKET_API,
-        is_force_close_socket,
-      })
-      // }
-    }
+    console.log(WS, 'CHECK wssss')
 
-    /** Gọi API để lấy dữ liệu trang (luôn gọi mỗi khi PAGE_ID thay đổi) */
-    fetchPageData(PAGE_ID)
+    /** Hủy WebSocket cũ trước khi tạo mới */
 
-    /** Chỉ chạy khi PAGE_ID thay đổi */
-  }, [PAGE_ID])
+    console.log('Đóng WebSocket cũ trước khi tạo mới')
+    closeSocketConnect(WS, setIsForceCloseSocket)
 
-  useEffect(() => {
-    /** Khi có clientId hợp lệ và socket chưa được khởi tạo */
-    /** Check từ global TH khởi tạo USER */
-
-    console.log(
-      'CHECKKKKKKKKK PAGE_ID',
-      GLOBAL_CLIENT_ID,
-      'TẠO websocket',
-      IS_INIT_CLIENT,
-      'INIT CLIENT'
-    )
-
-    if (GLOBAL_CLIENT_ID && IS_INIT_CLIENT && PAGE_ID) {
-      /** Khởi tạo WebSocket */
+    if (GLOBAL_CLIENT_ID) {
+      /** Tạo WebSocket mới */
       onSocketFromChatboxServer({
         page_id: PAGE_ID,
         client_id: GLOBAL_CLIENT_ID,
@@ -337,12 +289,13 @@ const ChatApp = ({
         SOCKET_API,
         is_force_close_socket,
       })
-      /**
-       * Đặt cờ khởi tạo là false
-       */
-      dispatch(setStatusIsInit(false))
     }
-  }, [PAGE_ID, IS_INIT_CLIENT, GLOBAL_CLIENT_ID])
+    /** Sau khi khởi tạo WebSocket, đặt lại cờ */
+    dispatch(setStatusIsInit(false))
+
+    /** Luôn gọi API lấy dữ liệu trang */
+    fetchPageData(PAGE_ID)
+  }, [PAGE_ID, GLOBAL_CLIENT_ID])
 
   /**
    * Tab menu với các mục chính gồm:

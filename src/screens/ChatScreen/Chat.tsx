@@ -1,5 +1,6 @@
 import { apiImage, fetchAPI, useAPI } from '@/api/api'
 import {
+  selectGlobalClientId,
   selectPageId,
   selectStatusAI,
   selectUserInfo,
@@ -83,6 +84,7 @@ function ChatScreen({
    * Hàm khởi tạo client id
    */
   const CLIENT_ID = localStorage.getItem(`client_id_${PAGE_ID}`)
+  const GLOBAL_CLIENT_ID = useSelector(selectGlobalClientId)
 
   useEffect(() => {
     /** Nếu có page_id thì mới xử lý tiếp */
@@ -167,6 +169,7 @@ function ChatScreen({
          * Set status init client thành true
          */
         dispatch(setStatusIsInit(true))
+        console.log('RESULT.data', RESULT.data)
         /**
          * Set global client id
          */
@@ -191,7 +194,7 @@ function ChatScreen({
     /**
      * Nếu là case AI_STATUS và chưa có CLIENT_ID
      */
-    if (AI_STATUS && !CLIENT_ID && PAGE_ID) {
+    if (AI_STATUS && !GLOBAL_CLIENT_ID && PAGE_ID) {
       /**
        * Gọi hàm khởi tạo client id
        */
@@ -208,7 +211,7 @@ function ChatScreen({
       console.log('CHẠY VÀO ĐÂY')
       initGetClientId(PARAMS)
     }
-  }, [AI_STATUS, CLIENT_ID, PAGE_ID])
+  }, [AI_STATUS, GLOBAL_CLIENT_ID, PAGE_ID])
 
   useEffect(() => {
     /**
