@@ -64,4 +64,48 @@ export interface AppState {
    * Thông tin trạng thái viewport của page cha
    */
   no_viewport?: boolean
+  /**
+   * Danh sách nhân viên
+   */
+  staff_list?: EmployeeList
+  /**
+   * Thông tin AI
+   */
+  page_info_ai?: {
+    /**
+     * Tên trợ lý ảo
+     */
+    ai_agent_id?: string
+    /**
+     * id trang
+     */
+    page_id?: string
+    /**
+     * ID khách hàng
+     */
+    fb_client_id?: string
+    /**
+     * Tên page
+     */
+    page_name?: string
+    /**
+     * Tên khách hàng
+     */
+    current_staff_name?: string
+    /**
+     * Cờ bật trạng thái AI
+     */
+    is_active_ai_agent?: boolean
+  }
+  /**
+   * refresh data
+   */
+  refresh_data?: boolean
+}
+/** Định nghĩa kiểu dữ liệu cho danh sách nhân viên */
+interface EmployeeList {
+  /** Danh sách nhân viên
+   * @params {string} key - Mã nhân viên
+   */
+  [key: string]: Employee
 }

@@ -91,9 +91,10 @@ function ChatScreen({
       if (CLIENT_ID && CLIENT_ID !== 'undefined') {
         setClientId(CLIENT_ID)
       } else {
+        // setClientId('')
       }
     }
-  }, [])
+  }, [PAGE_ID])
   /**
    * Hàm lấy dữ liệu khách hàng
    */
@@ -147,6 +148,7 @@ function ChatScreen({
 
       /** luu vao localStorage */
       setClientId(RESULT.data)
+
       /**
        *  Nếu lỗi 403 thì lưu lại chuỗi rỗng
        */
@@ -187,7 +189,7 @@ function ChatScreen({
     /**
      * Nếu là case AI_STATUS và chưa có CLIENT_ID
      */
-    if (AI_STATUS && !CLIENT_ID) {
+    if (AI_STATUS && !CLIENT_ID && PAGE_ID) {
       /**
        * Gọi hàm khởi tạo client id
        */
@@ -203,10 +205,11 @@ function ChatScreen({
       }
       initGetClientId(PARAMS)
     }
-  }, [AI_STATUS, CLIENT_ID])
+  }, [AI_STATUS, CLIENT_ID, PAGE_ID])
 
   useEffect(() => {
     console.log(USER_INFO, 'USER_INFO')
+    console.log(CLIENT_ID, 'CLIENT_ID')
 
     /**
      * Kiểm tra USER_INFO có chứa ít nhất một giá trị thực
@@ -239,7 +242,11 @@ function ChatScreen({
          * Thêm client_id vào PARAMS
          */
         PARAMS.client_id = USER_INFO.client_id
+
+        setClientId(USER_INFO.client_id)
       }
+
+      console.log('chạy vào đây ==================')
       /**
        * Gọi hàm khởi tạo client id
        */

@@ -52,5 +52,7 @@ export const en = {
 
     virtual_assistant: 'Virtual Assistant',
     add_to_chat: 'Add to chat',
+
+    invalid_virtual_assistant: 'Invalid virtual assistant information',
   },
 }

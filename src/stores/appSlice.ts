@@ -2,6 +2,7 @@ import { AppState } from './type'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from '@/stores'
 import { createSlice } from '@reduxjs/toolkit'
+import { set } from 'lodash'
 
 const INITIAL_STATE: AppState = {
   page_id: '',
@@ -25,6 +26,9 @@ const INITIAL_STATE: AppState = {
   },
   is_ai: false,
   no_viewport: false,
+  staff_list: {},
+  page_info_ai: {},
+  refresh_data: false,
 }
 
 export const appSlice = createSlice({
@@ -111,6 +115,27 @@ export const appSlice = createSlice({
     setNoViewport: (state, action: PayloadAction<boolean>) => {
       state.no_viewport = action.payload
     },
+    /**
+     * Lưu dữ liệu nhân viên
+     */
+    setStaffListStore: (
+      state,
+      action: PayloadAction<AppState['staff_list']>
+    ) => {
+      state.staff_list = action.payload
+    },
+    /**
+     * Lưu dữ liệu infor page AI
+     */
+    setPageInfoAI: (state, action: PayloadAction<AppState['page_info_ai']>) => {
+      state.page_info_ai = action.payload
+    },
+    /**
+     * set dữ liệu refresh
+     */
+    setRefreshData: (state, action: PayloadAction<boolean>) => {
+      state.refresh_data = action.payload
+    },
   },
 })
 
@@ -132,6 +157,9 @@ export const {
   setUserInfo,
   setStatusIsAI,
   setNoViewport,
+  setStaffListStore,
+  setPageInfoAI,
+  setRefreshData,
 } = appSlice.actions
 
 /** chọn đến page id */
@@ -178,5 +206,17 @@ export const selectUserInfo = (state: RootState) => state.app.user_info
 export const selectStatusAI = (state: RootState) => state.app.is_ai
 /** Status Viewport */
 export const selectStatusViewport = (state: RootState) => state.app.no_viewport
+/**
+ * Staff List
+ */
+export const selectStaffList = (state: RootState) => state.app.staff_list
+/**
+ * Page AI
+ */
+export const selectPageInfoAI = (state: RootState) => state.app.page_info_ai
+/**
+ * Refresh Data
+ */
+export const selectRefreshData = (state: RootState) => state.app.refresh_data
 
 export default appSlice.reducer

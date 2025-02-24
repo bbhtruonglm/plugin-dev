@@ -170,34 +170,30 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
                 </div>
               )}
             </div>
-            {/* {data?.message_type !== 'client' && (
+            {data?.llm_sources && data?.llm_sources.length > 0 && (
               <div className="flex flex-col gap-y-1 text-xs">
                 <div className="flex gap-x-1">
                   <BookOpen className="w-4 h-4" />
-                  <p className="text-xs">Dựa trên 2 nguồn thông tin:</p>
+                  <p className="text-xs">
+                    Dựa trên {data?.llm_sources.length} nguồn thông tin:
+                  </p>
                 </div>
                 <div className="pl-4">
-                  <a
-                    href="http://www.google.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex gap-x-2 items-center hover:text-blue-500"
-                  >
-                    •<span className="underline ">Chính sách hoàn tiền</span>
-                    <Share className="w-3 h-3 stroke-current" />
-                  </a>
-                  <a
-                    href="http://www.google.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex gap-x-2 items-center hover:text-blue-500"
-                  >
-                    •<span className="underline ">Quy trình hoàn tiền</span>
-                    <Share className="w-3 h-3 stroke-current" />
-                  </a>
+                  {data?.llm_sources?.map((item, index) => (
+                    <a
+                      key={index}
+                      href={item?.link || '#'}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex gap-x-2 items-center hover:text-blue-500"
+                    >
+                      •<span className="underline ">{item?.title}</span>
+                      <Share className="w-3 h-3 stroke-current flex-shrink-0" />
+                    </a>
+                  ))}
                 </div>
               </div>
-            )} */}
+            )}
           </div>
         )}
       {/* Hiển thị data dạng 1 ảnh */}
