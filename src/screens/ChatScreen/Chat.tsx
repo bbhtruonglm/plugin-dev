@@ -186,6 +186,8 @@ function ChatScreen({
    * Nếu là case AI_STATUS và chưa có CLIENT_ID
    */
   useEffect(() => {
+    console.log('CHẠY VÀO ĐÂY USER_INFO', USER_INFO)
+    console.log(CLIENT_ID, 'CHẠY VÀO ĐÂY CLLIENT ID')
     /**
      * Nếu là case AI_STATUS và chưa có CLIENT_ID
      */
@@ -203,14 +205,12 @@ function ChatScreen({
          */
         PARAMS.client_id = USER_INFO.client_id
       }
+      console.log('CHẠY VÀO ĐÂY')
       initGetClientId(PARAMS)
     }
   }, [AI_STATUS, CLIENT_ID, PAGE_ID])
 
   useEffect(() => {
-    console.log(USER_INFO, 'USER_INFO')
-    console.log(CLIENT_ID, 'CLIENT_ID')
-
     /**
      * Kiểm tra USER_INFO có chứa ít nhất một giá trị thực
      */
@@ -224,7 +224,7 @@ function ChatScreen({
     /**
      * Nếu có USER_INFO và chưa có CLIENT_ID
      */
-    if (HAS_VALID_VALUE && !CLIENT_ID) {
+    if (HAS_VALID_VALUE && !CLIENT_ID && !AI_STATUS) {
       /**
        * Gọi hàm khởi tạo client id
        */
@@ -246,13 +246,12 @@ function ChatScreen({
         setClientId(USER_INFO.client_id)
       }
 
-      console.log('chạy vào đây ==================')
       /**
        * Gọi hàm khởi tạo client id
        */
       initGetClientId(PARAMS)
     }
-  }, [CLIENT_ID, USER_INFO])
+  }, [CLIENT_ID, USER_INFO, AI_STATUS])
 
   /** Hàm đọc data khách hàng
    * @param {string} client_id - ID khách hàng

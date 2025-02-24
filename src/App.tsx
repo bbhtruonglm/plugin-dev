@@ -73,11 +73,16 @@ function App() {
         client?.public_profile?.fb_client_id
 
       /**
+       * Nếu client_id mới khác client_id cũ thì mới reset lại
+       */
+      // if (N_CLIENT_ID !== CLIENT_ID_LOCAL) {
+      /**
        * Reset lại client_id
        */
       localStorage.setItem(`client_id_${N_PAGE_ID}`, '')
 
-      console.log(N_CLIENT_ID, 'N_CLIENT_ID')
+      // dispatch(setGlobalClientId(''))
+
       /**
        * Gửi tin nhắn Cập nhật lại client_id
        */
@@ -90,6 +95,7 @@ function App() {
           client_id: N_CLIENT_ID,
         })
       )
+      // }
       console.log(client, 'client')
     })
   }
