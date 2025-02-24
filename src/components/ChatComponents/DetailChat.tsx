@@ -2,6 +2,7 @@ import { ChatScreenProps, Message } from './type'
 import { debounce, keys } from 'lodash'
 import { fetchAPI, useAPI } from '@/api/api'
 import {
+  selectGlobalClientId,
   selectGlobalUnreadCount,
   selectLatestMessage,
   selectListMessage,
@@ -69,6 +70,11 @@ function DetailChat({
    * CLIENT_ID
    */
   const CLIENT_ID = localStorage.getItem(`client_id_${PAGE_ID}`)
+
+  /**
+   * STORE CLIENT_ID
+   */
+  const STORED_CLIENT_ID = useSelector(selectGlobalClientId)
   /**
    * State loading khi gửi tin nhắn
    */
@@ -115,7 +121,7 @@ function DetailChat({
        */
       dispatch(setRefreshData(false))
     }
-  }, [REFRESH_DATA, CLIENT_ID])
+  }, [REFRESH_DATA, CLIENT_ID, STORED_CLIENT_ID])
 
   /** Trạng thái đóng mở popup */
   const SHOW_POPUP = useSelector(selectStatusPopup)

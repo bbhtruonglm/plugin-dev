@@ -265,19 +265,25 @@ const ChatApp = ({
 
   useEffect(() => {
     /**  Nếu không có PAGE_ID, thoát ngay*/
+
     if (!PAGE_ID) return
 
     /** Lấy client_id từ localStorage, chỉ xử lý nếu hợp lệ
      *@example const STORED_CLIENT_ID = '6131478076934694'
      */
     const STORED_CLIENT_ID = localStorage.getItem(`client_id_${PAGE_ID}`)
-
+    console.log('CHECKKKKKKKKK PAGE_ID', STORED_CLIENT_ID, 'TẠO websocket')
     /**
      * Nếu không có client_id, khởi tạo lại hoặc đặt cờ khởi tạo socket
      */
     if (!STORED_CLIENT_ID) {
       /** Nếu không có client_id, khởi tạo lại hoặc đặt cờ khởi tạo socket */
     } else {
+      console.log(
+        'CHECKKKKKKKKK PAGE_ID',
+        'KHông có client ID',
+        'TẠO websocket'
+      )
       // if (!AI_STATUS) {
       /** Nếu có client_id hợp lệ, cập nhật vào state */
       onSocketFromChatboxServer({
@@ -306,10 +312,16 @@ const ChatApp = ({
   useEffect(() => {
     /** Khi có clientId hợp lệ và socket chưa được khởi tạo */
     /** Check từ global TH khởi tạo USER */
-    console.log(GLOBAL_CLIENT_ID, 'GLOBAL CLIENT IDĐ')
-    console.log(IS_INIT_CLIENT, 'IS_INIT_CLIENT')
-    // closeSocketConnect(WS, setIsForceCloseSocket)
-    if (GLOBAL_CLIENT_ID && IS_INIT_CLIENT) {
+
+    console.log(
+      'CHECKKKKKKKKK PAGE_ID',
+      GLOBAL_CLIENT_ID,
+      'TẠO websocket',
+      IS_INIT_CLIENT,
+      'INIT CLIENT'
+    )
+
+    if (GLOBAL_CLIENT_ID && IS_INIT_CLIENT && PAGE_ID) {
       /** Khởi tạo WebSocket */
       onSocketFromChatboxServer({
         page_id: PAGE_ID,
