@@ -2,7 +2,6 @@ import { AppState } from './type'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from '@/stores'
 import { createSlice } from '@reduxjs/toolkit'
-import { set } from 'lodash'
 
 const INITIAL_STATE: AppState = {
   page_id: '',
@@ -29,6 +28,7 @@ const INITIAL_STATE: AppState = {
   staff_list: {},
   page_info_ai: {},
   refresh_data: false,
+  typing_status: undefined,
 }
 
 export const appSlice = createSlice({
@@ -136,6 +136,12 @@ export const appSlice = createSlice({
     setRefreshData: (state, action: PayloadAction<boolean>) => {
       state.refresh_data = action.payload
     },
+    /**
+     * Trạng thái typing
+     */
+    setTypingStatus: (state, action: PayloadAction<boolean | undefined>) => {
+      state.typing_status = action.payload
+    },
   },
 })
 
@@ -160,6 +166,7 @@ export const {
   setStaffListStore,
   setPageInfoAI,
   setRefreshData,
+  setTypingStatus,
 } = appSlice.actions
 
 /** chọn đến page id */
@@ -218,5 +225,9 @@ export const selectPageInfoAI = (state: RootState) => state.app.page_info_ai
  * Refresh Data
  */
 export const selectRefreshData = (state: RootState) => state.app.refresh_data
+/**
+ * Typing status
+ */
+export const selectTypingStatus = (state: RootState) => state.app.typing_status
 
 export default appSlice.reducer

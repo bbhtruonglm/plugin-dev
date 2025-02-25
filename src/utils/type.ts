@@ -99,6 +99,10 @@ export interface MessageInfo {
   snap_replay_message?: MessageInfo
   /**dữ liệu của AI */
   ai?: MessageAiData[]
+  /**
+   * Trạng thái typing
+   */
+  sender_action: 'typing_on' | 'typing_off'
 }
 
 /**dữ liệu 1 file */

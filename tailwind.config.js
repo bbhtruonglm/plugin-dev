@@ -80,6 +80,19 @@ module.exports = {
             opacity: '0',
             transformOrigin: 'bottom right',
           },
+          typing: {
+            '0%': { content: '"."' },
+            '33%': { content: '".."' },
+            '66%': { content: '"..."' },
+          },
+          blink: {
+            '0%': { opacity: '1' },
+            '50%': { opacity: '0' },
+          },
+          jumping: {
+            '0%, 80%, 100%': { transform: 'translateY(0)' },
+            '40%': { transform: 'translateY(-8px)' },
+          },
         },
       },
 
@@ -90,6 +103,9 @@ module.exports = {
         zoomIn: 'zoomIn 0.2s ease-in-out forwards',
         zoomInBottomRight: 'zoomInBottomRight 0.2s ease-in-out forwards',
         zoomOutTopLeft: 'zoomOutTopLeft 0.2s ease-in-out forwards',
+        typing: 'typing 1.5s infinite',
+        blink: 'blink 0.6s infinite',
+        jumping: 'jumping 0.6s infinite',
       },
     },
   },

@@ -33,12 +33,56 @@ import ChatApp from './pages/ChatApp'
 import WIDGET from 'bbh-chatbox-widget-js-sdk'
 import i18next from './i18n'
 
+/**
+ * Hàm lấy tham số từ URL
+ * @param param  - Tham số cần lấy
+ * @returns
+ */
+function getQueryParam(param: string) {
+  /**
+   * Lấy tham số từ URL
+   */
+  const URL_PARAMS = new URLSearchParams(window.location.search)
+  /**
+   * Trả về tham số cần lấy
+   */
+  return URL_PARAMS.get(param)
+}
 function App() {
-  /** [optional] kích hoạt chế độ debug */
-  WIDGET.debugOn()
+  useEffect(() => {
+    /**
+     * Load WIDGET nếu trang hiện tại là trang AI Assistant
+     */
+    if (window.location.pathname.includes('/ai-assistant')) {
+      /**
+       * Lấy token từ URL
+       */
+      const TOKEN = getQueryParam('access_token')
+      /**
+       * Nếu có token thì load WIDGET
+       */
+      if (TOKEN) {
+        try {
+          /**
+           * Bật chế độ debug
+           */
+          WIDGET.debugOn()
+          /**
+           * Load WIDGET
+           */
+          WIDGET.load('00de4446885a43c5b58ef16dba0f5058')
+        } catch (error) {
+          console.error('Lỗi khi giải mã token:', error)
+        }
+      } else {
+        console.warn('Không tìm thấy token trong URL')
+      }
+    } else {
+      console.warn('Không phải trang AI Assistant, bỏ qua việc load WIDGET')
+    }
+    /** Chạy 1 lần khi component mount */
+  }, [])
 
-  /** nạp secret_key của widget */
-  WIDGET.load('00de4446885a43c5b58ef16dba0f5058')
   /**
    *  Hàm giải mã dữ liệu khách hàng
    * @returns {Promise<Object>} - Dữ liệu khách hàng
@@ -240,6 +284,7 @@ function App() {
          * Cập nhật trạng thái hiển thị popup
          */
         setShow(IS_AI)
+
         /**
          * Lấy ngôn ngữ từ URL
          */
@@ -250,128 +295,132 @@ function App() {
         await i18next.changeLanguage(LOCALE)
         console.log('Language changed to::', LOCALE)
 
-        /** Sử dụng await để lấy dữ liệu CLIENT_INFO */
-        const CLIENT_INFO = await decodeInitClientData()
+        if (IS_AI) {
+          /** Sử dụng await để lấy dữ liệu CLIENT_INFO */
+          const CLIENT_INFO = await decodeInitClientData()
 
-        console.log(CLIENT_INFO, 'CLIENT_INFO')
-        /**
-         * New CLIENT ID
-         */
-        const NEW_CLIENT_ID =
-          CLIENT_INFO?.public_profile?.page_id +
-          '__' +
-          CLIENT_INFO?.public_profile?.fb_client_id
-        console.log(NEW_CLIENT_ID, 'newclientid')
-        // localStorage.setItem(
-        //   `client_id_${CLIENT_INFO?.public_profile?.ai_agent_id}`,
-        //   NEW_CLIENT_ID
-        // )
-        // dispatch(setGlobalClientId(NEW_CLIENT_ID))
+          console.log(CLIENT_INFO, 'CLIENT_INFO')
+          /**
+           * New CLIENT ID
+           */
+          const NEW_CLIENT_ID =
+            CLIENT_INFO?.public_profile?.page_id +
+            '__' +
+            CLIENT_INFO?.public_profile?.fb_client_id
+          console.log(NEW_CLIENT_ID, 'newclientid')
+          // localStorage.setItem(
+          //   `client_id_${CLIENT_INFO?.public_profile?.ai_agent_id}`,
+          //   NEW_CLIENT_ID
+          // )
+          // dispatch(setGlobalClientId(NEW_CLIENT_ID))
 
-        /** Dữ liệu khách hàng */
-        const DATA_CLIENT = {
-          ai_agent_id: CLIENT_INFO?.public_profile?.ai_agent_id || '',
-          page_id: CLIENT_INFO?.public_profile?.page_id || '',
-          fb_client_id: CLIENT_INFO?.public_profile?.fb_client_id || '',
-          page_name: CLIENT_INFO?.public_profile?.page_name || '',
-          current_staff_name:
-            CLIENT_INFO?.public_profile?.current_staff_name || '',
-          is_active_ai_agent:
-            CLIENT_INFO?.public_profile?.is_active_ai_agent || false,
-        }
+          /** Dữ liệu khách hàng */
+          const DATA_CLIENT = {
+            ai_agent_id: CLIENT_INFO?.public_profile?.ai_agent_id || '',
+            page_id: CLIENT_INFO?.public_profile?.page_id || '',
+            fb_client_id: CLIENT_INFO?.public_profile?.fb_client_id || '',
+            page_name: CLIENT_INFO?.public_profile?.page_name || '',
+            current_staff_name:
+              CLIENT_INFO?.public_profile?.current_staff_name || '',
+            is_active_ai_agent:
+              CLIENT_INFO?.public_profile?.is_active_ai_agent || false,
+          }
 
-        /** Lưu thông tin khách hàng vào store */
-        dispatch(setPageInfoAI(DATA_CLIENT))
-        dispatch(setRefreshData(true))
-        /**
-         * Cập nhạt thông tin user nếu chưa đăng ký
-         */
-        dispatch(
-          setUserInfo({
-            user_name: '',
-            user_email: '',
-            user_phone: '',
-            client_id: NEW_CLIENT_ID,
-          })
-        )
-
-        /** Lấy page_id */
-        const STORED_PAGE_ID =
-          URL_PARENT.searchParams.get('page_id') ||
-          CLIENT_INFO?.public_profile?.ai_agent_id ||
-          ''
-
-        /**
-         * Lưu page_id vào store
-         */
-        dispatch(setPageId(STORED_PAGE_ID || ''))
-        /**
-         * Cập nhật thông tin kích thước của parent
-         */
-        /** 1. Width của parent */
-        const WIDTH_PARENT = URL_PARENT.searchParams.get('parentWidth')
-        /** 2. Height của parent */
-        const HEIGHT_PARENT = URL_PARENT.searchParams.get('parentHeight')
-        /** 3. Kiểm tra có viewport không */
-        const HAS_VIEWPORT = URL_PARENT.searchParams.get('has_viewport')
-        /**
-         * Nếu không có viewport thì setNoViewport(true)
-         */
-        if (HAS_VIEWPORT === 'false') {
-          dispatch(setNoViewport(true))
-        }
-        /**
-         * Nếu có WIDTH_PARENT thì cập nhật width
-         */
-        if (WIDTH_PARENT) {
-          dispatch(setCurrentWidth(Number(WIDTH_PARENT)))
-        }
-        /**
-         * Nếu có HEIGHT_PARENT thì cập nhật height
-         */
-        if (HEIGHT_PARENT) {
-          dispatch(setCurrentHeight(Number(HEIGHT_PARENT)))
-        }
-        /**
-         * Lấy client_id từ localStorage
-         */
-        const STORED_CLIENT_ID = localStorage.getItem(
-          `client_id_${STORED_PAGE_ID}`
-        )
-        /**
-         * Lấy dữ liệu khách hàng
-         */
-        fetchClientData(STORED_CLIENT_ID, STORED_PAGE_ID)
-        /**
-         * Lấy tin nhắn mới nhất
-         */
-        const STORED_MESSAGE_LATEST = parsedString(
-          localStorage.getItem(
-            `latest_message__${STORED_PAGE_ID}__${STORED_CLIENT_ID}`
-          ) || ''
-        )
-        /**
-         * Lấy số tin nhắn chưa đọc
-         */
-        const STORED_UNREAD_COUNT = Number(
-          localStorage.getItem(
-            `count_unread__${STORED_PAGE_ID}__${STORED_CLIENT_ID}`
+          /** Lưu thông tin khách hàng vào store */
+          dispatch(setPageInfoAI(DATA_CLIENT))
+          dispatch(setRefreshData(true))
+          /**
+           * Cập nhạt thông tin user nếu chưa đăng ký
+           */
+          dispatch(
+            setUserInfo({
+              user_name: '',
+              user_email: '',
+              user_phone: '',
+              client_id: NEW_CLIENT_ID,
+            })
           )
-        )
-        /** Lưu trạng thái hiển thị popup */
+          /** Lấy page_id */
+          const STORED_PAGE_ID = CLIENT_INFO?.public_profile?.ai_agent_id || ''
+          /**
+           * Lưu page_id vào store
+           */
+          dispatch(setPageId(STORED_PAGE_ID || ''))
+        } else {
+          /** Lấy page_id */
+          const STORED_PAGE_ID = URL_PARENT.searchParams.get('page_id') || ''
+          /**
+           * Lưu page_id vào store
+           */
+          dispatch(setPageId(STORED_PAGE_ID || ''))
+          /**
+           * Cập nhật thông tin kích thước của parent
+           */
+          /** 1. Width của parent */
+          const WIDTH_PARENT = URL_PARENT.searchParams.get('parentWidth')
+          /** 2. Height của parent */
+          const HEIGHT_PARENT = URL_PARENT.searchParams.get('parentHeight')
+          /** 3. Kiểm tra có viewport không */
+          const HAS_VIEWPORT = URL_PARENT.searchParams.get('has_viewport')
+          /**
+           * Nếu không có viewport thì setNoViewport(true)
+           */
+          if (HAS_VIEWPORT === 'false') {
+            dispatch(setNoViewport(true))
+          }
+          /**
+           * Nếu có WIDTH_PARENT thì cập nhật width
+           */
+          if (WIDTH_PARENT) {
+            dispatch(setCurrentWidth(Number(WIDTH_PARENT)))
+          }
+          /**
+           * Nếu có HEIGHT_PARENT thì cập nhật height
+           */
+          if (HEIGHT_PARENT) {
+            dispatch(setCurrentHeight(Number(HEIGHT_PARENT)))
+          }
+          /**
+           * Lấy client_id từ localStorage
+           */
+          const STORED_CLIENT_ID = localStorage.getItem(
+            `client_id_${STORED_PAGE_ID}`
+          )
+          /**
+           * Lấy dữ liệu khách hàng
+           */
+          fetchClientData(STORED_CLIENT_ID, STORED_PAGE_ID)
+          /**
+           * Lấy tin nhắn mới nhất
+           */
+          const STORED_MESSAGE_LATEST = parsedString(
+            localStorage.getItem(
+              `latest_message__${STORED_PAGE_ID}__${STORED_CLIENT_ID}`
+            ) || ''
+          )
+          /**
+           * Lấy số tin nhắn chưa đọc
+           */
+          const STORED_UNREAD_COUNT = Number(
+            localStorage.getItem(
+              `count_unread__${STORED_PAGE_ID}__${STORED_CLIENT_ID}`
+            )
+          )
+          /** Lưu trạng thái hiển thị popup */
 
-        localStorage.setItem(
-          `status_quick_chat__${STORED_PAGE_ID}`,
-          'show_quick_chat'
-        )
-        /**
-         * Lưu tin nhắn mới nhất vào store
-         */
-        dispatch(setLatestMessageGlobal(STORED_MESSAGE_LATEST))
-        /**
-         * Lưu số tin nhắn chưa đọc vào store
-         */
-        dispatch(setGlobalUnreadCount(STORED_UNREAD_COUNT || 0))
+          localStorage.setItem(
+            `status_quick_chat__${STORED_PAGE_ID}`,
+            'show_quick_chat'
+          )
+          /**
+           * Lưu tin nhắn mới nhất vào store
+           */
+          dispatch(setLatestMessageGlobal(STORED_MESSAGE_LATEST))
+          /**
+           * Lưu số tin nhắn chưa đọc vào store
+           */
+          dispatch(setGlobalUnreadCount(STORED_UNREAD_COUNT || 0))
+        }
       } catch (error) {
         console.error('Error fetching data:', error)
       }

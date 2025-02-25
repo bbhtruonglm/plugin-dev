@@ -97,6 +97,8 @@ export interface AppState {
      */
     is_active_ai_agent?: boolean
   }
+  /**Typing status */
+  typing_status?: boolean | undefined
   /**
    * refresh data
    */

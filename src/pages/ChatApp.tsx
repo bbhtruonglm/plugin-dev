@@ -269,33 +269,57 @@ const ChatApp = ({
     console.log(WS, 'CHECK wssss')
 
     /** Hủy WebSocket cũ trước khi tạo mới */
+    if (AI_STATUS) {
+      console.log('Đóng WebSocket cũ trước khi tạo mới')
+      closeSocketConnect(WS, setIsForceCloseSocket)
 
-    console.log('Đóng WebSocket cũ trước khi tạo mới')
-    closeSocketConnect(WS, setIsForceCloseSocket)
-
-    if (GLOBAL_CLIENT_ID) {
-      /** Tạo WebSocket mới */
-      onSocketFromChatboxServer({
-        page_id: PAGE_ID,
-        client_id: GLOBAL_CLIENT_ID,
-        WS,
-        dispatch,
-        REF_LIST_UNREAD_MESSAGE,
-        REF_GLOBAL_UNREAD_MESSAGE_COUNT,
-        REF_LAST_TIME_CLOSE_QUICK_CHAT,
-        REF_SHOW_QUICK_CHAT,
-        IS_SHOW_REF,
-        TAB_REF,
-        SOCKET_API,
-        is_force_close_socket,
-      })
+      if (GLOBAL_CLIENT_ID) {
+        /** Tạo WebSocket mới */
+        onSocketFromChatboxServer({
+          page_id: PAGE_ID,
+          client_id: GLOBAL_CLIENT_ID,
+          WS,
+          dispatch,
+          REF_LIST_UNREAD_MESSAGE,
+          REF_GLOBAL_UNREAD_MESSAGE_COUNT,
+          REF_LAST_TIME_CLOSE_QUICK_CHAT,
+          REF_SHOW_QUICK_CHAT,
+          IS_SHOW_REF,
+          TAB_REF,
+          SOCKET_API,
+          is_force_close_socket,
+        })
+      }
+      /** Sau khi khởi tạo WebSocket, đặt lại cờ */
+      dispatch(setStatusIsInit(false))
     }
-    /** Sau khi khởi tạo WebSocket, đặt lại cờ */
-    dispatch(setStatusIsInit(false))
-
-    /** Luôn gọi API lấy dữ liệu trang */
-    fetchPageData(PAGE_ID)
-  }, [PAGE_ID, GLOBAL_CLIENT_ID])
+    /**
+     * Trạng thái không phải AI thì lấy client từ localStorage
+     */
+    if (!AI_STATUS) {
+      /** Luôn gọi API lấy dữ liệu trang */
+      fetchPageData(PAGE_ID)
+      if (CLIENT_STORED) {
+        /** Tạo WebSocket mới */
+        onSocketFromChatboxServer({
+          page_id: PAGE_ID,
+          client_id: CLIENT_STORED,
+          WS,
+          dispatch,
+          REF_LIST_UNREAD_MESSAGE,
+          REF_GLOBAL_UNREAD_MESSAGE_COUNT,
+          REF_LAST_TIME_CLOSE_QUICK_CHAT,
+          REF_SHOW_QUICK_CHAT,
+          IS_SHOW_REF,
+          TAB_REF,
+          SOCKET_API,
+          is_force_close_socket,
+        })
+      }
+      /** Sau khi khởi tạo WebSocket, đặt lại cờ */
+      dispatch(setStatusIsInit(false))
+    }
+  }, [PAGE_ID, GLOBAL_CLIENT_ID, CLIENT_STORED])
 
   /**
    * Tab menu với các mục chính gồm:

@@ -13,6 +13,7 @@ import {
   selectStatusAI,
   selectStatusPopup,
   selectStatusViewport,
+  selectTypingStatus,
   setGlobalUnreadCount,
   setListMessage,
   setLoadingGlobal,
@@ -28,6 +29,7 @@ import InitClient from './Body/InitClient'
 import InputChat from './Body/InputChat'
 import Loading from '../Loading/Loading'
 import LoadingDots from '../Loading/LoadingDot'
+import LoadingJumping from '../Loading/LoadingJumping'
 import MessageBody from './Body/MessageBody'
 import { renderAvatarCDN } from '@/utils'
 import { t } from 'i18next'
@@ -69,6 +71,11 @@ function DetailChat({
    */
   const REFRESH_DATA = useSelector(selectRefreshData)
 
+  /**
+   * Trạng thái typing
+   */
+  const TYPING_STATUS = useSelector(selectTypingStatus)
+
   /** ID trang được lấy từ store */
   const PAGE_ID = useSelector(selectPageId)
   /**
@@ -82,6 +89,37 @@ function DetailChat({
   const [skip, setSkip] = useState(0)
   /** Dùng ref để giữ giá trị của skip */
   const SKIP_REF = useRef(0)
+  /**
+   * Trạng thái loading khi gửi tin nhắn
+   */
+  const STATUSES = ['AI đang suy nghĩ', 'AI vẫn đang suy nghĩ', 'Sắp xong rồi!']
+  /**
+   * Trạng thái loading khi gửi tin nhắn
+   */
+  const [status_index, setStatusIndex] = useState(0)
+  /**
+   * Cập nhật trạng thái loading khi gửi tin nhắn
+   */
+  useEffect(() => {
+    /**
+     * Nếu trạng thái typing thay đổi
+     */
+    if (TYPING_STATUS) {
+      /** Reset trạng thái khi bắt đầu typing */
+      setStatusIndex(0)
+      /**
+       * Set interval để thay đổi trạng thái
+       */
+      const INTERVAL = setInterval(() => {
+        setStatusIndex((prev) => (prev + 1) % STATUSES.length)
+      }, 3000)
+
+      return () => clearInterval(INTERVAL)
+    } else {
+      /** Reset khi ngừng typing */
+      setStatusIndex(0)
+    }
+  }, [TYPING_STATUS])
 
   useEffect(() => {
     console.log(REFRESH_DATA, 'refresh detail chat')
@@ -117,6 +155,7 @@ function DetailChat({
        * Fetch data với client id truyền vào
        */
       fetchMessage(CLIENT_ID_GLOBAL)
+      console.log('FETCH MESSAGE use Effect Refresh data')
       /**
        * Set lại trạng thái REFRESH_DATA
        */
@@ -129,6 +168,7 @@ function DetailChat({
 
   /** List tin nhắn được lấy từ store */
   const LIST_MESSAGE = useSelector(selectListMessage)
+  console.log(LIST_MESSAGE, 'LIST_MESSAGE')
 
   /** Số tin nhắn chưa đọc lấy trong STORE */
   const GLOBAL_UNREAD_COUNT = useSelector(selectGlobalUnreadCount)
@@ -301,8 +341,12 @@ function DetailChat({
 
     /** Scroll lên top ( Theo vị trí tính toán) thì load thêm data cũ */
     if (CONTAINER.scrollTop <= 342 && !loading_more && has_more) {
+      /**
+       * Nếu có client id thì mới fetch data
+       */
       if (CLIENT_ID_GLOBAL) {
         fetchMessage(CLIENT_ID_GLOBAL)
+        console.log('FETCH MESSAGE handle Scroll')
       }
     }
     /**  vị trí bottom*/
@@ -357,12 +401,15 @@ function DetailChat({
 
   useEffect(() => {
     let timeout_id: NodeJS.Timeout
+
+    if (AI_STATUS) return
     /** Nếu Mới khởi tạo client, call api fetch tin nhắn nhưng cần settimeout */
     if (is_init) {
       /** Đặt timeout để call API sau 0.1 giây */
       timeout_id = setTimeout(() => {
         /**  Gọi API sau khi đợi 1 giây */
-        fetchMessage(CLIENT_ID_GLOBAL)
+        fetchMessage(CLIENT_ID as string)
+        console.log('FETCH MESSAGE là INIT')
         /** Khi khởi tạo và call API sau 0.1 giây . set lại trạng thái Không là tin nhắn khởi tạo nữa */
         setIsInit()
         console.log('API called after 1 second because is_init is true')
@@ -370,8 +417,9 @@ function DetailChat({
     }
 
     /** Khi user_id thay đổi, Trạng thái đã Khởi tạo thì gọi fetchMessage ngay lập tức */
-    if (CLIENT_ID_GLOBAL && !is_init) {
-      fetchMessage(CLIENT_ID_GLOBAL)
+    if (CLIENT_ID && !is_init) {
+      fetchMessage(CLIENT_ID)
+      console.log('FETCH MESSAGE Không phải init')
     }
 
     /** Cleanup: Hủy bỏ timeout nếu is_init thay đổi hoặc component bị unmount */
@@ -383,7 +431,7 @@ function DetailChat({
         clearTimeout(timeout_id)
       }
     }
-  }, [CLIENT_ID_GLOBAL, is_init])
+  }, [CLIENT_ID, is_init])
 
   /** Hàm Xử lý gửi tin nhắn
    * @param {string} input - Nội dung tin nhắn text
@@ -417,7 +465,8 @@ function DetailChat({
      * - Page nhắn tin trả lời
      * Thì sẽ thêm vào store
      */
-
+    console.log(LATEST_MESSAGE, 'LATEST_MESSAGE')
+    console.log(is_init, 'is_init')
     if (keys(LATEST_MESSAGE).length !== 0 && !is_init) {
       /** Lưu tin nhắn mới từ socket vào store */
       dispatch(setListMessage([...LIST_MESSAGE, LATEST_MESSAGE]))
@@ -572,13 +621,23 @@ function DetailChat({
               />
             </div>
           ))}
-        {/* <div>
-          {is_generate_message && user_id && (
+        <div>
+          {/* {TYPING_STATUS && user_id && (
             <div className="flex p-2 rounded-full bg-slate-300 w-fit">
               <LoadingDots />
             </div>
+          )} */}
+          {TYPING_STATUS && (
+            <div className="text-lg font-semibold flex items-center gap-x-2 py-2 px-4 rounded-full bg-slate-300 w-fit">
+              <span className="text-xs text-slate-700">
+                {STATUSES[status_index]}
+              </span>
+              <div className="flex  ">
+                <LoadingDots />
+              </div>
+            </div>
           )}
-        </div> */}
+        </div>
 
         {/* Thẻ div này đóng vai trò là nơi đánh dấu để cuộn tới
          * khi có tin nhắn mới thì sẽ cuộn xuống dưới cùng
