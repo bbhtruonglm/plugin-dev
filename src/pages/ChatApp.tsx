@@ -266,13 +266,16 @@ const ChatApp = ({
   useEffect(() => {
     if (!PAGE_ID) return
 
-    console.log(WS, 'CHECK wssss')
-
     /** Hủy WebSocket cũ trước khi tạo mới */
     if (AI_STATUS) {
       console.log('Đóng WebSocket cũ trước khi tạo mới')
+      /**
+       * Đóng WebSocket cũ trước khi tạo mới
+       */
       closeSocketConnect(WS, setIsForceCloseSocket)
-
+      /**
+       * Nếu nhận được client_id từ AI thì lưu vào localStorage
+       */
       if (GLOBAL_CLIENT_ID) {
         /** Tạo WebSocket mới */
         onSocketFromChatboxServer({

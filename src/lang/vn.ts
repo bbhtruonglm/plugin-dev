@@ -54,5 +54,8 @@ export const vn = {
 
     invalid_virtual_assistant: 'Thông tin trợ lý ảo không đúng',
     unread_message: 'Tin nhắn chưa đọc',
+    ai_thinking: 'AI đang suy nghĩ',
+    ai_still_thinking: 'AI vẫn đang suy nghĩ',
+    ai_already_thinking: 'Sắp xong rồi!',
   },
 }
