@@ -511,7 +511,11 @@ function DetailChat({
     },
     [employee_list]
   )
-
+  const [url, setUrl] = useState('')
+  useEffect(() => {
+    console.log(window.location, 'window.location.href')
+    setUrl(window.location.href)
+  }, [])
   return (
     <div
       className={`flex flex-col w-full h-full ${
@@ -568,6 +572,7 @@ function DetailChat({
             )}
           </div>
         )}
+
         {AI_STATUS && invalid_page_id && (
           <h4 className="flex justify-center font-semibold text-red-600">
             {t('invalid_virtual_assistant')}
@@ -618,6 +623,7 @@ function DetailChat({
             </div>
           ))}
         <div>
+          <div className="word-breaks whitespace-pre-line">{url}</div>
           {/* {TYPING_STATUS && user_id && (
             <div className="flex p-2 rounded-full bg-slate-300 w-fit">
               <LoadingDots />

@@ -49,6 +49,7 @@ function getQueryParam(param: string) {
    */
   return URL_PARAMS.get(param)
 }
+
 function App() {
   useEffect(() => {
     /**
