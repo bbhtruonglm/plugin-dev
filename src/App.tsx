@@ -59,11 +59,11 @@ function App() {
       /**
        * Lấy token từ URL
        */
-      const TOKEN = getQueryParam('access_token')
+      // const TOKEN = getQueryParam('access_token')
       /**
        * Nếu có token thì load WIDGET
        */
-      if (TOKEN) {
+      // if (TOKEN) {
         try {
           /**
            * Bật chế độ debug
@@ -76,9 +76,9 @@ function App() {
         } catch (error) {
           console.error('Lỗi khi giải mã token:', error)
         }
-      } else {
-        console.warn('Không tìm thấy token trong URL')
-      }
+      // } else {
+      //   console.warn('Không tìm thấy token trong URL')
+      // }
     } else {
       console.warn('Không phải trang AI Assistant, bỏ qua việc load WIDGET')
     }
