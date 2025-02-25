@@ -623,7 +623,6 @@ function DetailChat({
             </div>
           ))}
         <div>
-          <div className="word-breaks whitespace-pre-line">{url}</div>
           {/* {TYPING_STATUS && user_id && (
             <div className="flex p-2 rounded-full bg-slate-300 w-fit">
               <LoadingDots />
