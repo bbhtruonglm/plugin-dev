@@ -7,6 +7,7 @@ import {
   setGlobalUnreadCount,
   setLatestMessageGlobal,
   setListUnreadMessage,
+  setTypingStatus,
 } from '@/stores/appSlice'
 
 import { MessageInfo } from '@/utils/type'
@@ -108,6 +109,10 @@ export function onSocketFromChatboxServer({
     let socket_data: {
       /**dữ liệu tin nhắn mới */
       message?: MessageInfo
+      /**
+       * Trạng thái của người gửi
+       */
+      sender_action?: 'typing_on' | 'typing_off'
     } = {}
     /**  cố gắng giải mã dữ liệu*/
     try {
@@ -119,7 +124,20 @@ export function onSocketFromChatboxServer({
     /** Kiểm tra socket_data có dữ liệu không */
     if (!size(socket_data)) return
     /** Lấy tin nhắn từ socket */
-    let { message } = socket_data
+    let { message, sender_action } = socket_data
+    console.log(sender_action, 'socket data')
+    /** Nếu có trạng thái typing */
+    if (sender_action === 'typing_on') {
+      /** Nếu có trạng thái typing thì hiển thị */
+      console.log('typing_on')
+      dispatch(setTypingStatus(true))
+    }
+    if (sender_action === 'typing_off') {
+      /** Nếu có trạng thái typing thì hiển thị */
+      console.log('typing_off')
+      dispatch(setTypingStatus(false))
+    }
+
     /**
      * Phải lấy data trong REF,
      * Vì khi websocket, chỉ lưu giá trị lúc mới khởi tạo
@@ -181,6 +199,7 @@ export function onSocketFromChatboxServer({
     if (message && IS_SHOW_REF.current && TAB_REF.current === 'message') {
       /** Không nhận tin nhắn từ hệ thống */
       if (message?.message_type !== 'system') {
+        console.log(message, 'message sockettttt')
         dispatch(setLatestMessageGlobal(message))
         /** Cần lưu ý (với data của redux, WS đang lưu giá trị [] ban đầu)
          * Vì Latest mesage chỉ gọi hàm setListMessage

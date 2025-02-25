@@ -175,6 +175,10 @@ function ChatScreen({
          */
         dispatch(setGlobalClientId(RESULT.data))
         /**
+         * Nếu là AI_STATUS thì return
+         */
+        if (AI_STATUS) return
+        /**
          * Set is init thành true
          */
         setIsInit(true)
