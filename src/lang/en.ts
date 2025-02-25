@@ -54,5 +54,9 @@ export const en = {
     add_to_chat: 'Add to chat',
 
     invalid_virtual_assistant: 'Invalid virtual assistant information',
+    unread_message: 'Unread message',
+    ai_thinking: 'AI is thinking',
+    ai_still_thinking: 'AI is still thinking',
+    ai_already_thinking: 'Almost done!',
   },
 }

@@ -90,13 +90,18 @@ function DetailChat({
   /** Dùng ref để giữ giá trị của skip */
   const SKIP_REF = useRef(0)
   /**
-   * Trạng thái loading khi gửi tin nhắn
+   * Mock data trạng thái AI
    */
-  const STATUSES = ['AI đang suy nghĩ', 'AI vẫn đang suy nghĩ', 'Sắp xong rồi!']
+  const STATUSES = [
+    t('ai_thinking'),
+    t('ai_still_thinking'),
+    t('ai_already_thinking'),
+  ]
   /**
    * Trạng thái loading khi gửi tin nhắn
    */
   const [status_index, setStatusIndex] = useState(0)
+
   /**
    * Cập nhật trạng thái loading khi gửi tin nhắn
    */
@@ -122,21 +127,15 @@ function DetailChat({
   }, [TYPING_STATUS])
 
   useEffect(() => {
-    console.log(REFRESH_DATA, 'refresh detail chat')
-
-    console.log(CLIENT_ID_GLOBAL, 'CLIENT_ID_GLOBAL')
     /**
      * Kiểm tra REFRESH_DATA và !CLIENT_ID
      */
-    if (REFRESH_DATA && !CLIENT_ID_GLOBAL) {
-      /**
-       * Set lại các trạng thái của component
-       */
+    if (REFRESH_DATA) {
       /**
        * có data
        */
       setHasMore(true)
-      console.log(REFRESH_DATA, 'fetch data no CLIENT')
+
       /**
        * Set lại skip
        */
@@ -150,12 +149,11 @@ function DetailChat({
      * Đoạn này cần sửa lại
      */
     if (REFRESH_DATA && CLIENT_ID_GLOBAL) {
-      console.log('fetch data has CLIENT')
       /**
        * Fetch data với client id truyền vào
        */
       fetchMessage(CLIENT_ID_GLOBAL)
-      console.log('FETCH MESSAGE use Effect Refresh data')
+
       /**
        * Set lại trạng thái REFRESH_DATA
        */
@@ -168,7 +166,6 @@ function DetailChat({
 
   /** List tin nhắn được lấy từ store */
   const LIST_MESSAGE = useSelector(selectListMessage)
-  console.log(LIST_MESSAGE, 'LIST_MESSAGE')
 
   /** Số tin nhắn chưa đọc lấy trong STORE */
   const GLOBAL_UNREAD_COUNT = useSelector(selectGlobalUnreadCount)
@@ -226,7 +223,6 @@ function DetailChat({
 
   /** Hàm gọi API để lấy tin nhắn */
   const fetchMessage = async (client_iddd?: string) => {
-    console.log(client_iddd, 'hahahah')
     /** Đang loading hoặc không có thêm bản ghi sẽ không fetch data nữa */
     if (loading_more || !has_more) return
     /** Lấy vị trí scroll hiện tại, nếu k có thì return */
@@ -409,7 +405,7 @@ function DetailChat({
       timeout_id = setTimeout(() => {
         /**  Gọi API sau khi đợi 1 giây */
         fetchMessage(CLIENT_ID as string)
-        console.log('FETCH MESSAGE là INIT')
+
         /** Khi khởi tạo và call API sau 0.1 giây . set lại trạng thái Không là tin nhắn khởi tạo nữa */
         setIsInit()
         console.log('API called after 1 second because is_init is true')
@@ -632,6 +628,7 @@ function DetailChat({
               <span className="text-xs text-slate-700">
                 {STATUSES[status_index]}
               </span>
+
               <div className="flex  ">
                 <LoadingDots />
               </div>

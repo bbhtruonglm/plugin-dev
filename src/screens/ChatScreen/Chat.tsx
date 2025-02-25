@@ -6,6 +6,7 @@ import {
   selectUserInfo,
   setGlobalClientId,
   setStatusIsInit,
+  setUserInfo,
 } from '@/stores/appSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { useEffect, useState } from 'react'
@@ -175,6 +176,17 @@ function ChatScreen({
          */
         dispatch(setGlobalClientId(RESULT.data))
         /**
+         * Sau khi khởi tạo client thì xoá hết thông tin trong store
+         */
+        dispatch(
+          setUserInfo({
+            user_name: '',
+            user_phone: '',
+            user_email: '',
+            client_id: '',
+          })
+        )
+        /**
          * Nếu là AI_STATUS thì return
          */
         if (AI_STATUS) return
@@ -196,9 +208,14 @@ function ChatScreen({
     console.log('CHẠY VÀO ĐÂY USER_INFO', USER_INFO)
     console.log(CLIENT_ID, 'CHẠY VÀO ĐÂY CLLIENT ID')
     /**
+     * Kiểm tra USER_INFO có chứa ít nhất một giá trị thực
+     */
+    const HAS_VALID_VALUE = USER_INFO && USER_INFO.client_id?.trim()
+
+    /**
      * Nếu là case AI_STATUS và chưa có CLIENT_ID
      */
-    if (AI_STATUS && !GLOBAL_CLIENT_ID && PAGE_ID) {
+    if (AI_STATUS && !GLOBAL_CLIENT_ID && PAGE_ID && HAS_VALID_VALUE) {
       /**
        * Gọi hàm khởi tạo client id
        */
@@ -213,9 +230,12 @@ function ChatScreen({
         PARAMS.client_id = USER_INFO.client_id
       }
       console.log('CHẠY VÀO ĐÂY')
+      /**
+       * Gọi hàm khởi tạo client id
+       */
       initGetClientId(PARAMS)
     }
-  }, [AI_STATUS, GLOBAL_CLIENT_ID, PAGE_ID])
+  }, [AI_STATUS, GLOBAL_CLIENT_ID, PAGE_ID, USER_INFO])
 
   useEffect(() => {
     /**

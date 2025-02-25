@@ -18,6 +18,7 @@ import {
   setGlobalUnreadCount,
   setLatestMessageGlobal,
   setListMessage,
+  setLoadingGlobal,
   setNoViewport,
   setPageId,
   setPageInfoAI,
@@ -89,8 +90,6 @@ function App() {
    */
   const decodeClientData = async () => {
     WIDGET.onEvent(async () => {
-      /** ghi lại thông tin khách hàng mới */
-      let client = await WIDGET.getClientInfo()
       /**
        * dispatch để reset data
        */
@@ -103,6 +102,18 @@ function App() {
        * Xoá tin nhắn mới nhất
        */
       dispatch(setLatestMessageGlobal(null))
+      /**
+       * Reset lại client_id Mỗi khi phát hiện có sự kiện mới
+       */
+      dispatch(setGlobalClientId(''))
+
+      /**
+       * setLoading global là true
+       */
+      dispatch(setLoadingGlobal(true))
+
+      /** ghi lại thông tin khách hàng mới */
+      let client = await WIDGET.getClientInfo()
 
       /**
        * PAGE_ID mới
@@ -125,7 +136,7 @@ function App() {
        */
       localStorage.setItem(`client_id_${N_PAGE_ID}`, '')
 
-      dispatch(setGlobalClientId(''))
+      console.log('CHẠY VÀO ĐÂY USER_INFO hàm refresh', client)
 
       /**
        * Gửi tin nhắn Cập nhật lại client_id
@@ -299,7 +310,7 @@ function App() {
           /** Sử dụng await để lấy dữ liệu CLIENT_INFO */
           const CLIENT_INFO = await decodeInitClientData()
 
-          console.log(CLIENT_INFO, 'CLIENT_INFO')
+          console.log(CLIENT_INFO, 'CLIENT_INFO CHẠY VÀO ĐÂY')
           /**
            * New CLIENT ID
            */
@@ -330,16 +341,18 @@ function App() {
           dispatch(setPageInfoAI(DATA_CLIENT))
           dispatch(setRefreshData(true))
           /**
-           * Cập nhạt thông tin user nếu chưa đăng ký
+           * Nếu có client_id mới thì lưu vào store
            */
-          dispatch(
-            setUserInfo({
-              user_name: '',
-              user_email: '',
-              user_phone: '',
-              client_id: NEW_CLIENT_ID,
-            })
-          )
+          if (NEW_CLIENT_ID) {
+            dispatch(
+              setUserInfo({
+                user_name: '',
+                user_email: '',
+                user_phone: '',
+                client_id: NEW_CLIENT_ID,
+              })
+            )
+          }
           /** Lấy page_id */
           const STORED_PAGE_ID = CLIENT_INFO?.public_profile?.ai_agent_id || ''
           /**
