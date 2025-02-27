@@ -29,6 +29,7 @@ const INITIAL_STATE: AppState = {
   page_info_ai: {},
   refresh_data: false,
   typing_status: undefined,
+  suggest_message: '',
 }
 
 export const appSlice = createSlice({
@@ -142,6 +143,12 @@ export const appSlice = createSlice({
     setTypingStatus: (state, action: PayloadAction<boolean | undefined>) => {
       state.typing_status = action.payload
     },
+    /**
+     * Trạng thái suggest message
+     */
+    setSuggestMessage: (state, action: PayloadAction<string>) => {
+      state.suggest_message = action.payload
+    },
   },
 })
 
@@ -167,6 +174,7 @@ export const {
   setPageInfoAI,
   setRefreshData,
   setTypingStatus,
+  setSuggestMessage,
 } = appSlice.actions
 
 /** chọn đến page id */
@@ -229,5 +237,10 @@ export const selectRefreshData = (state: RootState) => state.app.refresh_data
  * Typing status
  */
 export const selectTypingStatus = (state: RootState) => state.app.typing_status
+/**
+ * Suggest message
+ */
+export const selectSuggestMessage = (state: RootState) =>
+  state.app.suggest_message
 
 export default appSlice.reducer

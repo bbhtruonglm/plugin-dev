@@ -3,7 +3,10 @@ import {
   selectPageInfoAI,
   selectStatusAI,
   selectStatusPopup,
+  selectSuggestMessage,
+  setSuggestMessage,
 } from '@/stores/appSlice'
+import { t, use } from 'i18next'
 import { useEffect, useRef, useState } from 'react'
 
 import { ReactComponent as Arrow } from '@/assets/Icon_up_circle.svg'
@@ -11,8 +14,8 @@ import { ReactComponent as ArrowSlate } from '@/assets/Icon_up_circle_slate.svg'
 import { ReactComponent as Close } from '@/assets/close.svg'
 import { InputProps } from '../type'
 import Upload from './Upload'
-import { t } from 'i18next'
 import { useAPI } from '@/api/api'
+import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
 
 function InputChat({
@@ -67,6 +70,12 @@ function InputChat({
    * Data client info
    */
   const CLIENT_INFO = useSelector(selectPageInfoAI)
+
+  /**
+   * Tin nhắn suggest
+   */
+  const SUGGEST_MESSAGE = useSelector(selectSuggestMessage)
+  console.log(SUGGEST_MESSAGE, 'suggest')
 
   useEffect(() => {
     /**
@@ -308,7 +317,13 @@ function InputChat({
      */
     return ''
   }
-
+  const dispatch = useDispatch()
+  // useEffect(() => {
+  //   if (SUGGEST_MESSAGE) {
+  //     handleSend(SUGGEST_MESSAGE)
+  //   }
+  //   dispatch(setSuggestMessage(''))
+  // }, [SUGGEST_MESSAGE])
   return (
     <div
       className={`absolute flex justify-center items-center bg-transparent w-full ${
@@ -319,7 +334,7 @@ function InputChat({
     >
       <div
         className={`bg-white w-full flex shadow-sm ${
-          is_ai_suggest
+          SUGGEST_MESSAGE
             ? 'flex-col rounded-xl gap-y-1'
             : 'flex-row justify-between items-center rounded-full gap-2'
         }   h-full py-2 px-4`}
@@ -348,16 +363,15 @@ function InputChat({
             }}
           />
         )}
-        {is_ai_suggest && (
+        {SUGGEST_MESSAGE && (
           <div
             onClick={() => {
-              setValue(data_suggest)
-              setDataSuggest('')
-              setIsAiSuggest(false)
+              handleSend(SUGGEST_MESSAGE)
+              dispatch(setSuggestMessage(''))
             }}
             className="outline outline-1 outline-slate-200 rounded-full w-fit px-2 p-1 text-xs cursor-pointer"
           >
-            {data_suggest}
+            {SUGGEST_MESSAGE}
           </div>
         )}
         <div className="flex justify-between items-center w-full">
