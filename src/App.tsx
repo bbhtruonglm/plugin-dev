@@ -91,6 +91,10 @@ function App() {
    */
   const decodeClientData = async () => {
     WIDGET.onEvent(async (e: any, value: any) => {
+      /**
+       * Nếu là tin nhắn từ khách hàng thì gửi tin nhắn suggest
+       * Tạm thời không dùng return tránh bị lỗi phần còn lại
+       */
       if (value?.type === 'CLIENT_MESSAGE') {
         // dispatch(setSuggestMessage(value?.playload?.message))
         return
@@ -215,6 +219,9 @@ function App() {
     const { user_name, user_email, user_phone, client_id, from, action, type } =
       PAYLOAD
     console.log('DATA::', PAYLOAD)
+    /**
+     * Nếu từ chatbox và là tin nhắn từ khách hàng thì gửi tin nhắn suggest
+     */
     if (from === 'CHATBOX' && type === 'CLIENT_MESSAGE') {
       dispatch(setSuggestMessage(PAYLOAD?.payload?.message))
     }
