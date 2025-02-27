@@ -69,18 +69,18 @@ function App() {
        * Nếu có token thì load WIDGET
        */
       // if (TOKEN) {
-        try {
-          /**
-           * Bật chế độ debug
-           */
-          WIDGET.debugOn()
-          /**
-           * Load WIDGET
-           */
-          WIDGET.load('00de4446885a43c5b58ef16dba0f5058')
-        } catch (error) {
-          console.error('Lỗi khi giải mã token:', error)
-        }
+      try {
+        /**
+         * Bật chế độ debug
+         */
+        WIDGET.debugOn()
+        /**
+         * Load WIDGET
+         */
+        WIDGET.load('00de4446885a43c5b58ef16dba0f5058')
+      } catch (error) {
+        console.error('Lỗi khi giải mã token:', error)
+      }
       // } else {
       //   console.warn('Không tìm thấy token trong URL')
       // }
