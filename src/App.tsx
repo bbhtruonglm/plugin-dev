@@ -25,6 +25,7 @@ import {
   setRefreshData,
   setStatusIsAI,
   setStatusPopup,
+  setSuggestMessage,
   setUserInfo,
 } from './stores/appSlice'
 import { useDispatch, useSelector } from 'react-redux'
@@ -89,69 +90,75 @@ function App() {
    * @returns {Promise<Object>} - Dữ liệu khách hàng
    */
   const decodeClientData = async () => {
-    WIDGET.onEvent(async () => {
-      /**
-       * dispatch để reset data
-       */
-      dispatch(setRefreshData(true))
-      /**
-       * Xoá danh sách tin nhắn
-       */
-      dispatch(setListMessage([]))
-      /**
-       * Xoá tin nhắn mới nhất
-       */
-      dispatch(setLatestMessageGlobal(null))
-      /**
-       * Reset lại client_id Mỗi khi phát hiện có sự kiện mới
-       */
-      dispatch(setGlobalClientId(''))
+    WIDGET.onEvent(async (e: any, value: any) => {
+      if (value?.type === 'CLIENT_MESSAGE') {
+        // dispatch(setSuggestMessage(value?.playload?.message))
+        return
+      } else {
+        /**
+         * dispatch để reset data
+         */
+        dispatch(setRefreshData(true))
+        /**
+         * Xoá danh sách tin nhắn
+         */
+        dispatch(setListMessage([]))
+        /**
+         * Xoá tin nhắn mới nhất
+         */
+        dispatch(setLatestMessageGlobal(null))
+        /**
+         * Reset lại client_id Mỗi khi phát hiện có sự kiện mới
+         */
+        dispatch(setGlobalClientId(''))
+        /**
+         * Reset tin nhắn suggest
+         */
+        dispatch(setSuggestMessage(''))
 
-      /**
-       * setLoading global là true
-       */
-      dispatch(setLoadingGlobal(true))
+        /**
+         * setLoading global là true
+         */
+        dispatch(setLoadingGlobal(true))
+        /** ghi lại thông tin khách hàng mới */
+        let client = await WIDGET.getClientInfo()
+        console.log('CHẠY VÀO ĐÂY USER_INFO hàm decode', client)
+        /**
+         * PAGE_ID mới
+         */
+        const N_PAGE_ID = client?.public_profile?.ai_agent_id
+        /**
+         * ID khách hàng mới
+         */
+        const N_CLIENT_ID =
+          client?.public_profile?.page_id +
+          '__' +
+          client?.public_profile?.fb_client_id
 
-      /** ghi lại thông tin khách hàng mới */
-      let client = await WIDGET.getClientInfo()
+        /**
+         * Nếu client_id mới khác client_id cũ thì mới reset lại
+         */
+        // if (N_CLIENT_ID !== CLIENT_ID_LOCAL) {
+        /**
+         * Reset lại client_id
+         */
+        localStorage.setItem(`client_id_${N_PAGE_ID}`, '')
 
-      /**
-       * PAGE_ID mới
-       */
-      const N_PAGE_ID = client?.public_profile?.ai_agent_id
-      /**
-       * ID khách hàng mới
-       */
-      const N_CLIENT_ID =
-        client?.public_profile?.page_id +
-        '__' +
-        client?.public_profile?.fb_client_id
+        console.log('CHẠY VÀO ĐÂY USER_INFO hàm refresh', client)
 
-      /**
-       * Nếu client_id mới khác client_id cũ thì mới reset lại
-       */
-      // if (N_CLIENT_ID !== CLIENT_ID_LOCAL) {
-      /**
-       * Reset lại client_id
-       */
-      localStorage.setItem(`client_id_${N_PAGE_ID}`, '')
+        /**
+         * Gửi tin nhắn Cập nhật lại client_id
+         */
 
-      console.log('CHẠY VÀO ĐÂY USER_INFO hàm refresh', client)
-
-      /**
-       * Gửi tin nhắn Cập nhật lại client_id
-       */
-
-      dispatch(
-        setUserInfo({
-          user_name: '',
-          user_email: '',
-          user_phone: '',
-          client_id: N_CLIENT_ID,
-        })
-      )
-      // }
-      console.log(client, 'client')
+        dispatch(
+          setUserInfo({
+            user_name: '',
+            user_email: '',
+            user_phone: '',
+            client_id: N_CLIENT_ID,
+          })
+        )
+      }
     })
   }
   /**
@@ -205,9 +212,12 @@ function App() {
      * @type {string} action - Hành động từ app cha
      * @type {string} locale - Ngôn ngữ
      */
-    const { user_name, user_email, user_phone, client_id, from, action } =
+    const { user_name, user_email, user_phone, client_id, from, action, type } =
       PAYLOAD
     console.log('DATA::', PAYLOAD)
+    if (from === 'CHATBOX' && type === 'CLIENT_MESSAGE') {
+      dispatch(setSuggestMessage(PAYLOAD?.payload?.message))
+    }
 
     /** Kiểm tra thông tin từ app cha */
     if (from === 'parent-app') {
@@ -319,11 +329,6 @@ function App() {
             '__' +
             CLIENT_INFO?.public_profile?.fb_client_id
           console.log(NEW_CLIENT_ID, 'newclientid')
-          // localStorage.setItem(
-          //   `client_id_${CLIENT_INFO?.public_profile?.ai_agent_id}`,
-          //   NEW_CLIENT_ID
-          // )
-          // dispatch(setGlobalClientId(NEW_CLIENT_ID))
 
           /** Dữ liệu khách hàng */
           const DATA_CLIENT = {

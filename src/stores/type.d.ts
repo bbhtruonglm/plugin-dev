@@ -103,6 +103,10 @@ export interface AppState {
    * refresh data
    */
   refresh_data?: boolean
+  /**
+   * Tin nhắn suggest của khách hàng
+   */
+  suggest_message?: string
 }
 /** Định nghĩa kiểu dữ liệu cho danh sách nhân viên */
 interface EmployeeList {
