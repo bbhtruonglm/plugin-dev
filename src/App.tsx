@@ -378,6 +378,7 @@ function App() {
            * Lưu page_id vào store
            */
           dispatch(setPageId(STORED_PAGE_ID || ''))
+
           /**
            * Cập nhật thông tin kích thước của parent
            */
@@ -411,6 +412,10 @@ function App() {
           const STORED_CLIENT_ID = localStorage.getItem(
             `client_id_${STORED_PAGE_ID}`
           )
+          /**
+           * Trường hợp KHông phải chat AI thì lưu client_id vào store
+           */
+          dispatch(setGlobalClientId(STORED_CLIENT_ID || ''))
           /**
            * Lấy dữ liệu khách hàng
            */
