@@ -227,6 +227,7 @@ function DetailChat({
     if (loading_more || !has_more) return
     /** Lấy vị trí scroll hiện tại, nếu k có thì return */
     const CONTAINER = MESSAGE_CONTAINER_REF.current
+    console.log(CONTAINER, 'CONTAINER')
     /** Nếu không co REF thi return */
     if (!CONTAINER) return
 
