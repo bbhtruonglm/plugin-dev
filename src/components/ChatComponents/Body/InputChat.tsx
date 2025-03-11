@@ -14,6 +14,7 @@ import { ReactComponent as ArrowSlate } from '@/assets/Icon_up_circle_slate.svg'
 import { ReactComponent as Close } from '@/assets/close.svg'
 import { InputProps } from '../type'
 import Upload from './Upload'
+import { postMessageToParent } from '@/utils'
 import { useAPI } from '@/api/api'
 import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
@@ -297,7 +298,7 @@ function InputChat({
       /**
        * Cuộn tới input
        */
-      INPUT_REF.current.scrollIntoView({ behavior: 'smooth' })
+      // INPUT_REF.current.scrollIntoView({ behavior: 'smooth' })
     }
   }
 

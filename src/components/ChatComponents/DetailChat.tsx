@@ -648,7 +648,7 @@ function DetailChat({
               </div>
             </div>
           )}
-        </div>
+        </div> */}
 
         {/* Thẻ div này đóng vai trò là nơi đánh dấu để cuộn tới
          * khi có tin nhắn mới thì sẽ cuộn xuống dưới cùng
