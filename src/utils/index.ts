@@ -154,6 +154,7 @@ export const renderAvatarCDN = (id: string) => {
    * Link avatar của nhân sự
    */
   const LINK_AVATAR = `https://cdn.botbanhang.vn/media/s/${id}/user`
+
   /**
    * Trả về link avatar
    */
@@ -609,9 +610,10 @@ export const checkStaffExist = (id: string) => {
    * Lấy ID từ message_metadata
    */
   const ID_DETECT = id.split('__')[2]
-
   /** Nếu không có staff Id thì trả về '' */
   if (!ID_DETECT) return ''
+
+  if (ID_DETECT === 'undefined') return './images/assistant_bot.svg'
   /**
    * Trả về link avatar
    */

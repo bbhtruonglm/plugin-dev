@@ -14,6 +14,7 @@ import { ReactComponent as ArrowSlate } from '@/assets/Icon_up_circle_slate.svg'
 import { ReactComponent as Close } from '@/assets/close.svg'
 import { InputProps } from '../type'
 import Upload from './Upload'
+import { postMessageToParent } from '@/utils'
 import { useAPI } from '@/api/api'
 import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
@@ -31,6 +32,7 @@ function InputChat({
    * Input Ref
    */
   const INPUT_REF = useRef<HTMLInputElement>(null)
+
   /**
    * @param SHOW_POPUP: boolean
    * Lấy trạng thái của popup
@@ -75,49 +77,90 @@ function InputChat({
    * Tin nhắn suggest
    */
   const SUGGEST_MESSAGE = useSelector(selectSuggestMessage)
-  console.log(SUGGEST_MESSAGE, 'suggest')
+
+  // useEffect(() => {
+  //   /**
+  //    * Nếu SHOW_POPUP = true thì focus vào input
+  //    */
+  //   if (SHOW_POPUP) {
+  //     /**
+  //      * Focus vào input khi popup mở
+  //      */
+  //     const TIMER = setTimeout(() => {
+  //       /**
+  //        * Nếu input tồn tại
+  //        */
+  //       if (INPUT_REF.current) {
+  //         /** Focus vào input khi popup mở */
+  //         // INPUT_REF.current.focus()
+  //         /** Cuộn tới input */
+  //         // INPUT_REF.current.scrollIntoView({ behavior: 'smooth' })
+  //       }
+  //       /**
+  //        * Delay 200ms để chắc chắn input đã được render
+  //        */
+  //     }, 200)
+
+  //     /** Chặn cuộn trang khi popup mở */
+  //     document.body.style.overflow = 'hidden'
+  //     /**
+  //      * Clear timeout khi component unmount
+  //      */
+  //     return () => {
+  //       /**
+  //        * Clear timeout
+  //        */
+  //       clearTimeout(TIMER)
+  //     }
+  //   } else {
+  //     /**
+  //      * Hiển thị cuộn trang khi popup đóng
+  //      */
+  //     document.body.style.overflow = 'auto'
+  //   }
+  // }, [SHOW_POPUP])
 
   useEffect(() => {
     /**
-     * Nếu SHOW_POPUP = true thì focus vào input
+     * Hàm xử lý focus
      */
-    if (SHOW_POPUP) {
+    const handleFocus = () => {
       /**
-       * Focus vào input khi popup mở
+       *
        */
-      const TIMER = setTimeout(() => {
-        /**
-         * Nếu input tồn tại
-         */
+      // setIsKeyboardOpen(true)
+      setTimeout(() => {
         if (INPUT_REF.current) {
-          /** Focus vào input khi popup mở */
-          INPUT_REF.current.focus()
-          /** Cuộn tới input */
-          INPUT_REF.current.scrollIntoView({ behavior: 'smooth' })
+          INPUT_REF.current.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+          })
         }
-        /**
-         * Delay 200ms để chắc chắn input đã được render
-         */
       }, 200)
-
-      /** Chặn cuộn trang khi popup mở */
-      document.body.style.overflow = 'hidden'
-      /**
-       * Clear timeout khi component unmount
-       */
-      return () => {
-        /**
-         * Clear timeout
-         */
-        clearTimeout(TIMER)
-      }
-    } else {
-      /**
-       * Hiển thị cuộn trang khi popup đóng
-       */
-      document.body.style.overflow = 'auto'
     }
-  }, [SHOW_POPUP])
+    /**
+     * Hàm xử lý blur
+     */
+    const handleBlur = () => {
+      setIsKeyboardOpen(false)
+    }
+    /**
+     * Nếu input tồn tại
+     */
+    if (INPUT_REF.current) {
+      INPUT_REF.current.addEventListener('focus', handleFocus)
+      INPUT_REF.current.addEventListener('blur', handleBlur)
+    }
+    /**
+     * Cleanup
+     */
+    return () => {
+      if (INPUT_REF.current) {
+        INPUT_REF.current.removeEventListener('focus', handleFocus)
+        INPUT_REF.current.removeEventListener('blur', handleBlur)
+      }
+    }
+  }, [])
   /**
    *  Hàm upload file
    * @param file  File | null
@@ -182,7 +225,7 @@ function InputChat({
           method: 'POST',
           body: FORM_DATA,
         })
-        console.log(RES, 'res')
+
         /**
          * set loading
          */
@@ -237,6 +280,9 @@ function InputChat({
        * Reset value
        */
       setValue('')
+
+      INPUT_REF.current?.blur()
+      setIsKeyboardOpen(false)
     }
   }
   /**
@@ -248,55 +294,14 @@ function InputChat({
       /**
        * Focus vào input khi popup mở
        */
-      INPUT_REF.current.focus()
+      // INPUT_REF.current.focus()
       /**
        * Cuộn tới input
        */
-      INPUT_REF.current.scrollIntoView({ behavior: 'smooth' })
+      // INPUT_REF.current.scrollIntoView({ behavior: 'smooth' })
     }
   }
-  /**
-   * State suggest của AI
-   */
-  const [is_ai_suggest, setIsAiSuggest] = useState(false)
-  /**
-   * Suggest của AI
-   */
-  const [data_suggest, setDataSuggest] = useState('')
-  /**
-   * Suggest của AI
-   */
-  useEffect(() => {
-    console.log('run')
-    /**
-     * Nếu không có giá trị và là suggest của AI và AI đang hoạt động thì mới suggest
-     */
-    if (!value && !is_ai_suggest && AI_STATUS) {
-      /**
-       * Random index
-       */
-      const RANDOM_INDEX = Math.floor(Math.random() * MOCK_SUGGEST.length)
-      /**
-       * Set data suggest
-       */
-      // setDataSuggest(MOCK_SUGGEST[RANDOM_INDEX])
-      /**
-       * Delay 10s để hiển thị suggest
-       */
-      setTimeout(() => {
-        // setIsAiSuggest(true)
-      }, 10000)
-    }
-  }, [is_ai_suggest, value])
-  /**
-   * Mock suggest
-   */
-  const MOCK_SUGGEST = [
-    'Chính sách hoàn hàng',
-    'Chính sách hoàn tiền',
-    'Chính sách hoàn tiền cho khách hàng',
-    'Làm sao để hoàn tiền cho khách hàng',
-  ]
+
   /**
    * Render page name
    * @param page_name string
@@ -318,12 +323,36 @@ function InputChat({
     return ''
   }
   const dispatch = useDispatch()
-  // useEffect(() => {
-  //   if (SUGGEST_MESSAGE) {
-  //     handleSend(SUGGEST_MESSAGE)
-  //   }
-  //   dispatch(setSuggestMessage(''))
-  // }, [SUGGEST_MESSAGE])
+  /** Trạng thái mở keyboard */
+  const [is_keyboard_open, setIsKeyboardOpen] = useState(false)
+  /**
+   * Lắng nghe sự kiện touchmove để tắt bàn phím khi user vuốt
+   */
+  useEffect(() => {
+    /**
+     * Hàm xử lý touchmove
+     */
+    const handleTouchMove = () => {
+      if (is_keyboard_open) {
+        /** Tắt bàn phím khi user vuốt */
+        INPUT_REF.current?.blur()
+        setIsKeyboardOpen(false)
+      }
+    }
+    // document.body.style.overflow = 'hidden'
+    /**
+     * Nếu bàn phím mở và popup đóng thì tắt bàn phím
+     */
+    window.addEventListener('touchmove', handleTouchMove)
+    /**
+     * Cleanup
+     */
+    return () => {
+      // document.body.style.overflow = ''
+      window.removeEventListener('touchmove', handleTouchMove)
+    }
+  }, [is_keyboard_open])
+
   return (
     <div
       className={`absolute flex justify-center items-center bg-transparent w-full ${
@@ -377,7 +406,10 @@ function InputChat({
         <div className="flex justify-between items-center w-full">
           <input
             ref={INPUT_REF}
-            onChange={(e) => setValue(e.target.value)}
+            onChange={(e) => {
+              e.preventDefault()
+              setValue(e.target.value)
+            }}
             disabled={preview_url ? true : false}
             value={value}
             onKeyDown={(e) => {
@@ -397,6 +429,9 @@ function InputChat({
                     : CLIENT_INFO?.page_name)
             }
             className="bg-transparent outline-none flex-grow placeholder:text-slate-500 text-sm font-medium py-1.5 px-1"
+            onFocus={() => {
+              setIsKeyboardOpen(true)
+            }}
           />
           {AI_STATUS && value && (
             <div
@@ -437,10 +472,14 @@ function InputChat({
             {value || preview_url ? (
               <div
                 className="cursor-pointer"
-                onClick={() => {
+                onClick={(e) => {
                   if (!loading && !error_message && preview_url === null) {
                     handleSend(value)
                     setValue('')
+                    e.preventDefault()
+                    INPUT_REF.current?.blur()
+                    setIsKeyboardOpen(false)
+                    /** Tắt bàn phím khi user vuốt */
                   } else {
                     uploadFile(file)
                   }
