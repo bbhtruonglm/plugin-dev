@@ -91,7 +91,7 @@ function UnreadMessage({ onNavigate, onError }: SendMessageProps) {
                   )}
                 </div>
                 <div
-                  className="flex flex-col flex-grow min-w-0 h-full cursor-pointer"
+                  className="flex flex-col flex-grow min-w-0 h-20 cursor-pointer"
                   onClick={() => {
                     /** Khi click trả lời sẽ  reset hết data trong store */
                     // dispatch(setLatestMessageGlobal(null))
@@ -107,13 +107,14 @@ function UnreadMessage({ onNavigate, onError }: SendMessageProps) {
                   }}
                 >
                   <div className="flex flex-col justify-start items-center w-full gap-x-1 flex-shrink-0">
-                    <span className="flex text-sm w-full">
+                    {/* <span className="flex text-sm w-full max-h-16 line-clamp-2"> */}
+                    <span className="text-sm max-h-16 break-words whitespace-pre-line overflow-hidden line-clamp-3">
                       {LATEST_MESSAGE?.message_text}
                     </span>
 
                     {/* Phần hiển thị thông tin tin nhắn */}
-                    <div className="flex w-full">
-                      <div className="text-slate-500 text-sm font-medium flex items-center ">
+                    <div className="flex w-full gap-x-2">
+                      <div className="text-slate-500 text-sm font-medium flex items-center">
                         {/* Hiển thị tên nhân viên */}
                         <span className="">
                           {renderStaffName(
@@ -123,9 +124,9 @@ function UnreadMessage({ onNavigate, onError }: SendMessageProps) {
                         </span>
                       </div>
 
+                      <span className="mx-0.5">•</span>
                       {/* Hiển thị thời gian tin nhắn */}
                       <span className="text-slate-500 text-sm font-medium truncate flex items-center flex-shrink-0">
-                        <span className="mx-0.5">•</span>
                         {/* {calculateTimeAgo(LATEST_MESSAGE?.createdAt)} */}
                         <TimeAgo timestamp={LATEST_MESSAGE?.createdAt} />
                       </span>
@@ -133,7 +134,9 @@ function UnreadMessage({ onNavigate, onError }: SendMessageProps) {
                   </div>
                 </div>
               </div>
-              <Arrow />
+              <div>
+                <Arrow />
+              </div>
             </div>
           )}
         </div>

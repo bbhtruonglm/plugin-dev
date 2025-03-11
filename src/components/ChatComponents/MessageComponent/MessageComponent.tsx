@@ -99,6 +99,7 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
   }
   /** Trạng thái Đóng/ Mở Popup */
   const SHOW_POPUP = useSelector(selectStatusPopup)
+
   return (
     <div
       className={`flex flex-col transition-all duration-300 ease-out gap-y-4 rounded-lg group relative ${getMessageClasses(
