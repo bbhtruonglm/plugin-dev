@@ -408,12 +408,13 @@ const ChatApp = ({
      */
     dispatch(setEmbedPosition('bottom_left'))
     /**
-     * Lưu thông tin vị trí chatbox
+     * Lưu thông tin chi tiết vị trí của chatbox
      */
-    postMessagePosition('bottom_left')
+    dispatch(setEmbedPositionDetail({ bottom: 4, right: 12, left: 12 }))
+
     // dispatch(setEmbedPosition('bottom_right'))
 
-    // postMessagePosition('bottom_right')
+    postMessagePosition('bottom_left')
 
     /**
      *  Tạm ẩn để deploy lên production
