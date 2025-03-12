@@ -92,9 +92,9 @@ function InputChat({
   //        */
   //       if (INPUT_REF.current) {
   //         /** Focus vào input khi popup mở */
-  //         // INPUT_REF.current.focus()
+  //         INPUT_REF.current.focus()
   //         /** Cuộn tới input */
-  //         // INPUT_REF.current.scrollIntoView({ behavior: 'smooth' })
+  //         INPUT_REF.current.scrollIntoView({ behavior: 'smooth' })
   //       }
   //       /**
   //        * Delay 200ms để chắc chắn input đã được render
@@ -120,47 +120,47 @@ function InputChat({
   //   }
   // }, [SHOW_POPUP])
 
-  useEffect(() => {
-    /**
-     * Hàm xử lý focus
-     */
-    const handleFocus = () => {
-      /**
-       *
-       */
-      // setIsKeyboardOpen(true)
-      setTimeout(() => {
-        if (INPUT_REF.current) {
-          INPUT_REF.current.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center',
-          })
-        }
-      }, 200)
-    }
-    /**
-     * Hàm xử lý blur
-     */
-    const handleBlur = () => {
-      setIsKeyboardOpen(false)
-    }
-    /**
-     * Nếu input tồn tại
-     */
-    if (INPUT_REF.current) {
-      INPUT_REF.current.addEventListener('focus', handleFocus)
-      INPUT_REF.current.addEventListener('blur', handleBlur)
-    }
-    /**
-     * Cleanup
-     */
-    return () => {
-      if (INPUT_REF.current) {
-        INPUT_REF.current.removeEventListener('focus', handleFocus)
-        INPUT_REF.current.removeEventListener('blur', handleBlur)
-      }
-    }
-  }, [])
+  // useEffect(() => {
+  //   /**
+  //    * Hàm xử lý focus
+  //    */
+  //   const handleFocus = () => {
+  //     /**
+  //      *
+  //      */
+  //     setIsKeyboardOpen(true)
+  //     setTimeout(() => {
+  //       if (INPUT_REF.current) {
+  //         INPUT_REF.current.scrollIntoView({
+  //           behavior: 'smooth',
+  //           block: 'center',
+  //         })
+  //       }
+  //     }, 200)
+  //   }
+  //   /**
+  //    * Hàm xử lý blur
+  //    */
+  //   const handleBlur = () => {
+  //     setIsKeyboardOpen(false)
+  //   }
+  //   /**
+  //    * Nếu input tồn tại
+  //    */
+  //   if (INPUT_REF.current) {
+  //     INPUT_REF.current.addEventListener('focus', handleFocus)
+  //     INPUT_REF.current.addEventListener('blur', handleBlur)
+  //   }
+  //   /**
+  //    * Cleanup
+  //    */
+  //   return () => {
+  //     if (INPUT_REF.current) {
+  //       INPUT_REF.current.removeEventListener('focus', handleFocus)
+  //       INPUT_REF.current.removeEventListener('blur', handleBlur)
+  //     }
+  //   }
+  // }, [])
   /**
    *  Hàm upload file
    * @param file  File | null
@@ -281,8 +281,8 @@ function InputChat({
        */
       setValue('')
 
-      INPUT_REF.current?.blur()
-      setIsKeyboardOpen(false)
+      // INPUT_REF.current?.blur()
+      // setIsKeyboardOpen(false)
     }
   }
   /**
@@ -298,7 +298,7 @@ function InputChat({
       /**
        * Cuộn tới input
        */
-      // INPUT_REF.current.scrollIntoView({ behavior: 'smooth' })
+      INPUT_REF.current.scrollIntoView({ behavior: 'smooth' })
     }
   }
 
@@ -339,7 +339,7 @@ function InputChat({
         setIsKeyboardOpen(false)
       }
     }
-    // document.body.style.overflow = 'hidden'
+    document.body.style.overflow = 'hidden'
     /**
      * Nếu bàn phím mở và popup đóng thì tắt bàn phím
      */
@@ -348,7 +348,7 @@ function InputChat({
      * Cleanup
      */
     return () => {
-      // document.body.style.overflow = ''
+      document.body.style.overflow = ''
       window.removeEventListener('touchmove', handleTouchMove)
     }
   }, [is_keyboard_open])
@@ -407,7 +407,7 @@ function InputChat({
           <input
             ref={INPUT_REF}
             onChange={(e) => {
-              e.preventDefault()
+              // e.preventDefault()
               setValue(e.target.value)
             }}
             disabled={preview_url ? true : false}
