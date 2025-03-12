@@ -403,6 +403,17 @@ const ChatApp = ({
 
     /** lưu tên page vào state */
     setPageName(RES?.data?.name)
+    /**
+     * Lưu thông tin vị trí chatbox
+     */
+    dispatch(setEmbedPosition('bottom_left'))
+    /**
+     * Lưu thông tin vị trí chatbox
+     */
+    postMessagePosition('bottom_left')
+    // dispatch(setEmbedPosition('bottom_right'))
+
+    // postMessagePosition('bottom_right')
 
     /**
      *  Tạm ẩn để deploy lên production

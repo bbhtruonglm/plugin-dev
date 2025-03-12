@@ -371,6 +371,20 @@ export const postMessageToParentAllowedDomains = (list_domains?: string[]) => {
     '*'
   )
 }
+/**
+ *  Hàm post message thông tin đến parent
+ * @param position
+ */
+export const postMessagePosition = (position: string) => {
+  /** post message đến parent */
+  window.parent.postMessage(
+    {
+      from: 'BBH-EMBED-IFRAME',
+      position: position,
+    },
+    '*'
+  )
+}
 
 /** Thêm thời gian đóng popup vào localStorage
  * @param {string} page_id: Nhận với page_id
