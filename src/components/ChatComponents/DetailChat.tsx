@@ -619,7 +619,7 @@ function DetailChat({
               />
             </div>
           ))}
-        {/* <div>
+        <div>
           {TYPING_STATUS && (
             <div className="text-lg font-semibold flex items-center gap-x-2 py-2 px-4 rounded-full bg-slate-300 w-fit">
               <span className="text-xs text-slate-700">
@@ -631,7 +631,7 @@ function DetailChat({
               </div>
             </div>
           )}
-        </div> */}
+        </div>
 
         {/* Thẻ div này đóng vai trò là nơi đánh dấu để cuộn tới
          * khi có tin nhắn mới thì sẽ cuộn xuống dưới cùng
