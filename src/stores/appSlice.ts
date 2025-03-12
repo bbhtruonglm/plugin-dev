@@ -32,6 +32,11 @@ const INITIAL_STATE: AppState = {
   typing_status: undefined,
   suggest_message: '',
   embed_position: 'right',
+  embed_position_detail: {
+    left: undefined,
+    right: undefined,
+    bottom: undefined,
+  },
 }
 
 export const appSlice = createSlice({
@@ -157,6 +162,15 @@ export const appSlice = createSlice({
     setEmbedPosition: (state, action: PayloadAction<string>) => {
       state.embed_position = action.payload || 'right'
     },
+    /**
+     * Trạng thái vị trí của embed
+     */
+    setEmbedPositionDetail: (
+      state,
+      action: PayloadAction<AppState['embed_position_detail']>
+    ) => {
+      state.embed_position_detail = action.payload
+    },
   },
 })
 
@@ -184,6 +198,7 @@ export const {
   setTypingStatus,
   setSuggestMessage,
   setEmbedPosition,
+  setEmbedPositionDetail,
 } = appSlice.actions
 
 /** chọn đến page id */
@@ -256,5 +271,9 @@ export const selectSuggestMessage = (state: RootState) =>
  */
 export const selectEmbedPosition = (state: RootState) =>
   state.app.embed_position
-
+/**
+ * Embed position detail
+ */
+export const selectEmbedPositionDetail = (state: RootState) =>
+  state.app.embed_position_detail
 export default appSlice.reducer

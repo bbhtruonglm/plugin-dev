@@ -76,7 +76,7 @@ function UnreadMessage({ onNavigate, onError }: SendMessageProps) {
             <div className="flex flex-row items-center w-full gap-2">
               {/* Hiển thị avatar theo role user / shop */}
               <div
-                className={`flex gap-x-2 flex-grow min-h-0 justify-start items-end `}
+                className={`flex gap-x-2 flex-grow min-h-0 justify-start items-end`}
               >
                 <div className="flex flex-shrink-0 ">
                   {LATEST_MESSAGE?.message_type === 'page' && (
@@ -85,13 +85,13 @@ function UnreadMessage({ onNavigate, onError }: SendMessageProps) {
                         checkStaffExist(LATEST_MESSAGE?.message_metadata) ||
                         './images/earth.svg'
                       }
-                      className="w-8 h-8  mask-rounded-oval bg-gray-200"
+                      className="w-8 h-8 mask-rounded-oval bg-gray-200"
                       alt=""
                     />
                   )}
                 </div>
                 <div
-                  className="flex flex-col flex-grow min-w-0 h-20 cursor-pointer"
+                  className="flex flex-col flex-grow min-w-0 max-h-20 cursor-pointer"
                   onClick={() => {
                     /** Khi click trả lời sẽ  reset hết data trong store */
                     // dispatch(setLatestMessageGlobal(null))
@@ -106,7 +106,7 @@ function UnreadMessage({ onNavigate, onError }: SendMessageProps) {
                     // handleBtn()
                   }}
                 >
-                  <div className="flex flex-col justify-start items-center w-full gap-x-1 flex-shrink-0">
+                  <div className="flex flex-col justify-start w-full gap-x-1 flex-shrink-0">
                     {/* <span className="flex text-sm w-full max-h-16 line-clamp-2"> */}
                     <span className="text-sm max-h-16 break-words whitespace-pre-line overflow-hidden line-clamp-3">
                       {LATEST_MESSAGE?.message_text}

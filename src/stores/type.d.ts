@@ -111,6 +111,14 @@ export interface AppState {
    * embed position
    */
   embed_position?: string
+  /**
+   * Embed position detail
+   */
+  embed_position_detail?: {
+    bottom?: number
+    right?: number
+    left?: number
+  }
 }
 /** Định nghĩa kiểu dữ liệu cho danh sách nhân viên */
 interface EmployeeList {

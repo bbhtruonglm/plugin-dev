@@ -5,6 +5,7 @@ import {
   postMessagePosition,
   postMessageToParent,
   renderLocale,
+  renderPosition,
   renderStaffName,
   saveQuickChatCount,
   saveQuickChatLatestMessage,
@@ -22,6 +23,7 @@ import {
   selectCurrentHeight,
   selectCurrentWidth,
   selectEmbedPosition,
+  selectEmbedPositionDetail,
   selectGlobalClientId,
   selectGlobalPreviewUrl,
   selectGlobalUnreadCount,
@@ -33,6 +35,7 @@ import {
   selectStatusIsInit,
   selectStatusPopup,
   setEmbedPosition,
+  setEmbedPositionDetail,
   setGlobalPreviewUrl,
   setGlobalUnreadCount,
   setLatestMessageGlobal,
@@ -377,6 +380,10 @@ const ChatApp = ({
    * Vị trí của chatbox
    */
   const POSITION = useSelector(selectEmbedPosition)
+  /**
+   * Vị trí chi tiết của chatbox
+   */
+  const POSITION_DETAIL = useSelector(selectEmbedPositionDetail)
   /** Hàm đọc dữ liệu trang
    * @param {string} page_id - ID trang
    */
@@ -400,12 +407,13 @@ const ChatApp = ({
      */
     dispatch(setEmbedPosition('bottom_left'))
     /**
-     * Lưu thông tin vị trí chatbox
+     * Lưu thông tin chi tiết vị trí của chatbox
      */
-    postMessagePosition('bottom_left')
+    dispatch(setEmbedPositionDetail({ bottom: 4, right: 12, left: 12 }))
+
     // dispatch(setEmbedPosition('bottom_right'))
 
-    // postMessagePosition('bottom_right')
+    postMessagePosition('bottom_left')
 
     /** nếu cài đặt ở setting page is_active = false thì k lưu  */
     if (!RES?.data?.social_platform?.is_active) {
@@ -537,14 +545,29 @@ const ChatApp = ({
      * @param triggerWelcome  Trạng thái hiển thị tin nhắn chào mừng
      * @param height  Chiều cao popup
      * @param previewUrl  Đường dẫn xem trước ảnh
+     * @param position  Vị trí popup
      * @returns
      */
     const callPostMessage = (
       popupOpen: boolean,
       triggerWelcome: boolean,
       height?: number,
-      previewUrl?: string
-    ) => postMessageToParent(popupOpen, triggerWelcome, height, previewUrl)
+      previewUrl?: string,
+      position?: string,
+      bottom?: string | number,
+      right?: string | number,
+      left?: string | number
+    ) =>
+      postMessageToParent(
+        popupOpen,
+        triggerWelcome,
+        height,
+        previewUrl,
+        position,
+        bottom,
+        right,
+        left
+      )
     /**
      *  Hàm lấy chiều cao tin nhắn
      * @param message  Tin nhắn
@@ -590,7 +613,16 @@ const ChatApp = ({
       /**
        * Gọi hàm postMessage
        */
-      callPostMessage(true, false)
+      callPostMessage(
+        true,
+        false,
+        undefined,
+        undefined,
+        POSITION,
+        POSITION_DETAIL?.bottom,
+        POSITION_DETAIL?.right,
+        POSITION_DETAIL?.left
+      )
       /**
        * Trả về css popup
        */
@@ -603,7 +635,16 @@ const ChatApp = ({
       /**
        * Gọi hàm postMessage
        */
-      callPostMessage(true, false)
+      callPostMessage(
+        true,
+        false,
+        undefined,
+        undefined,
+        POSITION,
+        POSITION_DETAIL?.bottom,
+        POSITION_DETAIL?.right,
+        POSITION_DETAIL?.left
+      )
       /**
        * Trả về css popup
        */
@@ -613,14 +654,59 @@ const ChatApp = ({
      * Trường hợp xem trước ảnh
      */
     if (IS_PREVIEWING_IMAGE) {
-      /**
-       * Gọi hàm postMessage
-       */
-      callPostMessage(true, false, 674, GLOBAL_PREVIEW_URL)
-      /**
-       * Trả về css popup
-       */
-      return 'flex w-screen h-screen items-end justify-end px-6 pr-5 pb-[68px]'
+      if (IS_MOBILE) {
+        /**
+         * Gọi hàm postMessage
+         */
+        callPostMessage(
+          true,
+          false,
+          undefined,
+          GLOBAL_PREVIEW_URL,
+          POSITION,
+          POSITION_DETAIL?.bottom,
+          POSITION_DETAIL?.right,
+          POSITION_DETAIL?.left
+        )
+        /**
+         * Trả về css popup
+         */
+        return 'w-screen_dvw h-screen_dvh'
+      } else {
+        /**
+         * Gọi hàm postMessage
+         */
+        callPostMessage(
+          true,
+          false,
+          674,
+          GLOBAL_PREVIEW_URL,
+          POSITION,
+          POSITION_DETAIL?.bottom,
+          POSITION_DETAIL?.right,
+          POSITION_DETAIL?.left
+        )
+        /**
+         * Trả về css popup
+         */
+        if (POSITION === 'bottom_left')
+          return (
+            'flex w-screen h-screen items-start justify-end' +
+            renderPosition(
+              POSITION_DETAIL?.bottom || 0,
+              POSITION_DETAIL?.right || 0,
+              POSITION_DETAIL?.left || 0
+            )
+          )
+        return (
+          'flex w-screen h-screen items-end justify-end' +
+          renderPosition(
+            POSITION_DETAIL?.bottom || 0,
+            POSITION_DETAIL?.right || 0,
+            POSITION_DETAIL?.left || 0
+          )
+        )
+      }
     }
     /**
      * Trường hợp popup đóng, và không có tin nhắn chưa đọc
@@ -629,7 +715,16 @@ const ChatApp = ({
       /**
        * Gọi hàm postMessage
        */
-      callPostMessage(false, true, 142)
+      callPostMessage(
+        false,
+        true,
+        142,
+        undefined,
+        POSITION,
+        POSITION_DETAIL?.bottom,
+        POSITION_DETAIL?.right,
+        POSITION_DETAIL?.left
+      )
       /**
        * Trả về css popup
        */
@@ -647,7 +742,16 @@ const ChatApp = ({
       /**
        * Gọi hàm postMessage
        */
-      callPostMessage(false, false)
+      callPostMessage(
+        false,
+        false,
+        undefined,
+        undefined,
+        POSITION,
+        POSITION_DETAIL?.bottom,
+        POSITION_DETAIL?.right,
+        POSITION_DETAIL?.left
+      )
       /**
        * Trả về css popup
        */
@@ -668,7 +772,16 @@ const ChatApp = ({
         /**
          * Gọi hàm postMessage
          */
-        callPostMessage(false, true, HEIGHT)
+        callPostMessage(
+          false,
+          true,
+          HEIGHT,
+          undefined,
+          POSITION,
+          POSITION_DETAIL?.bottom,
+          POSITION_DETAIL?.right,
+          POSITION_DETAIL?.left
+        )
         /**
          * Trả về css popup
          * Vì chiều cao tin nhắn có thể thay đổi nên sử dụng biến HEIGHT
@@ -680,7 +793,16 @@ const ChatApp = ({
           /**
            * Gọi hàm postMessage
            */
-          callPostMessage(false, true, HEIGHT)
+          callPostMessage(
+            false,
+            true,
+            HEIGHT,
+            undefined,
+            POSITION,
+            POSITION_DETAIL?.bottom,
+            POSITION_DETAIL?.right,
+            POSITION_DETAIL?.left
+          )
           /**
            * Trả về css popup
            */
@@ -693,7 +815,16 @@ const ChatApp = ({
           /**
            * Gọi hàm postMessage
            */
-          callPostMessage(false, true, HEIGHT)
+          callPostMessage(
+            false,
+            true,
+            HEIGHT,
+            undefined,
+            POSITION,
+            POSITION_DETAIL?.bottom,
+            POSITION_DETAIL?.right,
+            POSITION_DETAIL?.left
+          )
           /**
            * Trả về css popup
            */
@@ -706,7 +837,16 @@ const ChatApp = ({
           /**
            * Gọi hàm postMessage
            */
-          callPostMessage(false, true, HEIGHT)
+          callPostMessage(
+            false,
+            true,
+            HEIGHT,
+            undefined,
+            POSITION,
+            POSITION_DETAIL?.bottom,
+            POSITION_DETAIL?.right,
+            POSITION_DETAIL?.left
+          )
           /**
            * Trả về css popup
            */
@@ -721,7 +861,16 @@ const ChatApp = ({
       /**
        * Gọi hàm postMessage
        */
-      callPostMessage(true, false)
+      callPostMessage(
+        true,
+        false,
+        undefined,
+        undefined,
+        POSITION,
+        POSITION_DETAIL?.bottom,
+        POSITION_DETAIL?.right,
+        POSITION_DETAIL?.left
+      )
       /**
        * Trả về css popup
        */
@@ -730,7 +879,16 @@ const ChatApp = ({
     /**
      * Trường hợp mở popup Màn hình PC bình thường
      */
-    callPostMessage(true, false)
+    callPostMessage(
+      true,
+      false,
+      undefined,
+      undefined,
+      POSITION,
+      POSITION_DETAIL?.bottom,
+      POSITION_DETAIL?.right,
+      POSITION_DETAIL?.left
+    )
     /**
      * Trả về css popup
      */
@@ -773,8 +931,10 @@ const ChatApp = ({
       !show && HAS_NO_UNREAD_MESSAGE
         ? 'hidden'
         : `flex flex-col ${
-            has_exited_preview
-              ? ''
+            IS_MOBILE
+              ? ' '
+              : has_exited_preview
+              ? ' '
               : POSITION === 'bottom_right'
               ? 'animate-zoomInBottomRight'
               : 'animate-zoomInBottomLeft'
@@ -791,7 +951,7 @@ const ChatApp = ({
     }
 
     /** Trường hợp đang xem trước */
-    if (GLOBAL_PREVIEW_URL) {
+    if (!IS_MOBILE && GLOBAL_PREVIEW_URL) {
       return `${BASE_CLASSES} w-[400px] h-[600px] mb-2.5 rounded-[20px] relative overflow-hidden`
     }
 
@@ -903,7 +1063,16 @@ const ChatApp = ({
     /**
      * Gọi hàm đến Parent
      */
-    postMessageToParent(SHOW_POPUP, false, 674, '')
+    postMessageToParent(
+      SHOW_POPUP,
+      false,
+      674,
+      '',
+      POSITION,
+      POSITION_DETAIL?.bottom,
+      POSITION_DETAIL?.right,
+      POSITION_DETAIL?.left
+    )
   }
 
   return (
@@ -1202,7 +1371,16 @@ const ChatApp = ({
                           'hide_quick_chat'
                         )
                         /** post message 1 lần nữa */
-                        postMessageToParent(false, false)
+                        postMessageToParent(
+                          false,
+                          false,
+                          undefined,
+                          undefined,
+                          POSITION,
+                          POSITION_DETAIL?.bottom,
+                          POSITION_DETAIL?.right,
+                          POSITION_DETAIL?.left
+                        )
                       }}
                       className="h-5 w-5 cursor-pointer flex justify-center items-center"
                     >
@@ -1278,7 +1456,16 @@ const ChatApp = ({
           <div
             onClick={(event) => {
               event.stopPropagation()
-              postMessageToParent(false, false)
+              postMessageToParent(
+                false,
+                false,
+                undefined,
+                undefined,
+                POSITION,
+                POSITION_DETAIL?.bottom,
+                POSITION_DETAIL?.right,
+                POSITION_DETAIL?.left
+              )
               setShowWelcomeMessage(false)
             }}
             className="h-6 w-6 cursor-pointer flex justify-center items-center hover:bg-gray-300 rounded-full p-2"
@@ -1300,7 +1487,16 @@ const ChatApp = ({
               dispatch(setListUnreadMessage([]))
               dispatch(setListMessage([]))
               dispatch(setGlobalUnreadCount(0))
-              postMessageToParent(false, false)
+              postMessageToParent(
+                false,
+                false,
+                undefined,
+                undefined,
+                POSITION,
+                POSITION_DETAIL?.bottom,
+                POSITION_DETAIL?.right,
+                POSITION_DETAIL?.left
+              )
             }
             /**
              * Khi click vào nút trigger,
@@ -1319,7 +1515,11 @@ const ChatApp = ({
           }, 200)
         }}
         className={`absolute justify-center items-center bottom-4 ${
-          POSITION === 'bottom_left' ? 'left-2' : 'right-2'
+          POSITION === 'bottom_right'
+            ? 'right-2'
+            : GLOBAL_PREVIEW_URL
+            ? 'left-5 bottom-5'
+            : 'left-2'
         }  h-12 w-12 bg-white shadow-lg rounded-full  hover:scale-110 ${
           AI_STATUS ? 'hidden' : ''
         }  ${
@@ -1363,7 +1563,7 @@ const ChatApp = ({
         {GLOBAL_PREVIEW_URL && (
           <img
             src={GLOBAL_PREVIEW_URL}
-            className="max-w-[880px] min-w-80 w-full h-auto object-contain rounded-lg"
+            className="max-w-[880px] min-w-80 w-full h-auto min-h-20 object-contain rounded-lg bg-slate-200"
             alt="Full Attachment"
           />
         )}
