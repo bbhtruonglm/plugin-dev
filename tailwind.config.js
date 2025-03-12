@@ -80,19 +80,43 @@ module.exports = {
             opacity: '0',
             transformOrigin: 'bottom right',
           },
-          typing: {
-            '0%': { content: '"."' },
-            '33%': { content: '".."' },
-            '66%': { content: '"..."' },
+        },
+        zoomInBottomLeft: {
+          '0%': {
+            transform: 'scale(0)',
+            transformOrigin: 'bottom left',
+            opacity: '0',
           },
-          blink: {
-            '0%': { opacity: '1' },
-            '50%': { opacity: '0' },
+          '100%': {
+            transform: 'scale(1)',
+            transformOrigin: 'bottom left',
+            opacity: '1',
           },
-          jumping: {
-            '0%, 80%, 100%': { transform: 'translateY(0)' },
-            '40%': { transform: 'translateY(-8px)' },
+        },
+        zoomOutTopRight: {
+          '0%': {
+            transform: 'scale(1)',
+            opacity: '1',
+            transformOrigin: 'top right',
           },
+          '100%': {
+            transform: 'scale(0)',
+            opacity: '0',
+            transformOrigin: 'top right',
+          },
+        },
+        typing: {
+          '0%': { content: '"."' },
+          '33%': { content: '".."' },
+          '66%': { content: '"..."' },
+        },
+        blink: {
+          '0%': { opacity: '1' },
+          '50%': { opacity: '0' },
+        },
+        jumping: {
+          '0%, 80%, 100%': { transform: 'translateY(0)' },
+          '40%': { transform: 'translateY(-6px)' },
         },
       },
 
@@ -103,9 +127,11 @@ module.exports = {
         zoomIn: 'zoomIn 0.2s ease-in-out forwards',
         zoomInBottomRight: 'zoomInBottomRight 0.2s ease-in-out forwards',
         zoomOutTopLeft: 'zoomOutTopLeft 0.2s ease-in-out forwards',
+        zoomInBottomLeft: 'zoomInBottomLeft 0.2s ease-in-out forwards',
+        zoomOutTopRight: 'zoomOutTopRight 0.2s ease-in-out forwards',
         typing: 'typing 1.5s infinite',
         blink: 'blink 0.6s infinite',
-        jumping: 'jumping 0.6s infinite',
+        jumping: 'jumping 1s infinite',
       },
     },
   },

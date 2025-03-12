@@ -2,6 +2,7 @@ import { AppState } from './type'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from '@/stores'
 import { createSlice } from '@reduxjs/toolkit'
+import { set } from 'lodash'
 
 const INITIAL_STATE: AppState = {
   page_id: '',
@@ -30,6 +31,7 @@ const INITIAL_STATE: AppState = {
   refresh_data: false,
   typing_status: undefined,
   suggest_message: '',
+  embed_position: 'right',
 }
 
 export const appSlice = createSlice({
@@ -149,6 +151,12 @@ export const appSlice = createSlice({
     setSuggestMessage: (state, action: PayloadAction<string>) => {
       state.suggest_message = action.payload
     },
+    /**
+     * Trạng thái vị trí của embed
+     */
+    setEmbedPosition: (state, action: PayloadAction<string>) => {
+      state.embed_position = action.payload || 'right'
+    },
   },
 })
 
@@ -175,6 +183,7 @@ export const {
   setRefreshData,
   setTypingStatus,
   setSuggestMessage,
+  setEmbedPosition,
 } = appSlice.actions
 
 /** chọn đến page id */
@@ -242,5 +251,10 @@ export const selectTypingStatus = (state: RootState) => state.app.typing_status
  */
 export const selectSuggestMessage = (state: RootState) =>
   state.app.suggest_message
+/**
+ * Embed position
+ */
+export const selectEmbedPosition = (state: RootState) =>
+  state.app.embed_position
 
 export default appSlice.reducer

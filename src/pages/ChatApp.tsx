@@ -2,6 +2,7 @@ import { ChatAppProps, EmployeeList } from './type'
 import {
   checkStaffExist,
   hasAttachmentOfType,
+  postMessagePosition,
   postMessageToParent,
   renderLocale,
   renderStaffName,
@@ -20,6 +21,7 @@ import { get, isEmpty, map, values } from 'lodash'
 import {
   selectCurrentHeight,
   selectCurrentWidth,
+  selectEmbedPosition,
   selectGlobalClientId,
   selectGlobalPreviewUrl,
   selectGlobalUnreadCount,
@@ -30,6 +32,7 @@ import {
   selectStatusAI,
   selectStatusIsInit,
   selectStatusPopup,
+  setEmbedPosition,
   setGlobalPreviewUrl,
   setGlobalUnreadCount,
   setLatestMessageGlobal,
@@ -370,7 +373,10 @@ const ChatApp = ({
     //   value: 'news',
     // },
   ]
-
+  /**
+   * Vị trí của chatbox
+   */
+  const POSITION = useSelector(selectEmbedPosition)
   /** Hàm đọc dữ liệu trang
    * @param {string} page_id - ID trang
    */
@@ -389,6 +395,17 @@ const ChatApp = ({
 
     /** lưu tên page vào state */
     setPageName(RES?.data?.name)
+    /**
+     * Lưu thông tin vị trí chatbox
+     */
+    dispatch(setEmbedPosition('bottom_left'))
+    /**
+     * Lưu thông tin vị trí chatbox
+     */
+    postMessagePosition('bottom_left')
+    // dispatch(setEmbedPosition('bottom_right'))
+
+    // postMessagePosition('bottom_right')
 
     /** nếu cài đặt ở setting page is_active = false thì k lưu  */
     if (!RES?.data?.social_platform?.is_active) {
@@ -756,7 +773,11 @@ const ChatApp = ({
       !show && HAS_NO_UNREAD_MESSAGE
         ? 'hidden'
         : `flex flex-col ${
-            !has_exited_preview ? 'animate-zoomInBottomRight' : ''
+            has_exited_preview
+              ? ''
+              : POSITION === 'bottom_right'
+              ? 'animate-zoomInBottomRight'
+              : 'animate-zoomInBottomLeft'
           } transition-transform duration-200 ease-in-out`
 
     /** Điều kiện màn hình nhỏ và đang mở */
@@ -1297,7 +1318,9 @@ const ChatApp = ({
             /** Delay 200ms */
           }, 200)
         }}
-        className={`absolute justify-center items-center bottom-4 right-2  h-12 w-12 bg-white shadow-lg rounded-full  hover:scale-110 ${
+        className={`absolute justify-center items-center bottom-4 ${
+          POSITION === 'bottom_left' ? 'left-2' : 'right-2'
+        }  h-12 w-12 bg-white shadow-lg rounded-full  hover:scale-110 ${
           AI_STATUS ? 'hidden' : ''
         }  ${
           !show
