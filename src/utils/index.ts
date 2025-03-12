@@ -657,27 +657,58 @@ export const checkStaffExist = (id: string) => {
 }
 /**
  *  Hàm render vị trí
- * @param bottom  giá trị bottom
- * @param right  giá trị right
- * @param left  giá trị left
+ * @param bottom
+ * @param right
+ * @param left
  * @returns
  */
 export const renderPosition = (
+  position: string,
   bottom: string | number,
   right: string | number,
   left: string | number
 ) => {
-  let new_bottom = 0
-  let new_right = 0
-  let new_left = 0
-  if (bottom) {
-    new_bottom = 64 + parseInt(bottom.toString())
+  /** Khởi tạo giá trị mặc định */
+  let new_bottom = 64
+  let new_right = 4
+  let new_left = 4
+  /**
+   * Chuyển đổi giá trị thành số nguyên
+   */
+  if (bottom !== undefined && bottom !== null) {
+    new_bottom = 64 + parseInt(bottom.toString(), 10)
   }
-  if (right) {
-    new_right = 8 + parseInt(right.toString())
+  if (right !== undefined && right !== null) {
+    new_right = 8 + parseInt(right.toString(), 10)
   }
-  if (left) {
-    new_left = 8 + parseInt(left.toString())
+  if (left !== undefined && left !== null) {
+    new_left = 8 + parseInt(left.toString(), 10)
   }
-  return ` pb-[${new_bottom}px] pr-[${new_right}px] pl-[${new_left}px]`
+
+  /** Danh sách các giá trị hợp lệ trong Tailwind (có thể bổ sung nếu cần) */
+  const VALID_TAILWIND_SPACING = new Set([
+    0, 1, 2, 3, 4, 5, 6, 8, 10, 12, 14, 16, 20, 24, 28, 32, 36, 40, 44, 48, 52,
+    56, 60, 64, 72, 80, 96,
+  ])
+  /**
+   *  Hàm lấy class Tailwind
+   * @param value
+   * @param prefix
+   * @returns
+   */
+  const getTailwindClass = (value: number, prefix: string) => {
+    return VALID_TAILWIND_SPACING.has(value / 4)
+      ? `${prefix}-${value / 4}`
+      : `${prefix}-[${value}px]`
+  }
+  /**
+   * Tạo class Tailwind cho bottom, right, left
+   */
+  const BOTTOM_CLASS = getTailwindClass(new_bottom, 'pb')
+  const RIGHT_CLASS = getTailwindClass(new_right, 'pr')
+  const LEFT_CLASS = getTailwindClass(new_left, 'pl')
+
+  return `flex w-screen h-screen ${
+    position === 'bottom_left' ? 'items-start' : 'items-end'
+  } justify-end ${BOTTOM_CLASS} ${RIGHT_CLASS} ${LEFT_CLASS}`
 }

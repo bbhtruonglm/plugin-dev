@@ -405,7 +405,7 @@ const ChatApp = ({
     /**
      * Lưu thông tin vị trí chatbox
      */
-    dispatch(setEmbedPosition('bottom_left'))
+    dispatch(setEmbedPosition('bottom_right'))
     /**
      * Lưu thông tin chi tiết vị trí của chatbox
      */
@@ -413,7 +413,7 @@ const ChatApp = ({
 
     // dispatch(setEmbedPosition('bottom_right'))
 
-    postMessagePosition('bottom_left')
+    postMessagePosition('bottom_right')
 
     /** nếu cài đặt ở setting page is_active = false thì k lưu  */
     if (!RES?.data?.social_platform?.is_active) {
@@ -618,7 +618,7 @@ const ChatApp = ({
         false,
         undefined,
         undefined,
-        POSITION,
+        POSITION ?? 'bottom_right',
         POSITION_DETAIL?.bottom,
         POSITION_DETAIL?.right,
         POSITION_DETAIL?.left
@@ -689,23 +689,21 @@ const ChatApp = ({
         /**
          * Trả về css popup
          */
-        if (POSITION === 'bottom_left')
-          return (
-            'flex w-screen h-screen items-start justify-end' +
-            renderPosition(
-              POSITION_DETAIL?.bottom || 0,
-              POSITION_DETAIL?.right || 0,
-              POSITION_DETAIL?.left || 0
-            )
+        if (POSITION === 'bottom_left') {
+          return renderPosition(
+            POSITION,
+            POSITION_DETAIL?.bottom ?? 0,
+            POSITION_DETAIL?.right ?? 0,
+            POSITION_DETAIL?.left ?? 0
           )
-        return (
-          'flex w-screen h-screen items-end justify-end' +
-          renderPosition(
-            POSITION_DETAIL?.bottom || 0,
-            POSITION_DETAIL?.right || 0,
-            POSITION_DETAIL?.left || 0
+        } else {
+          return renderPosition(
+            'bottom_right',
+            POSITION_DETAIL?.bottom ?? 0,
+            POSITION_DETAIL?.right ?? 0,
+            POSITION_DETAIL?.left ?? 0
           )
-        )
+        }
       }
     }
     /**
