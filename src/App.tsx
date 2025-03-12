@@ -5,6 +5,7 @@ import { Route, Routes } from 'react-router-dom'
 import { fetchAPI, useAPI } from './api/api'
 import {
   parsedString,
+  postMessagePosition,
   postMessageToParent,
   saveQuickChatLatestMessage,
   saveTimeClosePopup,
@@ -273,6 +274,8 @@ function App() {
   useEffect(() => {
     /** Thêm event listener cho thông điệp */
     window.addEventListener('message', handleMessage)
+
+    // postMessagePosition('bottom_left')
     /**
      * Hàm giải mã dữ liệu khách hàng
      */

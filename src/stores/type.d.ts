@@ -107,6 +107,10 @@ export interface AppState {
    * Tin nhắn suggest của khách hàng
    */
   suggest_message?: string
+  /**
+   * embed position
+   */
+  embed_position?: string
 }
 /** Định nghĩa kiểu dữ liệu cho danh sách nhân viên */
 interface EmployeeList {

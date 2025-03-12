@@ -632,7 +632,8 @@ function DetailChat({
               </span>
 
               <div className="flex  ">
-                <LoadingDots />
+                {/* <LoadingDots /> */}
+                <LoadingJumping />
               </div>
             </div>
           )}
