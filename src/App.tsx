@@ -11,6 +11,8 @@ import {
   saveTimeClosePopup,
 } from './utils'
 import {
+  selectEmbedPosition,
+  selectEmbedPositionDetail,
   selectPageId,
   setCurrentHeight,
   setCurrentWidth,
@@ -461,13 +463,27 @@ function App() {
 
     fetchData()
   }, [])
+  const POSTION = useSelector(selectEmbedPosition)
 
+  /**
+   * Vị trí chi tiết của chatbox
+   */
+  const POSITION_DETAIL = useSelector(selectEmbedPositionDetail)
   /** Function tắt bật của popup dạng PC */
   const handleToggle = () => {
     /** Lưu vào store  trạng thái đóng mở của popup*/
     dispatch(setStatusPopup(!is_show))
     /** Gọi tới parent để hiện thị popup */
-    postMessageToParent(!is_show, false)
+    postMessageToParent(
+      !is_show,
+      false,
+      undefined,
+      undefined,
+      POSTION,
+      POSITION_DETAIL?.bottom,
+      POSITION_DETAIL?.right,
+      POSITION_DETAIL?.left
+    )
   }
 
   /** Function tắt báo popup dạng Mobile*/
@@ -475,7 +491,16 @@ function App() {
     /** Lưu vào store trạng thái đóng của popup*/
     dispatch(setStatusPopup(false))
     /** Gọi tới parent để đóng popup */
-    postMessageToParent(false, false)
+    postMessageToParent(
+      false,
+      false,
+      undefined,
+      undefined,
+      POSTION,
+      POSITION_DETAIL?.bottom,
+      POSITION_DETAIL?.right,
+      POSITION_DETAIL?.left
+    )
   }
 
   /** Hàm đọc data khách hàng
@@ -511,7 +536,7 @@ function App() {
 
   return (
     <div
-      className="flex flex-col justify-center items-center h-full w-full overflow-hidden "
+      className="flex flex-col justify-center items-center w-full h-full overflow-hidden px-5"
       id="bbh-chat-plugin"
     >
       <Routes>

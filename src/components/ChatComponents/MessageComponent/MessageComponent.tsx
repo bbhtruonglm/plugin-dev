@@ -7,6 +7,8 @@ import {
   postMessageToParent,
 } from '@/utils'
 import {
+  selectEmbedPosition,
+  selectEmbedPositionDetail,
   selectStatusAI,
   selectStatusPopup,
   setGlobalPreviewUrl,
@@ -95,11 +97,23 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
     /** Click vào ảnh thì gửi thông tin cho sdk
      * Có thể lưu data và STORE
      */
-    postMessageToParent(true, false, 674, url)
+    postMessageToParent(
+      true,
+      false,
+      674,
+      url,
+      POSITION,
+      POSITION_DETAIL?.bottom,
+      POSITION_DETAIL?.right,
+      POSITION_DETAIL?.left
+    )
   }
   /** Trạng thái Đóng/ Mở Popup */
   const SHOW_POPUP = useSelector(selectStatusPopup)
-
+  /** Trạng thái vị trí của embed */
+  const POSITION = useSelector(selectEmbedPosition)
+  /** Trạng thái vị trí chi tiết của embed */
+  const POSITION_DETAIL = useSelector(selectEmbedPositionDetail)
   return (
     <div
       className={`flex flex-col transition-all duration-300 ease-out gap-y-4 rounded-lg group relative ${getMessageClasses(
@@ -253,7 +267,8 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
                           SHOW_POPUP,
                           false,
                           674,
-                          attachment?.payload?.url
+                          attachment?.payload?.url,
+                          POSITION
                         )
                       }}
                       loading="lazy"

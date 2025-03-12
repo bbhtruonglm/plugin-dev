@@ -288,13 +288,23 @@ export function calculateTimeAgo(time_string: string) {
 /** Hàm post message thông tin đến parent
  * @param {boolean} is_show: Kiểm tra xem popup hiển thị hay không?
  * @param {boolean} is_quick_chat: Kiểm tra xem có QUICK_CHAT không?
- *  @param {number} height: Chiều cao QUICK_CHAT (Do có nhiều case kích thước chiều cao)
+ * @param {number} height: Chiều cao QUICK_CHAT (Do có nhiều case kích thước chiều cao)
+ * @param {string} media_url: URL ảnh
+ * @param {string} position: Vị trí hiển thị
+ * @param {string | number} bottom: Vị trí bottom
+ * @param {string | number} right: Vị trí right
+ * @param {string | number} left: Vị trí left
+ *
  */
 export const postMessageToParent = (
   is_show: boolean,
   is_quick_chat: boolean,
   height?: number,
-  media_url?: string
+  media_url?: string,
+  position?: string,
+  bottom?: string | number,
+  right?: string | number,
+  left?: string | number
 ) => {
   /** post message đến parent */
   window.parent.postMessage(
@@ -304,6 +314,10 @@ export const postMessageToParent = (
       is_quick_chat: is_quick_chat,
       height: height || 0,
       media_url: media_url || '',
+      position: position || 'bottom_right',
+      bottom: bottom,
+      right: right,
+      left: left,
     },
     '*'
   )
@@ -312,12 +326,20 @@ export const postMessageToParent = (
  *  Hàm post message thông tin đến parent
  * @param position
  */
-export const postMessagePosition = (position: string) => {
+export const postMessagePosition = (
+  position: string,
+  bottom?: string | number,
+  right?: string | number,
+  left?: string | number
+) => {
   /** post message đến parent */
   window.parent.postMessage(
     {
       from: 'BBH-EMBED-IFRAME',
       position: position,
+      bottom: bottom,
+      right: right,
+      left: left,
     },
     '*'
   )
@@ -632,4 +654,30 @@ export const checkStaffExist = (id: string) => {
    * Trả về link avatar
    */
   return renderAvatarCDN(ID_DETECT)
+}
+/**
+ *  Hàm render vị trí
+ * @param bottom  giá trị bottom
+ * @param right  giá trị right
+ * @param left  giá trị left
+ * @returns
+ */
+export const renderPosition = (
+  bottom: string | number,
+  right: string | number,
+  left: string | number
+) => {
+  let new_bottom = 0
+  let new_right = 0
+  let new_left = 0
+  if (bottom) {
+    new_bottom = 64 + parseInt(bottom.toString())
+  }
+  if (right) {
+    new_right = 8 + parseInt(right.toString())
+  }
+  if (left) {
+    new_left = 8 + parseInt(left.toString())
+  }
+  return ` pb-[${new_bottom}px] pr-[${new_right}px] pl-[${new_left}px]`
 }
