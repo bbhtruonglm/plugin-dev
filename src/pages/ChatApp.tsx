@@ -4,6 +4,7 @@ import {
   hasAttachmentOfType,
   postMessagePosition,
   postMessageToParent,
+  postMessageToParentHiddenPath,
   renderLocale,
   renderPosition,
   renderStaffName,
@@ -414,6 +415,11 @@ const ChatApp = ({
     // dispatch(setEmbedPosition('bottom_right'))
 
     postMessagePosition('bottom_right')
+
+    /**
+     * Gửi list path sang SDK
+     */
+    postMessageToParentHiddenPath(['child-app'])
 
     /** nếu cài đặt ở setting page is_active = false thì k lưu  */
     if (!RES?.data?.social_platform?.is_active) {
