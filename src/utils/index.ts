@@ -345,6 +345,20 @@ export const postMessagePosition = (
   )
 }
 
+/**
+ * Post message thông tin đến parent
+ */
+export const postMessageToParentHiddenPath = (list_hidden_path?: string[]) => {
+  /** post message đến parent */
+  window.parent.postMessage(
+    {
+      from: 'BBH-EMBED-IFRAME',
+      list_hidden_path: list_hidden_path,
+    },
+    '*'
+  )
+}
+
 /** Thêm thời gian đóng popup vào localStorage
  * @param {string} page_id: Nhận với page_id
  */
