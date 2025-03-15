@@ -358,6 +358,19 @@ export const postMessageToParentHiddenPath = (list_hidden_path?: string[]) => {
     '*'
   )
 }
+/**
+ * Post message thông tin đến parent
+ */
+export const postMessageToParentAllowedDomains = (list_domains?: string[]) => {
+  /** post message đến parent */
+  window.parent.postMessage(
+    {
+      from: 'BBH-EMBED-IFRAME',
+      allowed_domains: list_domains,
+    },
+    '*'
+  )
+}
 
 /** Thêm thời gian đóng popup vào localStorage
  * @param {string} page_id: Nhận với page_id

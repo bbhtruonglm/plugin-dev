@@ -4,6 +4,7 @@ import {
   hasAttachmentOfType,
   postMessagePosition,
   postMessageToParent,
+  postMessageToParentAllowedDomains,
   postMessageToParentHiddenPath,
   renderLocale,
   renderPosition,
@@ -43,7 +44,6 @@ import {
   setListMessage,
   setListUnreadMessage,
   setLoadingGlobal,
-  setRefreshData,
   setStaffListStore,
   setStatusIsInit,
 } from '@/stores/appSlice'
@@ -420,6 +420,7 @@ const ChatApp = ({
      * Gửi list path sang SDK
      */
     postMessageToParentHiddenPath(['child-app'])
+    postMessageToParentAllowedDomains(RES?.data?.allow_domain)
 
     /** nếu cài đặt ở setting page is_active = false thì k lưu  */
     if (!RES?.data?.social_platform?.is_active) {
