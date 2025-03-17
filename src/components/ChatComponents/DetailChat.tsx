@@ -158,7 +158,6 @@ function DetailChat({
        * Fetch data với client id truyền vào
        */
       fetchMessage(CLIENT_ID_GLOBAL)
-
       /**
        * Set lại trạng thái REFRESH_DATA
        */
