@@ -2,6 +2,7 @@ import { ChatScreenProps, Message } from './type'
 import { debounce, keys } from 'lodash'
 import { fetchAPI, useAPI } from '@/api/api'
 import {
+  selectAiId,
   selectGlobalClientId,
   selectGlobalUnreadCount,
   selectLatestMessage,
@@ -66,6 +67,10 @@ function DetailChat({
 
   /** hàm dispatch đến store */
   const dispatch = useDispatch()
+  /**
+   * Trạng thái có ID Trợ lý ảo
+   */
+  const NO_AI_ID = useSelector(selectAiId)
   /**
    * THông tin Refresh Data
    */
@@ -188,6 +193,8 @@ function DetailChat({
 
   /** Trạng thái AI_STATUS */
   const AI_STATUS = useSelector(selectStatusAI)
+  console.log(AI_STATUS, ' aiiii')
+  console.log(NO_AI_ID, 'no iddd')
 
   /** Số bản ghi hiển thị trong 1 trang */
   const LIMIT = 20
@@ -573,6 +580,11 @@ function DetailChat({
         {AI_STATUS && invalid_page_id && (
           <h4 className="flex justify-center font-semibold text-red-600">
             {t('invalid_virtual_assistant')}
+          </h4>
+        )}
+        {AI_STATUS && NO_AI_ID && (
+          <h4 className="flex justify-center font-semibold text-red-600">
+            {t('no_virtual_assistant')}
           </h4>
         )}
         {/* Hiển thị Phần chào mừng với AI */}

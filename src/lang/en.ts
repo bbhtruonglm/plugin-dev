@@ -58,5 +58,7 @@ export const en = {
     ai_thinking: 'AI is thinking',
     ai_still_thinking: 'AI is still thinking',
     ai_already_thinking: 'Almost done!',
+    no_virtual_assistant:
+      'No virtual assistant has been set up. Please go to Settings > Virtual Assistant to complete the configuration before using the service.',
   },
 }

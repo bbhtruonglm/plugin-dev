@@ -696,20 +696,20 @@ export const renderPosition = (
   left: string | number
 ) => {
   /** Khởi tạo giá trị mặc định */
-  let new_bottom = 64
+  let new_bottom = 68
   let new_right = 4
   let new_left = 4
   /**
    * Chuyển đổi giá trị thành số nguyên
    */
   if (bottom !== undefined && bottom !== null) {
-    new_bottom = 64 + parseInt(bottom.toString(), 10)
+    new_bottom = 68 + parseInt(bottom.toString(), 10)
   }
   if (right !== undefined && right !== null) {
-    new_right = 8 + parseInt(right.toString(), 10)
+    new_right = 20 + parseInt(right.toString(), 10)
   }
   if (left !== undefined && left !== null) {
-    new_left = 8 + parseInt(left.toString(), 10)
+    new_left = 20 + parseInt(left.toString(), 10)
   }
 
   /** Danh sách các giá trị hợp lệ trong Tailwind (có thể bổ sung nếu cần) */
