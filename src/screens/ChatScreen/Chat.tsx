@@ -214,6 +214,11 @@ function ChatScreen({
     const HAS_VALID_VALUE = USER_INFO && USER_INFO.client_id?.trim()
 
     /**
+     * Kiểm tra USER_INFO có chứa ít nhất một giá trị thực
+     */
+    const HAS_VALID_VALUE = USER_INFO && USER_INFO.client_id?.trim()
+
+    /**
      * Nếu là case AI_STATUS và chưa có CLIENT_ID
      */
     if (AI_STATUS && !GLOBAL_CLIENT_ID && PAGE_ID && HAS_VALID_VALUE) {

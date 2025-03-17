@@ -106,6 +106,7 @@ function DetailChat({
    * Trạng thái loading khi gửi tin nhắn
    */
   const [status_index, setStatusIndex] = useState(0)
+
   /**
    * Cập nhật trạng thái loading khi gửi tin nhắn
    */
@@ -157,7 +158,7 @@ function DetailChat({
        * Fetch data với client id truyền vào
        */
       fetchMessage(CLIENT_ID_GLOBAL)
-      console.log('FETCH MESSAGE use Effect Refresh data')
+
       /**
        * Set lại trạng thái REFRESH_DATA
        */
@@ -170,7 +171,6 @@ function DetailChat({
 
   /** List tin nhắn được lấy từ store */
   const LIST_MESSAGE = useSelector(selectListMessage)
-  console.log(LIST_MESSAGE, 'LIST_MESSAGE')
 
   /** Số tin nhắn chưa đọc lấy trong STORE */
   const GLOBAL_UNREAD_COUNT = useSelector(selectGlobalUnreadCount)
@@ -653,6 +653,7 @@ function DetailChat({
               <span className="text-xs text-slate-700">
                 {STATUSES[status_index]}
               </span>
+
               <div className="flex  ">
                 <LoadingDots />
               </div>
