@@ -37,6 +37,7 @@ const INITIAL_STATE: AppState = {
     right: undefined,
     bottom: undefined,
   },
+  ai_id: undefined,
 }
 
 export const appSlice = createSlice({
@@ -171,6 +172,12 @@ export const appSlice = createSlice({
     ) => {
       state.embed_position_detail = action.payload
     },
+    /**
+     * Trạng thái không có Id AI
+     */
+    setNoAiId: (state, action: PayloadAction<boolean>) => {
+      state.ai_id = action.payload
+    },
   },
 })
 
@@ -199,6 +206,7 @@ export const {
   setSuggestMessage,
   setEmbedPosition,
   setEmbedPositionDetail,
+  setNoAiId,
 } = appSlice.actions
 
 /** chọn đến page id */
@@ -276,4 +284,9 @@ export const selectEmbedPosition = (state: RootState) =>
  */
 export const selectEmbedPositionDetail = (state: RootState) =>
   state.app.embed_position_detail
+
+/**
+ * AI ID
+ */
+export const selectAiId = (state: RootState) => state.app.ai_id
 export default appSlice.reducer

@@ -22,6 +22,7 @@ import {
   setLatestMessageGlobal,
   setListMessage,
   setLoadingGlobal,
+  setNoAiId,
   setNoViewport,
   setPageId,
   setPageInfoAI,
@@ -135,6 +136,17 @@ function App() {
          * PAGE_ID mới
          */
         const N_PAGE_ID = client?.public_profile?.ai_agent_id
+        /**
+         * nếu không có ai_agent_id thì setNoAiId(true)
+         */
+        if (!N_PAGE_ID) {
+          /**
+           * Set No AI ID store
+           */
+          dispatch(setNoAiId(true))
+          return
+        }
+
         /**
          * ID khách hàng mới
          */
@@ -374,9 +386,17 @@ function App() {
           /** Lấy page_id */
           const STORED_PAGE_ID = CLIENT_INFO?.public_profile?.ai_agent_id || ''
           /**
+           * Nếu không có page_id thì setNoAiId(true  )
+           */
+          if (!STORED_PAGE_ID) {
+            dispatch(setNoAiId(true))
+          } else {
+            dispatch(setNoAiId(false))
+            dispatch(setPageId(STORED_PAGE_ID || ''))
+          }
+          /**
            * Lưu page_id vào store
            */
-          dispatch(setPageId(STORED_PAGE_ID || ''))
         } else {
           /** Lấy page_id */
           const STORED_PAGE_ID = URL_PARENT.searchParams.get('page_id') || ''

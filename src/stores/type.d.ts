@@ -119,6 +119,7 @@ export interface AppState {
     right?: number
     left?: number
   }
+  ai_id?: boolean
 }
 /** Định nghĩa kiểu dữ liệu cho danh sách nhân viên */
 interface EmployeeList {

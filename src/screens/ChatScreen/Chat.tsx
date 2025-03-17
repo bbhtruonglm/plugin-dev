@@ -207,6 +207,7 @@ function ChatScreen({
   useEffect(() => {
     console.log('CHẠY VÀO ĐÂY USER_INFO', USER_INFO)
     console.log(CLIENT_ID, 'CHẠY VÀO ĐÂY CLLIENT ID')
+
     /**
      * Kiểm tra USER_INFO có chứa ít nhất một giá trị thực
      */

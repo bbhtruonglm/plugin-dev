@@ -403,24 +403,28 @@ const ChatApp = ({
 
     /** lưu tên page vào state */
     setPageName(RES?.data?.name)
-    /**
-     * Lưu thông tin vị trí chatbox
-     */
-    dispatch(setEmbedPosition('bottom_right'))
-    /**
-     * Lưu thông tin chi tiết vị trí của chatbox
-     */
-    dispatch(setEmbedPositionDetail({ bottom: 4, right: 12, left: 12 }))
 
+    /**
+     *  Tạm ẩn để deploy lên production
+     */
+    // /**
+    //  * Lưu thông tin vị trí chatbox
+    //  */
     // dispatch(setEmbedPosition('bottom_right'))
+    // /**
+    //  * Lưu thông tin chi tiết vị trí của chatbox
+    //  */
+    // dispatch(setEmbedPositionDetail({ bottom: 4, right: 12, left: 12 }))
 
-    postMessagePosition('bottom_right')
+    // // dispatch(setEmbedPosition('bottom_right'))
 
-    /**
-     * Gửi list path sang SDK
-     */
-    postMessageToParentHiddenPath(['child-app'])
-    postMessageToParentAllowedDomains(RES?.data?.allow_domain)
+    // postMessagePosition('bottom_right')
+
+    // /**
+    //  * Gửi list path sang SDK
+    //  */
+    // postMessageToParentHiddenPath(['child-app'])
+    // postMessageToParentAllowedDomains(RES?.data?.allow_domain)
 
     /** nếu cài đặt ở setting page is_active = false thì k lưu  */
     if (!RES?.data?.social_platform?.is_active) {
@@ -696,21 +700,24 @@ const ChatApp = ({
         /**
          * Trả về css popup
          */
-        if (POSITION === 'bottom_left') {
-          return renderPosition(
-            POSITION,
-            POSITION_DETAIL?.bottom ?? 0,
-            POSITION_DETAIL?.right ?? 0,
-            POSITION_DETAIL?.left ?? 0
-          )
-        } else {
-          return renderPosition(
-            'bottom_right',
-            POSITION_DETAIL?.bottom ?? 0,
-            POSITION_DETAIL?.right ?? 0,
-            POSITION_DETAIL?.left ?? 0
-          )
-        }
+        // if (POSITION === 'bottom_left') {
+        //   return renderPosition(
+        //     POSITION,
+        //     POSITION_DETAIL?.bottom ?? 0,
+        //     POSITION_DETAIL?.right ?? 0,
+        //     POSITION_DETAIL?.left ?? 0
+        //   )
+        // } else {
+        //   const A = renderPosition(
+        //     'bottom_right',
+        //     POSITION_DETAIL?.bottom ?? 0,
+        //     POSITION_DETAIL?.right ?? 0,
+        //     POSITION_DETAIL?.left ?? 0
+        //   )
+        //   console.log(A, 'A')
+        //   return A
+        // }
+        return 'flex w-screen h-screen items-end justify-end px-6 pr-5 pb-[68px]'
       }
     }
     /**
@@ -940,9 +947,9 @@ const ChatApp = ({
               ? ' '
               : has_exited_preview
               ? ' '
-              : POSITION === 'bottom_right'
-              ? 'animate-zoomInBottomRight'
-              : 'animate-zoomInBottomLeft'
+              : POSITION === 'bottom_left'
+              ? 'animate-zoomInBottomLeft'
+              : 'animate-zoomInBottomRight'
           } transition-transform duration-200 ease-in-out`
 
     /** Điều kiện màn hình nhỏ và đang mở */
@@ -1520,11 +1527,10 @@ const ChatApp = ({
           }, 200)
         }}
         className={`absolute justify-center items-center bottom-4 ${
-          POSITION === 'bottom_right'
-            ? 'right-2'
-            : GLOBAL_PREVIEW_URL
-            ? 'left-5 bottom-5'
-            : 'left-2'
+          // POSITION === 'bottom_right'
+          //   ? 'right-2'
+          // :
+          GLOBAL_PREVIEW_URL ? 'right-5 bottom-5' : 'right-2'
         }  h-12 w-12 bg-white shadow-lg rounded-full  hover:scale-110 ${
           AI_STATUS ? 'hidden' : ''
         }  ${

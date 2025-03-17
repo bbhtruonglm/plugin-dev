@@ -57,5 +57,8 @@ export const vn = {
     ai_thinking: 'AI đang suy nghĩ',
     ai_still_thinking: 'AI vẫn đang suy nghĩ',
     ai_already_thinking: 'Sắp xong rồi!',
+
+    no_virtual_assistant:
+      'Chưa có trợ lý ảo nào được thiết lập. Vui lòng truy cập Cài đặt > Trợ lý ảo để hoàn tất cấu hình trước khi sử dụng dịch vụ.',
   },
 }
