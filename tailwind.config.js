@@ -80,6 +80,19 @@ module.exports = {
             opacity: '0',
             transformOrigin: 'bottom right',
           },
+          typing: {
+            '0%': { content: '"."' },
+            '33%': { content: '".."' },
+            '66%': { content: '"..."' },
+          },
+          blink: {
+            '0%': { opacity: '1' },
+            '50%': { opacity: '0' },
+          },
+          jumping: {
+            '0%, 80%, 100%': { transform: 'translateY(0)' },
+            '40%': { transform: 'translateY(-8px)' },
+          },
         },
         zoomInBottomLeft: {
           '0%': {

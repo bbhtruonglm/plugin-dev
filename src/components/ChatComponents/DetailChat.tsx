@@ -106,7 +106,6 @@ function DetailChat({
    * Trạng thái loading khi gửi tin nhắn
    */
   const [status_index, setStatusIndex] = useState(0)
-
   /**
    * Cập nhật trạng thái loading khi gửi tin nhắn
    */
@@ -158,6 +157,7 @@ function DetailChat({
        * Fetch data với client id truyền vào
        */
       fetchMessage(CLIENT_ID_GLOBAL)
+      console.log('FETCH MESSAGE use Effect Refresh data')
       /**
        * Set lại trạng thái REFRESH_DATA
        */
@@ -170,6 +170,7 @@ function DetailChat({
 
   /** List tin nhắn được lấy từ store */
   const LIST_MESSAGE = useSelector(selectListMessage)
+  console.log(LIST_MESSAGE, 'LIST_MESSAGE')
 
   /** Số tin nhắn chưa đọc lấy trong STORE */
   const GLOBAL_UNREAD_COUNT = useSelector(selectGlobalUnreadCount)
@@ -412,7 +413,6 @@ function DetailChat({
       timeout_id = setTimeout(() => {
         /**  Gọi API sau khi đợi 1 giây */
         fetchMessage(CLIENT_ID as string)
-
         /** Khi khởi tạo và call API sau 0.1 giây . set lại trạng thái Không là tin nhắn khởi tạo nữa */
         setIsInit()
         console.log('API called after 1 second because is_init is true')
@@ -645,6 +645,16 @@ function DetailChat({
               <div className="flex  ">
                 {/* <LoadingDots /> */}
                 <LoadingJumping />
+              </div>
+            </div>
+          )}
+          {TYPING_STATUS && (
+            <div className="text-lg font-semibold flex items-center gap-x-2 py-2 px-4 rounded-full bg-slate-300 w-fit">
+              <span className="text-xs text-slate-700">
+                {STATUSES[status_index]}
+              </span>
+              <div className="flex  ">
+                <LoadingDots />
               </div>
             </div>
           )}
