@@ -114,6 +114,32 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
   const POSITION = useSelector(selectEmbedPosition)
   /** Trạng thái vị trí chi tiết của embed */
   const POSITION_DETAIL = useSelector(selectEmbedPositionDetail)
+
+  /**
+   *  Hàm format text với link
+   * @param text - Nội dung tin nhắn
+   * @returns
+   */
+  const formatTextWithLinks = (text: string) => {
+    /** Tìm kế tìm link trong text */
+    const URL_REGEX = /(https?:\/\/[^\s]+)/g
+    /** Return text với link */
+    return text.split(URL_REGEX).map((part, index) =>
+      URL_REGEX.test(part) ? (
+        <a
+          key={index}
+          href={part}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-500 underline"
+        >
+          {part}
+        </a>
+      ) : (
+        part
+      )
+    )
+  }
   return (
     <div
       className={`flex flex-col transition-all duration-300 ease-out gap-y-4 rounded-lg group relative ${getMessageClasses(
@@ -137,7 +163,8 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
           !data?.message_attachments?.[0]?.type) && (
           <div className="flex p-2">
             <p className="text-sm min-h-4 break-words whitespace-pre-line overflow-hidden">
-              {data?.message_text}
+              {/* {data?.message_text} */}
+              {formatTextWithLinks(data?.message_text)}
             </p>
           </div>
         )}
