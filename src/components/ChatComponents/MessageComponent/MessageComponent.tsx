@@ -184,7 +184,9 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
               } flex flex-col gap-y-2 p-2 rounded-lg shadow-sm`}
             >
               <p className="text-sm min-h-4 break-words whitespace-pre-line overflow-hidden">
-                {data?.message_text}
+                {/* {data?.message_text} */}
+
+                {formatTextWithLinks(data?.message_text)}
               </p>
               {data?.message_type !== 'client' && (
                 <div className="flex flex-col gap-y-2">
