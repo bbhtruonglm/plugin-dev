@@ -193,8 +193,6 @@ function DetailChat({
 
   /** Trạng thái AI_STATUS */
   const AI_STATUS = useSelector(selectStatusAI)
-  console.log(AI_STATUS, ' aiiii')
-  console.log(NO_AI_ID, 'no iddd')
 
   /** Số bản ghi hiển thị trong 1 trang */
   const LIMIT = 20
@@ -223,10 +221,6 @@ function DetailChat({
    * State lưu lỗi khi upload file
    */
   const [error_upload, setErrorUpload] = useState('')
-  /**
-   * State lưu trạng thái loading khi khởi tạo client
-   */
-  const [is_generate_message, setIsGenerateMessage] = useState(true)
 
   /** Hàm gọi API để lấy tin nhắn */
   const fetchMessage = async (client_iddd?: string) => {
