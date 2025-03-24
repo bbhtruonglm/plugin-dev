@@ -35,6 +35,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux'
 import { useEffect, useState } from 'react'
 
+import ActiveSDK from './pages/ActiveSDK'
 import ChatApp from './pages/ChatApp'
 import WIDGET from 'bbh-chatbox-widget-js-sdk'
 import i18next from './i18n'
@@ -633,6 +634,10 @@ function App() {
               client_name={client_name}
             />
           }
+        />
+        <Route
+          path="/active-sdk"
+          element={<ActiveSDK />}
         />
       </Routes>
     </div>

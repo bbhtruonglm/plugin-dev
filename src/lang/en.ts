@@ -60,5 +60,21 @@ export const en = {
     ai_already_thinking: 'Almost done!',
     no_virtual_assistant:
       'No virtual assistant has been set up. Please go to Settings > Virtual Assistant to complete the configuration before using the service.',
+
+    /** Active */
+    active: 'Activate',
+    active_success: 'Widget has been activated!',
+    active_fail: 'Activation failed',
+    active_warning: 'Warning',
+    active_error: 'Error',
+    active_invalid_token: 'Invalid token',
+    active_token_expired: 'Token has expired',
+    active_token_not_found: 'Token not found',
+    active_fail_message: 'Activation failed',
+    active_access_token_invalid: 'Invalid Access Token',
+    active_sdk_message: 'To activate the Widget, please press Activate',
+    success: 'Success',
+    failed: 'Failed',
+    warning: 'Warning',
   },
 }
