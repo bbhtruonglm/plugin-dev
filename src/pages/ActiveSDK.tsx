@@ -145,7 +145,7 @@ const ActiveSDK = () => {
           type={type}
           title={
             type === 'success'
-              ? t('sucsess')
+              ? t('success')
               : type === 'error'
               ? t('failed')
               : t('warning')
