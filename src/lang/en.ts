@@ -76,5 +76,8 @@ export const en = {
     success: 'Success',
     failed: 'Failed',
     warning: 'Warning',
+
+    confirm: 'Confirm',
+    cancel: 'Cancel',
   },
 }

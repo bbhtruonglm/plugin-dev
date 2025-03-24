@@ -76,5 +76,8 @@ export const vn = {
     success: 'Thành công',
     failed: 'Thất bại',
     warning: 'Cảnh báo',
+
+    confirm: 'Xác nhận',
+    cancel: 'Hủy bỏ',
   },
 }

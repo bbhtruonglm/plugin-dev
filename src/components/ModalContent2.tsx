@@ -2,6 +2,7 @@ import ErrorIcon from './Icon/ErrorIcon'
 import React from 'react'
 import SuccessIcon from './Icon/SuccessIcon'
 import WarningIcon from './Icon/WarningIcon'
+import { t } from 'i18next'
 
 type ModalProps = {
   /**
@@ -80,13 +81,13 @@ const ModalContent2: React.FC<ModalProps> = ({
             onClick={onConfirm}
             className={`px-4 py-2 ${'bg-blue-700 hover:bg-blue-500'} text-white rounded-md`}
           >
-            Xác nhận
+            {t('confirm')}
           </button>
           <button
             onClick={onCancel}
             className="px-4 py-2 bg-gray-700 hover:bg-gray-500 text-white rounded-md"
           >
-            Huỷ bỏ
+            {t('cancel')}
           </button>
         </div>
       </div>
