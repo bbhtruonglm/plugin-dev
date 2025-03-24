@@ -125,7 +125,7 @@ const ActiveSDK = () => {
 
   return (
     <div className="flex flex-col items-center justify-center w-screen h-screen gap-y-2">
-      <h1 className="text-2xl">{t('active_sdk')}</h1>
+      <h1 className="text-2xl">{t('active_sdk_message')}</h1>
       <button
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer flex gap-x-2 items-center truncate"
         onClick={handleActive}
