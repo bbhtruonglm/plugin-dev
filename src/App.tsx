@@ -61,7 +61,10 @@ function App() {
     /**
      * Load WIDGET nếu trang hiện tại là trang AI Assistant
      */
-    if (window.location.pathname.includes('/ai-assistant')) {
+    if (
+      window.location.pathname.includes('/ai-assistant') ||
+      window.location.pathname.includes('/active-sdk')
+    ) {
       /**
        * Lấy token từ URL
        */

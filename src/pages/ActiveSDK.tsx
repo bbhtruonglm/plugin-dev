@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 
 import LoadingSize from '@/components/Loading/LoadingSize'
 import ModalContent2 from '@/components/ModalContent2'
-import { set } from 'lodash'
+import WIDGET from 'bbh-chatbox-widget-js-sdk'
 import { t } from 'i18next'
 
 const ActiveSDK = () => {
@@ -53,73 +53,25 @@ const ActiveSDK = () => {
      */
     if (access_token) {
       try {
-        const RES = await fetch(
-          'https://chatbox-app.botbanhang.vn/v1/app/app-installed/update',
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(BODY),
-          }
-        )
-        /**
-         * Chuyển response sang json
-         */
-        const RESPONSE = await RES.json()
-        /**
-         * Nếu response thành công thì mở cảnh báo
-         */
-        if (RESPONSE?.succes) {
-          /** Mô cảnh báo */
-          setOpenWarning(true)
-          /** Loại cảnh báo */
-          setType('success')
-          /** Message */
-          setMessage(t('active_success'))
-        } else {
-          /** Mở cảnh báo */
-          setOpenWarning(true)
-          /** Loại cảnh báo */
-          setType('error')
-          if (RESPONSE?.message?.message === 'invalid token') {
-            /** Message */
-            setMessage(t('active_invalid_token'))
-            return
-          }
-          if (RESPONSE?.message?.message === 'token expired') {
-            /** Message */
-            setMessage(t('active_token_expired'))
-            return
-          }
-          if (RESPONSE?.message?.message === 'token not found') {
-            /** Message */
-            setMessage(t('active_token_not_found'))
-            return
-          }
-          setMessage(t('active_fail'))
-        }
-      } catch (error) {
-        console.log(error)
-        /** Mô cảnh báo */
+        /** Goị hàm OAuth */
+        await WIDGET.oAuth()
+        /** Gửi request lên server */
         setOpenWarning(true)
-        /** Loại cảnh báo */
+        /** Set loại modal */
+        setType('success')
+        /** Set message */
+        setMessage(t('active_success'))
+      } catch (error) {
+        /** Hiện thị cảnh báo */
+        setOpenWarning(true)
+        /** Set loại modal */
         setType('error')
-        /** Message */
+        /** Set message */
         setMessage(t('active_fail'))
       } finally {
-        /** Set loading false */
+        /** Set loading */
         setLoading(false)
       }
-    } else {
-      /** Mở cảnh báo */
-      setOpenWarning(true)
-      /** Loại cảnh báo */
-      setType('error')
-      /** Message  token*/
-      setMessage(t('active_access_token_invalid'))
-      /** Set loading false */
-      setLoading(false)
     }
   }
 
