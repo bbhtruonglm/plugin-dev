@@ -19,11 +19,13 @@ import {
   setGlobalClientId,
   setGlobalPreviewUrl,
   setGlobalUnreadCount,
+  setIsAvatar,
   setLatestMessageGlobal,
   setListMessage,
   setLoadingGlobal,
   setNoAiId,
   setNoViewport,
+  setPageAvatar,
   setPageId,
   setPageInfoAI,
   setRefreshData,
@@ -371,6 +373,23 @@ function App() {
         console.log(PRIMARY_LANUGAGE) // Ví dụ: "vi", "en", "ja"
 
         console.log(PAGE_SETTING, 'kkk')
+
+        /**
+         * Trạng thái hình thị avatar
+         */
+        const IS_AVATAR = PAGE_SETTING?.is_use_persona_id
+        /**
+         * Avatar trang
+         */
+        const PAGE_AVATAR = PAGE_SETTING?.avatar
+        /**
+         * Lưu trạng thái hình thị avatar vào store
+         */
+        dispatch(setIsAvatar(IS_AVATAR))
+        /**
+         * Lưu avatar vào store
+         */
+        dispatch(setPageAvatar(PAGE_AVATAR))
         /**
          * Chế độ ngôn ngữ trang
          */

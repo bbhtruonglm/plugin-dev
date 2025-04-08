@@ -1,13 +1,16 @@
 import { ChatScreenProps, Message } from './type'
 import { debounce, keys } from 'lodash'
 import { fetchAPI, useAPI } from '@/api/api'
+import { renderAvatarCDN, renderAvatarFromId } from '@/utils'
 import {
   selectAiId,
   selectGlobalClientId,
   selectGlobalUnreadCount,
+  selectIsAvatar,
   selectLatestMessage,
   selectListMessage,
   selectLoadingGlobal,
+  selectPageAvatar,
   selectPageId,
   selectPageInfoAI,
   selectRefreshData,
@@ -32,7 +35,6 @@ import Loading from '../Loading/Loading'
 import LoadingDots from '../Loading/LoadingDot'
 import LoadingJumping from '../Loading/LoadingJumping'
 import MessageBody from './Body/MessageBody'
-import { renderAvatarCDN } from '@/utils'
 import { t } from 'i18next'
 
 /** Chi tiết component chat */
@@ -496,22 +498,24 @@ function DetailChat({
       }, 100)
     }
   }, [SHOW_POPUP, GLOBAL_UNREAD_COUNT])
-
+  /**
+   * link avatar cua page
+   */
+  const PAGE_AVATAR = useSelector(selectPageAvatar)
+  /**
+   * Setting hiển thị avatar nhân viên
+   */
+  const IS_PAGE_AVATAR = useSelector(selectIsAvatar)
   /** Hàm kiểm tra nhân sự có tồn tại không
    * @string id: Nhan vao id của nhân sự
    * @returns {string} link avatar
    */
   const checkStaffExist = useCallback(
     (id: string) => {
-      /** Lấy ID của nhân viên */
-      const ID_DETECT = id.split('__')[2]
-      /** Nếu không có staff Id thì trả về '' */
-      if (!ID_DETECT) return ''
-      if (ID_DETECT === 'undefined') return './images/assistant_bot.svg'
-      /** Nếu có staff Id thì trả về link avatar */
-      return renderAvatarCDN(ID_DETECT)
+      const STAFF_AVATAR = renderAvatarFromId(id, IS_PAGE_AVATAR, PAGE_AVATAR)
+      return STAFF_AVATAR
     },
-    [employee_list]
+    [employee_list, IS_PAGE_AVATAR, PAGE_AVATAR]
   )
   const [url, setUrl] = useState('')
 

@@ -16,7 +16,7 @@ interface IProps {
    * @param checkStaffExist: (e: any) => string
    * Kiểm tra xem staff có tồn tại không
    */
-  checkStaffExist: (e: any) => string
+  checkStaffExist: (e: any) => string | undefined
   /**
    * @param client_name?: string
    * Tên của khách hàng
@@ -36,10 +36,11 @@ const MessageBody = React.memo(
         }`}
       >
         {item?.message_type === 'page' && (
-          <div className="flex mask-rounded-oval bg-gray-300 w-6 h-6 items-center justify-center">
+          <div className="flex mask-rounded-oval bg-transparent w-6 h-6 items-center justify-center">
             <img
               src={
-                checkStaffExist(item?.message_metadata) || './images/earth.svg'
+                checkStaffExist(item?.message_metadata) ||
+                './images/Logo_retion_embed.png'
               }
               className="w-6 h-6 mask-rounded-oval"
               alt=""

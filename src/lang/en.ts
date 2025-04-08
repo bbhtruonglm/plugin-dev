@@ -79,5 +79,7 @@ export const en = {
 
     confirm: 'Confirm',
     cancel: 'Cancel',
+
+    staff: 'Staff',
   },
 }

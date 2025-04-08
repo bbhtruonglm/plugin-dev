@@ -79,5 +79,7 @@ export const vn = {
 
     confirm: 'Xác nhận',
     cancel: 'Hủy bỏ',
+
+    staff: 'Nhân viên',
   },
 }
