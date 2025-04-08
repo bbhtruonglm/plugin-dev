@@ -104,6 +104,13 @@ interface InputProps {
    * handle Error
    */
   handleError?: (e: any) => void
+  /** đang hiện phím ảon */
+  is_show_keyboard?: boolean
+  /** set hiện phím ảo */
+  setIsShowKeyboard?: (e: boolean) => void
+
+  /** ref input */
+  page_ref?: any
 }
 
 /** Cấu trúc dữ liệu input */

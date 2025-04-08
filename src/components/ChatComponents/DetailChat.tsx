@@ -514,6 +514,7 @@ function DetailChat({
     [employee_list]
   )
   const [url, setUrl] = useState('')
+
   useEffect(() => {
     console.log(window.location, 'window.location.href')
     setUrl(window.location.href)
@@ -522,7 +523,7 @@ function DetailChat({
     <div
       className={`flex flex-col w-full h-full ${
         AI_STATUS && 'bg-ai-bg'
-      }  relative`}
+      }  relative `}
     >
       {/* header */}
       <div className={`${AI_STATUS ? 'hidden' : ''}`}>
@@ -543,7 +544,7 @@ function DetailChat({
         ref={MESSAGE_CONTAINER_REF}
         className={`px-5 py-3 gap-4 overflow-y-auto scrollbar-thin scrollbar-webkit flex flex-col relative ${
           AI_STATUS ? 'mt-0 mb-16' : user_id ? 'my-16' : 'mt-44'
-        }`}
+        } `}
       >
         {user_id && loading_more && (
           <div className="fixed bg-white-300 top-[12%] left-[48%] p-2 rounded-full text-xs z-50">

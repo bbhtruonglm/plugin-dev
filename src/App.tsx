@@ -199,7 +199,7 @@ function App() {
    * @type {Object} API - API lấy thông tin khách hàng
    * @type {string} READ_CLIENT_INFO - URL API lấy thông tin khách hàng
    */
-  const { READ_CLIENT_INFO } = useAPI()
+  const { READ_CLIENT_INFO, READ_PAGE_INFO } = useAPI()
 
   /** Trạng thái hiển thị Popup */
   const [is_show, setShow] = useState(false)
@@ -306,7 +306,27 @@ function App() {
       decodeClientData()
     }
   }, [])
-
+  /**
+   * Gọi Hàm Lấy dự liệu setting Trang
+   * @param page_id id trang
+   * @returns
+   */
+  const fetchPageSetting = async (page_id: string) => {
+    /** Tạo đối tượng URL */
+    const URL_READ = new URL(READ_PAGE_INFO)
+    /**
+     * Thêm search vào URLs
+     */
+    URL_READ.search = new URLSearchParams({ page_id }).toString()
+    /**
+     * Lấy thông tin trang
+     */
+    const RES = await fetchAPI(URL_READ.toString(), 'GET')
+    /**
+     * Trả về cài đặt trang
+     */
+    return RES?.data
+  }
   useEffect(() => {
     /**
      * Hàm lấy dữ liệu
@@ -321,6 +341,9 @@ function App() {
         const URL_PARAMS = new URLSearchParams(window.location.search)
 
         console.log('URL_PARENT::', URL_PARENT)
+
+        /** Lấy page_id */
+        const STORED_PAGE_ID = URL_PARENT.searchParams.get('page_id') || ''
         /**
          * Kiểm tra xem có phải AI không
          */
@@ -334,16 +357,100 @@ function App() {
          * Cập nhật trạng thái hiển thị popup
          */
         setShow(IS_AI)
+        /**
+         * Lấy cài đặt trang
+         */
+        const PAGE_SETTING = await fetchPageSetting(STORED_PAGE_ID)
+        /**  Lấy ngôn ngữ từ trình duyệt*/
+        const BROWSER_LANGUAGE = navigator.language || navigator.languages[0]
 
+        console.log(BROWSER_LANGUAGE) // Ví dụ: "vi-VN", "en-US", "ja-JP"
+
+        /** Nếu chỉ cần mã ngôn ngữ chính (không có region) */
+        const PRIMARY_LANUGAGE = BROWSER_LANGUAGE.split('-')[0]
+        console.log(PRIMARY_LANUGAGE) // Ví dụ: "vi", "en", "ja"
+
+        console.log(PAGE_SETTING, 'kkk')
+        /**
+         * Chế độ ngôn ngữ trang
+         */
+        const WEB_LANGUAGE = PAGE_SETTING?.web_language
+        /**
+         * Ngôn ngữ trang
+         */
+        const PAGE_LANGUAGE = PAGE_SETTING?.page_language
+        /**
+         * Ngôn ngữ Mặc định của trang
+         */
+        const DEFAULT_LANGUAGE = PAGE_SETTING?.default_language
+        /**
+         * Trạng thái tự động đổi ngôn ngữ theo khu vực
+         */
+        const AUTO_CHANGE_BY_REGION =
+          PAGE_SETTING?.auto_change_language_by_region
+        /**
+         * Ngôn ngữ Mặc định
+         */
+        const DEFAULT_LANGUAGE_CONFIG = 'en'
         /**
          * Lấy ngôn ngữ từ URL
          */
-        const LOCALE = URL_PARAMS.get('locale') || 'vn'
+        const LOCALE_PARAMS = URL_PARAMS?.get('locale')
+
+        /**
+         * Xử lý ngôn ngữ
+         * 1. Ưu tiên số 1: lấy theo ngôn ngữ từ SDK config hoặc Default config
+         * 2. Nếu WEB_LANGUAGE = DEFAULT thì lý ngôn ngữ từ PAGE_LANGUAGE (Trong Setting) hoặc Default config
+         * 3. Nếu WEB_LANGUAGE != DEFAULT thì lý ngôn ngữ từ DEFAULT (Trong Setting) hoặc Default config
+         */
+        let EMBED_LOCALE
+
+        /** Kiem tra xem LOCALE_PARAMS co hop le khong */
+        const IS_VALID_LOCALE = LOCALE_PARAMS && LOCALE_PARAMS !== 'undefined'
+        /**
+         * Kiem tra xem WEB_LANGUAGE co hop le khong
+         */
+        switch (true) {
+          /**
+           * Nếu ngôn ngữ ở sdk hợp lệ thì chọn ngôn ngữ ở sdk
+           */
+          case IS_VALID_LOCALE:
+            EMBED_LOCALE = LOCALE_PARAMS
+            break
+          /**
+           * Nếu trạng thái mặc định sẽ lấy theo field default_language (Trong Setting)
+           * hoặc Default config
+           */
+          case WEB_LANGUAGE === 'DEFAULT':
+            EMBED_LOCALE = DEFAULT_LANGUAGE || DEFAULT_LANGUAGE_CONFIG
+            break
+          /**
+           * Nếu không có case nào thoả mã thì lấy mặc định (fix cứng Tiếng việt)
+           */
+          default:
+            EMBED_LOCALE = DEFAULT_LANGUAGE_CONFIG
+            break
+        }
+
+        if (IS_AI) {
+          /**
+           * Lấy ngôn ngữ của LOCALE_PARAMS
+           */
+          const LOCALE = IS_VALID_LOCALE
+            ? LOCALE_PARAMS
+            : DEFAULT_LANGUAGE_CONFIG
+          /**
+           *  Cập nhật ngôn ngữ vào i18next
+           */
+          await i18next.changeLanguage(LOCALE)
+          console.log('Language changed to::', LOCALE)
+        } else {
+          await i18next.changeLanguage(EMBED_LOCALE)
+          console.log('Language changed to::', EMBED_LOCALE)
+        }
         /**
          * Thay đổi ngôn ngữ
          */
-        await i18next.changeLanguage(LOCALE)
-        console.log('Language changed to::', LOCALE)
 
         if (IS_AI) {
           /** Sử dụng await để lấy dữ liệu CLIENT_INFO */

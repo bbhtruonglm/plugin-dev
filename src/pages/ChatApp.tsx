@@ -400,7 +400,6 @@ const ChatApp = ({
 
     /** Thông tin page từ api */
     const RES = await fetchAPI(URL_READ.toString(), 'GET')
-
     /** lưu tên page vào state */
     setPageName(RES?.data?.name)
 
