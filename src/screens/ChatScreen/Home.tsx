@@ -68,7 +68,7 @@ function Home({
       {!!social_link?.length && (
         <ChatOption
           social_link={social_link}
-          social_description={social_description}
+          social_description={social_description[I18N.language]}
         />
       )}
       {/* Giới thiệu AI */}
