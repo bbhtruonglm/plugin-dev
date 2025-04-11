@@ -11,6 +11,7 @@ import {
   saveTimeClosePopup,
 } from './utils'
 import {
+  resetConversation,
   selectEmbedPosition,
   selectEmbedPositionDetail,
   selectPageId,
@@ -225,7 +226,7 @@ function App() {
   /** Hàm xử lý thông điệp từ parent
    * @param {MessageEvent} event - Sự kiện tin nhắn
    */
-  const handleMessage = (event: MessageEvent) => {
+  const handleMessage = async (event: MessageEvent) => {
     /** @type {Object} PAYLOAD - Dữ liệu từ event */
     const PAYLOAD = event.data
     console.log('EVENT::', event)
@@ -238,14 +239,37 @@ function App() {
      * @type {string} action - Hành động từ app cha
      * @type {string} locale - Ngôn ngữ
      */
-    const { user_name, user_email, user_phone, client_id, from, action, type } =
-      PAYLOAD
+    const {
+      user_name,
+      user_email,
+      user_phone,
+      client_id,
+      from,
+      action,
+      type,
+      locale,
+      reset_conversation,
+      reset_page_id,
+    } = PAYLOAD
     console.log('DATA::', PAYLOAD)
+
     /**
      * Nếu từ chatbox và là tin nhắn từ khách hàng thì gửi tin nhắn suggest
      */
     if (from === 'CHATBOX' && type === 'CLIENT_MESSAGE') {
       dispatch(setSuggestMessage(PAYLOAD?.payload?.message))
+    }
+
+    if (from === 'parent-app-preview') {
+      /**
+       *  Cập nhật ngôn ngữ vào i18next
+       */
+      await i18next.changeLanguage(locale)
+      if (reset_conversation) {
+        console.log(PAGE_ID, 'page_id')
+        localStorage?.removeItem(`client_id_${reset_page_id}`)
+        dispatch(resetConversation())
+      }
     }
 
     /** Kiểm tra thông tin từ app cha */
@@ -371,8 +395,6 @@ function App() {
         /** Nếu chỉ cần mã ngôn ngữ chính (không có region) */
         const PRIMARY_LANUGAGE = BROWSER_LANGUAGE.split('-')[0]
         console.log(PRIMARY_LANUGAGE) // Ví dụ: "vi", "en", "ja"
-
-        console.log(PAGE_SETTING, 'kkk')
 
         /**
          * Trạng thái hình thị avatar

@@ -39,6 +39,7 @@ const INITIAL_STATE: AppState = {
   },
   ai_id: undefined,
   is_avatar: false,
+  reset_conversation: false,
 }
 
 export const appSlice = createSlice({
@@ -191,6 +192,12 @@ export const appSlice = createSlice({
     setPageAvatar: (state, action: PayloadAction<string>) => {
       state.page_avatar = action.payload
     },
+    /** Reset conversation */
+    resetConversation: (state) => {
+      state.list_message = []
+      state.list_unread_message = []
+      state.latest_message = null
+    },
   },
 })
 
@@ -222,6 +229,7 @@ export const {
   setNoAiId,
   setIsAvatar,
   setPageAvatar,
+  resetConversation,
 } = appSlice.actions
 
 /** chọn đến page id */

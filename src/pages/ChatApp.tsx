@@ -468,10 +468,11 @@ const ChatApp = ({
     /** Lưu thông tin biểu mẫu */
     setWebForm({
       is_active: RES?.data?.web_form?.is_active || false,
-      source:
-        RES?.data?.web_form?.source?.[
-          renderLocale(I18N.language) || RES?.data?.default_language || 'vi'
-        ] || {},
+      source: RES?.data?.web_form?.source || {},
+      // source:
+      //   RES?.data?.web_form?.source?.[
+      //     renderLocale(I18N.language) || RES?.data?.default_language || 'vi'
+      //   ] || {},
     })
 
     /** Lưu danh sách nhân viên */

@@ -131,6 +131,10 @@ export interface AppState {
    * page_avatar
    */
   page_avatar?: string
+  /**
+   * reset_conversation
+   */
+  reset_conversation?: boolean
 }
 /** Định nghĩa kiểu dữ liệu cho danh sách nhân viên */
 interface EmployeeList {

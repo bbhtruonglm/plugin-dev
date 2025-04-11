@@ -94,10 +94,12 @@ function ChatScreen({
       if (CLIENT_ID && CLIENT_ID !== 'undefined') {
         setClientId(CLIENT_ID)
       } else {
-        // setClientId('')
+        if (!AI_STATUS) {
+          setClientId('')
+        }
       }
     }
-  }, [PAGE_ID])
+  }, [PAGE_ID, CLIENT_ID])
   /**
    * Hàm lấy dữ liệu khách hàng
    */

@@ -5,6 +5,7 @@ import UnreadMessage from '@/components/HomeComponents/UnreadMessage'
 import { selectLatestMessage } from '@/stores/appSlice'
 import { t } from 'i18next'
 import { useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 function Home({
   onNavigate,
@@ -14,14 +15,17 @@ function Home({
   web_form,
   social_description,
 }: HomeProps) {
+  /** Dịch ngôn ngữ */
+  const { t, i18n: I18N } = useTranslation()
   /**
    * Lấy thông tin từ web_form
    */
   const { is_active, source } = web_form || {}
+
   /**
    * Lấy title và description từ source
    */
-  const { title, description } = source || {}
+  const { title, description } = source[I18N.language] || {}
 
   /**
    * Tin nhắn mới nhất
