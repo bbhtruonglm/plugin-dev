@@ -450,7 +450,7 @@ const ChatApp = ({
        * Lưu thông tin mô tả mạng xã hội
        */
       setSocialDescription(RES?.data?.social_platform?.description)
-      console.log(RES?.data?.social_platform?.description, 'zzz')
+
       // setSocialDescription(
       //   RES?.data?.social_platform?.description?.[
       //     I18N.language || RES?.data?.default_language || 'vi'

@@ -41,7 +41,7 @@ function UnreadMessage({ onNavigate, onError }: SendMessageProps) {
    * Lấy client_id từ localStorage
    */
   const CLIENT_STORED = localStorage.getItem(`client_id_${PAGE_ID}`)
-  console.log(LATEST_MESSAGE)
+
   /**
    * link avatar cua page
    */

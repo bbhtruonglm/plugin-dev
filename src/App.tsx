@@ -262,11 +262,70 @@ function App() {
 
     if (from === 'parent-app-preview') {
       /**
-       *  Cập nhật ngôn ngữ vào i18next
+       * Nếu trạng thái auto thì fix lại theo setting page
        */
-      await i18next.changeLanguage(locale)
+      if (locale === 'auto') {
+        /**
+         * Lấy cài đặt trang
+         */
+        const PAGE_SETTING = await fetchPageSetting(reset_page_id)
+        /**
+         * Chế độ ngôn ngữ trang
+         */
+        const WEB_LANGUAGE = PAGE_SETTING?.web_language
+        /**
+         * Ngôn ngữ trang
+         */
+        const PAGE_LANGUAGE = PAGE_SETTING?.page_language
+        /**
+         * Ngôn ngữ Mặc định của trang
+         */
+        const DEFAULT_LANGUAGE = PAGE_SETTING?.default_language
+
+        /**
+         * Ngôn ngữ Mặc định
+         */
+        const DEFAULT_LANGUAGE_CONFIG = 'en'
+
+        let EMBED_LOCALE
+        /**
+         * Kiem tra xem WEB_LANGUAGE co hop le khong
+         */
+        switch (true) {
+          /**
+           * Nếu trạng thái mặc định sẽ lấy theo field default_language (Trong Setting)
+           * hoặc Default config
+           */
+          case WEB_LANGUAGE === 'DEFAULT':
+            EMBED_LOCALE = DEFAULT_LANGUAGE || DEFAULT_LANGUAGE_CONFIG
+            break
+          /**
+           * Nếu không có case nào thoả mã thì lấy mặc định (fix cứng Tiếng việt)
+           */
+          default:
+            EMBED_LOCALE = DEFAULT_LANGUAGE_CONFIG
+            break
+        }
+        console.log(EMBED_LOCALE, 'EMBED_LOCALE')
+        /**
+         *  Cập nhật ngôn ngữ vào i18next
+         */
+        await i18next.changeLanguage(EMBED_LOCALE)
+      }
+      /**
+       * Nếu ngôn ngữ khác mặc định thì cập nhật ngôn ngữ
+       */
+      if (locale && locale !== 'auto') {
+        /**
+         *  Cập nhật ngôn ngữ vào i18next
+         */
+        await i18next.changeLanguage(locale)
+      }
+      /**
+       * Nếu reset conversation thì xóa client_id trong localStorage
+       * va reset conversation
+       */
       if (reset_conversation) {
-        console.log(PAGE_ID, 'page_id')
         localStorage?.removeItem(`client_id_${reset_page_id}`)
         dispatch(resetConversation())
       }
@@ -447,7 +506,10 @@ function App() {
         let EMBED_LOCALE
 
         /** Kiem tra xem LOCALE_PARAMS co hop le khong */
-        const IS_VALID_LOCALE = LOCALE_PARAMS && LOCALE_PARAMS !== 'undefined'
+        const IS_VALID_LOCALE =
+          LOCALE_PARAMS &&
+          LOCALE_PARAMS !== 'undefined' &&
+          LOCALE_PARAMS !== 'auto'
         /**
          * Kiem tra xem WEB_LANGUAGE co hop le khong
          */
@@ -486,6 +548,7 @@ function App() {
           await i18next.changeLanguage(LOCALE)
           console.log('Language changed to::', LOCALE)
         } else {
+          console.log(EMBED_LOCALE, 'embeddd')
           await i18next.changeLanguage(EMBED_LOCALE)
           console.log('Language changed to::', EMBED_LOCALE)
         }
