@@ -68,7 +68,6 @@ const ChatApp = ({
   handleBtn,
   show,
   setHideForMobile,
-  client_name,
   consultation,
 }: ChatAppProps) => {
   /** Dịch ngôn ngữ */
@@ -1202,7 +1201,6 @@ const ChatApp = ({
                   setCurrentTab('message')
                 }}
                 social_link={social_link}
-                client_name={client_name}
                 web_form={web_form}
                 social_description={social_description}
               />

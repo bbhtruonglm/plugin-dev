@@ -135,6 +135,9 @@ export interface AppState {
    * reset_conversation
    */
   reset_conversation?: boolean
+
+  /** Tên của client_id */
+  client_name_store?: string
 }
 /** Định nghĩa kiểu dữ liệu cho danh sách nhân viên */
 interface EmployeeList {

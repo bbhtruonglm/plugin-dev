@@ -4,6 +4,7 @@ import {
   selectPageId,
   selectStatusAI,
   selectUserInfo,
+  setClientNameStore,
   setGlobalClientId,
   setStatusIsInit,
   setUserInfo,
@@ -177,6 +178,9 @@ function ChatScreen({
          * Set global client id
          */
         dispatch(setGlobalClientId(RESULT.data))
+        /** Lưu tên client vào store */
+        dispatch(setClientNameStore(value?.name))
+
         /**
          * Sau khi khởi tạo client thì xoá hết thông tin trong store
          */

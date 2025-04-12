@@ -15,6 +15,7 @@ import {
   selectEmbedPosition,
   selectEmbedPositionDetail,
   selectPageId,
+  setClientNameStore,
   setCurrentHeight,
   setCurrentWidth,
   setGlobalClientId,
@@ -220,9 +221,6 @@ function App() {
   /** Dispatch */
   const dispatch = useDispatch()
 
-  /** Tên client */
-  const [client_name, setClientName] = useState(null as any)
-
   /** Hàm xử lý thông điệp từ parent
    * @param {MessageEvent} event - Sự kiện tin nhắn
    */
@@ -326,8 +324,17 @@ function App() {
        * va reset conversation
        */
       if (reset_conversation) {
+        /**
+         * Xóa client_id trong localStorage
+         */
         localStorage?.removeItem(`client_id_${reset_page_id}`)
+
+        /**
+         * Reset conversation
+         */
         dispatch(resetConversation())
+
+        dispatch(setClientNameStore(undefined))
       }
     }
 
@@ -751,7 +758,9 @@ function App() {
     /** Nếu không có client_id hoặc page_id thì setClientName(null) */
     if (!client_id || !page_id) {
       /** Set tên client là null */
-      setClientName(null)
+      // setClientName(null)
+      /** Reset tên client */
+      dispatch(setClientNameStore(undefined))
       return
     }
 
@@ -767,7 +776,9 @@ function App() {
     /** Lấy thông tin client */
     const RES = await fetchAPI(URL_READ.toString(), 'GET')
     /** Lưu tên client */
-    setClientName(RES?.data?.client_name)
+    // setClientName(RES?.data?.client_name)
+    /** Lưu Tên client vào store */
+    dispatch(setClientNameStore(RES?.data?.client_name))
   }
 
   return (
@@ -810,7 +821,6 @@ function App() {
                 saveTimeClosePopup(PAGE_ID)
                 handleOff()
               }}
-              client_name={client_name}
               consultation={type_consultation}
             />
           }
@@ -845,7 +855,6 @@ function App() {
                 saveTimeClosePopup(PAGE_ID)
                 handleOff()
               }}
-              client_name={client_name}
             />
           }
         />
