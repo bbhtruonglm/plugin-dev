@@ -63,13 +63,13 @@ export const useAPI = () => {
   /**
    *  Môi trường của ứng dụng:
    */
-  const ENV = import.meta.env.VITE_APP_ENV || 'production'
+  const ENV = import.meta.env.VITE_APP_ENV || 'development'
 
   /**
    * - Trả về đường dẫn API theo môi trường:
    * mặc định là production nếu môi trường không hợp lệ
    */
-  return API_END_POINTS[ENV] || API_END_POINTS.production
+  return API_END_POINTS[ENV] || API_END_POINTS.development
 }
 /**
  * - Hàm xử lý gọi api:
