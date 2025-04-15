@@ -1,5 +1,6 @@
 import {
   checkStaffExist,
+  renderAvatarFromId,
   renderStaffName,
   saveQuickChatCount,
   truncateSentences,
@@ -7,17 +8,19 @@ import {
 } from '@/utils'
 import {
   selectGlobalUnreadCount,
+  selectIsAvatar,
   selectLatestMessage,
+  selectPageAvatar,
   selectPageId,
   selectStaffList,
 } from '@/stores/appSlice'
 import { t, use } from 'i18next'
+import { useCallback, useState } from 'react'
 
 import { ReactComponent as Arrow } from '@/assets/chevron-right.svg'
 import { EmployeeList } from '@/pages/type'
 import TimeAgo from '../TimeAgo'
 import { useSelector } from 'react-redux'
-import { useState } from 'react'
 
 function UnreadMessage({ onNavigate, onError }: SendMessageProps) {
   /** danh sách id page */
@@ -38,19 +41,32 @@ function UnreadMessage({ onNavigate, onError }: SendMessageProps) {
    * Lấy client_id từ localStorage
    */
   const CLIENT_STORED = localStorage.getItem(`client_id_${PAGE_ID}`)
-  console.log(LATEST_MESSAGE)
 
+  /**
+   * link avatar cua page
+   */
+  const PAGE_AVATAR = useSelector(selectPageAvatar)
+  /**
+   * Setting hiển thị avatar nhân viên
+   */
+  const IS_PAGE_AVATAR = useSelector(selectIsAvatar)
+  /** Hàm kiểm tra nhân sự có tồn tại không
+   * @string id: Nhan vao id của nhân sự
+   * @returns {string} link avatar
+   */
+  const checkStaffExist = useCallback(
+    (id: string) => {
+      const STAFF_AVATAR = renderAvatarFromId(id, IS_PAGE_AVATAR, PAGE_AVATAR)
+      return STAFF_AVATAR
+    },
+    [IS_PAGE_AVATAR, PAGE_AVATAR]
+  )
   return (
     <div
       onClick={() => {
-        /**
-         * Kiểm tra xem có page_id không
-         */
         if (PAGE_ID && PAGE_ID !== null) {
-          /** Có page_id thì thêm page_id và url, sau đó chuyển trang */
           onNavigate()
         } else {
-          /** Không có page_id thì báo lỗi */
           onError()
         }
       }}
@@ -61,80 +77,63 @@ function UnreadMessage({ onNavigate, onError }: SendMessageProps) {
           {t('unread_message')}
           <span
             className={`text-white bg-red-500 text-xxs rounded-full h-4 w-4 ${
-              !GLOBAL_UNREAD_COUNT ? 'hidden' : 'block'
-            } flex justify-center items-center`}
+              !GLOBAL_UNREAD_COUNT ? 'hidden' : 'flex'
+            } justify-center items-center`}
           >
             {GLOBAL_UNREAD_COUNT < 10 ? GLOBAL_UNREAD_COUNT : '9+'}
           </span>
         </h4>
-        {/* <h5 className="flex gap-2 items-center text-sm text-onlineColor">
-          <div className="w-3 h-3 rounded-full bg-onlineColor"></div>
-          {t('we_are_online')}
-        </h5> */}
+
         <div className="flex h-full w-full">
           {LATEST_MESSAGE?.message_type === 'page' && (
-            <div className="flex flex-row items-center w-full gap-2">
-              {/* Hiển thị avatar theo role user / shop */}
+            <div className="flex items-center w-full gap-2">
+              {/* Avatar */}
+              <div className="flex-shrink-0">
+                <img
+                  src={
+                    checkStaffExist(LATEST_MESSAGE?.message_metadata) ||
+                    './images/earth.svg'
+                  }
+                  className="w-8 h-8 mask-rounded-oval bg-gray-200"
+                  alt=""
+                />
+              </div>
+
+              {/* Nội dung tin nhắn */}
               <div
-                className={`flex gap-x-2 flex-grow min-h-0 justify-start items-end`}
+                className="flex flex-col flex-grow min-w-0 max-h-20 overflow-hidden"
+                onClick={() => {}}
               >
-                <div className="flex flex-shrink-0 ">
-                  {LATEST_MESSAGE?.message_type === 'page' && (
-                    <img
-                      src={
-                        checkStaffExist(LATEST_MESSAGE?.message_metadata) ||
-                        './images/earth.svg'
-                      }
-                      className="w-8 h-8 mask-rounded-oval bg-gray-200"
-                      alt=""
-                    />
-                  )}
-                </div>
-                <div
-                  className="flex flex-col flex-grow min-w-0 max-h-20 cursor-pointer"
-                  onClick={() => {
-                    /** Khi click trả lời sẽ  reset hết data trong store */
-                    // dispatch(setLatestMessageGlobal(null))
-                    // dispatch(setListUnreadMessage([]))
-                    // dispatch(setListMessage([]))
-                    // dispatch(setGlobalUnreadCount(0))
-                    /** Khi click vào trả lời, xoá unread_count */
-                    // saveQuickChatCount(PAGE_ID, CLIENT_STORED, 0)
-                    /* Chuyển tab thành message */
-                    // setCurrentTab('message')
-                    /** trigger hàm đóng mở popup */
-                    // handleBtn()
-                  }}
-                >
-                  <div className="flex flex-col justify-start w-full gap-x-1 flex-shrink-0">
-                    {/* <span className="flex text-sm w-full max-h-16 line-clamp-2"> */}
-                    <span className="text-sm max-h-16 break-words whitespace-pre-line overflow-hidden line-clamp-3">
-                      {LATEST_MESSAGE?.message_text}
+                <span className="text-sm max-h-16 break-words whitespace-pre-line overflow-hidden line-clamp-3">
+                  {LATEST_MESSAGE?.message_text}
+                </span>
+
+                {/* Hàng dưới: Tên + thời gian */}
+                <div className="flex items-center min-w-0 w-full">
+                  {/* Tên nhân viên - truncate nếu dài */}
+                  <span className="text-slate-500 text-sm font-medium truncate ">
+                    {!IS_PAGE_AVATAR
+                      ? t('staff')
+                      : renderStaffName(
+                          STAFF_LIST as EmployeeList,
+                          LATEST_MESSAGE?.message_metadata
+                        )}
+                  </span>
+
+                  {/* Phần phải: chỉ hiện nếu có đủ không gian */}
+                  <div className="flex-shrink-0 flex items-center ml-1">
+                    <span className="text-slate-500 text-sm font-medium mx-1">
+                      •
                     </span>
-
-                    {/* Phần hiển thị thông tin tin nhắn */}
-                    <div className="flex w-full gap-x-2">
-                      <div className="text-slate-500 text-sm font-medium flex items-center">
-                        {/* Hiển thị tên nhân viên */}
-                        <span className="">
-                          {renderStaffName(
-                            STAFF_LIST as EmployeeList,
-                            LATEST_MESSAGE?.message_metadata
-                          )}
-                        </span>
-                      </div>
-
-                      <span className="mx-0.5">•</span>
-                      {/* Hiển thị thời gian tin nhắn */}
-                      <span className="text-slate-500 text-sm font-medium truncate flex items-center flex-shrink-0">
-                        {/* {calculateTimeAgo(LATEST_MESSAGE?.createdAt)} */}
-                        <TimeAgo timestamp={LATEST_MESSAGE?.createdAt} />
-                      </span>
-                    </div>
+                    <span className="text-slate-500 text-sm font-medium">
+                      <TimeAgo timestamp={LATEST_MESSAGE?.createdAt} />
+                    </span>
                   </div>
                 </div>
               </div>
-              <div>
+
+              {/* Mũi tên */}
+              <div className="flex-shrink-0">
                 <Arrow />
               </div>
             </div>

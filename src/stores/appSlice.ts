@@ -38,6 +38,9 @@ const INITIAL_STATE: AppState = {
     bottom: undefined,
   },
   ai_id: undefined,
+  is_avatar: false,
+  reset_conversation: false,
+  client_name_store: undefined,
 }
 
 export const appSlice = createSlice({
@@ -178,10 +181,32 @@ export const appSlice = createSlice({
     setNoAiId: (state, action: PayloadAction<boolean>) => {
       state.ai_id = action.payload
     },
+    /**
+     * Trạng thái ẩn avatar staff/page
+     */
+    setIsAvatar: (state, action: PayloadAction<boolean>) => {
+      state.is_avatar = action.payload
+    },
+    /**
+     * Avatar của page
+     */
+    setPageAvatar: (state, action: PayloadAction<string>) => {
+      state.page_avatar = action.payload
+    },
+    /** Reset conversation */
+    resetConversation: (state) => {
+      state.list_message = []
+      state.list_unread_message = []
+      state.latest_message = null
+    },
+    /** CLient name */
+    setClientNameStore: (state, action: PayloadAction<string | undefined>) => {
+      state.client_name_store = action.payload
+    },
   },
 })
 
-// Action creators are generated for each case reducer function
+/** Action creators are generated for each case reducer function */
 export const {
   setPageId,
   setGlobalClientId,
@@ -207,6 +232,10 @@ export const {
   setEmbedPosition,
   setEmbedPositionDetail,
   setNoAiId,
+  setIsAvatar,
+  setPageAvatar,
+  resetConversation,
+  setClientNameStore,
 } = appSlice.actions
 
 /** chọn đến page id */
@@ -289,4 +318,15 @@ export const selectEmbedPositionDetail = (state: RootState) =>
  * AI ID
  */
 export const selectAiId = (state: RootState) => state.app.ai_id
+/**
+ * Is Avatar
+ */
+export const selectIsAvatar = (state: RootState) => state.app.is_avatar
+/**
+ * Page Avatar
+ */
+export const selectPageAvatar = (state: RootState) => state.app.page_avatar
+/** Lấy tên client */
+export const selectClientName = (state: RootState) =>
+  state.app.client_name_store
 export default appSlice.reducer

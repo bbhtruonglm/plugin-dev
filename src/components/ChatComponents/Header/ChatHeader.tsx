@@ -1,6 +1,11 @@
 import 'react-loading-skeleton/dist/skeleton.css' // Đảm bảo CSS được import
 
-import { selectCurrentWidth, selectLoadingGlobal } from '@/stores/appSlice'
+import {
+  selectCurrentWidth,
+  selectIsAvatar,
+  selectLoadingGlobal,
+  setIsAvatar,
+} from '@/stores/appSlice'
 
 import { ReactComponent as BackArrow } from '@/assets/white-arrow.svg'
 import { ChatHeaderProps } from '../type'
@@ -28,6 +33,11 @@ function ChatHeader({
 
   /** Check list nhân viên có ai online không */
   const ANY_ONLINE = employee_list?.some((employee) => employee.is_online)
+  /**
+   * Hiển thị avatar nhân viên/page
+   */
+  const IS_AVATAR = useSelector(selectIsAvatar)
+  console.log(IS_AVATAR, 'is avatar')
 
   return (
     <>
@@ -104,21 +114,19 @@ function ChatHeader({
           }`}
         >
           {user_id ? (
-            <div className="flex justify-between items-center w-full">
-              <div className="flex gap-2 items-center">
+            <div className="flex justify-between items-center w-full gap-x-2">
+              <div className="flex gap-2 items-center flex-1 overflow-hidden">
                 <BackArrow
                   className="w-7 h-7 cursor-pointer"
                   onClick={() => onCancel()}
                 />
 
-                <div>
+                <div className="flex flex-col overflow-hidden flex-1">
                   {loading_staff ? (
-                    <div className="h-5 flex items-center">
-                      {/* <LoadingDots /> */}
-                    </div>
+                    <div className="h-5 flex items-center"></div>
                   ) : (
-                    <h2 className="text-white text-sm font-medium">
-                      {staff_name || page_name}
+                    <h2 className="text-white text-sm font-medium truncate overflow-hidden whitespace-nowrap">
+                      {IS_AVATAR ? staff_name || page_name : page_name}
                     </h2>
                   )}
                   <h5 className="flex gap-1 items-center font-normal text-xs text-onlineColor">
@@ -127,6 +135,7 @@ function ChatHeader({
                   </h5>
                 </div>
               </div>
+
               <div className="flex gap-x-5">
                 <div className="flex h-8 justify-center">
                   <OnlineStaff
@@ -139,8 +148,8 @@ function ChatHeader({
                   onClick={setHideForMobile}
                   className={`${
                     CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
-                      ? ' flex w-9 h-9 items-center justify-center'
-                      : ' hidden'
+                      ? 'flex w-9 h-9 items-center justify-center'
+                      : 'hidden'
                   }`}
                 >
                   <Close />
@@ -157,7 +166,7 @@ function ChatHeader({
                 {loading_staff ? (
                   <></>
                 ) : (
-                  <h2 className="text-lg font-medium text-white">
+                  <h2 className="text-lg font-medium text-white truncate overflow-hidden whitespace-nowrap">
                     {page_name}
                   </h2>
                 )}

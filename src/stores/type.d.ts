@@ -119,7 +119,25 @@ export interface AppState {
     right?: number
     left?: number
   }
+  /**
+   * AI_ID
+   */
   ai_id?: boolean
+  /**
+   * Trạng thái ẩn avatar nhân viên
+   */
+  is_avatar?: boolean
+  /**
+   * page_avatar
+   */
+  page_avatar?: string
+  /**
+   * reset_conversation
+   */
+  reset_conversation?: boolean
+
+  /** Tên của client_id */
+  client_name_store?: string
 }
 /** Định nghĩa kiểu dữ liệu cho danh sách nhân viên */
 interface EmployeeList {

@@ -6,7 +6,7 @@ import {
   selectSuggestMessage,
   setSuggestMessage,
 } from '@/stores/appSlice'
-import { t, use } from 'i18next'
+import { useDispatch, useSelector } from 'react-redux'
 import { useEffect, useRef, useState } from 'react'
 
 import { ReactComponent as Arrow } from '@/assets/Icon_up_circle.svg'
@@ -15,8 +15,6 @@ import { ReactComponent as Close } from '@/assets/close.svg'
 import { InputProps } from '../type'
 import Upload from './Upload'
 import { useAPI } from '@/api/api'
-import { useDispatch } from 'react-redux'
-import { useSelector } from 'react-redux'
 
 function InputChat({
   handleSend,
@@ -26,6 +24,9 @@ function InputChat({
   client_id,
   setLoading,
   handleError,
+  is_show_keyboard,
+  setIsShowKeyboard,
+  page_ref,
 }: InputProps) {
   /**
    * Input Ref
@@ -336,6 +337,7 @@ function InputChat({
         /** Tắt bàn phím khi user vuốt */
         INPUT_REF.current?.blur()
         setIsKeyboardOpen(false)
+        setIsShowKeyboard && setIsShowKeyboard(false)
       }
     }
     document.body.style.overflow = 'hidden'
@@ -430,6 +432,7 @@ function InputChat({
             className="bg-transparent outline-none flex-grow placeholder:text-slate-500 text-sm font-medium py-1.5 px-1"
             onFocus={() => {
               setIsKeyboardOpen(true)
+              setIsShowKeyboard && setIsShowKeyboard(true)
             }}
           />
           {AI_STATUS && value && (
@@ -478,6 +481,7 @@ function InputChat({
                     e.preventDefault()
                     INPUT_REF.current?.blur()
                     setIsKeyboardOpen(false)
+                    setIsShowKeyboard && setIsShowKeyboard(false)
                     /** Tắt bàn phím khi user vuốt */
                   } else {
                     uploadFile(file)

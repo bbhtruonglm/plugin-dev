@@ -4,6 +4,7 @@ import {
   selectPageId,
   selectStatusAI,
   selectUserInfo,
+  setClientNameStore,
   setGlobalClientId,
   setStatusIsInit,
   setUserInfo,
@@ -94,10 +95,12 @@ function ChatScreen({
       if (CLIENT_ID && CLIENT_ID !== 'undefined') {
         setClientId(CLIENT_ID)
       } else {
-        // setClientId('')
+        if (!AI_STATUS) {
+          setClientId('')
+        }
       }
     }
-  }, [PAGE_ID])
+  }, [PAGE_ID, CLIENT_ID])
   /**
    * Hàm lấy dữ liệu khách hàng
    */
@@ -175,6 +178,9 @@ function ChatScreen({
          * Set global client id
          */
         dispatch(setGlobalClientId(RESULT.data))
+        /** Lưu tên client vào store */
+        dispatch(setClientNameStore(value?.name))
+
         /**
          * Sau khi khởi tạo client thì xoá hết thông tin trong store
          */

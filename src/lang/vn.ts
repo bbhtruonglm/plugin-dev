@@ -60,5 +60,26 @@ export const vn = {
 
     no_virtual_assistant:
       'Chưa có trợ lý ảo nào được thiết lập. Vui lòng truy cập Cài đặt > Trợ lý ảo để hoàn tất cấu hình trước khi sử dụng dịch vụ.',
+
+    /** Active */
+    active: 'Kích hoạt',
+    active_success: 'Widget đã được kích hoạt!',
+    active_fail: 'Kích hoạt thất bại',
+    active_warning: 'Cảnh báo',
+    active_error: 'Lỗi',
+    active_invalid_token: 'Token không hợp lệ',
+    active_token_expired: 'Token đã hết hạn',
+    active_token_not_found: 'Token không tồn tại',
+    active_fail_message: 'Kích hoạt thất bại',
+    active_access_token_invalid: 'Access Token không hợp lệ',
+    active_sdk_message: 'Để kích hoạt Widget vui lòng ấn Kích hoạt',
+    success: 'Thành công',
+    failed: 'Thất bại',
+    warning: 'Cảnh báo',
+
+    confirm: 'Xác nhận',
+    cancel: 'Hủy bỏ',
+
+    staff: 'Nhân viên',
   },
 }

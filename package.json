@@ -10,7 +10,7 @@
     "@testing-library/user-event": "^13.5.0",
     "@types/jest": "^27.5.2",
     "@types/react-redux": "^7.1.33",
-    "bbh-chatbox-widget-js-sdk": "^1.0.10",
+    "bbh-chatbox-widget-js-sdk": "^1.0.11",
     "dotenv": "^16.4.5",
     "env-cmd": "^10.1.0",
     "i18next": "^23.15.1",

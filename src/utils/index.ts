@@ -136,15 +136,47 @@ export const removeVietnameseTones = (str?: string) => {
  * @returns {string} link avatar
  */
 export const renderAvatar = (id: string) => {
+  if (!id) return './images/no_avatar.jpg'
   /**
    * Link avatar của nhân sự
    */
   const LINK_AVATAR = apiImage(`/app/facebook/avatar/${id}?width=64&height=64`)
+
   /**
    * Trả về link avatar
    */
   return LINK_AVATAR
 }
+/** Hàm kiểm tra nhân sự có tồn tại không
+ * @string id: Nhan vao id của nhân sự
+ * @returns {string} link avatar
+ */
+export const renderAvatarFromId = (
+  id: string,
+  IS_PAGE_AVATAR: boolean | undefined,
+  PAGE_AVATAR: string | undefined
+) => {
+  /** Lấy ID của nhân viên */
+  const ID_DETECT = id.split('__')[2]
+  /** Nếu không có staff Id thì trả về '' */
+  if (!ID_DETECT) return ''
+  if (ID_DETECT === 'undefined') return PAGE_AVATAR
+
+  if (!IS_PAGE_AVATAR) {
+    /**
+     * Nếu chưa setup Avatar page
+     */
+    if (!PAGE_AVATAR) {
+      return './images/Logo_retion_embed.png'
+    } else {
+      return PAGE_AVATAR
+    }
+  } else {
+    /** Nếu có staff Id thì trả về link avatar */
+    return renderAvatarCDN(ID_DETECT)
+  }
+}
+
 /** Trả về link avatar
  * @param {string} id: Nhận vào id của nhân sự
  * @returns {string} link avatar

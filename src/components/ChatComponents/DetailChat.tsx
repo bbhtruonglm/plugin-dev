@@ -1,13 +1,16 @@
 import { ChatScreenProps, Message } from './type'
 import { debounce, keys } from 'lodash'
 import { fetchAPI, useAPI } from '@/api/api'
+import { renderAvatarCDN, renderAvatarFromId } from '@/utils'
 import {
   selectAiId,
   selectGlobalClientId,
   selectGlobalUnreadCount,
+  selectIsAvatar,
   selectLatestMessage,
   selectListMessage,
   selectLoadingGlobal,
+  selectPageAvatar,
   selectPageId,
   selectPageInfoAI,
   selectRefreshData,
@@ -32,7 +35,6 @@ import Loading from '../Loading/Loading'
 import LoadingDots from '../Loading/LoadingDot'
 import LoadingJumping from '../Loading/LoadingJumping'
 import MessageBody from './Body/MessageBody'
-import { renderAvatarCDN } from '@/utils'
 import { t } from 'i18next'
 
 /** Chi tiết component chat */
@@ -407,7 +409,6 @@ function DetailChat({
       timeout_id = setTimeout(() => {
         /**  Gọi API sau khi đợi 1 giây */
         fetchMessage(CLIENT_ID as string)
-
         /** Khi khởi tạo và call API sau 0.1 giây . set lại trạng thái Không là tin nhắn khởi tạo nữa */
         setIsInit()
         console.log('API called after 1 second because is_init is true')
@@ -497,29 +498,36 @@ function DetailChat({
       }, 100)
     }
   }, [SHOW_POPUP, GLOBAL_UNREAD_COUNT])
-
+  /**
+   * link avatar cua page
+   */
+  const PAGE_AVATAR = useSelector(selectPageAvatar)
+  /**
+   * Setting hiển thị avatar nhân viên
+   */
+  const IS_PAGE_AVATAR = useSelector(selectIsAvatar)
   /** Hàm kiểm tra nhân sự có tồn tại không
    * @string id: Nhan vao id của nhân sự
    * @returns {string} link avatar
    */
   const checkStaffExist = useCallback(
     (id: string) => {
-      /** Lấy ID của nhân viên */
-      const ID_DETECT = id.split('__')[2]
-      /** Nếu không có staff Id thì trả về '' */
-      if (!ID_DETECT) return ''
-      if (ID_DETECT === 'undefined') return './images/assistant_bot.svg'
-      /** Nếu có staff Id thì trả về link avatar */
-      return renderAvatarCDN(ID_DETECT)
+      const STAFF_AVATAR = renderAvatarFromId(id, IS_PAGE_AVATAR, PAGE_AVATAR)
+      return STAFF_AVATAR
     },
-    [employee_list]
+    [employee_list, IS_PAGE_AVATAR, PAGE_AVATAR]
   )
+  const [url, setUrl] = useState('')
 
+  useEffect(() => {
+    console.log(window.location, 'window.location.href')
+    setUrl(window.location.href)
+  }, [])
   return (
     <div
       className={`flex flex-col w-full h-full ${
         AI_STATUS && 'bg-ai-bg'
-      }  relative`}
+      }  relative `}
     >
       {/* header */}
       <div className={`${AI_STATUS ? 'hidden' : ''}`}>
@@ -540,7 +548,7 @@ function DetailChat({
         ref={MESSAGE_CONTAINER_REF}
         className={`px-5 py-3 gap-4 overflow-y-auto scrollbar-thin scrollbar-webkit flex flex-col relative ${
           AI_STATUS ? 'mt-0 mb-16' : user_id ? 'my-16' : 'mt-44'
-        }`}
+        } `}
       >
         {user_id && loading_more && (
           <div className="fixed bg-white-300 top-[12%] left-[48%] p-2 rounded-full text-xs z-50">
@@ -571,6 +579,7 @@ function DetailChat({
             )}
           </div>
         )}
+
         {AI_STATUS && invalid_page_id && (
           <h4 className="flex justify-center font-semibold text-red-600">
             {t('invalid_virtual_assistant')}

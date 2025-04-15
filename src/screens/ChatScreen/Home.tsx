@@ -1,27 +1,35 @@
+import { selectClientName, selectLatestMessage } from '@/stores/appSlice'
+
 import ChatOption from '@/components/HomeComponents/ChatOption'
 import { HomeProps } from './type'
 import SendMessage from '@/components/HomeComponents/SendMessage'
 import UnreadMessage from '@/components/HomeComponents/UnreadMessage'
-import { selectLatestMessage } from '@/stores/appSlice'
 import { t } from 'i18next'
 import { useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 function Home({
   onNavigate,
   onError,
   social_link,
-  client_name,
   web_form,
   social_description,
 }: HomeProps) {
+  /** Dịch ngôn ngữ */
+  const { t, i18n: I18N } = useTranslation()
+
+  /** Client name */
+  const CLIENT_NAME = useSelector(selectClientName)
+
   /**
    * Lấy thông tin từ web_form
    */
   const { is_active, source } = web_form || {}
+
   /**
    * Lấy title và description từ source
    */
-  const { title, description } = source || {}
+  const { title, description } = source[I18N.language] || {}
 
   /**
    * Tin nhắn mới nhất
@@ -33,9 +41,9 @@ function Home({
       {/* Greeting */}
       <div className="">
         <h1 className="text-2xl font-semibold">
-          {client_name
-            ? `${title || t('_hi')} ${client_name},` ||
-              `${t('_hi')} ${client_name},`
+          {CLIENT_NAME
+            ? `${title || t('_hi')} ${CLIENT_NAME},` ||
+              `${t('_hi')} ${CLIENT_NAME},`
             : t('welcome')}
         </h1>
         <h2 className="text-xl font-medium">
@@ -48,7 +56,6 @@ function Home({
         <UnreadMessage
           onNavigate={onNavigate}
           onError={onError}
-          client_name={client_name}
         />
       )}
 
@@ -57,14 +64,13 @@ function Home({
       <SendMessage
         onNavigate={onNavigate}
         onError={onError}
-        client_name={client_name}
       />
 
       {/* Lựa chọn kênh liên lạc. Nếu không có list social thì ẩn đi */}
       {!!social_link?.length && (
         <ChatOption
           social_link={social_link}
-          social_description={social_description}
+          social_description={social_description[I18N.language]}
         />
       )}
       {/* Giới thiệu AI */}

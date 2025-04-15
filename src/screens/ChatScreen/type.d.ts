@@ -48,5 +48,5 @@ interface HomeProps {
   /** webform */
   web_form?: any
   /** Mô tả kênh liên lạc */
-  social_description?: string | null
+  social_description?: any
 }

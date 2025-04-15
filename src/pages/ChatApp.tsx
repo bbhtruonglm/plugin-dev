@@ -1,11 +1,15 @@
 import { ChatAppProps, EmployeeList } from './type'
 import {
-  checkStaffExist,
+  closeSocketConnect,
+  onSocketFromChatboxServer,
+} from '@/components/WebSocket/WebSocket'
+import { fetchAPI, useAPI } from '@/api/api'
+import { get, isEmpty, map, values } from 'lodash'
+import {
   hasAttachmentOfType,
   postMessagePosition,
   postMessageToParent,
-  postMessageToParentAllowedDomains,
-  postMessageToParentHiddenPath,
+  renderAvatarFromId,
   renderLocale,
   renderPosition,
   renderStaffName,
@@ -16,12 +20,6 @@ import {
   truncateString,
 } from '@/utils'
 import {
-  closeSocketConnect,
-  onSocketFromChatboxServer,
-} from '@/components/WebSocket/WebSocket'
-import { fetchAPI, useAPI } from '@/api/api'
-import { get, isEmpty, map, values } from 'lodash'
-import {
   selectCurrentHeight,
   selectCurrentWidth,
   selectEmbedPosition,
@@ -29,8 +27,10 @@ import {
   selectGlobalClientId,
   selectGlobalPreviewUrl,
   selectGlobalUnreadCount,
+  selectIsAvatar,
   selectLatestMessage,
   selectListUnreadMessage,
+  selectPageAvatar,
   selectPageId,
   selectRefreshData,
   selectStatusAI,
@@ -47,7 +47,7 @@ import {
   setStaffListStore,
   setStatusIsInit,
 } from '@/stores/appSlice'
-import { useContext, useEffect, useRef, useState } from 'react'
+import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { ReactComponent as ActiveHome } from '@/assets/home-active.svg'
@@ -72,7 +72,6 @@ const ChatApp = ({
   handleBtn,
   show,
   setHideForMobile,
-  client_name,
   consultation,
 }: ChatAppProps) => {
   /** Dịch ngôn ngữ */
@@ -400,9 +399,22 @@ const ChatApp = ({
 
     /** Thông tin page từ api */
     const RES = await fetchAPI(URL_READ.toString(), 'GET')
-
     /** lưu tên page vào state */
     setPageName(RES?.data?.name)
+
+    /**
+     *  Tạm ẩn để deploy lên production
+     */
+    // /**
+    //  * Lưu thông tin vị trí chatbox
+    //  */
+    // dispatch(setEmbedPosition('bottom_right'))
+    // /**
+    //  * Lưu thông tin chi tiết vị trí của chatbox
+    //  */
+    // dispatch(setEmbedPositionDetail({ bottom: 4, right: 12, left: 12 }))
+
+    // // dispatch(setEmbedPosition('bottom_right'))
 
     /**
      *  Tạm ẩn để deploy lên production
@@ -440,11 +452,13 @@ const ChatApp = ({
       /**
        * Lưu thông tin mô tả mạng xã hội
        */
-      setSocialDescription(
-        RES?.data?.social_platform?.description?.[
-          I18N.language || RES?.data?.default_language || 'vi'
-        ]
-      )
+      setSocialDescription(RES?.data?.social_platform?.description)
+
+      // setSocialDescription(
+      //   RES?.data?.social_platform?.description?.[
+      //     I18N.language || RES?.data?.default_language || 'vi'
+      //   ]
+      // )
     }
 
     /** Lưu thông tin tin nhắn chào mừng */
@@ -459,10 +473,11 @@ const ChatApp = ({
     /** Lưu thông tin biểu mẫu */
     setWebForm({
       is_active: RES?.data?.web_form?.is_active || false,
-      source:
-        RES?.data?.web_form?.source?.[
-          renderLocale(I18N.language) || RES?.data?.default_language || 'vi'
-        ] || {},
+      source: RES?.data?.web_form?.source || {},
+      // source:
+      //   RES?.data?.web_form?.source?.[
+      //     renderLocale(I18N.language) || RES?.data?.default_language || 'vi'
+      //   ] || {},
     })
 
     /** Lưu danh sách nhân viên */
@@ -1086,6 +1101,25 @@ const ChatApp = ({
       POSITION_DETAIL?.left
     )
   }
+  /**
+   * link avatar cua page
+   */
+  const PAGE_AVATAR = useSelector(selectPageAvatar)
+  /**
+   * Setting hiển thị avatar nhân viên
+   */
+  const IS_PAGE_AVATAR = useSelector(selectIsAvatar)
+  /** Hàm kiểm tra nhân sự có tồn tại không
+   * @string id: Nhan vao id của nhân sự
+   * @returns {string} link avatar
+   */
+  const checkStaffExist = useCallback(
+    (id: string) => {
+      const STAFF_AVATAR = renderAvatarFromId(id, IS_PAGE_AVATAR, PAGE_AVATAR)
+      return STAFF_AVATAR
+    },
+    [IS_PAGE_AVATAR, PAGE_AVATAR]
+  )
 
   return (
     /** Hiển thị thông tin Layout cả SDK */
@@ -1171,7 +1205,6 @@ const ChatApp = ({
                   setCurrentTab('message')
                 }}
                 social_link={social_link}
-                client_name={client_name}
                 web_form={web_form}
                 social_description={social_description}
               />
@@ -1335,29 +1368,35 @@ const ChatApp = ({
                 >
                   <div className="flex justify-between items-center w-full gap-x-1 flex-shrink-0">
                     {/* Phần hiển thị thông tin tin nhắn */}
-                    <div className="flex justify-between w-full ">
-                      <div className="text-slate-500 text-xs font-medium flex items-center">
+                    <div className="flex justify-between w-full overflow-hidden">
+                      <div className="text-slate-500 text-xs font-medium flex items-center overflow-hidden flex-1">
                         {/* Hiển thị tên nhân viên */}
-                        <span className="">
-                          {truncateSentences(
-                            renderStaffName(
-                              staff_list,
-                              LATEST_MESSAGE?.message_metadata
-                            ),
-                            6
-                          )}
-                        </span>
-                        <span className="mx-0.5">{t('from')}</span>
+                        {IS_PAGE_AVATAR && (
+                          <div className="flex-shrink-0">
+                            <span>
+                              {truncateSentences(
+                                renderStaffName(
+                                  staff_list,
+                                  LATEST_MESSAGE?.message_metadata
+                                ),
+                                6
+                              )}
+                            </span>
+                            <span className="mx-0.5">{t('from')}</span>
+                          </div>
+                        )}
+
                         {/* Hiển thị tên trang, có thể bị cắt ngắn nếu quá dài */}
-                        <span className="mx-0.5 truncate">
-                          {truncateString(page_name, 10)}
+                        <span className="mx-0.5 truncate whitespace-nowrap overflow-hidden text-ellipsis flex-1">
+                          {!IS_PAGE_AVATAR
+                            ? page_name
+                            : truncateString(page_name, 10)}
                         </span>
                       </div>
 
                       {/* Hiển thị thời gian tin nhắn */}
                       <span className="text-slate-500 text-xs font-medium truncate flex items-center flex-shrink-0">
                         <span className="mx-0.5">•</span>
-                        {/* {calculateTimeAgo(LATEST_MESSAGE?.createdAt)} */}
                         <TimeAgo timestamp={LATEST_MESSAGE?.createdAt} />
                       </span>
                     </div>
@@ -1365,24 +1404,15 @@ const ChatApp = ({
                     {/* Nút đóng */}
                     <div
                       onClick={(event) => {
-                        /**
-                         * Ngăn chặn sự kiện lan truyền
-                         */
                         event.stopPropagation()
-                        /** Reset hết data trong store */
                         dispatch(setLatestMessageGlobal(null))
-                        /** Khi đóng tin nhắn mới, reset unread_count */
                         dispatch(setGlobalUnreadCount(0))
-                        /** Lưu thời gian vào localstorage Khi đóng tin nhắn mới */
                         saveTimeClosePopup(PAGE_ID)
-                        /** Reset latest message trong store thành null */
                         saveQuickChatLatestMessage(PAGE_ID, CLIENT_STORED, null)
-                        /** Thay đổi trạng thái SHOW_QUICK_CHAT= 'hide_quick_chat' */
                         localStorage.setItem(
                           `status_quick_chat__${PAGE_ID}`,
                           'hide_quick_chat'
                         )
-                        /** post message 1 lần nữa */
                         postMessageToParent(
                           false,
                           false,
@@ -1423,17 +1453,19 @@ const ChatApp = ({
                     /** trigger hàm đóng mở popup */
                     handleBtn()
                   }}
-                  className="h-11 bg-white text-slate-400 text-sm flex w-full rounded-xl shadow-md p-3  items-center"
+                  className="h-11 bg-white text-slate-400 text-sm flex w-full rounded-xl shadow-md p-3  items-center truncate overflow-hidden whitespace-nowrap"
                 >
                   {t('reply') +
                     ' ' +
-                    truncateSentences(
-                      renderStaffName(
-                        staff_list,
-                        LATEST_MESSAGE?.message_metadata
-                      ),
-                      6
-                    )}
+                    (!IS_PAGE_AVATAR
+                      ? page_name
+                      : truncateSentences(
+                          renderStaffName(
+                            staff_list,
+                            LATEST_MESSAGE?.message_metadata
+                          ),
+                          6
+                        ))}
                 </div>
               </div>
             </div>
