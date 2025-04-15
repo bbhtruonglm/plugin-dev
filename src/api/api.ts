@@ -1,7 +1,7 @@
 import { VITE_APP_BE_HOST, VITE_APP_SOCKET_HOST } from './env/production'
 import {
-  VITE_APP_BE_HOST as VITE_APP_BE_HOST_STAGING,
-  VITE_APP_SOCKET_HOST as VITE_APP_SOCKET_HOST_STAGING,
+  VITE_APP_BE_HOST as VITE_APP_BE_HOST_DEVELOPMENT,
+  VITE_APP_SOCKET_HOST as VITE_APP_SOCKET_HOST_DEVELOPMENT,
 } from './env/staging'
 
 /**
@@ -23,7 +23,7 @@ type EndPointType = {
   /**
    * - Đường dẫn API cho môi trường staging:
    */
-  staging: {
+  development: {
     SOCKET_API: string
     READ_MESSAGE_API: string
     SEND_MESSAGE_API: string
@@ -46,13 +46,13 @@ const API_END_POINTS = {
     READ_CLIENT_INFO: `${VITE_APP_BE_HOST}/embed/conversation/read_client`,
     IMAGE: `https://chatbox-static-v3.botbanhang.vn`,
   },
-  staging: {
-    SOCKET_API: VITE_APP_SOCKET_HOST_STAGING,
-    READ_MESSAGE_API: `${VITE_APP_BE_HOST_STAGING}/embed/message/read_message`,
-    SEND_MESSAGE_API: `${VITE_APP_BE_HOST_STAGING}/embed/message/send_message`,
-    INIT_CLIENT_API: `${VITE_APP_BE_HOST_STAGING}/embed/conversation/init_identify`,
-    READ_PAGE_INFO: `${VITE_APP_BE_HOST_STAGING}/embed/page/read_page`, // sử dụng BE_HOST của production
-    READ_CLIENT_INFO: `${VITE_APP_BE_HOST_STAGING}/embed/conversation/read_client`, // sử dụng BE_HOST của production
+  development: {
+    SOCKET_API: VITE_APP_SOCKET_HOST_DEVELOPMENT,
+    READ_MESSAGE_API: `${VITE_APP_BE_HOST_DEVELOPMENT}/embed/message/read_message`,
+    SEND_MESSAGE_API: `${VITE_APP_BE_HOST_DEVELOPMENT}/embed/message/send_message`,
+    INIT_CLIENT_API: `${VITE_APP_BE_HOST_DEVELOPMENT}/embed/conversation/init_identify`,
+    READ_PAGE_INFO: `${VITE_APP_BE_HOST_DEVELOPMENT}/embed/page/read_page`, // sử dụng BE_HOST của production
+    READ_CLIENT_INFO: `${VITE_APP_BE_HOST_DEVELOPMENT}/embed/conversation/read_client`, // sử dụng BE_HOST của production
     IMAGE: `https://chatbox-static-v3.botbanhang.vn`,
   },
 } as EndPointType
@@ -64,6 +64,7 @@ export const useAPI = () => {
    *  Môi trường của ứng dụng:
    */
   const ENV = import.meta.env.VITE_APP_ENV || 'production'
+
   /**
    * - Trả về đường dẫn API theo môi trường:
    * mặc định là production nếu môi trường không hợp lệ
@@ -98,6 +99,7 @@ export function apiImage(end_point: string) {
    * Môi trường của ứng dụng:
    */
   const ENV = (import.meta.env.VITE_APP_ENV as string) || 'production'
+
   /**
    * - Đường dẫn API:
    */
