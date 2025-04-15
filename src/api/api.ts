@@ -63,7 +63,8 @@ export const useAPI = () => {
   /**
    *  Môi trường của ứng dụng:
    */
-  const ENV = import.meta.env.VITE_APP_ENV || 'development'
+  // const ENV = import.meta.env.VITE_APP_ENV || 'development'
+  const ENV = 'development'
 
   /**
    * - Trả về đường dẫn API theo môi trường:
