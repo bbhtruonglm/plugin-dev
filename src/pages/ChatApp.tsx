@@ -141,7 +141,11 @@ const ChatApp = ({
   /** Kiểm tra nếu is_ai = true thì  chuyển luôn vào tab message */
   useEffect(() => {
     /** Nếu trạng thái mở AI hoặc trạng thái consultation thì vào luôn tab message */
-    if (AI_STATUS || consultation || !IS_SHOW_HOME) {
+    if (
+      AI_STATUS ||
+      consultation ||
+      (IS_SHOW_HOME !== undefined && !IS_SHOW_HOME)
+    ) {
       /** Set tab hiện tại là message */
       setCurrentTab('message')
       /** Set show welcome message là false */
