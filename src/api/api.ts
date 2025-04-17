@@ -69,7 +69,11 @@ const API_END_POINTS = {
  * - Hàm lấy api theo môi trường:
  */
 export const useAPI = () => {
-  console.log('test ========', import.meta.env.VITE_APP_ENV)
+  console.log(
+    'test ========',
+    import.meta.env.VITE_APP_ENV,
+    import.meta.env.REACT_APP_ENV
+  )
   /**
    *  Môi trường của ứng dụng:
    */
