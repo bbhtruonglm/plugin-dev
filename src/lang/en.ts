@@ -81,5 +81,6 @@ export const en = {
     cancel: 'Cancel',
 
     staff: 'Staff',
+    anonymous: 'Anonymous',
   },
 }

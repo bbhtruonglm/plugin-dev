@@ -1,5 +1,5 @@
 import { ChatScreenProps, Message } from './type'
-import { debounce, keys } from 'lodash'
+import { debounce, isEmpty, keys } from 'lodash'
 import { fetchAPI, useAPI } from '@/api/api'
 import { renderAvatarCDN, renderAvatarFromId } from '@/utils'
 import {
@@ -14,6 +14,8 @@ import {
   selectPageId,
   selectPageInfoAI,
   selectRefreshData,
+  selectShowForm,
+  selectShowSupportStaff,
   selectStatusAI,
   selectStatusPopup,
   selectStatusViewport,
@@ -223,6 +225,55 @@ function DetailChat({
    * State lưu lỗi khi upload file
    */
   const [error_upload, setErrorUpload] = useState('')
+
+  /**
+   * show init client từ store
+   */
+  const FORM_BEFORE_CHAT = useSelector(selectShowForm)
+
+  console.log(FORM_BEFORE_CHAT, 'FORM_BEFORE_CHAT')
+  /**
+   * State lưu user_id trong localStorage
+   */
+  const [local_user_id, setLocalUserId] = useState<string | null | undefined>(
+    undefined
+  )
+
+  // Bước 1: Lấy user_id từ localStorage
+  useEffect(() => {
+    /**
+     * Khi user_id khóng null
+     */
+    if (PAGE_ID === undefined) return
+    /**
+     * Lấy user_id trong localStorage
+     */
+    const STORED_CLIENT_ID = localStorage.getItem(`client_id_${PAGE_ID}`)
+    /** Lưu user_id */
+    setLocalUserId(STORED_CLIENT_ID) // có thể là null nếu chưa có
+  }, [PAGE_ID, user_id])
+
+  // Bước 2: Chỉ chạy logic anonymous khi đã biết chắc chắn user_id là null
+  useEffect(() => {
+    /** Đnag load thông tin */
+    if (local_user_id === undefined) return // Đang load từ localStorage, chưa xong
+    console.log(FORM_BEFORE_CHAT, 'chay vao day')
+    /**
+     * Khi user_id khóng null
+     */
+    if (!isEmpty(FORM_BEFORE_CHAT)) {
+      /**
+       * Khi chưa tạo tài khoản ẩn danh
+       */
+      if (!FORM_BEFORE_CHAT?.is_active && !local_user_id) {
+        /** Tạo thành tài khoản ẩn danh */
+        onInitClient({
+          name: t('anonymous'),
+          page_id: PAGE_ID,
+        })
+      }
+    }
+  }, [FORM_BEFORE_CHAT, local_user_id])
 
   /** Hàm gọi API để lấy tin nhắn */
   const fetchMessage = async (client_iddd?: string) => {

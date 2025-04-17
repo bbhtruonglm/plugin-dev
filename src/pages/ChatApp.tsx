@@ -33,6 +33,8 @@ import {
   selectPageAvatar,
   selectPageId,
   selectRefreshData,
+  selectShowHome,
+  selectShowSupportStaff,
   selectStatusAI,
   selectStatusIsInit,
   selectStatusPopup,
@@ -88,6 +90,8 @@ const ChatApp = ({
   const LIST_UNREAD_MESSAGE = useSelector(selectListUnreadMessage)
   /**Status AI */
   const AI_STATUS = useSelector(selectStatusAI)
+  /** Trạng thái hiển thị màn home */
+  const IS_SHOW_HOME = useSelector(selectShowHome)
   /** Khởi tạo websocket */
   const WS = useRef<WebSocket | null>(null)
   /** State Khai báo thông tin */
@@ -110,6 +114,8 @@ const ChatApp = ({
   const TAB_REF = useRef(current_tab)
   /** Tạo ref để giữ giá trị của is_show */
   const IS_SHOW_REF = useRef(show)
+  /**Show support staff */
+  const SHOW_SUPPORT_STAFF = useSelector(selectShowSupportStaff)
 
   /**
    * THông tin Refresh Data
@@ -135,13 +141,13 @@ const ChatApp = ({
   /** Kiểm tra nếu is_ai = true thì  chuyển luôn vào tab message */
   useEffect(() => {
     /** Nếu trạng thái mở AI hoặc trạng thái consultation thì vào luôn tab message */
-    if (AI_STATUS || consultation) {
+    if (AI_STATUS || consultation || !IS_SHOW_HOME) {
       /** Set tab hiện tại là message */
       setCurrentTab('message')
       /** Set show welcome message là false */
       setShowWelcomeMessage(false)
     }
-  }, [AI_STATUS, consultation])
+  }, [AI_STATUS, consultation, IS_SHOW_HOME])
 
   /** hàm dispatch đến store */
   const dispatch = useDispatch()
@@ -1160,7 +1166,7 @@ const ChatApp = ({
 
               <div className="flex items-center gap-x-5">
                 <div className="flex items-center h-8">
-                  <OnlineStaff data={EMPLOYEE_LIST} />
+                  {SHOW_SUPPORT_STAFF && <OnlineStaff data={EMPLOYEE_LIST} />}
                 </div>
                 <div
                   onClick={setHideForMobile}

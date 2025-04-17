@@ -4,8 +4,12 @@ import {
   selectCurrentWidth,
   selectIsAvatar,
   selectLoadingGlobal,
+  selectPageAvatar,
+  selectShowHome,
+  selectShowSupportStaff,
   setIsAvatar,
 } from '@/stores/appSlice'
+import { useEffect, useState } from 'react'
 
 import { ReactComponent as BackArrow } from '@/assets/white-arrow.svg'
 import { ChatHeaderProps } from '../type'
@@ -39,6 +43,25 @@ function ChatHeader({
   const IS_AVATAR = useSelector(selectIsAvatar)
   console.log(IS_AVATAR, 'is avatar')
 
+  /**Show support staff */
+  const SHOW_SUPPORT_STAFF = useSelector(selectShowSupportStaff)
+
+  /**
+   * link avatar cua page
+   */
+  const PAGE_AVATAR = useSelector(selectPageAvatar)
+
+  /**
+   * Trạng thái hiện thị home page
+   */
+  const IS_SHOW_HOME = useSelector(selectShowHome)
+
+  const [is_show_home, setIsShowHome] = useState(true)
+  useEffect(() => {
+    console.log(IS_SHOW_HOME, 'is show home')
+    setIsShowHome(IS_SHOW_HOME || false)
+  }, [IS_SHOW_HOME])
+
   return (
     <>
       {LOADING_GLOBAL ? (
@@ -50,10 +73,14 @@ function ChatHeader({
           {user_id ? (
             <div className="flex justify-between items-center w-full h-16 py-3 px-5">
               <div className="flex justify-center items-center gap-x-3 py-4 h-16">
-                <BackArrow
-                  className="w-7 h-7 cursor-pointer"
-                  onClick={() => onCancel()}
-                />
+                {is_show_home ? (
+                  <BackArrow
+                    className="w-7 h-7 cursor-pointer"
+                    onClick={() => onCancel()}
+                  />
+                ) : (
+                  <div className="w-7 h-7"></div>
+                )}
                 <div className="flex flex-col">
                   <Skeleton
                     count={1}
@@ -77,10 +104,14 @@ function ChatHeader({
           ) : (
             <div className="flex flex-col w-full items-center py-3 px-5 gap-2 h-44">
               <div className="flex justify-between w-full ">
-                <BackArrow
-                  className="w-7 h-7 cursor-pointer"
-                  onClick={() => onCancel()}
-                />
+                {is_show_home ? (
+                  <BackArrow
+                    className="w-7 h-7 cursor-pointer"
+                    onClick={() => onCancel()}
+                  />
+                ) : (
+                  <div className="w-7 h-7"></div>
+                )}
                 <Skeleton
                   count={1}
                   height={18}
@@ -116,10 +147,14 @@ function ChatHeader({
           {user_id ? (
             <div className="flex justify-between items-center w-full gap-x-2">
               <div className="flex gap-2 items-center flex-1 overflow-hidden">
-                <BackArrow
-                  className="w-7 h-7 cursor-pointer"
-                  onClick={() => onCancel()}
-                />
+                {is_show_home ? (
+                  <BackArrow
+                    className="w-7 h-7 cursor-pointer"
+                    onClick={() => onCancel()}
+                  />
+                ) : (
+                  <div className="w-7 h-7"></div>
+                )}
 
                 <div className="flex flex-col overflow-hidden flex-1">
                   {loading_staff ? (
@@ -137,12 +172,14 @@ function ChatHeader({
               </div>
 
               <div className="flex gap-x-5">
-                <div className="flex h-8 justify-center">
-                  <OnlineStaff
-                    data={employee_list}
-                    size="small"
-                  />
-                </div>
+                {SHOW_SUPPORT_STAFF && (
+                  <div className="flex h-8 justify-center">
+                    <OnlineStaff
+                      data={employee_list}
+                      size="small"
+                    />
+                  </div>
+                )}
 
                 <div
                   onClick={setHideForMobile}
@@ -159,10 +196,14 @@ function ChatHeader({
           ) : (
             <div className="flex flex-col items-center w-full gap-y-1">
               <div className="flex w-full justify-between items-center h-[30px] ">
-                <BackArrow
-                  className="w-7 h-7 cursor-pointer"
-                  onClick={() => onCancel()}
-                />
+                {is_show_home ? (
+                  <BackArrow
+                    className="w-7 h-7 cursor-pointer"
+                    onClick={() => onCancel()}
+                  />
+                ) : (
+                  <div className="w-7 h-7"></div>
+                )}
                 {loading_staff ? (
                   <></>
                 ) : (
@@ -183,10 +224,14 @@ function ChatHeader({
               </div>
               <div className="flex items-center py-3 justify-center h-[72px] w-full">
                 <div className="flex h-12 justify-center">
-                  <OnlineStaff
-                    data={employee_list}
-                    size="medium"
-                  />
+                  {SHOW_SUPPORT_STAFF ? (
+                    <OnlineStaff
+                      data={employee_list}
+                      size="medium"
+                    />
+                  ) : (
+                    <img src={'./images/Logo_retion_white.png'} />
+                  )}
                 </div>
               </div>
               <div className="flex flex-col justify-center items-center h-10 gap-1">

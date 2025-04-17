@@ -81,5 +81,6 @@ export const vn = {
     cancel: 'Hủy bỏ',
 
     staff: 'Nhân viên',
+    anonymous: 'Ẩn danh',
   },
 }

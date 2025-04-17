@@ -41,6 +41,11 @@ const INITIAL_STATE: AppState = {
   is_avatar: false,
   reset_conversation: false,
   client_name_store: undefined,
+  show_support_staff: undefined,
+  form_before_chat: {
+    is_active: false,
+  },
+  is_visible_home_page: undefined,
 }
 
 export const appSlice = createSlice({
@@ -203,6 +208,18 @@ export const appSlice = createSlice({
     setClientNameStore: (state, action: PayloadAction<string | undefined>) => {
       state.client_name_store = action.payload
     },
+    /** Hiển thị show_supoort staff */
+    setShowSupportStaff: (state, action: PayloadAction<boolean>) => {
+      state.show_support_staff = action.payload
+    },
+    /** trạng thái hiển thị form */
+    setShowForm: (state, action: PayloadAction<any>) => {
+      state.form_before_chat = action.payload
+    },
+    /** Trạng thái hiển thị trang chủ */
+    setShowHome: (state, action: PayloadAction<boolean>) => {
+      state.is_visible_home_page = action.payload
+    },
   },
 })
 
@@ -236,6 +253,9 @@ export const {
   setPageAvatar,
   resetConversation,
   setClientNameStore,
+  setShowSupportStaff,
+  setShowForm,
+  setShowHome,
 } = appSlice.actions
 
 /** chọn đến page id */
@@ -329,4 +349,15 @@ export const selectPageAvatar = (state: RootState) => state.app.page_avatar
 /** Lấy tên client */
 export const selectClientName = (state: RootState) =>
   state.app.client_name_store
+/** SHow support staff */
+export const selectShowSupportStaff = (state: RootState) =>
+  state.app.show_support_staff
+
+/** show form */
+export const selectShowForm = (state: RootState) => state.app.form_before_chat
+
+/** show home */
+export const selectShowHome = (state: RootState) =>
+  state.app.is_visible_home_page
+
 export default appSlice.reducer

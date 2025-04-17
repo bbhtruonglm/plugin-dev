@@ -63,8 +63,9 @@ export const useAPI = () => {
   /**
    *  Môi trường của ứng dụng:
    */
-  // const ENV = import.meta.env.VITE_APP_ENV || 'development'
-  const ENV = 'development'
+  const ENV = (import.meta.env.VITE_APP_ENV ||
+    'development') as keyof EndPointType
+  // const ENV = 'development'
 
   /**
    * - Trả về đường dẫn API theo môi trường:
@@ -99,7 +100,8 @@ export function apiImage(end_point: string) {
   /**
    * Môi trường của ứng dụng:
    */
-  const ENV = (import.meta.env.VITE_APP_ENV as string) || 'production'
+  const ENV = (import.meta.env.VITE_APP_ENV ||
+    'production') as keyof EndPointType
 
   /**
    * - Đường dẫn API:

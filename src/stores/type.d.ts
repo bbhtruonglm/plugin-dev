@@ -138,6 +138,21 @@ export interface AppState {
 
   /** Tên của client_id */
   client_name_store?: string
+  /**
+   * Hiển thị nhân viên hỗ trợ
+   */
+  show_support_staff?: boolean
+  /**
+   * form before chat
+   */
+  form_before_chat?: {
+    /** trạng thái kích hoạt */
+    is_active: boolean
+    /** data */
+    data?: {}
+  }
+  /** Hiển thị trang chủ */
+  is_visible_home_page?: boolean
 }
 /** Định nghĩa kiểu dữ liệu cho danh sách nhân viên */
 interface EmployeeList {

@@ -31,6 +31,9 @@ import {
   setPageId,
   setPageInfoAI,
   setRefreshData,
+  setShowForm,
+  setShowHome,
+  setShowSupportStaff,
   setStatusIsAI,
   setStatusPopup,
   setSuggestMessage,
@@ -496,6 +499,28 @@ function App() {
          * Ngôn ngữ Mặc định của trang
          */
         const DEFAULT_LANGUAGE = PAGE_SETTING?.default_language
+
+        /** Show support staff   */
+        const SHOW_SUPPORT_STAFF = PAGE_SETTING?.is_visible_staff?.is_active
+
+        dispatch(setShowSupportStaff(SHOW_SUPPORT_STAFF))
+        /**
+         * Hiển thị form
+         */
+        const SHOW_FORM = PAGE_SETTING?.form_before_chat
+
+        /**
+         * Hiển thị trang chủ
+         */
+        const SHOW_HOME_PAGE = PAGE_SETTING?.is_visible_home_page || false
+        console.log(PAGE_SETTING, 'PAGE_SETTING')
+        /** Lưu vào store */
+        dispatch(setShowForm(SHOW_FORM))
+
+        /**
+         * Lưu vào store trạng thái hiển thị trang chủ
+         */
+        dispatch(setShowHome(SHOW_HOME_PAGE))
         /**
          * Trạng thái tự động đổi ngôn ngữ theo khu vực
          */
