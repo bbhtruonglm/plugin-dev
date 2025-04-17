@@ -55,6 +55,15 @@ const API_END_POINTS = {
     READ_CLIENT_INFO: `${VITE_APP_BE_HOST_DEVELOPMENT}/embed/conversation/read_client`, // sử dụng BE_HOST của production
     IMAGE: `https://chatbox-static-v3.botbanhang.vn`,
   },
+  staging: {
+    SOCKET_API: VITE_APP_SOCKET_HOST_DEVELOPMENT,
+    READ_MESSAGE_API: `${VITE_APP_BE_HOST_DEVELOPMENT}/embed/message/read_message`,
+    SEND_MESSAGE_API: `${VITE_APP_BE_HOST_DEVELOPMENT}/embed/message/send_message`,
+    INIT_CLIENT_API: `${VITE_APP_BE_HOST_DEVELOPMENT}/embed/conversation/init_identify`,
+    READ_PAGE_INFO: `${VITE_APP_BE_HOST_DEVELOPMENT}/embed/page/read_page`, // sử dụng BE_HOST của production
+    READ_CLIENT_INFO: `${VITE_APP_BE_HOST_DEVELOPMENT}/embed/conversation/read_client`, // sử dụng BE_HOST của production
+    IMAGE: `https://chatbox-static-v3.botbanhang.vn`,
+  },
 } as EndPointType
 /**
  * - Hàm lấy api theo môi trường:
@@ -66,7 +75,7 @@ export const useAPI = () => {
   const ENV = (import.meta.env.VITE_APP_ENV ||
     'development') as keyof EndPointType
   // const ENV = 'development'
-
+  console.log(ENV)
   /**
    * - Trả về đường dẫn API theo môi trường:
    * mặc định là production nếu môi trường không hợp lệ
