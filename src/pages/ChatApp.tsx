@@ -411,20 +411,20 @@ const ChatApp = ({
     const RES = await fetchAPI(URL_READ.toString(), 'GET')
     /** lưu tên page vào state */
     setPageName(RES?.data?.name)
-
+    console.log(RES, 'RES asdfasdfasd')
     /**
      *  Tạm ẩn để deploy lên production
      */
-    // /**
-    //  * Lưu thông tin vị trí chatbox
-    //  */
-    // dispatch(setEmbedPosition('bottom_right'))
-    // /**
-    //  * Lưu thông tin chi tiết vị trí của chatbox
-    //  */
+    /**
+     * Lưu thông tin vị trí chatbox
+     */
+    // dispatch(setEmbedPosition(RES?.data?.display_position.toLowerCase()))
+    /**
+     * Lưu thông tin chi tiết vị trí của chatbox
+     */
     // dispatch(setEmbedPositionDetail({ bottom: 4, right: 12, left: 12 }))
 
-    // // dispatch(setEmbedPosition('bottom_right'))
+    // dispatch(setEmbedPosition('bottom_right'))
 
     /**
      *  Tạm ẩn để deploy lên production

@@ -149,7 +149,7 @@ export interface AppState {
     /** trạng thái kích hoạt */
     is_active: boolean
     /** data */
-    data?: {}
+    data?: FormData[]
   }
   /** Hiển thị trang chủ */
   is_visible_home_page?: boolean
@@ -160,4 +160,17 @@ interface EmployeeList {
    * @params {string} key - Mã nhân viên
    */
   [key: string]: Employee
+}
+
+type FormData = {
+  /** field */
+  field: string
+  /** label */
+  title: string
+  /** type */
+  placeholder: string
+  /** is_active */
+  is_active: boolean
+  /** is_require */
+  is_require: boolean
 }

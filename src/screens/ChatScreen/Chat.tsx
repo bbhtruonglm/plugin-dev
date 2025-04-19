@@ -37,7 +37,7 @@ type INIT_INPUT = {
   phone?: string
   /**
    * Email
-   */
+   */ 
   email?: string
 }
 function ChatScreen({
