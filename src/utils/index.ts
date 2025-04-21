@@ -3,7 +3,6 @@ import { MessageInfo } from './type'
 import { apiImage } from '@/api/api'
 import { get } from 'lodash'
 import { t } from 'i18next'
-import { useCallback } from 'react'
 
 /** Hàm tìm locale từ URL
  * @returns {string} mặc định là 'en'
@@ -161,7 +160,7 @@ export const renderAvatarFromId = (
   /** Nếu không có staff Id thì trả về '' */
   if (!ID_DETECT) return ''
   if (ID_DETECT === 'undefined') return PAGE_AVATAR
-
+  /** Nếu không có page avatar */
   if (!IS_PAGE_AVATAR) {
     /**
      * Nếu chưa setup Avatar page
@@ -173,6 +172,7 @@ export const renderAvatarFromId = (
     }
   } else {
     /** Nếu có staff Id thì trả về link avatar */
+    // return renderAvatarCDN(ID_DETECT)
     return renderAvatarCDN(ID_DETECT)
   }
 }
@@ -182,10 +182,15 @@ export const renderAvatarFromId = (
  * @returns {string} link avatar
  */
 export const renderAvatarCDN = (id: string) => {
+  /** Lấy ENV */
+  const ENV = import.meta.env.VITE_APP_ENV
   /**
    * Link avatar của nhân sự
    */
-  const LINK_AVATAR = `https://cdn.botbanhang.vn/media/s/${id}/user`
+  const LINK_AVATAR =
+    ENV === 'production'
+      ? `https://cdn.botbanhang.vn/media/s/${id}/user`
+      : `https://dev-api.botbanhang.vn/v1/n6_static/cdn/media/s/${id}/user`
 
   /**
    * Trả về link avatar

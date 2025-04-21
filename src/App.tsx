@@ -501,7 +501,7 @@ function App() {
         const DEFAULT_LANGUAGE = PAGE_SETTING?.default_language
 
         /** Show support staff   */
-        const SHOW_SUPPORT_STAFF = PAGE_SETTING?.is_visible_staff?.is_active
+        const SHOW_SUPPORT_STAFF = PAGE_SETTING?.is_visible_staff
 
         dispatch(setShowSupportStaff(SHOW_SUPPORT_STAFF))
         /**

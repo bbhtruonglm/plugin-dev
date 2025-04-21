@@ -41,7 +41,10 @@ const INITIAL_STATE: AppState = {
   is_avatar: false,
   reset_conversation: false,
   client_name_store: undefined,
-  show_support_staff: undefined,
+  is_visible_staff: {
+    is_active: false,
+    allow_staffs: {},
+  },
   form_before_chat: {
     is_active: false,
   },
@@ -209,8 +212,8 @@ export const appSlice = createSlice({
       state.client_name_store = action.payload
     },
     /** Hiển thị show_supoort staff */
-    setShowSupportStaff: (state, action: PayloadAction<boolean>) => {
-      state.show_support_staff = action.payload
+    setShowSupportStaff: (state, action: PayloadAction<any>) => {
+      state.is_visible_staff = action.payload
     },
     /** trạng thái hiển thị form */
     setShowForm: (state, action: PayloadAction<any>) => {
@@ -351,7 +354,7 @@ export const selectClientName = (state: RootState) =>
   state.app.client_name_store
 /** SHow support staff */
 export const selectShowSupportStaff = (state: RootState) =>
-  state.app.show_support_staff
+  state.app.is_visible_staff
 
 /** show form */
 export const selectShowForm = (state: RootState) => state.app.form_before_chat

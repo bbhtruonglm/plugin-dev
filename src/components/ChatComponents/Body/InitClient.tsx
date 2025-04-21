@@ -300,52 +300,76 @@ import { t } from 'i18next'
 import { useSelector } from 'react-redux'
 
 function InitClient({ resetData, onInitClient }: InitClientProps) {
+  /** Loading Global */
   const LOADING_GLOBAL = useSelector(selectLoadingGlobal)
+  /** Lấy thông tin user từ store */
   const USER_INFO = useSelector(selectUserInfo)
+  /** show init client từ store */
   const FORM_BEFORE_CHAT = useSelector(selectShowForm)
+  /** Form values */
+  const [form_values, setFormValues] = useState<Record<string, string>>({})
+  /** Form errors */
+  const [form_errors, setFormErrors] = useState<Record<string, string>>({})
 
-  const [formValues, setFormValues] = useState<Record<string, string>>({})
-  const [formErrors, setFormErrors] = useState<Record<string, string>>({})
-
-  // Pre-fill nếu có dữ liệu từ store
+  /** Pre-fill nếu có dữ liệu từ store */
   useEffect(() => {
     if (!isEmpty(USER_INFO)) {
       setFormValues((prev) => ({
         ...prev,
-        NAME: USER_INFO?.user_name || '',
-        PHONE: USER_INFO?.user_phone || '',
-        EMAIL: USER_INFO?.user_email || '',
+        name: USER_INFO?.user_name || t('anonymous'),
+        phone: USER_INFO?.user_phone || '',
+        email: USER_INFO?.user_email || '',
       }))
     }
   }, [USER_INFO])
-
+  /** Reset data */
   useEffect(() => {
     if (resetData) {
       setFormValues({})
       setFormErrors({})
     }
   }, [resetData])
-
+  /** Handle change
+   * @param field: string
+   * @param value: string
+   */
   const handleChange = (field: string, value: string) => {
     setFormValues((prev) => ({ ...prev, [field]: value }))
     setFormErrors((prev) => ({ ...prev, [field]: '' }))
   }
-
+  /**
+   *  Validate form
+   * @returns  true/false
+   */
   const validate = () => {
-    const errors: Record<string, string> = {}
+    /**
+     * Danh sách lỗi
+     */
+    const ERRORS: Record<string, string> = {}
+    /**
+     * Danh sách trên form
+     */
     FORM_BEFORE_CHAT?.data?.forEach((field) => {
-      if (field.is_active && field.is_require && !formValues[field.field]) {
-        errors[field.field] = t('input_data')
+      if (field.is_active && field.is_require && !form_values[field.field]) {
+        ERRORS[field.field] = t('input_data')
       }
     })
-    setFormErrors(errors)
-    return Object.keys(errors).length === 0
+    /**
+     * Set lỗi
+     */
+    setFormErrors(ERRORS)
+    /**danh sach lỗi trả về*/
+    return Object.keys(ERRORS).length === 0
   }
-
+  /** Trạng thái disable */
   const isButtonDisabled = () => {
     return !validate()
   }
-
+  /**
+   *  Render input type
+   * @param field
+   * @returns
+   */
   const renderInputType = (field: string) => {
     if (field === 'EMAIL') return 'email'
     if (field === 'PHONE') return 'tel'
@@ -373,15 +397,15 @@ function InitClient({ resetData, onInitClient }: InitClientProps) {
                     title={field.title}
                     placeholder={field.placeholder}
                     required={field.is_require}
-                    value_input={formValues[field.field] || ''}
+                    value_input={form_values[field.field] || ''}
                     type={renderInputType(field.field)}
                     onChange={(e: any) =>
                       handleChange(field.field, e.target.value)
                     }
                   />
-                  {formErrors[field.field] && (
+                  {form_errors[field.field] && (
                     <span className="text-xs text-red-600">
-                      {formErrors[field.field]}
+                      {form_errors[field.field]}
                     </span>
                   )}
                 </div>
@@ -391,13 +415,19 @@ function InitClient({ resetData, onInitClient }: InitClientProps) {
 
           <button
             className={`text-white ${
-              Object.keys(formErrors).length > 0
+              Object.keys(form_errors).length > 0
                 ? 'bg-slate-400 cursor-not-allowed'
                 : 'bg-black'
             } rounded-md px-4 py-2 text-sm font-medium`}
             onClick={() => {
               if (validate()) {
-                onInitClient(formValues)
+                if (isEmpty(USER_INFO)) {
+                  onInitClient({
+                    user_name: t('anonymous'),
+                  })
+                  return
+                }
+                onInitClient(form_values)
               }
             }}
           >

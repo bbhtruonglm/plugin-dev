@@ -172,7 +172,7 @@ function ChatHeader({
               </div>
 
               <div className="flex gap-x-5">
-                {SHOW_SUPPORT_STAFF && (
+                {SHOW_SUPPORT_STAFF && SHOW_SUPPORT_STAFF?.is_active && (
                   <div className="flex h-8 justify-center">
                     <OnlineStaff
                       data={employee_list}
@@ -224,7 +224,7 @@ function ChatHeader({
               </div>
               <div className="flex items-center py-3 justify-center h-[72px] w-full">
                 <div className="flex h-12 justify-center">
-                  {SHOW_SUPPORT_STAFF ? (
+                  {SHOW_SUPPORT_STAFF && SHOW_SUPPORT_STAFF?.is_active ? (
                     <OnlineStaff
                       data={employee_list}
                       size="medium"

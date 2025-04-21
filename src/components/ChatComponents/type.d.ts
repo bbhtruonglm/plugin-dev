@@ -52,6 +52,8 @@ type Employee = {
   fb_staff_id: string
   /** trạng thái online */
   is_online: boolean
+  /** User_id */
+  user_id: string
 }
 
 /** Kiểu dữ liệu tin nhắn text*/

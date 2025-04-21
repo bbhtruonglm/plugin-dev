@@ -513,6 +513,7 @@ const ChatApp = ({
   const EMPLOYEE_LIST: Employee[] = map(values(staff_list), (employee) => ({
     fb_staff_id: employee.fb_staff_id,
     is_online: employee.is_online,
+    user_id: employee.user_id,
   }))
 
   /**
@@ -1170,7 +1171,9 @@ const ChatApp = ({
 
               <div className="flex items-center gap-x-5">
                 <div className="flex items-center h-8">
-                  {SHOW_SUPPORT_STAFF && <OnlineStaff data={EMPLOYEE_LIST} />}
+                  {SHOW_SUPPORT_STAFF && SHOW_SUPPORT_STAFF?.is_active && (
+                    <OnlineStaff data={EMPLOYEE_LIST} />
+                  )}
                 </div>
                 <div
                   onClick={setHideForMobile}

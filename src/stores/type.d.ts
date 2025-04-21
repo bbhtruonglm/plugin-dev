@@ -141,7 +141,12 @@ export interface AppState {
   /**
    * Hiển thị nhân viên hỗ trợ
    */
-  show_support_staff?: boolean
+  is_visible_staff?: {
+    /** Trạng thái bật tắt */
+    is_active?: boolean
+    /** Danh sách nhân viên hỗ trợ */
+    allow_staffs?: EmployeeList
+  }
   /**
    * form before chat
    */

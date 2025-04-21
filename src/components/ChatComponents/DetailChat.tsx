@@ -563,7 +563,9 @@ function DetailChat({
    */
   const checkStaffExist = useCallback(
     (id: string) => {
+      /** Lấy thônng tin avatar của staff */
       const STAFF_AVATAR = renderAvatarFromId(id, IS_PAGE_AVATAR, PAGE_AVATAR)
+      /** Trả về link */
       return STAFF_AVATAR
     },
     [employee_list, IS_PAGE_AVATAR, PAGE_AVATAR]
