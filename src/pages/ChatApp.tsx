@@ -419,10 +419,19 @@ const ChatApp = ({
      * Lưu thông tin vị trí chatbox
      */
     // dispatch(setEmbedPosition(RES?.data?.display_position.toLowerCase()))
+    // /** Lưu các giá trị vị trí từ page setting */
+    // /** Bottom */
+    // const BOTTOM = RES?.data?.bottom_distance
+    // /** Right */
+    // const RIGHT = RES?.data?.right_distance
+    // /** Left */
+    // const LEFT = RES?.data?.left_distance
     /**
      * Lưu thông tin chi tiết vị trí của chatbox
      */
-    // dispatch(setEmbedPositionDetail({ bottom: 4, right: 12, left: 12 }))
+    // dispatch(
+    //   setEmbedPositionDetail({ bottom: BOTTOM, right: RIGHT, left: LEFT })
+    // )
 
     // dispatch(setEmbedPosition('bottom_right'))
 
@@ -726,24 +735,31 @@ const ChatApp = ({
         /**
          * Trả về css popup
          */
-        // if (POSITION === 'bottom_left') {
-        //   return renderPosition(
-        //     POSITION,
-        //     POSITION_DETAIL?.bottom ?? 0,
-        //     POSITION_DETAIL?.right ?? 0,
-        //     POSITION_DETAIL?.left ?? 0
-        //   )
-        // } else {
-        //   const A = renderPosition(
-        //     'bottom_right',
-        //     POSITION_DETAIL?.bottom ?? 0,
-        //     POSITION_DETAIL?.right ?? 0,
-        //     POSITION_DETAIL?.left ?? 0
-        //   )
-        //   console.log(A, 'A')
-        //   return A
-        // }
-        return 'flex w-screen h-screen items-end justify-end px-6 pr-5 pb-[68px]'
+        /** Nếu vị trí popup la bottom_left */
+        if (POSITION === 'bottom_left') {
+          return renderPosition(
+            POSITION,
+            POSITION_DETAIL?.bottom ?? 0,
+            POSITION_DETAIL?.right ?? 0,
+            POSITION_DETAIL?.left ?? 0
+          )
+        } else {
+          /**
+           * Gọi hàm postMessage
+           */
+          const POSITION = renderPosition(
+            'bottom_right',
+            POSITION_DETAIL?.bottom ?? 0,
+            POSITION_DETAIL?.right ?? 0,
+            POSITION_DETAIL?.left ?? 0
+          )
+          console.log(POSITION, 'POSITION')
+          /**
+           * Trả về css popup
+           */
+          return POSITION
+        }
+        // return 'flex w-screen h-screen items-end justify-end px-6 pr-5 pb-[68px]'
       }
     }
     /**
@@ -1572,10 +1588,11 @@ const ChatApp = ({
           }, 200)
         }}
         className={`absolute justify-center items-center bottom-4 ${
-          // POSITION === 'bottom_right'
-          //   ? 'right-2'
-          // :
-          GLOBAL_PREVIEW_URL ? 'right-5 bottom-5' : 'right-2'
+          POSITION === 'bottom_left'
+            ? 'left-2'
+            : GLOBAL_PREVIEW_URL
+            ? 'right-5 bottom-5'
+            : 'right-2'
         }  h-12 w-12 bg-white shadow-lg rounded-full  hover:scale-110 ${
           AI_STATUS ? 'hidden' : ''
         }  ${

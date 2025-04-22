@@ -37,7 +37,7 @@ type INIT_INPUT = {
   phone?: string
   /**
    * Email
-   */ 
+   */
   email?: string
 }
 function ChatScreen({
@@ -180,6 +180,11 @@ function ChatScreen({
         dispatch(setGlobalClientId(RESULT.data))
         /** Lưu tên client vào store */
         dispatch(setClientNameStore(value?.name))
+
+        /**
+         * Xoá báo lỗi page_id không hợp lệ
+         */
+        setInvalidPageId(false)
 
         /**
          * Sau khi khởi tạo client thì xoá hết thông tin trong store

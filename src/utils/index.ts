@@ -771,7 +771,9 @@ export const renderPosition = (
   const BOTTOM_CLASS = getTailwindClass(new_bottom, 'pb')
   const RIGHT_CLASS = getTailwindClass(new_right, 'pr')
   const LEFT_CLASS = getTailwindClass(new_left, 'pl')
-
+  /**
+   * Tạo class Tailwind cho vị trí
+   */
   return `flex w-screen h-screen ${
     position === 'bottom_left' ? 'items-start' : 'items-end'
   } justify-end ${BOTTOM_CLASS} ${RIGHT_CLASS} ${LEFT_CLASS}`
