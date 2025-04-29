@@ -778,3 +778,7 @@ export const renderPosition = (
     position === 'bottom_left' ? 'items-start' : 'items-end'
   } justify-end ${BOTTOM_CLASS} ${RIGHT_CLASS} ${LEFT_CLASS}`
 }
+/** Regex điện thoại Viết Nam */
+export const VN_PHONE_REGEX = /^(0|\+84)[0-9]{9}$/ // ví dụ: 09xxxxxxxx hoặc +849xxxxxxxx
+/** Regex điện thoại Anh */
+export const UK_PHONE_REGEX = /^(\+44|0)7\d{9}$/ // ví dụ: 07xxxxxxxxx hoặc +447xxxxxxxxx

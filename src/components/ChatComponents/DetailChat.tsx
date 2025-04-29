@@ -1,7 +1,6 @@
 import { ChatScreenProps, Message } from './type'
 import { debounce, isEmpty, keys } from 'lodash'
 import { fetchAPI, useAPI } from '@/api/api'
-import { renderAvatarCDN, renderAvatarFromId } from '@/utils'
 import {
   selectAiId,
   selectGlobalClientId,
@@ -15,7 +14,6 @@ import {
   selectPageInfoAI,
   selectRefreshData,
   selectShowForm,
-  selectShowSupportStaff,
   selectStatusAI,
   selectStatusPopup,
   selectStatusViewport,
@@ -37,6 +35,7 @@ import Loading from '../Loading/Loading'
 import LoadingDots from '../Loading/LoadingDot'
 import LoadingJumping from '../Loading/LoadingJumping'
 import MessageBody from './Body/MessageBody'
+import { renderAvatarFromId } from '@/utils'
 import { t } from 'i18next'
 
 /** Chi tiết component chat */
@@ -723,7 +722,7 @@ function DetailChat({
         )}
       </div>
       {/* Hiển thị nút nhảy về cuối trang */}
-      {show_jump_button && (
+      {show_jump_button && user_id && (
         <button
           onClick={scrollToBottom}
           className={`absolute flex justify-center items-center h-7 w-7 shadow-md bg-white rounded-full z-[999999] ${

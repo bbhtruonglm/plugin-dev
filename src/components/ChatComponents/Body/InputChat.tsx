@@ -419,6 +419,7 @@ function InputChat({
                 handleKeyDown(e)
               }
             }}
+            autoComplete="off"
             id="input-embed-chat"
             type="text"
             placeholder={

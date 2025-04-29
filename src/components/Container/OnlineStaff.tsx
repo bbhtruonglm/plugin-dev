@@ -39,7 +39,7 @@ function OnlineStaff({ data, size = 'small' }: StaffProps) {
     staffList: Staff[],
     activeUsers?: ActiveUsers
   ): Staff[] {
-    if (!activeUsers) return staffList
+    if (!activeUsers) return []
     // Lọc những staff có user_id không tồn tại trong activeUsers hoặc có giá trị false
     // return staffList.filter((staff) => {
     //   return activeUsers[staff.user_id] !== false
@@ -48,7 +48,10 @@ function OnlineStaff({ data, size = 'small' }: StaffProps) {
     // Nếu muốn chặt chẽ hơn (chỉ giữ những user_id tồn tại và có giá trị true)
     return staffList.filter((staff) => activeUsers[staff.user_id] === true)
   }
-  /** Danh sách staff */
+  /** Danh sách staff
+   *  @params {Array} data - Danh sách nhân viên
+   * @params {Object} activeUsers - Danh sách nhân viên tồn tại
+   */
   const FILTERED_STAFF = filterInactiveStaff(
     data,
     SHOW_SUPPORT_STAFF?.allow_staffs
