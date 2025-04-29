@@ -155,6 +155,7 @@ export const renderAvatarFromId = (
   IS_PAGE_AVATAR: boolean | undefined,
   PAGE_AVATAR: string | undefined
 ) => {
+  if (!id) return './images/no_avatar.jpg'
   /** Lấy ID của nhân viên */
   const ID_DETECT = id.split('__')[2]
   /** Nếu không có staff Id thì trả về '' */
