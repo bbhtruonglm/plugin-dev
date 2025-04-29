@@ -158,6 +158,8 @@ export interface AppState {
   }
   /** Hiển thị trang chủ */
   is_visible_home_page?: boolean
+  /** Trạng thái active trợ lý ảo */
+  is_active_ai_agent?: boolean
 }
 /** Định nghĩa kiểu dữ liệu cho danh sách nhân viên */
 interface EmployeeList {

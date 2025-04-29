@@ -15,6 +15,7 @@ import {
   selectEmbedPosition,
   selectEmbedPositionDetail,
   selectPageId,
+  setActiveAiAgent,
   setClientNameStore,
   setCurrentHeight,
   setCurrentWidth,
@@ -597,8 +598,19 @@ function App() {
         if (IS_AI) {
           /** Sử dụng await để lấy dữ liệu CLIENT_INFO */
           const CLIENT_INFO = await decodeInitClientData()
+          /** Trạng thái active AI agent */
+          const IS_ACTIVE_AGENT_AI =
+            CLIENT_INFO?.public_profile?.is_active_ai_agent
 
           console.log(CLIENT_INFO, 'CLIENT_INFO CHẠY VÀO ĐÂY')
+          /** Nếu khách hàng khóa AI agent thì khóa AI agent */
+          if (!IS_ACTIVE_AGENT_AI) {
+            /** Lưu vào Store */
+            dispatch(setActiveAiAgent(false))
+            return null
+          }
+
+          console.log(IS_ACTIVE_AGENT_AI, 'is_active_agent_ai')
           /**
            * New CLIENT ID
            */

@@ -60,6 +60,8 @@ export const en = {
     ai_already_thinking: 'Almost done!',
     no_virtual_assistant:
       'No virtual assistant has been set up. Please go to Settings > Virtual Assistant to complete the configuration before using the service.',
+    inactive_virtual_assistant:
+      'The virtual assistant is currently inactive. Please go to Settings > Virtual Assistant to complete the setup before using the service.',
 
     /** Active */
     active: 'Activate',

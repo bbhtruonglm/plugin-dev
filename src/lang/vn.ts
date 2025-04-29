@@ -60,6 +60,8 @@ export const vn = {
 
     no_virtual_assistant:
       'Chưa có trợ lý ảo nào được thiết lập. Vui lòng truy cập Cài đặt > Trợ lý ảo để hoàn tất cấu hình trước khi sử dụng dịch vụ.',
+    inactive_virtual_assistant:
+      'Đang tắt trang thái sử dụng trợ lý ảo. Vui lòng truy cập Cài đặt > Trợ lý ảo để hoàn tất cấu hình trước khi sử dụng dịch vụ.',
 
     /** Active */
     active: 'Kích hoạt',

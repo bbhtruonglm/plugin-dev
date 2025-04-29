@@ -55,7 +55,8 @@ export const ja = {
     ai_already_thinking: 'もうすぐ完了します！',
     no_virtual_assistant:
       'バーチャルアシスタントが設定されていません。サービスを使用する前に、設定 > バーチャルアシスタント で設定を完了してください。',
-
+    inactive_virtual_assistant:
+      'バーチャルアシスタントは現在無効になっています。設定 > バーチャルアシスタントに進み、利用を開始する前にセットアップを完了してください。',
     /** Active */
     active: '有効化',
     active_success: 'ウィジェットが有効化されました！',

@@ -54,6 +54,8 @@ export const zh = {
     ai_already_thinking: '快完成了！',
     no_virtual_assistant:
       '尚未设置虚拟助手。请前往 设置 > 虚拟助手 完成配置后再使用本服务。',
+    inactive_virtual_assistant:
+      '虚拟助手当前未激活。请前往设置 > 虚拟助手完成配置后再使用服务。',
 
     /** Active */
     active: '激活',

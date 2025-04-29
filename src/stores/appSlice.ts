@@ -49,6 +49,7 @@ const INITIAL_STATE: AppState = {
     is_active: false,
   },
   is_visible_home_page: undefined,
+  is_active_ai_agent: undefined,
 }
 
 export const appSlice = createSlice({
@@ -223,6 +224,10 @@ export const appSlice = createSlice({
     setShowHome: (state, action: PayloadAction<boolean>) => {
       state.is_visible_home_page = action.payload
     },
+    /** Trạng thái hiển thị trang chủ */
+    setActiveAiAgent: (state, action: PayloadAction<boolean>) => {
+      state.is_active_ai_agent = action.payload
+    },
   },
 })
 
@@ -259,6 +264,7 @@ export const {
   setShowSupportStaff,
   setShowForm,
   setShowHome,
+  setActiveAiAgent,
 } = appSlice.actions
 
 /** chọn đến page id */
@@ -362,5 +368,8 @@ export const selectShowForm = (state: RootState) => state.app.form_before_chat
 /** show home */
 export const selectShowHome = (state: RootState) =>
   state.app.is_visible_home_page
+/** show home */
+export const selectActiveAiAgent = (state: RootState) =>
+  state.app.is_active_ai_agent
 
 export default appSlice.reducer

@@ -55,7 +55,8 @@ export const ko = {
     ai_already_thinking: '거의 완료되었습니다!',
     no_virtual_assistant:
       '가상 어시스턴트가 설정되지 않았습니다. 설정 > 가상 어시스턴트에서 구성을 완료한 후 서비스를 이용하세요.',
-
+    inactive_virtual_assistant:
+      '가상 비서가 현재 비활성화되어 있습니다. 서비스 이용 전에 설정 > 가상 비서에서 설정을 완료해 주세요.',
     /** Active */
     active: '활성화',
     active_success: '위젯이 활성화되었습니다!',
