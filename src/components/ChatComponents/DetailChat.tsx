@@ -648,7 +648,7 @@ function DetailChat({
             {t('no_virtual_assistant')}
           </h4>
         )}
-        {AI_STATUS && !IS_ACTIVE_AGENT_AI && (
+        {AI_STATUS && !IS_ACTIVE_AGENT_AI && !NO_AI_ID && (
           <h4 className="flex justify-center font-semibold text-red-600">
             {t('inactive_virtual_assistant')}
           </h4>
