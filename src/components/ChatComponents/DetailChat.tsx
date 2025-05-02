@@ -80,6 +80,8 @@ function DetailChat({
    * Trạng thái có ID Trợ lý ảo
    */
   const IS_ACTIVE_AGENT_AI = useSelector(selectActiveAiAgent)
+
+  console.log(IS_ACTIVE_AGENT_AI, 'IS_ACTIVE_AGENT_AI')
   /**
    * THông tin Refresh Data
    */
@@ -648,7 +650,7 @@ function DetailChat({
             {t('no_virtual_assistant')}
           </h4>
         )}
-        {AI_STATUS && !IS_ACTIVE_AGENT_AI && !NO_AI_ID && (
+        {AI_STATUS && !IS_ACTIVE_AGENT_AI && (
           <h4 className="flex justify-center font-semibold text-red-600">
             {t('inactive_virtual_assistant')}
           </h4>

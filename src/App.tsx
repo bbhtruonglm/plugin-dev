@@ -563,9 +563,9 @@ function App() {
            * Nếu trạng thái mặc định sẽ lấy theo field default_language (Trong Setting)
            * hoặc Default config
            */
-          case WEB_LANGUAGE === 'DEFAULT':
-            EMBED_LOCALE = DEFAULT_LANGUAGE || DEFAULT_LANGUAGE_CONFIG
-            break
+          // case WEB_LANGUAGE === 'DEFAULT':
+          //   EMBED_LOCALE = DEFAULT_LANGUAGE || DEFAULT_LANGUAGE_CONFIG
+          //   break
           /**
            * Nếu không có case nào thoả mã thì lấy mặc định (fix cứng Tiếng việt)
            */
@@ -609,7 +609,7 @@ function App() {
             dispatch(setActiveAiAgent(false))
             return null
           }
-
+          dispatch(setActiveAiAgent(true))
           console.log(IS_ACTIVE_AGENT_AI, 'is_active_agent_ai')
           /**
            * New CLIENT ID

@@ -483,7 +483,8 @@ const ChatApp = ({
     /** Lưu thông tin tin nhắn chào mừng */
     setWelcomeMessage({
       message:
-        RES?.data?.welcome_message?.message || 'Chào mừng bạn đến với Retion',
+        RES?.data?.welcome_message?.source?.[I18N.language] ||
+        t('_welcome_message'),
       delay: RES?.data?.welcome_message?.delay * 1000 || 5000,
       is_active: RES?.data?.welcome_message?.is_active || false,
     })

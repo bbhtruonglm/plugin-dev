@@ -84,5 +84,7 @@ export const vn = {
 
     staff: 'Nhân viên',
     anonymous: 'Ẩn danh',
+
+    _welcome_message: 'Chào mừng bạn đến với Retion',
   },
 }
