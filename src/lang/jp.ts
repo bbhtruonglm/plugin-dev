@@ -78,5 +78,7 @@ export const ja = {
     cancel: 'キャンセル',
 
     staff: 'スタッフ',
+
+    _welcome_message: 'Retion へようこそ',
   },
 }

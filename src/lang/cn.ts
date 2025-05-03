@@ -77,5 +77,7 @@ export const zh = {
     cancel: '取消',
 
     staff: '客服人员',
+
+    _welcome_message: '欢迎来到 Retion',
   },
 }

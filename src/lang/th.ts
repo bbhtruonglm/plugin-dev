@@ -78,5 +78,7 @@ export const th = {
     cancel: 'ยกเลิก',
 
     staff: 'เจ้าหน้าที่',
+
+    _welcome_message: 'ยินดีต้อนรับสู่ Retion',
   },
 }

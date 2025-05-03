@@ -84,5 +84,7 @@ export const en = {
 
     staff: 'Staff',
     anonymous: 'Anonymous',
+
+    _welcome_message: 'Welcome to Retion',
   },
 }

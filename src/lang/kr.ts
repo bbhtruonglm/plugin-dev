@@ -77,5 +77,7 @@ export const ko = {
     cancel: '취소',
 
     staff: '직원',
+
+    _welcome_message: 'Retion에 오신 것을 환영합니다',
   },
 }
