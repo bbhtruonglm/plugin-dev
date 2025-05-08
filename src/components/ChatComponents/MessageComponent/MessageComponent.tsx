@@ -19,8 +19,10 @@ import AudioPlayer from './AudioPlayer'
 import { ReactComponent as BookOpen } from '@/assets/book-open.svg'
 import { ReactComponent as ChatBubble } from '@/assets/chat-bubble-oval-left-ellipsis.svg'
 import { ReactComponent as FileIcon } from '@/assets/document-text.svg'
+import ReactMarkdown from 'react-markdown'
 import { ReactComponent as Share } from '@/assets/external-link.svg'
 import VideoPlayer from './VideoPlayer'
+import remarkGfm from 'remark-gfm'
 import { t } from 'i18next'
 
 /**
@@ -162,10 +164,13 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
         (!data?.message_attachments?.length ||
           !data?.message_attachments?.[0]?.type) && (
           <div className="flex p-2">
-            <p className="text-sm min-h-4 break-words whitespace-pre-line overflow-hidden">
+            <div className="text-sm min-h-4 break-words whitespace-pre-line overflow-hidden">
               {/* {data?.message_text} */}
-              {formatTextWithLinks(data?.message_text)}
-            </p>
+              {/* {formatTextWithLinks(data?.message_text)} */}
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {data?.message_text}
+              </ReactMarkdown>
+            </div>
           </div>
         )}
       {/* Hiện thị data dạng text AI và có BTN */}
@@ -183,11 +188,15 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
                 data?.message_type !== 'client' ? 'bg-white' : 'bg-yellow-100'
               } flex flex-col gap-y-2 p-2 rounded-lg shadow-sm`}
             >
-              <p className="text-sm min-h-4 break-words whitespace-pre-line overflow-hidden">
+              <div className="text-sm min-h-4 break-words whitespace-pre-line overflow-hidden">
                 {/* {data?.message_text} */}
 
-                {formatTextWithLinks(data?.message_text)}
-              </p>
+                {/* {formatTextWithLinks(data?.message_text)}
+                 */}
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {data?.message_text}
+                </ReactMarkdown>
+              </div>
               {data?.message_type !== 'client' && (
                 <div className="flex flex-col gap-y-2">
                   <div
