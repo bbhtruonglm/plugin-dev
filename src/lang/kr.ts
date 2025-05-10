@@ -79,5 +79,6 @@ export const ko = {
     staff: '직원',
 
     _welcome_message: 'Retion에 오신 것을 환영합니다',
+    based_on_sources: '{{count}}개의 정보 출처를 기반으로 함',
   },
 }

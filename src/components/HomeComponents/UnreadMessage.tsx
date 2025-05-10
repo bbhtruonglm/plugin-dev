@@ -1,11 +1,4 @@
-import {
-  checkStaffExist,
-  renderAvatarFromId,
-  renderStaffName,
-  saveQuickChatCount,
-  truncateSentences,
-  truncateString,
-} from '@/utils'
+import { checkMD, renderAvatarFromId, renderStaffName } from '@/utils'
 import {
   selectGlobalUnreadCount,
   selectIsAvatar,
@@ -14,12 +7,14 @@ import {
   selectPageId,
   selectStaffList,
 } from '@/stores/appSlice'
-import { t, use } from 'i18next'
-import { useCallback, useState } from 'react'
 
 import { ReactComponent as Arrow } from '@/assets/chevron-right.svg'
 import { EmployeeList } from '@/pages/type'
+import ReactMarkdown from 'react-markdown'
 import TimeAgo from '../TimeAgo'
+import remarkGfm from 'remark-gfm'
+import { t } from 'i18next'
+import { useCallback } from 'react'
 import { useSelector } from 'react-redux'
 
 function UnreadMessage({ onNavigate, onError }: SendMessageProps) {
@@ -61,6 +56,7 @@ function UnreadMessage({ onNavigate, onError }: SendMessageProps) {
     },
     [IS_PAGE_AVATAR, PAGE_AVATAR]
   )
+
   return (
     <div
       onClick={() => {
@@ -105,7 +101,14 @@ function UnreadMessage({ onNavigate, onError }: SendMessageProps) {
                 onClick={() => {}}
               >
                 <span className="text-sm max-h-16 break-words whitespace-pre-line overflow-hidden line-clamp-3">
-                  {LATEST_MESSAGE?.message_text}
+                  {/* {LATEST_MESSAGE?.message_text} */}
+                  {checkMD(LATEST_MESSAGE?.message_text) ? (
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {LATEST_MESSAGE?.message_text}
+                    </ReactMarkdown>
+                  ) : (
+                    LATEST_MESSAGE?.message_text
+                  )}
                 </span>
 
                 {/* Hàng dưới: Tên + thời gian */}

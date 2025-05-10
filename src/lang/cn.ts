@@ -79,5 +79,6 @@ export const zh = {
     staff: '客服人员',
 
     _welcome_message: '欢迎来到 Retion',
+    based_on_sources: '基于 {{count}} 个信息来源',
   },
 }

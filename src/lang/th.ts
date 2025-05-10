@@ -80,5 +80,6 @@ export const th = {
     staff: 'เจ้าหน้าที่',
 
     _welcome_message: 'ยินดีต้อนรับสู่ Retion',
+    based_on_sources: 'อ้างอิงจากแหล่งข้อมูล {{count}} แหล่ง',
   },
 }

@@ -86,5 +86,6 @@ export const en = {
     anonymous: 'Anonymous',
 
     _welcome_message: 'Welcome to Retion',
+    based_on_sources: 'Based on {{count}} source(s) of information',
   },
 }

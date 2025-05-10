@@ -1,9 +1,11 @@
 import { BtnType, ElementType, MessageProps } from '../type'
-import { extractMessageId, isValidUrl } from '@/utils'
+import { checkMD, extractMessageId, isValidUrl } from '@/utils'
 
 import AudioPlayer from './AudioPlayer'
 import { ReactComponent as FileIcon } from '@/assets/document-text.svg'
+import ReactMarkdown from 'react-markdown'
 import VideoPlayer from './VideoPlayer'
+import remarkGfm from 'remark-gfm'
 
 function TemplateMessageComponent({ data }: MessageProps) {
   return (
@@ -18,7 +20,14 @@ function TemplateMessageComponent({ data }: MessageProps) {
           !data?.message_attachments?.[0]?.type) && (
           <div className="flex w-full">
             <p className="text-sm min-h-4 break-words whitespace-pre-line line-clamp-2 w-full">
-              {data?.message_text}
+              {/* {data?.message_text} */}
+              {checkMD(data?.message_text) ? (
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {data?.message_text}
+                </ReactMarkdown>
+              ) : (
+                data?.message_text
+              )}
             </p>
           </div>
         )}

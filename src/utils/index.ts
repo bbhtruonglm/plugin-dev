@@ -783,3 +783,14 @@ export const renderPosition = (
 export const VN_PHONE_REGEX = /^(0|\+84)[0-9]{9}$/ // ví dụ: 09xxxxxxxx hoặc +849xxxxxxxx
 /** Regex điện thoại Anh */
 export const UK_PHONE_REGEX = /^(\+44|0)7\d{9}$/ // ví dụ: 07xxxxxxxxx hoặc +447xxxxxxxxx
+
+/** Hàm kiểm tra Markdown
+ * @param message - Tin nhắn
+ * @returns true/false
+ */
+export const checkMD = (message: string) => {
+  /** Kiểm tra có chứa các ký tự định dạng MD không? */
+  const IS_MD = /[*_`#\-]/.test(message) // kiểm tra sơ bộ
+  /** Trả về kết quả */
+  return IS_MD
+}

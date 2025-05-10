@@ -1,6 +1,7 @@
 import { BtnType, ElementType, MessageProps } from '../type'
 import React, { useState } from 'react'
 import {
+  checkMD,
   extractMessageId,
   formatDate,
   isValidUrl,
@@ -142,6 +143,7 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
       )
     )
   }
+
   return (
     <div
       className={`flex flex-col transition-all duration-300 ease-out gap-y-4 rounded-lg group relative ${getMessageClasses(
@@ -167,9 +169,14 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
             <div className="text-sm min-h-4 break-words whitespace-pre-line overflow-hidden">
               {/* {data?.message_text} */}
               {/* {formatTextWithLinks(data?.message_text)} */}
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {data?.message_text}
-              </ReactMarkdown>
+
+              {checkMD(data?.message_text) ? (
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {data?.message_text}
+                </ReactMarkdown>
+              ) : (
+                data?.message_text
+              )}
             </div>
           </div>
         )}
@@ -193,9 +200,13 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
 
                 {/* {formatTextWithLinks(data?.message_text)}
                  */}
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {data?.message_text}
-                </ReactMarkdown>
+                {checkMD(data?.message_text) ? (
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {data?.message_text}
+                  </ReactMarkdown>
+                ) : (
+                  data?.message_text
+                )}
               </div>
               {data?.message_type !== 'client' && (
                 <div className="flex flex-col gap-y-2">
@@ -228,7 +239,10 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
                 <div className="flex gap-x-1">
                   <BookOpen className="w-4 h-4" />
                   <p className="text-xs">
-                    Dựa trên {data?.llm_sources.length} nguồn thông tin:
+                    {/* Dựa trên {data?.llm_sources.length} nguồn thông tin: */}
+                    {t('based_on_sources', {
+                      count: data?.llm_sources?.length || 0,
+                    })}
                   </p>
                 </div>
                 <div className="pl-4">

@@ -80,5 +80,6 @@ export const ja = {
     staff: 'スタッフ',
 
     _welcome_message: 'Retion へようこそ',
+    based_on_sources: '{{count}} 件の情報源に基づく',
   },
 }

@@ -86,5 +86,6 @@ export const vn = {
     anonymous: 'Ẩn danh',
 
     _welcome_message: 'Chào mừng bạn đến với Retion',
+    based_on_sources: 'Dựa trên {{count}} nguồn thông tin',
   },
 }
