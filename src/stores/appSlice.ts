@@ -187,7 +187,7 @@ export const appSlice = createSlice({
     /**
      * Trạng thái không có Id AI
      */
-    setNoAiId: (state, action: PayloadAction<boolean>) => {
+    setNoAiId: (state, action: PayloadAction<boolean | undefined>) => {
       state.ai_id = action.payload
     },
     /**

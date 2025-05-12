@@ -6,6 +6,7 @@ import {
   selectUserInfo,
   setClientNameStore,
   setGlobalClientId,
+  setLoadingGlobal,
   setStatusIsInit,
   setUserInfo,
 } from '@/stores/appSlice'
@@ -136,6 +137,7 @@ function ChatScreen({
        * // URL_CLIENT.search sẽ là "page=1&sort=asc"
        */
       const PARAMS = value
+
       /**
        * Gán chuỗi truy vấn vào URL
        */

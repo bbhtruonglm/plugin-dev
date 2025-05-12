@@ -143,11 +143,14 @@ function App() {
         dispatch(setLoadingGlobal(true))
         /** ghi lại thông tin khách hàng mới */
         let client = await WIDGET.getClientInfo()
+
         console.log('CHẠY VÀO ĐÂY USER_INFO hàm decode', client)
         /**
          * PAGE_ID mới
          */
         const N_PAGE_ID = client?.public_profile?.ai_agent_id
+
+        console.log('kkkk ================', client)
         /**
          * nếu không có ai_agent_id thì setNoAiId(true)
          */
@@ -200,6 +203,7 @@ function App() {
   const decodeInitClientData = async () => {
     /** khai báo biến lưu trữ dữ liệu khách hàng + init dữ liệu lần đầu */
     let client = await WIDGET.getClientInfo()
+    console.log(client, 'client')
     return client
   }
 
@@ -264,9 +268,9 @@ function App() {
     /**
      * Nếu từ chatbox và là tin nhắn từ khách hàng thì gửi tin nhắn suggest
      */
-    if (from === 'CHATBOX' && type === 'CLIENT_MESSAGE') {
-      dispatch(setSuggestMessage(PAYLOAD?.payload?.message))
-    }
+    // if (from === 'CHATBOX' && type === 'CLIENT_MESSAGE') {
+    //   dispatch(setSuggestMessage(PAYLOAD?.payload?.message))
+    // }
 
     if (from === 'parent-app-preview') {
       /**
@@ -454,15 +458,24 @@ function App() {
          * Lưu trạng thái AI vào store
          */
         dispatch(setStatusIsAI(IS_AI))
-
+        console.log(IS_AI, 'IS_AI')
         /**
          * Cập nhật trạng thái hiển thị popup
          */
         setShow(IS_AI)
+        /** Khai báo cài đặt trang */
+        let PAGE_SETTING = {} as any
+        /** Nếu có page_id thì lấy cài đặt trang */
+        if (STORED_PAGE_ID) {
+          PAGE_SETTING = await fetchPageSetting(STORED_PAGE_ID)
+        }
         /**
          * Lấy cài đặt trang
          */
-        const PAGE_SETTING = await fetchPageSetting(STORED_PAGE_ID)
+        // const PAGE_SETTING = await fetchPageSetting(STORED_PAGE_ID)
+
+        console.log(PAGE_SETTING, 'PAGE_SETTING')
+
         /**  Lấy ngôn ngữ từ trình duyệt*/
         const BROWSER_LANGUAGE = navigator.language || navigator.languages[0]
 
@@ -509,15 +522,22 @@ function App() {
          * Hiển thị form
          */
         const SHOW_FORM = PAGE_SETTING?.form_before_chat
-
-        /**
-         * Hiển thị trang chủ
-         */
-        const SHOW_HOME_PAGE = PAGE_SETTING?.is_visible_home_page || false
+        /** Nếu hiển thị form */
+        if (SHOW_FORM) {
+          // Chuyển field thành lowercase
+          SHOW_FORM.data = SHOW_FORM?.data.map((item: any) => ({
+            ...item,
+            field: item.field.toLowerCase(),
+          }))
+          /**
+           * Hiển thị trang chủ
+           */
+          /** Lưu vào store */
+          dispatch(setShowForm(SHOW_FORM))
+        }
         console.log(PAGE_SETTING, 'PAGE_SETTING')
-        /** Lưu vào store */
-        dispatch(setShowForm(SHOW_FORM))
-
+        /** Show home page */
+        const SHOW_HOME_PAGE = PAGE_SETTING?.is_visible_home_page || false
         /**
          * Lưu vào store trạng thái hiển thị trang chủ
          */
@@ -650,6 +670,7 @@ function App() {
           }
           /** Lấy page_id */
           const STORED_PAGE_ID = CLIENT_INFO?.public_profile?.ai_agent_id || ''
+
           /**
            * Nếu không có page_id thì setNoAiId(true  )
            */

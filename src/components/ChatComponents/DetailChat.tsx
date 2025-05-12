@@ -80,8 +80,31 @@ function DetailChat({
    * Trạng thái có ID Trợ lý ảo
    */
   const IS_ACTIVE_AGENT_AI = useSelector(selectActiveAiAgent)
+  /** Trạng thái loaded */
+  const [is_loaded, setIsLoaded] = useState(false)
+  /** Set loaded */
+  useEffect(() => {
+    /**
+     * Neu IS_ACTIVE_AGENT_AI la boolean
+     */
+    if (typeof IS_ACTIVE_AGENT_AI === 'boolean') {
+      setIsLoaded(true)
+    }
+  }, [IS_ACTIVE_AGENT_AI])
+  /** Biến check no message */
+  const [check_no_message_ai, setCheckNoMessageAi] = useState(false)
+  /** Delay time */
+  let delay = 400
+  /** Set timeout 0.4s thì bật cờ */
+  useEffect(() => {
+    if (!check_no_message_ai) {
+      const timer = setTimeout(() => {
+        setCheckNoMessageAi(true)
+      }, delay)
+      return () => clearTimeout(timer)
+    }
+  }, [check_no_message_ai])
 
-  console.log(IS_ACTIVE_AGENT_AI, 'IS_ACTIVE_AGENT_AI')
   /**
    * THông tin Refresh Data
    */
@@ -260,10 +283,10 @@ function DetailChat({
     setLocalUserId(STORED_CLIENT_ID) // có thể là null nếu chưa có
   }, [PAGE_ID, user_id])
 
-  // Bước 2: Chỉ chạy logic anonymous khi đã biết chắc chắn user_id là null
+  /** Bước 2: Chỉ chạy logic anonymous khi đã biết chắc chắn user_id là null */
   useEffect(() => {
     /** Đnag load thông tin */
-    if (local_user_id === undefined) return // Đang load từ localStorage, chưa xong
+    if (local_user_id === undefined || AI_STATUS) return // Đang load từ localStorage, chưa xong
     console.log(FORM_BEFORE_CHAT, 'chay vao day')
     /**
      * Khi user_id khóng null
@@ -280,7 +303,7 @@ function DetailChat({
         })
       }
     }
-  }, [FORM_BEFORE_CHAT, local_user_id])
+  }, [FORM_BEFORE_CHAT, local_user_id, AI_STATUS])
 
   /** Hàm gọi API để lấy tin nhắn */
   const fetchMessage = async (client_iddd?: string) => {
@@ -298,6 +321,8 @@ function DetailChat({
     /** set loading_more = true để không call liên tục */
 
     try {
+      /** Lấy data */
+      dispatch(setLoadingGlobal(true))
       /** Set loading more */
       setLoadingMore(true)
       /** Tạo đối tượng URL từ string */
@@ -315,45 +340,53 @@ function DetailChat({
 
       /** Thêm params vào URL */
       URL_READ.search = new URLSearchParams(PARAMS as any).toString()
-
       /** Kết quả trả về */
-      const RES = await fetchAPI(URL_READ.toString(), 'GET')
+      let result = []
 
-      /**
-       * Lưu kết quả trả về
-       */
-      const RESULT = await RES
-      /**
-       * Nếu data trả về = LIMIT thì còn tin nhắn cũ
-       */
-      if (RESULT.data.length === LIMIT) {
-        /** Cập nhật ref mà không gây re-render */
-        SKIP_REF.current += RESULT.data.length
+      try {
+        /** Kết quả trả về */
+        result = await fetchAPI(URL_READ.toString(), 'GET')
 
-        /** set call api se skip bn ban ghi */
-        setSkip(skip + RESULT.data.length)
-      }
+        /**
+         * Lưu kết quả trả về
+         */
+        const RESULT = await result
+        /**
+         * Nếu data trả về = LIMIT thì còn tin nhắn cũ
+         */
+        if (RESULT.data.length === LIMIT) {
+          /** Cập nhật ref mà không gây re-render */
+          SKIP_REF.current += RESULT.data.length
 
-      /** Loại bỏ những tin nhắn từ hệ thống và tin nhắn dạng note */
-      const FILTER_RES = RESULT?.data.filter(
-        (item: any) =>
-          item.message_type !== 'system' && item.message_type !== 'note'
-      )
-
-      dispatch(setListMessage([...FILTER_RES.reverse(), ...LIST_MESSAGE]))
-
-      /** Dùng request animation frame hoặc settimeout ( độ trễ 0ms) */
-      requestAnimationFrame(() => {
-        if (CONTAINER) {
-          /** Kiểm tra lại container trước khi sử dụng */
-          CONTAINER.scrollTop = CONTAINER.scrollHeight - SCROLL_POSITION
+          /** set call api se skip bn ban ghi */
+          setSkip(skip + RESULT.data.length)
         }
-      })
-      /** Nếu data trả về < LIMIT thì đã hết tin nhắn cũ */
-      /** Nếu load trên limit bản ghi thì hasmore == false */
-      if (RESULT.data.length !== LIMIT) {
-        /** k còn data nữa */
-        setHasMore(false)
+
+        /** Loại bỏ những tin nhắn từ hệ thống và tin nhắn dạng note */
+        const FILTER_RES = RESULT?.data.filter(
+          (item: any) =>
+            item.message_type !== 'system' && item.message_type !== 'note'
+        )
+        /** Lưu LIST_MESSAGE vào store */
+        dispatch(setListMessage([...FILTER_RES.reverse(), ...LIST_MESSAGE]))
+
+        /** Dùng request animation frame hoặc settimeout ( độ trễ 0ms) */
+        requestAnimationFrame(() => {
+          if (CONTAINER) {
+            /** Kiểm tra lại container trước khi sử dụng */
+            CONTAINER.scrollTop = CONTAINER.scrollHeight - SCROLL_POSITION
+          }
+        })
+        /** Nếu data trả về < LIMIT thì đã hết tin nhắn cũ */
+        /** Nếu load trên limit bản ghi thì hasmore == false */
+        if (RESULT.data.length !== LIMIT) {
+          /** k còn data nữa */
+          setHasMore(false)
+        }
+      } catch (error) {
+        console.log('Error:', error)
+      } finally {
+        dispatch(setLoadingGlobal(false))
       }
     } catch (error) {
     } finally {
@@ -583,6 +616,7 @@ function DetailChat({
     console.log(window.location, 'window.location.href')
     setUrl(window.location.href)
   }, [])
+
   return (
     <div
       className={`flex flex-col w-full h-full ${
@@ -629,6 +663,7 @@ function DetailChat({
               resetData={invalid_page_id}
               onInitClient={(e: any) => {
                 setLoadingInit(true)
+                console.log(e, 'eeeee')
                 onInitClient({ ...e, page_id: PAGE_ID })
               }}
             />
@@ -640,17 +675,20 @@ function DetailChat({
           </div>
         )}
 
-        {AI_STATUS && invalid_page_id && !NO_AI_ID && IS_ACTIVE_AGENT_AI && (
-          <h4 className="flex justify-center font-semibold text-red-600">
-            {t('invalid_virtual_assistant')}
-          </h4>
-        )}
+        {AI_STATUS &&
+          invalid_page_id === true &&
+          is_loaded &&
+          IS_ACTIVE_AGENT_AI === true && (
+            <h4 className="flex justify-center font-semibold text-red-600">
+              {t('invalid_virtual_assistant')}
+            </h4>
+          )}
         {AI_STATUS && NO_AI_ID && (
           <h4 className="flex justify-center font-semibold text-red-600">
             {t('no_virtual_assistant')}
           </h4>
         )}
-        {AI_STATUS && !IS_ACTIVE_AGENT_AI && (
+        {AI_STATUS && is_loaded && IS_ACTIVE_AGENT_AI === false && (
           <h4 className="flex justify-center font-semibold text-red-600">
             {t('inactive_virtual_assistant')}
           </h4>
@@ -659,7 +697,8 @@ function DetailChat({
         {AI_STATUS &&
           LIST_MESSAGE.length == 0 &&
           user_id &&
-          !LOADING_GLOBAL && (
+          !LOADING_GLOBAL &&
+          check_no_message_ai && (
             <div className="flex flex-col items-center gap-2.5">
               <img
                 src="./images/assistant_bot.svg"

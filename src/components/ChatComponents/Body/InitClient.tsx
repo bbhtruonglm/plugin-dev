@@ -28,13 +28,17 @@ function InitClient({ resetData, onInitClient }: InitClientProps) {
 
   /** Pre-fill nếu có dữ liệu từ store */
   useEffect(() => {
+    /** Check nếu có dữ liệu từ store */
     if (!isEmpty(USER_INFO)) {
-      setFormValues((prev) => ({
-        ...prev,
-        name: USER_INFO?.user_name || t('anonymous'),
-        phone: USER_INFO?.user_phone || '',
-        email: USER_INFO?.user_email || '',
-      }))
+      /** Lưu form lỗi */
+      setFormValues((prev) => {
+        return {
+          ...prev,
+          name: USER_INFO?.user_name || '',
+          phone: USER_INFO?.user_phone || '',
+          email: USER_INFO?.user_email || '',
+        }
+      })
     }
   }, [USER_INFO])
   /** Reset data */
@@ -52,6 +56,7 @@ function InitClient({ resetData, onInitClient }: InitClientProps) {
     setFormValues((prev) => ({ ...prev, [field]: value }))
     setFormErrors((prev) => ({ ...prev, [field]: '' }))
   }
+
   /**
    *  Validate form
    * @returns  true/false
@@ -71,7 +76,7 @@ function InitClient({ resetData, onInitClient }: InitClientProps) {
       }
 
       /** Nếu field là phone thì kiểm tra thêm định dạng */
-      if (field.field === 'PHONE' && VALUE) {
+      if (field.field === 'phone' && VALUE) {
         /**
          *  Kiểm tra dữ liệu SDT với regex
          */
@@ -92,8 +97,8 @@ function InitClient({ resetData, onInitClient }: InitClientProps) {
    * @returns
    */
   const renderInputType = (field: string) => {
-    if (field === 'EMAIL') return 'email'
-    if (field === 'PHONE') return 'tel'
+    if (field === 'EMAIL' || field === 'email') return 'email'
+    if (field === 'PHONE' || field === 'phone') return 'tel'
     return 'text'
   }
   /**
@@ -147,7 +152,6 @@ function InitClient({ resetData, onInitClient }: InitClientProps) {
               IS_DISABLED ? 'bg-slate-400 cursor-not-allowed' : 'bg-black'
             } rounded-md px-4 py-2 text-sm font-medium`}
             onClick={() => {
-              console.log(validate(), 'kkkk')
               if (validate()) {
                 if (isEmpty(USER_INFO)) {
                   onInitClient({
