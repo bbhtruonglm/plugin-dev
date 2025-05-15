@@ -28,9 +28,11 @@ import {
   setLoadingGlobal,
   setNoAiId,
   setNoViewport,
+  setOrgAllowLogo,
   setPageAvatar,
   setPageId,
   setPageInfoAI,
+  setPageLogo,
   setRefreshData,
   setShowForm,
   setShowHome,
@@ -150,7 +152,6 @@ function App() {
          */
         const N_PAGE_ID = client?.public_profile?.ai_agent_id
 
-        console.log('kkkk ================', client)
         /**
          * nếu không có ai_agent_id thì setNoAiId(true)
          */
@@ -450,6 +451,20 @@ function App() {
 
         /** Lấy page_id */
         const STORED_PAGE_ID = URL_PARENT.searchParams.get('page_id') || ''
+
+        /**
+         * Fix cứng với page_id 860086820907512 của khách cần hotfix
+         * se Update lại
+         */
+        if (STORED_PAGE_ID === '860086820907512') {
+          /**
+           * Lưu trạng thái logo trong store
+           */
+          dispatch(setOrgAllowLogo(true))
+          /** Lưu logo trong store */
+          dispatch(setPageLogo('./images/AIG.png'))
+        }
+
         /**
          * Kiểm tra xem có phải AI không
          */

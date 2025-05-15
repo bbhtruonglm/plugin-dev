@@ -30,8 +30,10 @@ import {
   selectIsAvatar,
   selectLatestMessage,
   selectListUnreadMessage,
+  selectOrgAllowLogo,
   selectPageAvatar,
   selectPageId,
+  selectPageLogo,
   selectRefreshData,
   selectShowHome,
   selectShowSupportStaff,
@@ -78,6 +80,16 @@ const ChatApp = ({
 }: ChatAppProps) => {
   /** Dịch ngôn ngữ */
   const { t, i18n: I18N } = useTranslation()
+  /**
+   * org custom logo
+   */
+  const ORG_ALLOW_LOGO = useSelector(selectOrgAllowLogo)
+
+  /**
+   * link logo
+   */
+  const LOGO_PAGE_CUSTOM = useSelector(selectPageLogo)
+
   /** Các đầu api */
   const { READ_PAGE_INFO, SOCKET_API } = useAPI()
   /** Trạng thái online */
@@ -1621,7 +1633,11 @@ const ChatApp = ({
             <Down />
           ) : (
             <img
-              src="./images/Logo_retion_embed.png"
+              src={
+                ORG_ALLOW_LOGO
+                  ? LOGO_PAGE_CUSTOM
+                  : './images/Logo_retion_embed.png'
+              }
               alt="Logo Retion"
               width={30}
               height={30}

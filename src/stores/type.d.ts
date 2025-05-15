@@ -160,6 +160,12 @@ export interface AppState {
   is_visible_home_page?: boolean
   /** Trạng thái active trợ lý ảo */
   is_active_ai_agent?: boolean
+  /**
+   * Trạng thái hiển thị logo tổ chức
+   */
+  org_allow_logo?: boolean
+  /** Logo page custom */
+  logo_page_custom?: string
 }
 /** Định nghĩa kiểu dữ liệu cho danh sách nhân viên */
 interface EmployeeList {

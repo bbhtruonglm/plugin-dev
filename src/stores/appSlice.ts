@@ -50,6 +50,8 @@ const INITIAL_STATE: AppState = {
   },
   is_visible_home_page: undefined,
   is_active_ai_agent: undefined,
+  org_allow_logo: undefined,
+  logo_page_custom: undefined,
 }
 
 export const appSlice = createSlice({
@@ -228,6 +230,17 @@ export const appSlice = createSlice({
     setActiveAiAgent: (state, action: PayloadAction<boolean>) => {
       state.is_active_ai_agent = action.payload
     },
+
+    /** set Org allow logo */
+    setOrgAllowLogo: (state, action: PayloadAction<boolean>) => {
+      state.org_allow_logo = action.payload
+    },
+    /**
+     * Logo page
+     */
+    setPageLogo: (state, action: PayloadAction<string>) => {
+      state.logo_page_custom = action.payload
+    },
   },
 })
 
@@ -265,6 +278,8 @@ export const {
   setShowForm,
   setShowHome,
   setActiveAiAgent,
+  setOrgAllowLogo,
+  setPageLogo,
 } = appSlice.actions
 
 /** chọn đến page id */
@@ -371,5 +386,10 @@ export const selectShowHome = (state: RootState) =>
 /** show home */
 export const selectActiveAiAgent = (state: RootState) =>
   state.app.is_active_ai_agent
+
+/** Org allow logo */
+export const selectOrgAllowLogo = (state: RootState) => state.app.org_allow_logo
+/** Logo page custom */
+export const selectPageLogo = (state: RootState) => state.app.logo_page_custom
 
 export default appSlice.reducer
