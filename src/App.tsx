@@ -457,6 +457,7 @@ function App() {
          * se Update lại
          */
         if (STORED_PAGE_ID === '860086820907512') {
+          // if (STORED_PAGE_ID === '388339911461476') {
           /**
            * Lưu trạng thái logo trong store
            */

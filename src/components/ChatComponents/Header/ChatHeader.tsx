@@ -4,7 +4,9 @@ import {
   selectCurrentWidth,
   selectIsAvatar,
   selectLoadingGlobal,
+  selectOrgAllowLogo,
   selectPageAvatar,
+  selectPageLogo,
   selectShowHome,
   selectShowSupportStaff,
   setIsAvatar,
@@ -55,8 +57,22 @@ function ChatHeader({
    * Trạng thái hiện thị home page
    */
   const IS_SHOW_HOME = useSelector(selectShowHome)
-
+  /**
+   * Trạng thái hiện thị home page
+   */
   const [is_show_home, setIsShowHome] = useState(true)
+  /**
+   * org custom logo
+   */
+  const ORG_ALLOW_LOGO = useSelector(selectOrgAllowLogo)
+
+  /**
+   * link logo
+   */
+  const LOGO_PAGE_CUSTOM = useSelector(selectPageLogo)
+  /**
+   * Trạng thái hiện thị home page
+   */
   useEffect(() => {
     console.log(IS_SHOW_HOME, 'is show home')
     setIsShowHome(IS_SHOW_HOME || false)
@@ -230,7 +246,13 @@ function ChatHeader({
                       size="medium"
                     />
                   ) : (
-                    <img src={'./images/Logo_retion_white.png'} />
+                    <img
+                      src={
+                        ORG_ALLOW_LOGO
+                          ? LOGO_PAGE_CUSTOM
+                          : './images/Logo_retion_white.png'
+                      }
+                    />
                   )}
                 </div>
               </div>
