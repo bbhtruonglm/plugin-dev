@@ -463,7 +463,7 @@ function App() {
            */
           dispatch(setOrgAllowLogo(true))
           /** Lưu logo trong store */
-          dispatch(setPageLogo('./images/AIG.png'))
+          dispatch(setPageLogo('./images/Logo_AIG.svg'))
         }
 
         /**

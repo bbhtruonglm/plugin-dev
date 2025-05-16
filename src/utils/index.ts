@@ -2,6 +2,7 @@ import { EmployeeList } from '@/pages/type'
 import { MessageInfo } from './type'
 import { apiImage } from '@/api/api'
 import { get } from 'lodash'
+import { setPageLogo } from '@/stores/appSlice'
 import { t } from 'i18next'
 
 /** Hàm tìm locale từ URL
