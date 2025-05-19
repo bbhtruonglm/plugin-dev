@@ -168,6 +168,9 @@ export interface AppState {
   logo_page_custom?: string
   /** TIn nhắn suggest tự động gửi */
   ai_message_auto_send?: string
+
+  /** is_view_screen */
+  is_view_screen?: boolean
 }
 /** Định nghĩa kiểu dữ liệu cho danh sách nhân viên */
 interface EmployeeList {

@@ -53,6 +53,7 @@ const INITIAL_STATE: AppState = {
   org_allow_logo: undefined,
   logo_page_custom: undefined,
   ai_message_auto_send: '',
+  is_view_screen: false,
 }
 
 export const appSlice = createSlice({
@@ -246,6 +247,10 @@ export const appSlice = createSlice({
     setAiMessageAutoSend: (state, action: PayloadAction<string>) => {
       state.ai_message_auto_send = action.payload
     },
+    /** is_view_screen */
+    setIsViewScreen: (state, action: PayloadAction<boolean>) => {
+      state.is_view_screen = action.payload
+    },
   },
 })
 
@@ -286,6 +291,7 @@ export const {
   setOrgAllowLogo,
   setPageLogo,
   setAiMessageAutoSend,
+  setIsViewScreen,
 } = appSlice.actions
 
 /** chọn đến page id */
@@ -401,5 +407,8 @@ export const selectPageLogo = (state: RootState) => state.app.logo_page_custom
 /** ai message auto send */
 export const selectAiMessageAutoSend = (state: RootState) =>
   state.app.ai_message_auto_send
+
+/** Is view screen */
+export const selectIsViewScreen = (state: RootState) => state.app.is_view_screen
 
 export default appSlice.reducer

@@ -28,6 +28,7 @@ import {
   selectGlobalPreviewUrl,
   selectGlobalUnreadCount,
   selectIsAvatar,
+  selectIsViewScreen,
   selectLatestMessage,
   selectListUnreadMessage,
   selectOrgAllowLogo,
@@ -102,6 +103,10 @@ const ChatApp = ({
   const LIST_UNREAD_MESSAGE = useSelector(selectListUnreadMessage)
   /**Status AI */
   const AI_STATUS = useSelector(selectStatusAI)
+
+  /** IS View screen */
+  const IS_VIEW_SCREEN = useSelector(selectIsViewScreen)
+
   /** Trạng thái hiển thị màn home */
   const IS_SHOW_HOME = useSelector(selectShowHome)
   /** Khởi tạo websocket */
@@ -156,14 +161,16 @@ const ChatApp = ({
     if (
       AI_STATUS ||
       consultation ||
+      IS_VIEW_SCREEN ||
       (IS_SHOW_HOME !== undefined && !IS_SHOW_HOME)
     ) {
+      console.log(IS_VIEW_SCREEN, 'IS_VIEW_SCREEN')
       /** Set tab hiện tại là message */
       setCurrentTab('message')
       /** Set show welcome message là false */
       setShowWelcomeMessage(false)
     }
-  }, [AI_STATUS, consultation, IS_SHOW_HOME])
+  }, [AI_STATUS, consultation, IS_SHOW_HOME, IS_VIEW_SCREEN])
 
   /** hàm dispatch đến store */
   const dispatch = useDispatch()
@@ -580,7 +587,7 @@ const ChatApp = ({
     /**
      * Xác định trạng thái AI
      */
-    const IS_AI = AI_STATUS
+    const IS_AI = AI_STATUS || IS_VIEW_SCREEN
     /**
      * Xác định trạng thái xem trước ảnh
      */
@@ -1013,7 +1020,7 @@ const ChatApp = ({
     }
 
     /** Trường hợp AI */
-    if (AI_STATUS) {
+    if (AI_STATUS || IS_VIEW_SCREEN) {
       return `${BASE_CLASSES} flex flex-col w-screen h-screen just-between`
     }
 
@@ -1185,7 +1192,7 @@ const ChatApp = ({
           {current_tab !== 'message' && (
             <div
               className={`flex justify-between items-center px-5 py-3 bg-slate-800 text-white ${
-                AI_STATUS ? 'hidden' : 'flex'
+                AI_STATUS || IS_VIEW_SCREEN ? 'hidden' : 'flex'
               }`}
             >
               <div>
@@ -1224,7 +1231,9 @@ const ChatApp = ({
 
           {/* body check theo bien current tab de render data */}
           <div
-            className={`flex flex-col h-full resize-none outline-none scrollbar-thin scrollbar-webkit overflow-y-auto overflow-x-hidden md:max-h-[600px] relative`}
+            className={`flex flex-col h-full resize-none outline-none scrollbar-thin scrollbar-webkit overflow-y-auto overflow-x-hidden ${
+              IS_VIEW_SCREEN ? 'h-screen' : 'md:max-h-[600px]'
+            }  relative`}
           >
             {!IS_ONLINE && (
               <div className="absolute top-28 left-[30%] text-xs bg-blue-300 p-2 rounded-lg text-white z-10">
@@ -1611,7 +1620,7 @@ const ChatApp = ({
             ? 'right-5 bottom-5'
             : 'right-2'
         }  h-12 w-12 bg-white shadow-lg rounded-full  hover:scale-110 ${
-          AI_STATUS ? 'hidden' : ''
+          AI_STATUS || IS_VIEW_SCREEN ? 'hidden' : ''
         }  ${
           !show
             ? ' flex z-30 '

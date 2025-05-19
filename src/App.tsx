@@ -24,6 +24,7 @@ import {
   setGlobalPreviewUrl,
   setGlobalUnreadCount,
   setIsAvatar,
+  setIsViewScreen,
   setLatestMessageGlobal,
   setListMessage,
   setLoadingGlobal,
@@ -481,15 +482,26 @@ function App() {
          * Kiểm tra xem có phải AI không
          */
         const IS_AI = URL_PARENT?.pathname.includes('ai-assistant')
+
+        const IS_VIEW_SCREEN = URL_PARENT?.pathname.includes('view-screen')
+
         /**
          * Lưu trạng thái AI vào store
          */
         dispatch(setStatusIsAI(IS_AI))
+
+        /**
+         * Lưu trạng thái view screen vào store
+         */
+        dispatch(setIsViewScreen(IS_VIEW_SCREEN))
+
+        console.log(IS_VIEW_SCREEN, 'IS_VIEW_SCREEN')
+
         console.log(IS_AI, 'IS_AI')
         /**
          * Cập nhật trạng thái hiển thị popup
          */
-        setShow(IS_AI)
+        setShow(IS_AI || IS_VIEW_SCREEN)
         /** Khai báo cài đặt trang */
         let PAGE_SETTING = {} as any
         /** Nếu có page_id thì lấy cài đặt trang */
@@ -918,6 +930,39 @@ function App() {
         />
         <Route
           path="/ai-assistant"
+          element={
+            <ChatApp
+              handleBtn={(e) => {
+                /**
+                 * Nếu e !== 'no_toggle' thì gọi hàm handleToggle
+                 */
+                if (e !== 'no_toggle') {
+                  handleToggle()
+                }
+
+                setShow(!is_show)
+                if (!is_show) {
+                  /** Khi mở chỉ reset tin nhắn mới nhất trong store */
+                  dispatch(setGlobalPreviewUrl(''))
+                  saveQuickChatLatestMessage(PAGE_ID, CLIENT_ID, null)
+                } else {
+                  /** Lưu thời gian vào localstorage Khi đóng popup */
+                  saveTimeClosePopup(PAGE_ID)
+                }
+              }}
+              show={is_show}
+              setHideForMobile={() => {
+                setShow(false)
+                dispatch(setGlobalPreviewUrl(''))
+                /** Lưu thời gian vào localstorage Khi đóng popup */
+                saveTimeClosePopup(PAGE_ID)
+                handleOff()
+              }}
+            />
+          }
+        />
+        <Route
+          path="/view-screen"
           element={
             <ChatApp
               handleBtn={(e) => {

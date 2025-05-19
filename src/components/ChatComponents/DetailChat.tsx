@@ -7,6 +7,7 @@ import {
   selectGlobalClientId,
   selectGlobalUnreadCount,
   selectIsAvatar,
+  selectIsViewScreen,
   selectLatestMessage,
   selectListMessage,
   selectLoadingGlobal,
@@ -76,6 +77,8 @@ function DetailChat({
    */
   const NO_AI_ID = useSelector(selectAiId)
 
+  /** IS View screen */
+  const IS_VIEW_SCREEN = useSelector(selectIsViewScreen)
   /**
    * Trạng thái có ID Trợ lý ảo
    */
@@ -286,7 +289,7 @@ function DetailChat({
   /** Bước 2: Chỉ chạy logic anonymous khi đã biết chắc chắn user_id là null */
   useEffect(() => {
     /** Đnag load thông tin */
-    if (local_user_id === undefined || AI_STATUS) return // Đang load từ localStorage, chưa xong
+    if (local_user_id === undefined || AI_STATUS || !PAGE_ID) return // Đang load từ localStorage, chưa xong
     console.log(FORM_BEFORE_CHAT, 'chay vao day')
     /**
      * Khi user_id khóng null
@@ -303,7 +306,7 @@ function DetailChat({
         })
       }
     }
-  }, [FORM_BEFORE_CHAT, local_user_id, AI_STATUS])
+  }, [FORM_BEFORE_CHAT, local_user_id, AI_STATUS, IS_VIEW_SCREEN])
 
   /** Hàm gọi API để lấy tin nhắn */
   const fetchMessage = async (client_iddd?: string) => {

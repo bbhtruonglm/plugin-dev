@@ -1,6 +1,7 @@
 import { apiImage, fetchAPI, useAPI } from '@/api/api'
 import {
   selectGlobalClientId,
+  selectIsViewScreen,
   selectPageId,
   selectStatusAI,
   selectUserInfo,
@@ -55,6 +56,11 @@ function ChatScreen({
 
   /** Lấy thông tin user từ store */
   const USER_INFO = useSelector(selectUserInfo)
+
+  /** IS View screen */
+  const IS_VIEW_SCREEN = useSelector(selectIsViewScreen)
+
+  console.log(IS_VIEW_SCREEN, 'IS_VIEW_SCREEN nnnnn')
 
   /** Lấy dữ liệu từ store */
   const dispatch = useDispatch()
@@ -229,7 +235,13 @@ function ChatScreen({
     /**
      * Nếu là case AI_STATUS và chưa có CLIENT_ID
      */
-    if (AI_STATUS && !GLOBAL_CLIENT_ID && PAGE_ID && HAS_VALID_VALUE) {
+    if (
+      AI_STATUS &&
+      !GLOBAL_CLIENT_ID &&
+      PAGE_ID &&
+      HAS_VALID_VALUE &&
+      !IS_VIEW_SCREEN
+    ) {
       /**
        * Gọi hàm khởi tạo client id
        */
@@ -249,7 +261,7 @@ function ChatScreen({
        */
       initGetClientId(PARAMS)
     }
-  }, [AI_STATUS, GLOBAL_CLIENT_ID, PAGE_ID, USER_INFO])
+  }, [AI_STATUS, GLOBAL_CLIENT_ID, PAGE_ID, USER_INFO, IS_VIEW_SCREEN])
 
   useEffect(() => {
     /**

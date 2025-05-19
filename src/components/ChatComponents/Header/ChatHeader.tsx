@@ -3,6 +3,7 @@ import 'react-loading-skeleton/dist/skeleton.css' // Đảm bảo CSS được i
 import {
   selectCurrentWidth,
   selectIsAvatar,
+  selectIsViewScreen,
   selectLoadingGlobal,
   selectOrgAllowLogo,
   selectPageAvatar,
@@ -47,7 +48,7 @@ function ChatHeader({
 
   /**Show support staff */
   const SHOW_SUPPORT_STAFF = useSelector(selectShowSupportStaff)
-
+  console.log(SHOW_SUPPORT_STAFF, 'show support staff')
   /**
    * link avatar cua page
    */
@@ -57,6 +58,9 @@ function ChatHeader({
    * Trạng thái hiện thị home page
    */
   const IS_SHOW_HOME = useSelector(selectShowHome)
+
+  /** IS View screen */
+  const IS_VIEW_SCREEN = useSelector(selectIsViewScreen)
   /**
    * Trạng thái hiện thị home page
    */
@@ -163,7 +167,7 @@ function ChatHeader({
           {user_id ? (
             <div className="flex justify-between items-center w-full gap-x-2">
               <div className="flex gap-2 items-center flex-1 overflow-hidden">
-                {is_show_home ? (
+                {is_show_home && !IS_VIEW_SCREEN ? (
                   <BackArrow
                     className="w-7 h-7 cursor-pointer"
                     onClick={() => onCancel()}
@@ -177,7 +181,11 @@ function ChatHeader({
                     <div className="h-5 flex items-center"></div>
                   ) : (
                     <h2 className="text-white text-sm font-medium truncate overflow-hidden whitespace-nowrap">
-                      {IS_AVATAR ? staff_name || page_name : page_name}
+                      {SHOW_SUPPORT_STAFF &&
+                      SHOW_SUPPORT_STAFF?.is_active &&
+                      IS_AVATAR
+                        ? staff_name || page_name
+                        : page_name}
                     </h2>
                   )}
                   <h5 className="flex gap-1 items-center font-normal text-xs text-onlineColor">
@@ -212,7 +220,7 @@ function ChatHeader({
           ) : (
             <div className="flex flex-col items-center w-full gap-y-1">
               <div className="flex w-full justify-between items-center h-[30px] ">
-                {is_show_home ? (
+                {is_show_home && !IS_VIEW_SCREEN ? (
                   <BackArrow
                     className="w-7 h-7 cursor-pointer"
                     onClick={() => onCancel()}
