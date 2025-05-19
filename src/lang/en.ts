@@ -21,6 +21,8 @@ export const en = {
 
     your_options:
       'You can ask questions or provide feedback on service quality.',
+    we_will_reply_soon: 'We will respond between 8:00 AM and 6:00 PM',
+
     welcomeMessage: 'How can we assist you?',
     sendUs: 'Send us a message',
     we_are_online: 'We are online',
