@@ -269,8 +269,8 @@ function App() {
 
     /** Check tin nhắn tự động từ Web hoặc mobile */
     if (
-      type === 'AI.SEND_TEXT_FROM_MOILE' ||
-      type === 'AI.SEND_TEXT_FROM_WEB'
+      type === 'AI.SEND_TEXT_FROM_MOBILE' ||
+      type === 'AI.SEND_TEXT_FROM_WEBSITE'
     ) {
       /**
        * Gửi tin nhắn tư vấn
