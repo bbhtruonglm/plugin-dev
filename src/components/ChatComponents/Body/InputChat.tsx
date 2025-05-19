@@ -1,9 +1,11 @@
 import {
+  selectAiMessageAutoSend,
   selectPageId,
   selectPageInfoAI,
   selectStatusAI,
   selectStatusPopup,
   selectSuggestMessage,
+  setAiMessageAutoSend,
   setSuggestMessage,
 } from '@/stores/appSlice'
 import { useDispatch, useSelector } from 'react-redux'
@@ -78,6 +80,11 @@ function InputChat({
    * Tin nhắn suggest
    */
   const SUGGEST_MESSAGE = useSelector(selectSuggestMessage)
+
+  /**
+   * Tin nhắn tự động gửi
+   */
+  const AI_MESSAGE_AUTO_SEND = useSelector(selectAiMessageAutoSend)
 
   // useEffect(() => {
   //   /**
@@ -354,6 +361,19 @@ function InputChat({
       window.removeEventListener('touchmove', handleTouchMove)
     }
   }, [is_keyboard_open])
+
+  /** Nếu có text auto send thì tự động gửi */
+  useEffect(() => {
+    /**
+     * Nếu text auto send thì tự động gửi, reset text
+     */
+    if (AI_MESSAGE_AUTO_SEND) {
+      /** Tự dộng gửi */
+      handleSend(AI_MESSAGE_AUTO_SEND)
+      /** reset trong store */
+      dispatch(setAiMessageAutoSend(''))
+    }
+  }, [AI_MESSAGE_AUTO_SEND])
 
   return (
     <div

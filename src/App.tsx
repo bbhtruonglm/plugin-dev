@@ -16,6 +16,7 @@ import {
   selectEmbedPositionDetail,
   selectPageId,
   setActiveAiAgent,
+  setAiMessageAutoSend,
   setClientNameStore,
   setCurrentHeight,
   setCurrentWidth,
@@ -266,6 +267,16 @@ function App() {
       dispatch(setSuggestMessage(PAYLOAD?.payload?.message))
     }
 
+    /** Check tin nhắn tự động từ Web hoặc mobile */
+    if (
+      type === 'AI.SEND_TEXT_FROM_MOILE' ||
+      type === 'AI.SEND_TEXT_FROM_WEB'
+    ) {
+      /**
+       * Gửi tin nhắn tư vấn
+       */
+      dispatch(setAiMessageAutoSend(PAYLOAD?.payload?.text))
+    }
     /**
      * Nếu từ chatbox và là tin nhắn từ khách hàng thì gửi tin nhắn suggest
      */

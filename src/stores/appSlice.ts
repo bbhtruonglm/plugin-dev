@@ -52,6 +52,7 @@ const INITIAL_STATE: AppState = {
   is_active_ai_agent: undefined,
   org_allow_logo: undefined,
   logo_page_custom: undefined,
+  ai_message_auto_send: '',
 }
 
 export const appSlice = createSlice({
@@ -241,6 +242,10 @@ export const appSlice = createSlice({
     setPageLogo: (state, action: PayloadAction<string>) => {
       state.logo_page_custom = action.payload
     },
+    /** ai message auto send */
+    setAiMessageAutoSend: (state, action: PayloadAction<string>) => {
+      state.ai_message_auto_send = action.payload
+    },
   },
 })
 
@@ -280,6 +285,7 @@ export const {
   setActiveAiAgent,
   setOrgAllowLogo,
   setPageLogo,
+  setAiMessageAutoSend,
 } = appSlice.actions
 
 /** chọn đến page id */
@@ -391,5 +397,9 @@ export const selectActiveAiAgent = (state: RootState) =>
 export const selectOrgAllowLogo = (state: RootState) => state.app.org_allow_logo
 /** Logo page custom */
 export const selectPageLogo = (state: RootState) => state.app.logo_page_custom
+
+/** ai message auto send */
+export const selectAiMessageAutoSend = (state: RootState) =>
+  state.app.ai_message_auto_send
 
 export default appSlice.reducer

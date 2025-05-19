@@ -166,6 +166,8 @@ export interface AppState {
   org_allow_logo?: boolean
   /** Logo page custom */
   logo_page_custom?: string
+  /** TIn nhắn suggest tự động gửi */
+  ai_message_auto_send?: string
 }
 /** Định nghĩa kiểu dữ liệu cho danh sách nhân viên */
 interface EmployeeList {
