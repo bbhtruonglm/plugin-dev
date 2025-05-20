@@ -237,7 +237,17 @@ function App() {
    */
   const handleMessage = async (event: MessageEvent) => {
     /** @type {Object} PAYLOAD - Dữ liệu từ event */
-    const PAYLOAD = event.data
+
+    let PAYLOAD: any
+
+    try {
+      // Nếu event.data là string, cố gắng parse nó
+      PAYLOAD =
+        typeof event.data === 'string' ? JSON.parse(event.data) : event.data
+    } catch (error) {
+      console.error('Lỗi khi parse event.data:', error)
+      return
+    }
     console.log('EVENT::', event)
     /**
      * @type {string} user_name - Tên người dùng
