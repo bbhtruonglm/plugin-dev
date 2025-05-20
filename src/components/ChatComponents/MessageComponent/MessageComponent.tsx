@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import AudioPlayer from './AudioPlayer'
 import { ReactComponent as BookOpen } from '@/assets/book-open.svg'
 import { ReactComponent as ChatBubble } from '@/assets/chat-bubble-oval-left-ellipsis.svg'
+import type { Components } from 'react-markdown'
 import { ReactComponent as FileIcon } from '@/assets/document-text.svg'
 import ReactMarkdown from 'react-markdown'
 import { ReactComponent as Share } from '@/assets/external-link.svg'
@@ -117,7 +118,23 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
   const POSITION = useSelector(selectEmbedPosition)
   /** Trạng thái vị trí chi tiết của embed */
   const POSITION_DETAIL = useSelector(selectEmbedPositionDetail)
-
+  /** markdown components */
+  const MARKDOWN_COMPONENTS: Components = {
+    a: (props) => {
+      const { href, children, ...rest } = props
+      return (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-600 underline"
+          {...rest}
+        >
+          {children}
+        </a>
+      )
+    },
+  }
   /**
    *  Hàm format text với link
    * @param text - Nội dung tin nhắn
@@ -171,7 +188,10 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
               {/* {formatTextWithLinks(data?.message_text)} */}
 
               {checkMD(data?.message_text) ? (
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={MARKDOWN_COMPONENTS}
+                >
                   {data?.message_text}
                 </ReactMarkdown>
               ) : (
