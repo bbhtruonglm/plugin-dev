@@ -262,7 +262,7 @@ function App() {
     } = PAYLOAD
     console.log('DATA::', PAYLOAD)
 
-    alert('PAYLOAD::' + JSON.stringify(PAYLOAD))
+    // alert('PAYLOAD::' + JSON.stringify(PAYLOAD))
     /**
      * Nếu từ chatbox và là tin nhắn từ khách hàng thì gửi tin nhắn suggest
      */
@@ -450,6 +450,7 @@ function App() {
      * Lấy thông tin trang
      */
     const RES = await fetchAPI(URL_READ.toString(), 'GET')
+
     /**
      * Trả về cài đặt trang
      */
@@ -471,7 +472,7 @@ function App() {
         console.log('URL_PARENT::', URL_PARENT)
 
         /** Lấy page_id */
-        const STORED_PAGE_ID = URL_PARENT.searchParams.get('page_id') || ''
+        const STORED_PAGE_ID = URL_PARENT.searchParams.get('page_id') || null
 
         /**
          * Fix cứng với page_id 860086820907512 của khách cần hotfix
@@ -514,6 +515,11 @@ function App() {
         /** Khai báo cài đặt trang */
         let PAGE_SETTING = {} as any
         /** Nếu có page_id thì lấy cài đặt trang */
+
+        /** Nếu có page_id
+         * Lấy cài đặt trang
+         */
+
         if (STORED_PAGE_ID) {
           PAGE_SETTING = await fetchPageSetting(STORED_PAGE_ID)
         }
@@ -690,7 +696,7 @@ function App() {
 
           /** Dữ liệu khách hàng */
           const DATA_CLIENT = {
-            ai_agent_id: CLIENT_INFO?.public_profile?.ai_agent_id || '',
+            ai_agent_id: CLIENT_INFO?.public_profile?.ai_agent_id || null,
             page_id: CLIENT_INFO?.public_profile?.page_id || '',
             fb_client_id: CLIENT_INFO?.public_profile?.fb_client_id || '',
             page_name: CLIENT_INFO?.public_profile?.page_name || '',
@@ -717,7 +723,8 @@ function App() {
             )
           }
           /** Lấy page_id */
-          const STORED_PAGE_ID = CLIENT_INFO?.public_profile?.ai_agent_id || ''
+          const STORED_PAGE_ID =
+            CLIENT_INFO?.public_profile?.ai_agent_id || null
 
           /**
            * Nếu không có page_id thì setNoAiId(true  )
@@ -733,11 +740,12 @@ function App() {
            */
         } else {
           /** Lấy page_id */
-          const STORED_PAGE_ID = URL_PARENT.searchParams.get('page_id') || ''
+          const STORED_PAGE_ID = URL_PARENT.searchParams.get('page_id') || null
+
           /**
            * Lưu page_id vào store
            */
-          dispatch(setPageId(STORED_PAGE_ID || ''))
+          dispatch(setPageId(STORED_PAGE_ID || null))
 
           /**
            * Cập nhật thông tin kích thước của parent

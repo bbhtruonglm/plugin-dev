@@ -218,7 +218,7 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
               <div className="text-sm min-h-4 break-words whitespace-pre-line overflow-hidden">
                 {/* {data?.message_text} */}
 
-                {formatTextWithLinks(data?.message_text)}
+                {/* {formatTextWithLinks(data?.message_text)} */}
 
                 {checkMD(data?.message_text) ? (
                   <ReactMarkdown

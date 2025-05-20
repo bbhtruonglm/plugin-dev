@@ -34,6 +34,8 @@ interface ChatProps {
   // latest_message?: any
   /** Danh sách tin nhắn chưa đọc */
   // list_unread_message: MessageInfo[]
+  /** invalid_page_id_parent */
+  invalid_page_id_parent?: boolean
 }
 
 interface HomeProps {

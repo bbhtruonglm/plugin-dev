@@ -19,7 +19,7 @@
  */
 export interface AppState {
   /** ID của trang đang nhắn tin */
-  page_id: string
+  page_id: string | any | null
   /** ID của khách hàng đang nhắn tin */
   client_id: string
   /** locale hiện tại */
@@ -75,7 +75,7 @@ export interface AppState {
     /**
      * Tên trợ lý ảo
      */
-    ai_agent_id?: string
+    ai_agent_id?: string | null
     /**
      * id trang
      */

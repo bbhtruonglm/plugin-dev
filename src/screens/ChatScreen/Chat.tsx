@@ -48,6 +48,7 @@ function ChatScreen({
   setHideForMobile,
   page_name,
   employee_list,
+  invalid_page_id_parent,
 }: ChatProps) {
   /** Lấy API từ useAPI */
   const { INIT_CLIENT_API, READ_CLIENT_INFO } = useAPI()
@@ -60,14 +61,16 @@ function ChatScreen({
   /** IS View screen */
   const IS_VIEW_SCREEN = useSelector(selectIsViewScreen)
 
-  console.log(IS_VIEW_SCREEN, 'IS_VIEW_SCREEN nnnnn')
+  // console.log(IS_VIEW_SCREEN, 'IS_VIEW_SCREEN nnnnn')
 
   /** Lấy dữ liệu từ store */
   const dispatch = useDispatch()
   /** State client ID */
   const [client_id, setClientId] = useState<String | null | any>('')
   /** State báo sai page_id */
-  const [invalid_page_id, setInvalidPageId] = useState(false)
+  const [invalid_page_id, setInvalidPageId] = useState<undefined | boolean>(
+    undefined
+  )
   /** State loading init client */
   const [loading, setLoading] = useState(false)
   /** State avatar nhân viên */
@@ -94,6 +97,14 @@ function ChatScreen({
    */
   const CLIENT_ID = localStorage.getItem(`client_id_${PAGE_ID}`)
   const GLOBAL_CLIENT_ID = useSelector(selectGlobalClientId)
+  /**
+   * Hàm lý tập báo sai page_id
+   */
+  useEffect(() => {
+    /** Phải có giá trị invalid thì mới cập nhật */
+    if (invalid_page_id_parent !== undefined)
+      setInvalidPageId(invalid_page_id_parent)
+  }, [invalid_page_id_parent])
 
   useEffect(() => {
     /** Nếu có page_id thì mới xử lý tiếp */

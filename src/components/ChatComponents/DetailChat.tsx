@@ -97,7 +97,7 @@ function DetailChat({
   /** Biến check no message */
   const [check_no_message_ai, setCheckNoMessageAi] = useState(false)
   /** Delay time */
-  let delay = 400
+  let delay = 800
   /** Set timeout 0.4s thì bật cờ */
   useEffect(() => {
     if (!check_no_message_ai) {

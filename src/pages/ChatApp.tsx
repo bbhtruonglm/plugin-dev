@@ -133,6 +133,10 @@ const ChatApp = ({
   const IS_SHOW_REF = useRef(show)
   /**Show support staff */
   const SHOW_SUPPORT_STAFF = useSelector(selectShowSupportStaff)
+  /** Invalid page */
+  const [invalid_page_id, setInvalidPageId] = useState<boolean | undefined>(
+    undefined
+  )
 
   /**
    * THông tin Refresh Data
@@ -299,8 +303,11 @@ const ChatApp = ({
   }, [show, LATEST_MESSAGE, SHOW_QUICK_CHAT, welcome_message])
 
   useEffect(() => {
-    if (!PAGE_ID) return
-
+    if (PAGE_ID === null) {
+      setErrorMessage('PAGE_ID is required')
+      return
+    }
+    setErrorMessage('')
     /** Hủy WebSocket cũ trước khi tạo mới */
     if (AI_STATUS) {
       console.log('Đóng WebSocket cũ trước khi tạo mới')
@@ -335,6 +342,11 @@ const ChatApp = ({
      * Trạng thái không phải AI thì lấy client từ localStorage
      */
     if (!AI_STATUS) {
+      /** Nếu không cố page id thì return */
+      if (!PAGE_ID) {
+        // setErrorMessage('PAGE_ID is required')
+        return
+      }
       /** Luôn gọi API lấy dữ liệu trang */
       fetchPageData(PAGE_ID)
       if (CLIENT_STORED) {
@@ -417,6 +429,11 @@ const ChatApp = ({
    * @param {string} page_id - ID trang
    */
   const fetchPageData = async (page_id: string) => {
+    /** Nếu không có page_id thì return */
+    if (page_id === null) {
+      return
+    }
+
     /** Tạo đối tượng URL từ string */
     const URL_READ = new URL(READ_PAGE_INFO)
     /** body gồm page_id */
@@ -431,6 +448,12 @@ const ChatApp = ({
     /** lưu tên page vào state */
     setPageName(RES?.data?.name)
     console.log(RES, 'RES asdfasdfasd')
+    /** Nếu lỗi 403 thì hiện cờ  */
+    if (RES?.code === 403) {
+      setInvalidPageId(true)
+      return
+    }
+    setInvalidPageId(false)
     /**
      *  Tạm ẩn để deploy lên production
      */
@@ -1283,6 +1306,7 @@ const ChatApp = ({
                   /** 6. Reset unread count */
                   dispatch(setGlobalUnreadCount(0))
                 }}
+                invalid_page_id_parent={invalid_page_id}
                 error_message={error_message}
                 onError={() => setErrorMessage('')}
                 setHideForMobile={setHideForMobile}

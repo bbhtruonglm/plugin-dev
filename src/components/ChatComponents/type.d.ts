@@ -14,7 +14,7 @@ interface ChatScreenProps {
   setLoadingInit: (e: any) => void
 
   /** sai id trang */
-  invalid_page_id: boolean
+  invalid_page_id: boolean | undefined
   /** Hàm reset input */
   onResetInput?: () => void
   /** Tin nhắn báo lỗi */
@@ -301,7 +301,7 @@ export interface VideoPlayerProps {
 /** ĐỊnh nghĩa cấu trúc khởi tạo Client ID */
 interface InitClientProps {
   /** Hàm reset data */
-  resetData: boolean
+  resetData: boolean | undefined
   /** Hàm khởi tạo client */
   onInitClient: (e?: any) => void
 }

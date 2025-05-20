@@ -61,7 +61,7 @@ export const appSlice = createSlice({
   initialState: INITIAL_STATE,
   reducers: {
     /** lưu page_id */
-    setPageId: (state, action: PayloadAction<string>) => {
+    setPageId: (state, action: PayloadAction<string | null>) => {
       state.page_id = action.payload
     },
     /** lưu client_id */
