@@ -261,6 +261,15 @@ function App() {
       reset_page_id,
     } = PAYLOAD
     console.log('DATA::', PAYLOAD)
+
+    alert('PAYLOAD::' + JSON.stringify(PAYLOAD))
+    /**
+     * Nếu từ chatbox và là tin nhắn từ khách hàng thì gửi tin nhắn suggest
+     */
+    if (from === 'CHATBOX' && type === 'CLIENT_MESSAGE') {
+      dispatch(setSuggestMessage(PAYLOAD?.payload?.message))
+    }
+
     /**
      * Nếu từ chatbox và là tin nhắn từ khách hàng thì gửi tin nhắn suggest
      */
