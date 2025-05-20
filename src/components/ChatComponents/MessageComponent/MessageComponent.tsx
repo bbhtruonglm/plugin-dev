@@ -195,7 +195,7 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
                   {data?.message_text}
                 </ReactMarkdown>
               ) : (
-                data?.message_text
+                formatTextWithLinks(data?.message_text)
               )}
             </div>
           </div>
@@ -218,14 +218,17 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
               <div className="text-sm min-h-4 break-words whitespace-pre-line overflow-hidden">
                 {/* {data?.message_text} */}
 
-                {/* {formatTextWithLinks(data?.message_text)}
-                 */}
+                {formatTextWithLinks(data?.message_text)}
+
                 {checkMD(data?.message_text) ? (
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={MARKDOWN_COMPONENTS}
+                  >
                     {data?.message_text}
                   </ReactMarkdown>
                 ) : (
-                  data?.message_text
+                  formatTextWithLinks(data?.message_text)
                 )}
               </div>
               {data?.message_type !== 'client' && (
