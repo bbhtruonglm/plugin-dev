@@ -64,6 +64,8 @@ type Message = {
   client_id: string
   /** Nội dung tin nhắn */
   text: string
+  /** User id */
+  user_id?: string
 }
 /** Cấu trúc dữ liệu header */
 interface ChatHeaderProps {

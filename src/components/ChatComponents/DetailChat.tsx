@@ -4,6 +4,7 @@ import { fetchAPI, useAPI } from '@/api/api'
 import {
   selectActiveAiAgent,
   selectAiId,
+  selectCurrentUserId,
   selectGlobalClientId,
   selectGlobalUnreadCount,
   selectIsAvatar,
@@ -24,6 +25,7 @@ import {
   setListMessage,
   setLoadingGlobal,
   setRefreshData,
+  setTypingStatus,
 } from '@/stores/appSlice'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -69,6 +71,13 @@ function DetailChat({
    * Global client ID
    */
   const CLIENT_ID_GLOBAL = useSelector(selectGlobalClientId)
+
+  /**
+   * CURRENT_USER_ID
+   */
+  const CURRENT_USER_ID = useSelector(selectCurrentUserId)
+
+  console.log(CURRENT_USER_ID, 'CURRENT_USER_ID')
 
   /** hàm dispatch đến store */
   const dispatch = useDispatch()
@@ -539,9 +548,14 @@ function DetailChat({
         page_id: PAGE_ID,
         client_id: user_id,
         text: input,
+        user_id: CURRENT_USER_ID,
       }
       /** Gọi api gửi tin nhắn */
       await fetchAPI(SEND_MESSAGE_API, 'POST', MESSAGE)
+      /** Trường hợp là AI Agent thì mới set Trạng thái typing true sau khi gửi */
+      if (AI_STATUS) {
+        dispatch(setTypingStatus(true))
+      }
 
       /** Gửi tin nhắn thành công, scroll xuống cuối trang */
       scrollToBottom()

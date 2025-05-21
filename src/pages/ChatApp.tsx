@@ -268,9 +268,7 @@ const ChatApp = ({
   const IS_INIT_CLIENT = useSelector(selectStatusIsInit)
   /** GLobal client_id */
   const GLOBAL_CLIENT_ID = useSelector(selectGlobalClientId)
-  /**
-   * Lấy client_id từ localStorage
-   */
+  /** Lấy client_id từ localStorage*/
   const CLIENT_STORED = localStorage.getItem(`client_id_${PAGE_ID}`)
 
   /** Tin nhắn chào mừng  */

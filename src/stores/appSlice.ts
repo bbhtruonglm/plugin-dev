@@ -54,6 +54,7 @@ const INITIAL_STATE: AppState = {
   logo_page_custom: undefined,
   ai_message_auto_send: '',
   is_view_screen: false,
+  current_user_id: undefined,
 }
 
 export const appSlice = createSlice({
@@ -251,6 +252,11 @@ export const appSlice = createSlice({
     setIsViewScreen: (state, action: PayloadAction<boolean>) => {
       state.is_view_screen = action.payload
     },
+
+    /** User id hiện tại */
+    setCurrentUserId: (state, action: PayloadAction<string>) => {
+      state.current_user_id = action.payload
+    },
   },
 })
 
@@ -292,6 +298,7 @@ export const {
   setPageLogo,
   setAiMessageAutoSend,
   setIsViewScreen,
+  setCurrentUserId,
 } = appSlice.actions
 
 /** chọn đến page id */
@@ -410,5 +417,9 @@ export const selectAiMessageAutoSend = (state: RootState) =>
 
 /** Is view screen */
 export const selectIsViewScreen = (state: RootState) => state.app.is_view_screen
+
+/** User id hiện tại */
+export const selectCurrentUserId = (state: RootState) =>
+  state.app.current_user_id
 
 export default appSlice.reducer

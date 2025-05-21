@@ -77,29 +77,19 @@ function ChatScreen({
   const [staff_avatar, setStaffAvatar] = useState(null as any)
   /** State tên nhân viên */
   const [staff_name, setStaffName] = useState(null as any)
-  /**
-   * State loading staff
-   */
+  /** State loading staff*/
   const [loading_staff, setLoadingStaff] = useState(false)
-  /**
-   *  State tên khách hàng
-   */
+  /**  State tên khách hàng*/
   const [client_name, setClientName] = useState(null as any)
-
-  /**
-   *  State khởi tạo xong
-   */
+  /**  State khởi tạo xong*/
   const [is_init, setIsInit] = useState(false)
   /** AI_STATUS */
   const AI_STATUS = useSelector(selectStatusAI)
-  /**
-   * Hàm khởi tạo client id
-   */
+  /** Hàm khởi tạo client id */
   const CLIENT_ID = localStorage.getItem(`client_id_${PAGE_ID}`)
+  /** Global client id */
   const GLOBAL_CLIENT_ID = useSelector(selectGlobalClientId)
-  /**
-   * Hàm lý tập báo sai page_id
-   */
+  /** Hàm lý tập báo sai page_id*/
   useEffect(() => {
     /** Phải có giá trị invalid thì mới cập nhật */
     if (invalid_page_id_parent !== undefined)

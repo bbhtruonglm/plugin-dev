@@ -270,16 +270,17 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
                 </div>
                 <div className="pl-4">
                   {data?.llm_sources?.map((item, index) => (
-                    <a
+                    <div
                       key={index}
-                      href={item?.link || '#'}
-                      target="_blank"
+                      // href={item?.link || '#'}
+                      // href={'#'}
+                      // target="_blank"
                       rel="noopener noreferrer"
-                      className="flex gap-x-2 items-center hover:text-blue-500"
+                      className="flex gap-x-2 items-center"
                     >
-                      •<span className="underline ">{item?.title}</span>
-                      <Share className="w-3 h-3 stroke-current flex-shrink-0" />
-                    </a>
+                      •<span className="">{item?.title}</span>
+                      {/* <Share className="w-3 h-3 stroke-current flex-shrink-0" /> */}
+                    </div>
                   ))}
                 </div>
               </div>

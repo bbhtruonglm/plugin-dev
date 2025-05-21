@@ -18,6 +18,7 @@ import {
   setAiMessageAutoSend,
   setClientNameStore,
   setCurrentHeight,
+  setCurrentUserId,
   setCurrentWidth,
   setGlobalClientId,
   setGlobalPreviewUrl,
@@ -104,6 +105,10 @@ function App() {
         /** PAGE_ID mới*/
         const N_PAGE_ID = client?.public_profile?.ai_agent_id
 
+        dispatch(
+          setCurrentUserId(client?.public_profile?.current_user_id || '')
+        )
+
         /** nếu không có ai_agent_id thì setNoAiId(true)*/
         if (!N_PAGE_ID) {
           /** Set No AI ID store*/
@@ -142,6 +147,8 @@ function App() {
   const decodeInitClientData = async () => {
     /** khai báo biến lưu trữ dữ liệu khách hàng + init dữ liệu lần đầu */
     let client = await WIDGET.getClientInfo()
+
+    console.log(client, 'heheheh')
     /** Trả về client */
     return client
   }
@@ -577,6 +584,11 @@ function App() {
             CLIENT_INFO?.public_profile?.is_active_ai_agent
 
           console.log(CLIENT_INFO, 'CLIENT_INFO CHẠY VÀO ĐÂY')
+
+          dispatch(
+            setCurrentUserId(CLIENT_INFO?.public_profile?.current_user_id || '')
+          )
+
           /** Nếu khách hàng khóa AI agent thì khóa AI agent */
           if (!IS_ACTIVE_AGENT_AI) {
             /** Lưu vào Store */
@@ -796,6 +808,7 @@ function App() {
     const RES = await fetchAPI(URL_READ.toString(), 'GET')
     /** Lưu tên client */
     // setClientName(RES?.data?.client_name)
+
     /** Lưu Tên client vào store */
     dispatch(setClientNameStore(RES?.data?.client_name))
   }
