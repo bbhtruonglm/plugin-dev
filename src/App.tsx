@@ -5,7 +5,6 @@ import { Route, Routes } from 'react-router-dom'
 import { fetchAPI, useAPI } from './api/api'
 import {
   parsedString,
-  postMessagePosition,
   postMessageToParent,
   saveQuickChatLatestMessage,
   saveTimeClosePopup,
@@ -52,54 +51,21 @@ import ChatApp from './pages/ChatApp'
 import WIDGET from 'bbh-chatbox-widget-js-sdk'
 import i18next from './i18n'
 
-/**
- * Hàm lấy tham số từ URL
- * @param param  - Tham số cần lấy
- * @returns
- */
-function getQueryParam(param: string) {
-  /**
-   * Lấy tham số từ URL
-   */
-  const URL_PARAMS = new URLSearchParams(window.location.search)
-  /**
-   * Trả về tham số cần lấy
-   */
-  return URL_PARAMS.get(param)
-}
-
 function App() {
   useEffect(() => {
-    /**
-     * Load WIDGET nếu trang hiện tại là trang AI Assistant
-     */
+    /** Load WIDGET nếu trang hiện tại là trang AI Assistant*/
     if (
       window.location.pathname.includes('/ai-assistant') ||
       window.location.pathname.includes('/active-sdk')
     ) {
-      /**
-       * Lấy token từ URL
-       */
-      // const TOKEN = getQueryParam('access_token')
-      /**
-       * Nếu có token thì load WIDGET
-       */
-      // if (TOKEN) {
       try {
-        /**
-         * Bật chế độ debug
-         */
+        /** Bật chế độ debug */
         WIDGET.debugOn()
-        /**
-         * Load WIDGET
-         */
+        /** Load WIDGET */
         WIDGET.load('00de4446885a43c5b58ef16dba0f5058')
       } catch (error) {
         console.error('Lỗi khi giải mã token:', error)
       }
-      // } else {
-      //   console.warn('Không tìm thấy token trong URL')
-      // }
     } else {
       console.warn('Không phải trang AI Assistant, bỏ qua việc load WIDGET')
     }
@@ -117,77 +83,46 @@ function App() {
        * Tạm thời không dùng return tránh bị lỗi phần còn lại
        */
       if (value?.type === 'CLIENT_MESSAGE') {
-        // dispatch(setSuggestMessage(value?.playload?.message))
         return
       } else {
-        /**
-         * dispatch để reset data
-         */
+        /** dispatch để reset data */
         dispatch(setRefreshData(true))
-        /**
-         * Xoá danh sách tin nhắn
-         */
+        /** Xoá danh sách tin nhắn */
         dispatch(setListMessage([]))
-        /**
-         * Xoá tin nhắn mới nhất
-         */
+        /** Xoá tin nhắn mới nhất */
         dispatch(setLatestMessageGlobal(null))
-        /**
-         * Reset lại client_id Mỗi khi phát hiện có sự kiện mới
-         */
+        /** Reset lại client_id Mỗi khi phát hiện có sự kiện mới */
         dispatch(setGlobalClientId(''))
-        /**
-         * Reset tin nhắn suggest
-         */
+        /** Reset tin nhắn suggest */
         dispatch(setSuggestMessage(''))
-
-        /**
-         * setLoading global là true
-         */
+        /** setLoading global là true */
         dispatch(setLoadingGlobal(true))
         /** ghi lại thông tin khách hàng mới */
         let client = await WIDGET.getClientInfo()
 
         console.log('CHẠY VÀO ĐÂY USER_INFO hàm decode', client)
-        /**
-         * PAGE_ID mới
-         */
+        /** PAGE_ID mới*/
         const N_PAGE_ID = client?.public_profile?.ai_agent_id
 
-        /**
-         * nếu không có ai_agent_id thì setNoAiId(true)
-         */
+        /** nếu không có ai_agent_id thì setNoAiId(true)*/
         if (!N_PAGE_ID) {
-          /**
-           * Set No AI ID store
-           */
+          /** Set No AI ID store*/
           dispatch(setNoAiId(true))
           return
         }
 
-        /**
-         * ID khách hàng mới
-         */
+        /** ID khách hàng mới */
         const N_CLIENT_ID =
           client?.public_profile?.page_id +
           '__' +
           client?.public_profile?.fb_client_id
 
-        /**
-         * Nếu client_id mới khác client_id cũ thì mới reset lại
-         */
-        // if (N_CLIENT_ID !== CLIENT_ID_LOCAL) {
-        /**
-         * Reset lại client_id
-         */
+        /** Reset lại client_id */
         localStorage.setItem(`client_id_${N_PAGE_ID}`, '')
 
         console.log('CHẠY VÀO ĐÂY USER_INFO hàm refresh', client)
 
-        /**
-         * Gửi tin nhắn Cập nhật lại client_id
-         */
-
+        /** Gửi tin nhắn Cập nhật lại client_id*/
         dispatch(
           setUserInfo({
             user_name: '',
@@ -199,6 +134,7 @@ function App() {
       }
     })
   }
+
   /**
    * Hàm giải mã dữ liệu khách hàng
    * @returns {Promise<Object>} - Dữ liệu khách hàng
@@ -206,10 +142,15 @@ function App() {
   const decodeInitClientData = async () => {
     /** khai báo biến lưu trữ dữ liệu khách hàng + init dữ liệu lần đầu */
     let client = await WIDGET.getClientInfo()
-    console.log(client, 'client')
+    /** Trả về client */
     return client
   }
 
+  /** Lấy thông tin vị trí */
+  const POSTION = useSelector(selectEmbedPosition)
+
+  /** Vị trí chi tiết của chatbox */
+  const POSITION_DETAIL = useSelector(selectEmbedPositionDetail)
   /**
    * @type {Object} API - API lấy thông tin khách hàng
    * @type {string} READ_CLIENT_INFO - URL API lấy thông tin khách hàng
@@ -218,31 +159,25 @@ function App() {
 
   /** Trạng thái hiển thị Popup */
   const [is_show, setShow] = useState(false)
-  /**
-   * Trạng thái hiển thị Popup tư vấn
-   */
+  /** Trạng thái hiển thị Popup tư vấn */
   const [type_consultation, setTypeConsultation] = useState(false)
-
   /** Page_id được lưu trong Store */
   const PAGE_ID = useSelector(selectPageId)
-
   /** Client_id được lưu trong localStorage theo Page_id */
   const CLIENT_ID = localStorage.getItem(`client_id_<${PAGE_ID}>`)
-
   /** Dispatch */
   const dispatch = useDispatch()
 
-  /** Hàm xử lý thông điệp từ parent
+  /** Hàm xử lý thông điệp postMessage từ parent - mobile
    * @param {MessageEvent} event - Sự kiện tin nhắn
    */
   const handleMessage = async (event: MessageEvent) => {
     /** @type {Object} PAYLOAD - Dữ liệu từ event */
-
-    let PAYLOAD: any
+    let payload_message: any
 
     try {
-      // Nếu event.data là string, cố gắng parse nó
-      PAYLOAD =
+      /** Nếu event.data là string, cố gắng parse nó */
+      payload_message =
         typeof event.data === 'string' ? JSON.parse(event.data) : event.data
     } catch (error) {
       console.error('Lỗi khi parse event.data:', error)
@@ -269,25 +204,19 @@ function App() {
       locale,
       reset_conversation,
       reset_page_id,
-    } = PAYLOAD
-    console.log('DATA::', PAYLOAD)
+    } = payload_message
+    console.log('DATA::', payload_message)
 
-    // alert('PAYLOAD::' + JSON.stringify(PAYLOAD))
-    /**
-     * Nếu từ chatbox và là tin nhắn từ khách hàng thì gửi tin nhắn suggest
-     */
+    /** Nếu từ chatbox và là tin nhắn từ khách hàng thì gửi tin nhắn suggest
+     * AI_AGENT
+     * */
     if (from === 'CHATBOX' && type === 'CLIENT_MESSAGE') {
-      dispatch(setSuggestMessage(PAYLOAD?.payload?.message))
+      dispatch(setSuggestMessage(payload_message?.payload?.message))
     }
 
-    /**
-     * Nếu từ chatbox và là tin nhắn từ khách hàng thì gửi tin nhắn suggest
+    /** Check tin nhắn tự động từ Web hoặc mobile
+     * Mở trợ lý ảo và và tự động gửi tin nhắn Cho Trợ lý ảo
      */
-    if (from === 'CHATBOX' && type === 'CLIENT_MESSAGE') {
-      dispatch(setSuggestMessage(PAYLOAD?.payload?.message))
-    }
-
-    /** Check tin nhắn tự động từ Web hoặc mobile */
     if (
       type === 'AI.SEND_TEXT_FROM_MOBILE' ||
       type === 'AI.SEND_TEXT_FROM_WEBSITE'
@@ -295,15 +224,12 @@ function App() {
       /**
        * Gửi tin nhắn tư vấn
        */
-      dispatch(setAiMessageAutoSend(PAYLOAD?.payload?.text))
+      dispatch(setAiMessageAutoSend(payload_message?.payload?.text))
     }
     /**
-     * Nếu từ chatbox và là tin nhắn từ khách hàng thì gửi tin nhắn suggest
+     * Nếu từ parent-app-preview
+     * Trang Preview xem Trước
      */
-    // if (from === 'CHATBOX' && type === 'CLIENT_MESSAGE') {
-    //   dispatch(setSuggestMessage(PAYLOAD?.payload?.message))
-    // }
-
     if (from === 'parent-app-preview') {
       /**
        * Nếu trạng thái auto thì fix lại theo setting page
@@ -331,7 +257,8 @@ function App() {
          */
         const DEFAULT_LANGUAGE_CONFIG = 'en'
 
-        let EMBED_LOCALE
+        /** Khai báo biến lưu trữ ngôn ngữ */
+        let embed_locale
         /**
          * Kiem tra xem WEB_LANGUAGE co hop le khong
          */
@@ -341,20 +268,20 @@ function App() {
            * hoặc Default config
            */
           case WEB_LANGUAGE === 'DEFAULT':
-            EMBED_LOCALE = DEFAULT_LANGUAGE || DEFAULT_LANGUAGE_CONFIG
+            embed_locale = DEFAULT_LANGUAGE || DEFAULT_LANGUAGE_CONFIG
             break
           /**
            * Nếu không có case nào thoả mã thì lấy mặc định (fix cứng Tiếng việt)
            */
           default:
-            EMBED_LOCALE = DEFAULT_LANGUAGE_CONFIG
+            embed_locale = DEFAULT_LANGUAGE_CONFIG
             break
         }
-        console.log(EMBED_LOCALE, 'EMBED_LOCALE')
+        console.log(embed_locale, 'EMBED_LOCALE')
         /**
          *  Cập nhật ngôn ngữ vào i18next
          */
-        await i18next.changeLanguage(EMBED_LOCALE)
+        await i18next.changeLanguage(embed_locale)
       }
       /**
        * Nếu ngôn ngữ khác mặc định thì cập nhật ngôn ngữ
@@ -384,7 +311,9 @@ function App() {
       }
     }
 
-    /** Kiểm tra thông tin từ app cha */
+    /** Kiểm tra thông tin từ app cha
+     * Trang chủ Retion hoặc BotBanHang
+     */
     if (from === 'parent-app') {
       console.log(
         'Nhận tin nhắn từ app cha. Thông tin nhận được là:',
@@ -430,17 +359,14 @@ function App() {
   useEffect(() => {
     /** Thêm event listener cho thông điệp */
     window.addEventListener('message', handleMessage)
-
-    // postMessagePosition('bottom_left')
-    /**
-     * Hàm giải mã dữ liệu khách hàng
-     */
+    /** Hàm giải mã dữ liệu khách hàng*/
     decodeClientData()
 
     /** Hàm cleanup */
     return () => {
       /** Xóa event listener */
       window.removeEventListener('message', handleMessage)
+      /** Hàm giải má dữ liệu khách hàng */
       decodeClientData()
     }
   }, [])
@@ -466,6 +392,7 @@ function App() {
      */
     return RES?.data
   }
+
   useEffect(() => {
     /**
      * Hàm lấy dữ liệu
@@ -496,49 +423,39 @@ function App() {
           dispatch(setOrgAllowLogo(true))
           /** Lưu logo trong store */
           dispatch(setPageLogo('./images/Logo_AIG.svg'))
+          // dispatch(setPageLogo(''))
         }
 
-        /**
-         * Kiểm tra xem có phải AI không
-         */
+        /** Kiểm tra xem có phải AI không*/
         const IS_AI = URL_PARENT?.pathname.includes('ai-assistant')
-
+        /** Kiểm tra xem có phải view screen */
         const IS_VIEW_SCREEN = URL_PARENT?.pathname.includes('view-screen')
 
-        /**
-         * Lưu trạng thái AI vào store
-         */
+        /** Lưu trạng thái AI vào store*/
         dispatch(setStatusIsAI(IS_AI))
 
-        /**
-         * Lưu trạng thái view screen vào store
-         */
+        /** Lưu trạng thái view screen vào store */
         dispatch(setIsViewScreen(IS_VIEW_SCREEN))
 
         console.log(IS_VIEW_SCREEN, 'IS_VIEW_SCREEN')
 
         console.log(IS_AI, 'IS_AI')
-        /**
-         * Cập nhật trạng thái hiển thị popup
+        /** Cập nhật trạng thái hiển thị popup
+         * Nếu có AI hoặc view screen thì luôn mở popup
          */
         setShow(IS_AI || IS_VIEW_SCREEN)
         /** Khai báo cài đặt trang */
-        let PAGE_SETTING = {} as any
+        let page_setting = {} as any
         /** Nếu có page_id thì lấy cài đặt trang */
 
         /** Nếu có page_id
          * Lấy cài đặt trang
          */
-
         if (STORED_PAGE_ID) {
-          PAGE_SETTING = await fetchPageSetting(STORED_PAGE_ID)
+          page_setting = await fetchPageSetting(STORED_PAGE_ID)
         }
-        /**
-         * Lấy cài đặt trang
-         */
-        // const PAGE_SETTING = await fetchPageSetting(STORED_PAGE_ID)
 
-        console.log(PAGE_SETTING, 'PAGE_SETTING')
+        console.log(page_setting, 'PAGE_SETTING')
 
         /**  Lấy ngôn ngữ từ trình duyệt*/
         const BROWSER_LANGUAGE = navigator.language || navigator.languages[0]
@@ -546,62 +463,49 @@ function App() {
         console.log(BROWSER_LANGUAGE) // Ví dụ: "vi-VN", "en-US", "ja-JP"
 
         /** Nếu chỉ cần mã ngôn ngữ chính (không có region) */
-        const PRIMARY_LANUGAGE = BROWSER_LANGUAGE.split('-')[0]
-        console.log(PRIMARY_LANUGAGE) // Ví dụ: "vi", "en", "ja"
+        const PRIMARY_LANGUAGE = BROWSER_LANGUAGE.split('-')[0]
+        console.log(PRIMARY_LANGUAGE) // Ví dụ: "vi", "en", "ja"
 
-        /**
-         * Trạng thái hình thị avatar
-         */
-        const IS_AVATAR = PAGE_SETTING?.is_use_persona_id
-        /**
-         * Avatar trang
-         */
-        const PAGE_AVATAR = PAGE_SETTING?.avatar
-        /**
-         * Lưu trạng thái hình thị avatar vào store
-         */
+        /** Trạng thái hình thị avatar*/
+        const IS_AVATAR = page_setting?.is_use_persona_id
+        /** Avatar trang*/
+        const PAGE_AVATAR = page_setting?.avatar
+        /** Lưu trạng thái hình thị avatar vào store */
         dispatch(setIsAvatar(IS_AVATAR))
-        /**
-         * Lưu avatar vào store
-         */
+        /** Lưu avatar vào store */
         dispatch(setPageAvatar(PAGE_AVATAR))
-        /**
-         * Chế độ ngôn ngữ trang
-         */
-        const WEB_LANGUAGE = PAGE_SETTING?.web_language
+        /** Chế độ ngôn ngữ trang */
+        const WEB_LANGUAGE = page_setting?.web_language
         /**
          * Ngôn ngữ trang
          */
-        const PAGE_LANGUAGE = PAGE_SETTING?.page_language
+        const PAGE_LANGUAGE = page_setting?.page_language
         /**
          * Ngôn ngữ Mặc định của trang
          */
-        const DEFAULT_LANGUAGE = PAGE_SETTING?.default_language
+        const DEFAULT_LANGUAGE = page_setting?.default_language
 
         /** Show support staff   */
-        const SHOW_SUPPORT_STAFF = PAGE_SETTING?.is_visible_staff
-
+        const SHOW_SUPPORT_STAFF = page_setting?.is_visible_staff
+        /** Hiển thị danh sách nhân viên hỗ trợ */
         dispatch(setShowSupportStaff(SHOW_SUPPORT_STAFF))
-        /**
-         * Hiển thị form
-         */
-        const SHOW_FORM = PAGE_SETTING?.form_before_chat
+        /** Hiển thị form*/
+        const SHOW_FORM = page_setting?.form_before_chat
         /** Nếu hiển thị form */
         if (SHOW_FORM) {
-          // Chuyển field thành lowercase
+          /** Chuyển field thành lowercase */
           SHOW_FORM.data = SHOW_FORM?.data.map((item: any) => ({
             ...item,
             field: item.field.toLowerCase(),
           }))
-          /**
-           * Hiển thị trang chủ
-           */
+
+          /**  Trạng thái Hiển thị trang chủ */
           /** Lưu vào store */
           dispatch(setShowForm(SHOW_FORM))
         }
-        console.log(PAGE_SETTING, 'PAGE_SETTING')
+        console.log(page_setting, 'PAGE_SETTING')
         /** Show home page */
-        const SHOW_HOME_PAGE = PAGE_SETTING?.is_visible_home_page || false
+        const SHOW_HOME_PAGE = page_setting?.is_visible_home_page || false
         /**
          * Lưu vào store trạng thái hiển thị trang chủ
          */
@@ -610,7 +514,7 @@ function App() {
          * Trạng thái tự động đổi ngôn ngữ theo khu vực
          */
         const AUTO_CHANGE_BY_REGION =
-          PAGE_SETTING?.auto_change_language_by_region
+          page_setting?.auto_change_language_by_region
         /**
          * Ngôn ngữ Mặc định
          */
@@ -626,7 +530,7 @@ function App() {
          * 2. Nếu WEB_LANGUAGE = DEFAULT thì lý ngôn ngữ từ PAGE_LANGUAGE (Trong Setting) hoặc Default config
          * 3. Nếu WEB_LANGUAGE != DEFAULT thì lý ngôn ngữ từ DEFAULT (Trong Setting) hoặc Default config
          */
-        let EMBED_LOCALE
+        let embed_locale
 
         /** Kiem tra xem LOCALE_PARAMS co hop le khong */
         const IS_VALID_LOCALE =
@@ -641,44 +545,30 @@ function App() {
            * Nếu ngôn ngữ ở sdk hợp lệ thì chọn ngôn ngữ ở sdk
            */
           case IS_VALID_LOCALE:
-            EMBED_LOCALE = LOCALE_PARAMS
+            embed_locale = LOCALE_PARAMS
             break
-          /**
-           * Nếu trạng thái mặc định sẽ lấy theo field default_language (Trong Setting)
-           * hoặc Default config
-           */
-          // case WEB_LANGUAGE === 'DEFAULT':
-          //   EMBED_LOCALE = DEFAULT_LANGUAGE || DEFAULT_LANGUAGE_CONFIG
-          //   break
           /**
            * Nếu không có case nào thoả mã thì lấy mặc định (fix cứng Tiếng việt)
            */
           default:
-            EMBED_LOCALE = DEFAULT_LANGUAGE_CONFIG
+            embed_locale = DEFAULT_LANGUAGE_CONFIG
             break
         }
 
         if (IS_AI) {
-          /**
-           * Lấy ngôn ngữ của LOCALE_PARAMS
-           */
+          /** Lấy ngôn ngữ của LOCALE_PARAMS */
           const LOCALE = IS_VALID_LOCALE
             ? LOCALE_PARAMS
             : DEFAULT_LANGUAGE_CONFIG
-          /**
-           *  Cập nhật ngôn ngữ vào i18next
-           */
+          /**  Cập nhật ngôn ngữ vào i18next */
           await i18next.changeLanguage(LOCALE)
           console.log('Language changed to::', LOCALE)
         } else {
-          console.log(EMBED_LOCALE, 'embeddd')
-          await i18next.changeLanguage(EMBED_LOCALE)
-          console.log('Language changed to::', EMBED_LOCALE)
+          console.log(embed_locale, 'embeddd')
+          await i18next.changeLanguage(embed_locale)
+          console.log('Language changed to::', embed_locale)
         }
-        /**
-         * Thay đổi ngôn ngữ
-         */
-
+        /** Thay đổi ngôn ngữ*/
         if (IS_AI) {
           /** Sử dụng await để lấy dữ liệu CLIENT_INFO */
           const CLIENT_INFO = await decodeInitClientData()
@@ -693,6 +583,9 @@ function App() {
             dispatch(setActiveAiAgent(false))
             return null
           }
+          /**
+           * Trạng thái active AI agent
+           */
           dispatch(setActiveAiAgent(true))
           console.log(IS_ACTIVE_AGENT_AI, 'is_active_agent_ai')
           /**
@@ -718,6 +611,8 @@ function App() {
 
           /** Lưu thông tin khách hàng vào store */
           dispatch(setPageInfoAI(DATA_CLIENT))
+
+          /** Lưu refresh data */
           dispatch(setRefreshData(true))
           /**
            * Nếu có client_id mới thì lưu vào store
@@ -836,12 +731,7 @@ function App() {
 
     fetchData()
   }, [])
-  const POSTION = useSelector(selectEmbedPosition)
 
-  /**
-   * Vị trí chi tiết của chatbox
-   */
-  const POSITION_DETAIL = useSelector(selectEmbedPositionDetail)
   /** Function tắt bật của popup dạng PC */
   const handleToggle = () => {
     /** Lưu vào store  trạng thái đóng mở của popup*/
@@ -879,7 +769,6 @@ function App() {
   /** Hàm đọc data khách hàng
    * @param {string} client_id - ID khách hàng
    * @param {string} page_id - ID trang
-   *
    */
   const fetchClientData = async (
     client_id: string | null,
@@ -922,9 +811,7 @@ function App() {
           element={
             <ChatApp
               handleBtn={(e) => {
-                /**
-                 * Nếu e !== 'no_toggle' thì gọi hàm handleToggle
-                 */
+                /** Nếu e !== 'no_toggle' thì gọi hàm handleToggle*/
                 if (e !== 'no_toggle') {
                   handleToggle()
                 }
@@ -937,9 +824,7 @@ function App() {
                 } else {
                   /** Lưu thời gian vào localstorage Khi đóng popup */
                   saveTimeClosePopup(PAGE_ID)
-                  /**
-                   * Lưu trạng thái tư vấn là false
-                   */
+                  /** Lưu trạng thái tư vấn là false*/
                   setTypeConsultation(false)
                 }
               }}

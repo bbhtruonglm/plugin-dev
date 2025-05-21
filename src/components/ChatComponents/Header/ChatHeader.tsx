@@ -19,6 +19,7 @@ import { ChatHeaderProps } from '../type'
 import { ReactComponent as Close } from '@/assets/close.svg'
 import OnlineStaff from '../../Container/OnlineStaff'
 import Skeleton from 'react-loading-skeleton'
+import { renderLogo } from '@/utils'
 import { t } from 'i18next'
 import { useSelector } from 'react-redux'
 
@@ -255,11 +256,11 @@ function ChatHeader({
                     />
                   ) : (
                     <img
-                      src={
-                        ORG_ALLOW_LOGO
-                          ? LOGO_PAGE_CUSTOM
-                          : './images/Logo_retion_white.png'
-                      }
+                      src={renderLogo(
+                        ORG_ALLOW_LOGO,
+                        LOGO_PAGE_CUSTOM,
+                        './images/Logo_retion_white.png'
+                      )}
                     />
                   )}
                 </div>
