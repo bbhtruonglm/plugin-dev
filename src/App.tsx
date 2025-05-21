@@ -180,11 +180,11 @@ function App() {
    */
   const handleMessage = async (event: MessageEvent) => {
     /** @type {Object} PAYLOAD - Dữ liệu từ event */
-    let payload_message: any
+    let PAYLOAD: any
 
     try {
       /** Nếu event.data là string, cố gắng parse nó */
-      payload_message =
+      PAYLOAD =
         typeof event.data === 'string' ? JSON.parse(event.data) : event.data
     } catch (error) {
       console.error('Lỗi khi parse event.data:', error)
@@ -211,14 +211,14 @@ function App() {
       locale,
       reset_conversation,
       reset_page_id,
-    } = payload_message
-    console.log('DATA::', payload_message)
+    } = PAYLOAD
+    console.log('DATA::', PAYLOAD)
 
     /** Nếu từ chatbox và là tin nhắn từ khách hàng thì gửi tin nhắn suggest
      * AI_AGENT
      * */
     if (from === 'CHATBOX' && type === 'CLIENT_MESSAGE') {
-      dispatch(setSuggestMessage(payload_message?.payload?.message))
+      dispatch(setSuggestMessage(PAYLOAD?.payload?.message))
     }
 
     /** Check tin nhắn tự động từ Web hoặc mobile
@@ -231,7 +231,7 @@ function App() {
       /**
        * Gửi tin nhắn tư vấn
        */
-      dispatch(setAiMessageAutoSend(payload_message?.payload?.text))
+      dispatch(setAiMessageAutoSend(PAYLOAD?.payload?.text))
     }
     /**
      * Nếu từ parent-app-preview
