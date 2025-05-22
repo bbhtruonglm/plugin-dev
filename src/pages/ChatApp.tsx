@@ -939,7 +939,7 @@ const ChatApp = ({
       callPostMessage(
         true,
         false,
-        undefined,
+        CURRENT_HEIGHT,
         undefined,
         POSITION,
         POSITION_DETAIL?.bottom,

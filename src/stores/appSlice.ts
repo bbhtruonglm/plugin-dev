@@ -2,7 +2,6 @@ import { AppState } from './type'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from '@/stores'
 import { createSlice } from '@reduxjs/toolkit'
-import { set } from 'lodash'
 
 const INITIAL_STATE: AppState = {
   page_id: '',
