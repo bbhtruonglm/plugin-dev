@@ -16,7 +16,6 @@ import { ReactComponent as ArrowSlate } from '@/assets/Icon_up_circle_slate.svg'
 import { ReactComponent as Close } from '@/assets/close.svg'
 import { InputProps } from '../type'
 import Upload from './Upload'
-import { set } from 'lodash'
 import { t } from 'i18next'
 import { useAPI } from '@/api/api'
 
@@ -267,6 +266,23 @@ function InputChat({
       }
     }
   }
+  /** Trạng thái composing */
+  const [is_composing, setIsComposing] = useState(false)
+
+  /**
+   * Hàm xử lý khi bắt đầu gõ
+   */
+  const handleCompositionStart = () => {
+    setIsComposing(true)
+  }
+
+  /**
+   * Hàm xử lý khi kết thúc gõ
+   */
+  const handleCompositionEnd = () => {
+    setIsComposing(false)
+  }
+
   /**
    * Hàm xử lý keydown
    * @param event any
@@ -276,7 +292,7 @@ function InputChat({
     /**
      * Nếu key là enter và value tồn tại
      */
-    if (event.key === 'Enter' && value) {
+    if (event.key === 'Enter' && value && !is_composing) {
       /**
        * Ngăn chặn mặc định của event
        */
@@ -440,6 +456,8 @@ function InputChat({
                 handleKeyDown(e)
               }
             }}
+            onCompositionStart={handleCompositionStart}
+            onCompositionEnd={handleCompositionEnd}
             autoComplete="off"
             id="input-embed-chat"
             type="text"
@@ -458,6 +476,7 @@ function InputChat({
               setIsShowKeyboard && setIsShowKeyboard(true)
             }}
           />
+
           {AI_STATUS && value && (
             <div
               className="cursor-pointer"
