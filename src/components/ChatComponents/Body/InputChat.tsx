@@ -16,6 +16,7 @@ import { ReactComponent as ArrowSlate } from '@/assets/Icon_up_circle_slate.svg'
 import { ReactComponent as Close } from '@/assets/close.svg'
 import { InputProps } from '../type'
 import Upload from './Upload'
+import { set } from 'lodash'
 import { t } from 'i18next'
 import { useAPI } from '@/api/api'
 
