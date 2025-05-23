@@ -1,4 +1,5 @@
 import { ChatAppProps, EmployeeList } from './type'
+import { ChevronDownIcon, HomeIcon } from '@heroicons/react/24/solid'
 import {
   closeSocketConnect,
   onSocketFromChatboxServer,
@@ -7,10 +8,9 @@ import { fetchAPI, useAPI } from '@/api/api'
 import { get, isEmpty, map, values } from 'lodash'
 import {
   hasAttachmentOfType,
-  postMessagePosition,
   postMessageToParent,
   renderAvatarFromId,
-  renderLocale,
+  renderLogo,
   renderPosition,
   renderStaffName,
   saveQuickChatCount,
@@ -41,8 +41,6 @@ import {
   selectStatusAI,
   selectStatusIsInit,
   selectStatusPopup,
-  setEmbedPosition,
-  setEmbedPositionDetail,
   setGlobalPreviewUrl,
   setGlobalUnreadCount,
   setLatestMessageGlobal,
@@ -55,15 +53,13 @@ import {
 import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { ReactComponent as ActiveHome } from '@/assets/home-active.svg'
 import { ReactComponent as ActiveMessage } from '@/assets/messageA.svg'
 import ChatScreen from '@/screens/ChatScreen/Chat'
 import { ReactComponent as Close } from '@/assets/close.svg'
 import { ReactComponent as CloseSlate } from '@/assets/close-black.svg'
-import { ReactComponent as Down } from '@/assets/arrow.svg'
 import { Employee } from '@/components/ChatComponents/type'
 import Home from '@/screens/ChatScreen/Home'
-import { ReactComponent as InactiveHome } from '@/assets/home.svg'
+import { HomeIcon as HomeIconOutline } from '@heroicons/react/24/outline'
 import { ReactComponent as InactiveMessage } from '@/assets/message.svg'
 import { MessageInfo } from '@/utils/type'
 import Modal from '@/components/ChatComponents/Modal/Modal'
@@ -81,16 +77,51 @@ const ChatApp = ({
 }: ChatAppProps) => {
   /** Dịch ngôn ngữ */
   const { t, i18n: I18N } = useTranslation()
+
   /**
-   * org custom logo
+   * Tab menu với các mục chính gồm:
+   * - Home
+   * - Message
+   * - Support (đã bị ẩn)
+   * - News (đã bị ẩn)
+   *
+   * @type {Array<Object>}
+   * @property {string} name - Tên của tab (hiển thị cho người dùng)
+   * @property {string} src - Đường dẫn đến icon không hoạt động (inactive)
+   * @property {string} value - Giá trị định danh của tab
+   * @property {string} srcA - Đường dẫn đến icon hoạt động (active)
+   *
    */
+  const MENU_LIST = [
+    {
+      name: t('home'),
+      src: HomeIconOutline,
+      value: 'home',
+      srcA: HomeIcon,
+    },
+    {
+      name: t('message'),
+      src: InactiveMessage,
+      value: 'message',
+      srcA: ActiveMessage,
+    },
+    // {
+    //   name: 'Hỗ trợ',
+    //   src: inactiveSupport,
+    //   srcA: activeSupport,
+    //   value: 'support',
+    // },
+    // {
+    //   name: 'Tin tức',
+    //   src: inactiveNews,
+    //   srcA: activeNew,
+    //   value: 'news',
+    // },
+  ]
+  /** org custom logo*/
   const ORG_ALLOW_LOGO = useSelector(selectOrgAllowLogo)
-
-  /**
-   * link logo
-   */
+  /** link logo   */
   const LOGO_PAGE_CUSTOM = useSelector(selectPageLogo)
-
   /** Các đầu api */
   const { READ_PAGE_INFO, SOCKET_API } = useAPI()
   /** Trạng thái online */
@@ -103,10 +134,8 @@ const ChatApp = ({
   const LIST_UNREAD_MESSAGE = useSelector(selectListUnreadMessage)
   /**Status AI */
   const AI_STATUS = useSelector(selectStatusAI)
-
   /** IS View screen */
   const IS_VIEW_SCREEN = useSelector(selectIsViewScreen)
-
   /** Trạng thái hiển thị màn home */
   const IS_SHOW_HOME = useSelector(selectShowHome)
   /** Khởi tạo websocket */
@@ -133,17 +162,17 @@ const ChatApp = ({
   const IS_SHOW_REF = useRef(show)
   /**Show support staff */
   const SHOW_SUPPORT_STAFF = useSelector(selectShowSupportStaff)
-
-  /**
-   * THông tin Refresh Data
-   */
+  /** THông tin Refresh Data*/
   const REFRESH_DATA = useSelector(selectRefreshData)
+  /** Invalid page */
+  const [invalid_page_id, setInvalidPageId] = useState<boolean | undefined>(
+    undefined
+  )
 
   useEffect(() => {
+    /** Trạng thái refresh data thì đóng web socket */
     if (REFRESH_DATA) {
-      /**
-       * Tắt web socket
-       */
+      /** Tắt web socket*/
       closeSocketConnect(WS, setIsForceCloseSocket)
     }
   }, [REFRESH_DATA])
@@ -239,9 +268,7 @@ const ChatApp = ({
   const IS_INIT_CLIENT = useSelector(selectStatusIsInit)
   /** GLobal client_id */
   const GLOBAL_CLIENT_ID = useSelector(selectGlobalClientId)
-  /**
-   * Lấy client_id từ localStorage
-   */
+  /** Lấy client_id từ localStorage*/
   const CLIENT_STORED = localStorage.getItem(`client_id_${PAGE_ID}`)
 
   /** Tin nhắn chào mừng  */
@@ -299,8 +326,11 @@ const ChatApp = ({
   }, [show, LATEST_MESSAGE, SHOW_QUICK_CHAT, welcome_message])
 
   useEffect(() => {
-    if (!PAGE_ID) return
-
+    if (PAGE_ID === null) {
+      setErrorMessage('PAGE_ID is required')
+      return
+    }
+    setErrorMessage('')
     /** Hủy WebSocket cũ trước khi tạo mới */
     if (AI_STATUS) {
       console.log('Đóng WebSocket cũ trước khi tạo mới')
@@ -335,6 +365,11 @@ const ChatApp = ({
      * Trạng thái không phải AI thì lấy client từ localStorage
      */
     if (!AI_STATUS) {
+      /** Nếu không cố page id thì return */
+      if (!PAGE_ID) {
+        // setErrorMessage('PAGE_ID is required')
+        return
+      }
       /** Luôn gọi API lấy dữ liệu trang */
       fetchPageData(PAGE_ID)
       if (CLIENT_STORED) {
@@ -360,52 +395,6 @@ const ChatApp = ({
   }, [PAGE_ID, GLOBAL_CLIENT_ID, CLIENT_STORED])
 
   /**
-   * Tab menu với các mục chính gồm:
-   * - Home
-   * - Message
-   * - Support (đã bị ẩn)
-   * - News (đã bị ẩn)
-   *
-   * @type {Array<Object>}
-   * @property {string} name - Tên của tab (hiển thị cho người dùng)
-   * @property {string} src - Đường dẫn đến icon không hoạt động (inactive)
-   * @property {string} value - Giá trị định danh của tab
-   * @property {string} srcA - Đường dẫn đến icon hoạt động (active)
-   *
-   * @example
-   * const MENU_LIST = [
-   *   { name: 'Trang chủ', src: inactiveHome, value: 'home', srcA: A },
-   *   { name: 'Tin nhắn', src: inactiveMessage, value: 'message', srcA: activeMessage },
-   *   // Các tab Support và News đang bị ẩn trong đoạn mã
-   * ];
-   */
-  const MENU_LIST = [
-    {
-      name: t('home'),
-      src: InactiveHome,
-      value: 'home',
-      srcA: ActiveHome,
-    },
-    {
-      name: t('message'),
-      src: InactiveMessage,
-      value: 'message',
-      srcA: ActiveMessage,
-    },
-    // {
-    //   name: 'Hỗ trợ',
-    //   src: inactiveSupport,
-    //   srcA: activeSupport,
-    //   value: 'support',
-    // },
-    // {
-    //   name: 'Tin tức',
-    //   src: inactiveNews,
-    //   srcA: activeNew,
-    //   value: 'news',
-    // },
-  ]
-  /**
    * Vị trí của chatbox
    */
   const POSITION = useSelector(selectEmbedPosition)
@@ -413,10 +402,16 @@ const ChatApp = ({
    * Vị trí chi tiết của chatbox
    */
   const POSITION_DETAIL = useSelector(selectEmbedPositionDetail)
+
   /** Hàm đọc dữ liệu trang
    * @param {string} page_id - ID trang
    */
   const fetchPageData = async (page_id: string) => {
+    /** Nếu không có page_id thì return */
+    if (page_id === null) {
+      return
+    }
+
     /** Tạo đối tượng URL từ string */
     const URL_READ = new URL(READ_PAGE_INFO)
     /** body gồm page_id */
@@ -431,6 +426,12 @@ const ChatApp = ({
     /** lưu tên page vào state */
     setPageName(RES?.data?.name)
     console.log(RES, 'RES asdfasdfasd')
+    /** Nếu lỗi 403 thì hiện cờ  */
+    if (RES?.code === 403) {
+      setInvalidPageId(true)
+      return
+    }
+    setInvalidPageId(false)
     /**
      *  Tạm ẩn để deploy lên production
      */
@@ -938,7 +939,7 @@ const ChatApp = ({
       callPostMessage(
         true,
         false,
-        undefined,
+        CURRENT_HEIGHT,
         undefined,
         POSITION,
         POSITION_DETAIL?.bottom,
@@ -1156,6 +1157,7 @@ const ChatApp = ({
    * Setting hiển thị avatar nhân viên
    */
   const IS_PAGE_AVATAR = useSelector(selectIsAvatar)
+
   /** Hàm kiểm tra nhân sự có tồn tại không
    * @string id: Nhan vao id của nhân sự
    * @returns {string} link avatar
@@ -1198,11 +1200,7 @@ const ChatApp = ({
               <div>
                 {/* <RetionLogo /> */}
                 <img
-                  src={
-                    ORG_ALLOW_LOGO
-                      ? LOGO_PAGE_CUSTOM
-                      : './images/Logo_retion_white.png'
-                  }
+                  src={renderLogo(ORG_ALLOW_LOGO, LOGO_PAGE_CUSTOM, '')}
                   alt="Logo Retion"
                   width={30}
                   height={30}
@@ -1283,6 +1281,7 @@ const ChatApp = ({
                   /** 6. Reset unread count */
                   dispatch(setGlobalUnreadCount(0))
                 }}
+                invalid_page_id_parent={invalid_page_id}
                 error_message={error_message}
                 onError={() => setErrorMessage('')}
                 setHideForMobile={setHideForMobile}
@@ -1351,9 +1350,9 @@ const ChatApp = ({
                           </div>
                           {/* active menu tab */}
                           {current_tab === value ? (
-                            <IconComponentA />
+                            <IconComponentA className="size-5" />
                           ) : (
-                            <IconComponent />
+                            <IconComponent className="size-5" />
                           )}
                         </div>
                         <p className={'text-sm font-medium'}>{name}</p>
@@ -1643,14 +1642,14 @@ const ChatApp = ({
         </div>
         <div className="">
           {show ? (
-            <Down />
+            <ChevronDownIcon className="size-6" />
           ) : (
             <img
-              src={
-                ORG_ALLOW_LOGO
-                  ? LOGO_PAGE_CUSTOM
-                  : './images/Logo_retion_embed.png'
-              }
+              src={renderLogo(
+                ORG_ALLOW_LOGO,
+                LOGO_PAGE_CUSTOM,
+                './images/Logo_retion_embed.png'
+              )}
               alt="Logo Retion"
               width={30}
               height={30}

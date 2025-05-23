@@ -48,6 +48,7 @@ function ChatScreen({
   setHideForMobile,
   page_name,
   employee_list,
+  invalid_page_id_parent,
 }: ChatProps) {
   /** Lấy API từ useAPI */
   const { INIT_CLIENT_API, READ_CLIENT_INFO } = useAPI()
@@ -60,40 +61,40 @@ function ChatScreen({
   /** IS View screen */
   const IS_VIEW_SCREEN = useSelector(selectIsViewScreen)
 
-  console.log(IS_VIEW_SCREEN, 'IS_VIEW_SCREEN nnnnn')
+  // console.log(IS_VIEW_SCREEN, 'IS_VIEW_SCREEN nnnnn')
 
   /** Lấy dữ liệu từ store */
   const dispatch = useDispatch()
   /** State client ID */
   const [client_id, setClientId] = useState<String | null | any>('')
   /** State báo sai page_id */
-  const [invalid_page_id, setInvalidPageId] = useState(false)
+  const [invalid_page_id, setInvalidPageId] = useState<undefined | boolean>(
+    undefined
+  )
   /** State loading init client */
   const [loading, setLoading] = useState(false)
   /** State avatar nhân viên */
   const [staff_avatar, setStaffAvatar] = useState(null as any)
   /** State tên nhân viên */
   const [staff_name, setStaffName] = useState(null as any)
-  /**
-   * State loading staff
-   */
+  /** State loading staff*/
   const [loading_staff, setLoadingStaff] = useState(false)
-  /**
-   *  State tên khách hàng
-   */
+  /**  State tên khách hàng*/
   const [client_name, setClientName] = useState(null as any)
-
-  /**
-   *  State khởi tạo xong
-   */
+  /**  State khởi tạo xong*/
   const [is_init, setIsInit] = useState(false)
   /** AI_STATUS */
   const AI_STATUS = useSelector(selectStatusAI)
-  /**
-   * Hàm khởi tạo client id
-   */
+  /** Hàm khởi tạo client id */
   const CLIENT_ID = localStorage.getItem(`client_id_${PAGE_ID}`)
+  /** Global client id */
   const GLOBAL_CLIENT_ID = useSelector(selectGlobalClientId)
+  /** Hàm lý tập báo sai page_id*/
+  useEffect(() => {
+    /** Phải có giá trị invalid thì mới cập nhật */
+    if (invalid_page_id_parent !== undefined)
+      setInvalidPageId(invalid_page_id_parent)
+  }, [invalid_page_id_parent])
 
   useEffect(() => {
     /** Nếu có page_id thì mới xử lý tiếp */

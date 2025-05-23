@@ -2,7 +2,6 @@ import { AppState } from './type'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from '@/stores'
 import { createSlice } from '@reduxjs/toolkit'
-import { set } from 'lodash'
 
 const INITIAL_STATE: AppState = {
   page_id: '',
@@ -54,6 +53,7 @@ const INITIAL_STATE: AppState = {
   logo_page_custom: undefined,
   ai_message_auto_send: '',
   is_view_screen: false,
+  current_user_id: undefined,
 }
 
 export const appSlice = createSlice({
@@ -61,7 +61,7 @@ export const appSlice = createSlice({
   initialState: INITIAL_STATE,
   reducers: {
     /** lưu page_id */
-    setPageId: (state, action: PayloadAction<string>) => {
+    setPageId: (state, action: PayloadAction<string | null>) => {
       state.page_id = action.payload
     },
     /** lưu client_id */
@@ -251,6 +251,11 @@ export const appSlice = createSlice({
     setIsViewScreen: (state, action: PayloadAction<boolean>) => {
       state.is_view_screen = action.payload
     },
+
+    /** User id hiện tại */
+    setCurrentUserId: (state, action: PayloadAction<string>) => {
+      state.current_user_id = action.payload
+    },
   },
 })
 
@@ -292,6 +297,7 @@ export const {
   setPageLogo,
   setAiMessageAutoSend,
   setIsViewScreen,
+  setCurrentUserId,
 } = appSlice.actions
 
 /** chọn đến page id */
@@ -410,5 +416,9 @@ export const selectAiMessageAutoSend = (state: RootState) =>
 
 /** Is view screen */
 export const selectIsViewScreen = (state: RootState) => state.app.is_view_screen
+
+/** User id hiện tại */
+export const selectCurrentUserId = (state: RootState) =>
+  state.app.current_user_id
 
 export default appSlice.reducer
