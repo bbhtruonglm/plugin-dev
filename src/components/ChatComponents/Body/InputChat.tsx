@@ -288,28 +288,61 @@ function InputChat({
    * @param event any
    * @returns void
    */
-  const handleKeyDown = (event: any) => {
-    /**
-     * Nếu key là enter và value tồn tại
-     */
-    if (event.key === 'Enter' && value && !is_composing) {
-      /**
-       * Ngăn chặn mặc định của event
-       */
-      event.preventDefault()
-      /**
-       * Gửi tin nhắn đi
-       */
-      handleSend(value)
-      /**
-       * Reset value
-       */
-      setValue('')
+  // const handleKeyDown = (event: any) => {
+  //   /**
+  //    * Nếu key là enter và value tồn tại
+  //    */
+  //   if (event.key === 'Enter' && value && !is_composing) {
+  //     /**
+  //      * Ngăn chặn mặc định của event
+  //      */
+  //     event.preventDefault()
+  //     /**
+  //      * Gửi tin nhắn đi
+  //      */
+  //     handleSend(value)
+  //     /**
+  //      * Reset value
+  //      */
+  //     setValue('')
 
-      // INPUT_REF.current?.blur()
-      // setIsKeyboardOpen(false)
+  //     // INPUT_REF.current?.blur()
+  //     // setIsKeyboardOpen(false)
+  //   }
+  // }
+
+  const handleKeyDown = (
+    event: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    /** Nếu key là enter */
+    if (event.key === 'Enter') {
+      /** Nếu đang gõ tiếng Việt, bỏ qua */
+      if (is_composing) return
+      /** Nếu shift key */
+      if (event.shiftKey) {
+        /** Cho phép xuống dòng (nếu là <textarea>) */
+        return
+      }
+      /**
+       * Nếu value tồn tại
+       */
+      if (value) {
+        /**
+         * Ngăn chặn mặc định của event
+         */
+        event.preventDefault()
+        /**
+         * Gửi tin nhắn đi
+         */
+        handleSend(value)
+        /**
+         * Reset value
+         */
+        setValue('')
+      }
     }
   }
+
   /**
    * Hàm xử lý click popup
    */
