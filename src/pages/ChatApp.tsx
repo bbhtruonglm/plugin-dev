@@ -54,7 +54,7 @@ import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { ReactComponent as ActiveMessage } from '@/assets/messageA.svg'
-import ChatScreen from '@/screens/ChatScreen/Chat'
+import ChatScreen from '@/screens/ChatScreen/Chat/Chat'
 import { ReactComponent as Close } from '@/assets/close.svg'
 import { ReactComponent as CloseSlate } from '@/assets/close-black.svg'
 import { Employee } from '@/components/ChatComponents/type'
@@ -193,7 +193,7 @@ const ChatApp = ({
       IS_VIEW_SCREEN ||
       (IS_SHOW_HOME !== undefined && !IS_SHOW_HOME)
     ) {
-      console.log(IS_VIEW_SCREEN, 'IS_VIEW_SCREEN')
+      // console.log(IS_VIEW_SCREEN, 'IS_VIEW_SCREEN')
       /** Set tab hiện tại là message */
       setCurrentTab('message')
       /** Set show welcome message là false */
@@ -327,7 +327,7 @@ const ChatApp = ({
 
   useEffect(() => {
     if (PAGE_ID === null) {
-      setErrorMessage('PAGE_ID is required')
+      setErrorMessage('Không tìm thấy page_id')
       return
     }
     setErrorMessage('')

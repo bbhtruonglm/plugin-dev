@@ -87,5 +87,7 @@ export const vn = {
 
     _welcome_message: 'Chào mừng bạn đến với Retion',
     based_on_sources: 'Dựa trên {{count}} nguồn thông tin',
+
+    page_id_required: 'Yêu cầu ID Trang',
   },
 }

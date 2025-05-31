@@ -89,5 +89,6 @@ export const en = {
 
     _welcome_message: 'Welcome to Retion',
     based_on_sources: 'Based on {{count}} source(s) of information',
+    page_id_required: 'Page ID is required',
   },
 }

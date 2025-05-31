@@ -64,6 +64,7 @@ function InitClient({ resetData, onInitClient }: InitClientProps) {
   const validate = () => {
     /** Khởi tạo mảng errors */
     const ERRORS: Record<string, string> = {}
+
     /**
      * Kiểm tra form
      */
@@ -101,15 +102,19 @@ function InitClient({ resetData, onInitClient }: InitClientProps) {
     if (field === 'PHONE' || field === 'phone') return 'tel'
     return 'text'
   }
+
   /**
-   * Kiểm tra button disabled
+   * Trạng thái disabled
+   * Nếu không yêu cầu form thì pass luôn
    */
-  const IS_DISABLED =
-    FORM_BEFORE_CHAT?.data?.some((field) => {
-      return (
-        field.is_active && field.is_require && !form_values[field.field]?.trim()
+  const IS_DISABLED = FORM_BEFORE_CHAT?.is_active
+    ? FORM_BEFORE_CHAT?.data?.some(
+        (field) =>
+          field.is_active &&
+          field.is_require &&
+          !form_values[field.field]?.trim()
       )
-    }) ?? true
+    : false
   return (
     <div className="flex flex-col gap-4 w-full h-full justify-center items-center">
       {LOADING_GLOBAL ? (
@@ -118,41 +123,43 @@ function InitClient({ resetData, onInitClient }: InitClientProps) {
         </div>
       ) : (
         <div className="flex flex-col w-full gap-4 h-full justify-center items-center">
-          <div className="flex flex-col gap-4 bg-white w-full py-4 justify-center items-center px-4 rounded-md">
-            {FORM_BEFORE_CHAT?.data?.map((field, idx) => {
-              if (!field.is_active) return null
+          {FORM_BEFORE_CHAT?.is_active && (
+            <div className="flex flex-col gap-4 bg-white w-full py-4 justify-center items-center px-4 rounded-md">
+              {FORM_BEFORE_CHAT?.data?.map((field, idx) => {
+                if (!field.is_active) return null
 
-              return (
-                <div
-                  className="w-full"
-                  key={idx}
-                >
-                  <Input
-                    title={field.title}
-                    placeholder={field.placeholder}
-                    required={field.is_require}
-                    value_input={form_values[field.field] || ''}
-                    type={renderInputType(field.field)}
-                    onChange={(e: any) =>
-                      handleChange(field.field, e.target.value)
-                    }
-                  />
-                  {form_errors[field.field] && (
-                    <span className="text-xs text-red-600">
-                      {form_errors[field.field]}
-                    </span>
-                  )}
-                </div>
-              )
-            })}
-          </div>
+                return (
+                  <div
+                    className="w-full"
+                    key={idx}
+                  >
+                    <Input
+                      title={field.title}
+                      placeholder={field.placeholder}
+                      required={field.is_require}
+                      value_input={form_values[field.field] || ''}
+                      type={renderInputType(field.field)}
+                      onChange={(e: any) =>
+                        handleChange(field.field, e.target.value)
+                      }
+                    />
+                    {form_errors[field.field] && (
+                      <span className="text-xs text-red-600">
+                        {form_errors[field.field]}
+                      </span>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          )}
 
           <button
             className={`text-white sticky bottom-0 ${
               IS_DISABLED ? 'bg-slate-400 cursor-not-allowed' : 'bg-black'
             } rounded-md px-4 py-2 text-sm font-medium`}
             onClick={() => {
-              if (validate()) {
+              if (!FORM_BEFORE_CHAT?.is_active || validate()) {
                 if (isEmpty(USER_INFO)) {
                   onInitClient({
                     user_name: t('anonymous'),

@@ -86,89 +86,6 @@ function InputChat({
    */
   const AI_MESSAGE_AUTO_SEND = useSelector(selectAiMessageAutoSend)
 
-  // useEffect(() => {
-  //   /**
-  //    * Nếu SHOW_POPUP = true thì focus vào input
-  //    */
-  //   if (SHOW_POPUP) {
-  //     /**
-  //      * Focus vào input khi popup mở
-  //      */
-  //     const TIMER = setTimeout(() => {
-  //       /**
-  //        * Nếu input tồn tại
-  //        */
-  //       if (INPUT_REF.current) {
-  //         /** Focus vào input khi popup mở */
-  //         INPUT_REF.current.focus()
-  //         /** Cuộn tới input */
-  //         INPUT_REF.current.scrollIntoView({ behavior: 'smooth' })
-  //       }
-  //       /**
-  //        * Delay 200ms để chắc chắn input đã được render
-  //        */
-  //     }, 200)
-
-  //     /** Chặn cuộn trang khi popup mở */
-  //     document.body.style.overflow = 'hidden'
-  //     /**
-  //      * Clear timeout khi component unmount
-  //      */
-  //     return () => {
-  //       /**
-  //        * Clear timeout
-  //        */
-  //       clearTimeout(TIMER)
-  //     }
-  //   } else {
-  //     /**
-  //      * Hiển thị cuộn trang khi popup đóng
-  //      */
-  //     document.body.style.overflow = 'auto'
-  //   }
-  // }, [SHOW_POPUP])
-
-  // useEffect(() => {
-  //   /**
-  //    * Hàm xử lý focus
-  //    */
-  //   const handleFocus = () => {
-  //     /**
-  //      *
-  //      */
-  //     setIsKeyboardOpen(true)
-  //     setTimeout(() => {
-  //       if (INPUT_REF.current) {
-  //         INPUT_REF.current.scrollIntoView({
-  //           behavior: 'smooth',
-  //           block: 'center',
-  //         })
-  //       }
-  //     }, 200)
-  //   }
-  //   /**
-  //    * Hàm xử lý blur
-  //    */
-  //   const handleBlur = () => {
-  //     setIsKeyboardOpen(false)
-  //   }
-  //   /**
-  //    * Nếu input tồn tại
-  //    */
-  //   if (INPUT_REF.current) {
-  //     INPUT_REF.current.addEventListener('focus', handleFocus)
-  //     INPUT_REF.current.addEventListener('blur', handleBlur)
-  //   }
-  //   /**
-  //    * Cleanup
-  //    */
-  //   return () => {
-  //     if (INPUT_REF.current) {
-  //       INPUT_REF.current.removeEventListener('focus', handleFocus)
-  //       INPUT_REF.current.removeEventListener('blur', handleBlur)
-  //     }
-  //   }
-  // }, [])
   /**
    *  Hàm upload file
    * @param file  File | null
@@ -288,28 +205,6 @@ function InputChat({
    * @param event any
    * @returns void
    */
-  // const handleKeyDown = (event: any) => {
-  //   /**
-  //    * Nếu key là enter và value tồn tại
-  //    */
-  //   if (event.key === 'Enter' && value && !is_composing) {
-  //     /**
-  //      * Ngăn chặn mặc định của event
-  //      */
-  //     event.preventDefault()
-  //     /**
-  //      * Gửi tin nhắn đi
-  //      */
-  //     handleSend(value)
-  //     /**
-  //      * Reset value
-  //      */
-  //     setValue('')
-
-  //     // INPUT_REF.current?.blur()
-  //     // setIsKeyboardOpen(false)
-  //   }
-  // }
 
   const handleKeyDown = (
     event: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>
