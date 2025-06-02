@@ -54,6 +54,7 @@ const INITIAL_STATE: AppState = {
   ai_message_auto_send: '',
   is_view_screen: false,
   current_user_id: undefined,
+  fixed_data_client: undefined,
 }
 
 export const appSlice = createSlice({
@@ -256,6 +257,10 @@ export const appSlice = createSlice({
     setCurrentUserId: (state, action: PayloadAction<string>) => {
       state.current_user_id = action.payload
     },
+    /** Fixed data client */
+    setFixedDataClient: (state, action: PayloadAction<any>) => {
+      state.fixed_data_client = action.payload
+    },
   },
 })
 
@@ -298,6 +303,7 @@ export const {
   setAiMessageAutoSend,
   setIsViewScreen,
   setCurrentUserId,
+  setFixedDataClient,
 } = appSlice.actions
 
 /** chọn đến page id */
@@ -420,5 +426,8 @@ export const selectIsViewScreen = (state: RootState) => state.app.is_view_screen
 /** User id hiện tại */
 export const selectCurrentUserId = (state: RootState) =>
   state.app.current_user_id
+/** Fixed data client */
+export const selectFixedDataClient = (state: RootState) =>
+  state.app.fixed_data_client
 
 export default appSlice.reducer

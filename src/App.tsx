@@ -20,6 +20,7 @@ import {
   setCurrentHeight,
   setCurrentUserId,
   setCurrentWidth,
+  setFixedDataClient,
   setGlobalClientId,
   setGlobalPreviewUrl,
   setGlobalUnreadCount,
@@ -360,6 +361,7 @@ function App() {
           ...(client_id && { client_id }),
         })
       )
+      dispatch(setFixedDataClient(true))
     }
   }
 

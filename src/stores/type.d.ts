@@ -173,6 +173,8 @@ export interface AppState {
   is_view_screen?: boolean
   /** Nhân viên hiện tjai */
   current_user_id?: string
+  /** Fixed data client */
+  fixed_data_client?: any
 }
 /** Định nghĩa kiểu dữ liệu cho danh sách nhân viên */
 interface EmployeeList {

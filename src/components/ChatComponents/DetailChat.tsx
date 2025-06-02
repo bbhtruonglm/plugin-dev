@@ -5,6 +5,7 @@ import {
   selectActiveAiAgent,
   selectAiId,
   selectCurrentUserId,
+  selectFixedDataClient,
   selectGlobalClientId,
   selectGlobalUnreadCount,
   selectIsAvatar,
@@ -273,6 +274,11 @@ function DetailChat({
    */
   const FORM_BEFORE_CHAT = useSelector(selectShowForm)
 
+  /** Fixed client info */
+  const FIXED_CLIENT_INFO = useSelector(selectFixedDataClient)
+
+  console.log(FIXED_CLIENT_INFO, 'FIXED_CLIENT_INFO')
+
   console.log(FORM_BEFORE_CHAT, 'FORM_BEFORE_CHAT')
   /**
    * State lưu user_id trong localStorage
@@ -298,7 +304,13 @@ function DetailChat({
   /** Bước 2: Chỉ chạy logic anonymous khi đã biết chắc chắn user_id là null */
   useEffect(() => {
     /** Đnag load thông tin */
-    if (local_user_id === undefined || AI_STATUS || !PAGE_ID) return // Đang load từ localStorage, chưa xong
+    if (
+      local_user_id === undefined ||
+      AI_STATUS ||
+      !PAGE_ID ||
+      FIXED_CLIENT_INFO
+    )
+      return // Đang load từ localStorage, chưa xong
     console.log(FORM_BEFORE_CHAT, 'chay vao day')
     /**
      * Khi user_id khóng null
