@@ -202,6 +202,7 @@ export function useChatClient(invalid_page_id_parent?: boolean) {
           localStorage.setItem(`client_id_${PAGE_ID}`, '')
           /** Báo lỗi page_id không hợp lệ*/
           setInvalidPageId(true)
+
           return
         }
         /** Client Id */
