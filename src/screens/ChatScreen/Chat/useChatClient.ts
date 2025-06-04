@@ -10,7 +10,7 @@ import {
   setStatusIsInit,
   setUserInfo,
 } from '@/stores/appSlice'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 /**
@@ -124,26 +124,173 @@ export function useChatClient(invalid_page_id_parent?: boolean) {
   }, [client_id])
 
   /** AI mode init client */
+  // useEffect(() => {
+  //   /**
+  //    * Kiểm tra USER_INFO có chứa ít nhất một giá trị thực
+  //    */
+  //   const HAS_VALID_USER = USER_INFO && USER_INFO?.client_id?.trim()
+  //   if (
+  //     AI_STATUS &&
+  //     !GLOBAL_CLIENT_ID &&
+  //     PAGE_ID &&
+  //     HAS_VALID_USER &&
+  //     !IS_VIEW_SCREEN
+  //   ) {
+  //     const PARAMS: INIT_INPUT = {
+  //       page_id: PAGE_ID,
+  //       client_id: USER_INFO.client_id,
+  //     }
+  //     /**
+  //      * Gọi hàm khởi tạo client id
+  //      */
+  //     initGetClientId(PARAMS)
+  //   }
+  // }, [AI_STATUS, GLOBAL_CLIENT_ID, PAGE_ID, USER_INFO, IS_VIEW_SCREEN])
+  /** Token */
+  const LATEST_TOKEN = useRef<symbol | null>(null)
+  /**
+   * Hàm khởi tạo client
+   */
+  const initGetClientId = useCallback(
+    async (
+      value: INIT_INPUT & { __token?: symbol; __isLatest?: () => boolean }
+    ) => {
+      try {
+        /** Check nếu không phải request mới nhất thì bỏ */
+        if (value.__isLatest && !value.__isLatest()) {
+          console.log('⛔️ Bỏ qua vì request cũ:', value.client_id)
+          return
+        }
+        /** Set loading */
+        setLoading(true)
+        /**
+         * Tạo URL
+         */
+        const URL_CLIENT = new URL(INIT_CLIENT_API)
+        /**
+         * Tách phần khóa trên URL
+         */
+        const { __token, __isLatest, ...cleanedParams } = value
+        /**
+         * Tạo URLSearchParams
+         */
+        URL_CLIENT.search = new URLSearchParams(cleanedParams as any).toString()
+
+        // URL_CLIENT.search = new URLSearchParams(value as any).toString()
+        /**
+         * Lấy thống tin client
+         */
+        const RES = await fetch(URL_CLIENT.toString(), { method: 'GET' })
+        /**
+         * Parse thống tin
+         */
+        const RESULT = await RES.json()
+
+        /** Check lại 1 lần nữa sau khi API xong */
+        if (value.__isLatest && !value.__isLatest()) {
+          console.log('⛔️ Response về chậm, bỏ:', value.client_id)
+          return
+        }
+        /** Nếu code là 403 */
+        if (RESULT.code === 403) {
+          /** Xóa client_id trong localStorage */
+          localStorage.setItem(`client_id_${PAGE_ID}`, '')
+          /**
+           * Set invalid page_id
+           */
+          setInvalidPageId(true)
+          return
+        }
+        /**
+         * Lấy client_id mới
+         */
+        const NEW_CLIENT_ID = RESULT.data
+        /**
+         * Lưu client_id mới
+         */
+        setClientId(NEW_CLIENT_ID)
+        /**
+         * Lưu client_id mới vào localStorage
+         */
+        localStorage.setItem(`client_id_${PAGE_ID}`, NEW_CLIENT_ID)
+        /**
+         * Lưu trạng thái mới init
+         */
+        dispatch(setStatusIsInit(true))
+        /**
+         * Lưu client_id mới vào Redux
+         */
+        dispatch(setGlobalClientId(NEW_CLIENT_ID))
+        /** Lưu tên client */
+        dispatch(setClientNameStore(value?.name))
+        /**
+         * Reset user_info
+         */
+        dispatch(
+          setUserInfo({
+            user_name: '',
+            user_phone: '',
+            user_email: '',
+            client_id: '',
+          })
+        )
+        /**
+         * Lưu client_id mới vào Redux
+         */
+        if (AI_STATUS) return
+        /**
+         * Lưu client_id mới vào Redux
+         */
+        setIsInit(true)
+        /** Set invalid page_id */
+        setInvalidPageId(false)
+      } catch (err) {
+        console.error('initGetClientId error:', err)
+      } finally {
+        setLoading(false)
+      }
+    },
+    [INIT_CLIENT_API, dispatch, PAGE_ID]
+  )
+  /**
+   * Hàm khởi tạo client
+   * @param params - Tham số khởi tạo
+   */
+  const safeInitGetClientId = useCallback(
+    (params: INIT_INPUT) => {
+      /**
+       * Tạo token mới
+       */
+      const TOKEN = Symbol(params.client_id)
+      LATEST_TOKEN.current = TOKEN
+      /**
+       * Gọi hàm khởi tạo client
+       */
+      initGetClientId({
+        ...params,
+        __token: TOKEN,
+        __isLatest: () => LATEST_TOKEN.current === TOKEN,
+      })
+    },
+    [initGetClientId]
+  )
+
   useEffect(() => {
-    /**
-     * Kiểm tra USER_INFO có chứa ít nhất một giá trị thực
-     */
-    const HAS_VALID_USER = USER_INFO && USER_INFO?.client_id?.trim()
+    console.log('first', AI_STATUS, GLOBAL_CLIENT_ID, PAGE_ID, USER_INFO)
     if (
       AI_STATUS &&
       !GLOBAL_CLIENT_ID &&
       PAGE_ID &&
-      HAS_VALID_USER &&
+      USER_INFO?.client_id?.trim() &&
       !IS_VIEW_SCREEN
     ) {
-      const PARAMS: INIT_INPUT = {
+      /**
+       * Gọi hàm khởi tạo client
+       */
+      safeInitGetClientId({
         page_id: PAGE_ID,
         client_id: USER_INFO.client_id,
-      }
-      /**
-       * Gọi hàm khởi tạo client id
-       */
-      initGetClientId(PARAMS)
+      })
     }
   }, [AI_STATUS, GLOBAL_CLIENT_ID, PAGE_ID, USER_INFO, IS_VIEW_SCREEN])
 
@@ -181,64 +328,64 @@ export function useChatClient(invalid_page_id_parent?: boolean) {
   }, [CLIENT_ID, USER_INFO, AI_STATUS])
 
   /** Init client id */
-  const initGetClientId = useCallback(
-    async (value: INIT_INPUT) => {
-      try {
-        /** Set loading */
-        setLoading(true)
-        /** Tạo đối tượng URL từ chuỗi init URL client */
-        const URL_CLIENT = new URL(INIT_CLIENT_API)
-        /**
-         * Gán chuỗi truy vấn vào URL
-         */
-        URL_CLIENT.search = new URLSearchParams(value as any).toString()
-        /** Lấy client_ID */
-        const RES = await fetch(URL_CLIENT.toString(), { method: 'GET' })
-        /** Chuyển đổi dữ liệu trả về thành JSON*/
-        const RESULT = await RES.json()
-        /**  Nếu lỗi 403 thì lưu lại chuỗi rỗng*/
-        if (RESULT.code === 403) {
-          /** Nếu lỗi thì lưu lại chuỗi rỗng */
-          localStorage.setItem(`client_id_${PAGE_ID}`, '')
-          /** Báo lỗi page_id không hợp lệ*/
-          setInvalidPageId(true)
+  // const initGetClientId = useCallback(
+  //   async (value: INIT_INPUT) => {
+  //     try {
+  //       /** Set loading */
+  //       setLoading(true)
+  //       /** Tạo đối tượng URL từ chuỗi init URL client */
+  //       const URL_CLIENT = new URL(INIT_CLIENT_API)
+  //       /**
+  //        * Gán chuỗi truy vấn vào URL
+  //        */
+  //       URL_CLIENT.search = new URLSearchParams(value as any).toString()
+  //       /** Lấy client_ID */
+  //       const RES = await fetch(URL_CLIENT.toString(), { method: 'GET' })
+  //       /** Chuyển đổi dữ liệu trả về thành JSON*/
+  //       const RESULT = await RES.json()
+  //       /**  Nếu lỗi 403 thì lưu lại chuỗi rỗng*/
+  //       if (RESULT.code === 403) {
+  //         /** Nếu lỗi thì lưu lại chuỗi rỗng */
+  //         localStorage.setItem(`client_id_${PAGE_ID}`, '')
+  //         /** Báo lỗi page_id không hợp lệ*/
+  //         setInvalidPageId(true)
 
-          return
-        }
-        /** Client Id */
-        const NEW_CLIENT_ID = RESULT.data
-        /** luu vao state */
-        setClientId(NEW_CLIENT_ID)
-        /** Lưu client_id */
-        localStorage.setItem(`client_id_${PAGE_ID}`, NEW_CLIENT_ID)
-        /** Set status init client thành true*/
-        dispatch(setStatusIsInit(true))
-        /** Set global client id*/
-        dispatch(setGlobalClientId(NEW_CLIENT_ID))
-        /** Lưu tên client vào store */
-        dispatch(setClientNameStore(value?.name))
-        /** Sau khi khởi tạo client thì xoá hết thông tin trong store*/
-        dispatch(
-          setUserInfo({
-            user_name: '',
-            user_phone: '',
-            user_email: '',
-            client_id: '',
-          })
-        )
-        if (AI_STATUS) return
-        /** Set is init thành true*/
-        setIsInit(true)
-        /** Xoá báo lỗi page_id không hợp lệ*/
-        setInvalidPageId(false)
-      } catch (err) {
-        console.error('initGetClientId error:', err)
-      } finally {
-        setLoading(false)
-      }
-    },
-    [INIT_CLIENT_API, dispatch, PAGE_ID]
-  )
+  //         return
+  //       }
+  //       /** Client Id */
+  //       const NEW_CLIENT_ID = RESULT.data
+  //       /** luu vao state */
+  //       setClientId(NEW_CLIENT_ID)
+  //       /** Lưu client_id */
+  //       localStorage.setItem(`client_id_${PAGE_ID}`, NEW_CLIENT_ID)
+  //       /** Set status init client thành true*/
+  //       dispatch(setStatusIsInit(true))
+  //       /** Set global client id*/
+  //       dispatch(setGlobalClientId(NEW_CLIENT_ID))
+  //       /** Lưu tên client vào store */
+  //       dispatch(setClientNameStore(value?.name))
+  //       /** Sau khi khởi tạo client thì xoá hết thông tin trong store*/
+  //       dispatch(
+  //         setUserInfo({
+  //           user_name: '',
+  //           user_phone: '',
+  //           user_email: '',
+  //           client_id: '',
+  //         })
+  //       )
+  //       if (AI_STATUS) return
+  //       /** Set is init thành true*/
+  //       setIsInit(true)
+  //       /** Xoá báo lỗi page_id không hợp lệ*/
+  //       setInvalidPageId(false)
+  //     } catch (err) {
+  //       console.error('initGetClientId error:', err)
+  //     } finally {
+  //       setLoading(false)
+  //     }
+  //   },
+  //   [INIT_CLIENT_API, dispatch, PAGE_ID]
+  // )
   /**
    * Hàm lấy dữ liệu client
    * @param {string} client_id - ID client
