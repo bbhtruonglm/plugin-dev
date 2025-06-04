@@ -347,8 +347,10 @@ function DetailChat({
     /** set loading_more = true để không call liên tục */
 
     try {
-      /** Lấy data */
-      dispatch(setLoadingGlobal(true))
+      if (AI_STATUS) {
+        /** Lấy data */
+        // dispatch(setLoadingGlobal(true))
+      }
       /** Set loading more */
       setLoadingMore(true)
       /** Tạo đối tượng URL từ string */
