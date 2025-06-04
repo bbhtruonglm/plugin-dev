@@ -1,6 +1,7 @@
 import { ChatScreenProps, Message } from './type'
 import { debounce, isEmpty, keys } from 'lodash'
 import { fetchAPI, useAPI } from '@/api/api'
+import { renderAvatarFromId, renderAvatarFromIdAgent } from '@/utils'
 import {
   selectActiveAiAgent,
   selectAiId,
@@ -40,7 +41,6 @@ import Loading from '../Loading/Loading'
 import LoadingDots from '../Loading/LoadingDot'
 import LoadingJumping from '../Loading/LoadingJumping'
 import MessageBody from './Body/MessageBody'
-import { renderAvatarFromId } from '@/utils'
 import { t } from 'i18next'
 
 /** Chi tiết component chat */
@@ -201,6 +201,8 @@ function DetailChat({
      * Đoạn này cần sửa lại
      */
     if (REFRESH_DATA && CLIENT_ID_GLOBAL) {
+      console.log('first ====', CLIENT_ID_GLOBAL)
+      console.log('first ====', REFRESH_DATA)
       /**
        * Fetch data với client id truyền vào
        */
@@ -561,7 +563,9 @@ function DetailChat({
         client_id: user_id,
         text: input,
         user_id: CURRENT_USER_ID,
+        metadata: `__ai_agent__${CURRENT_USER_ID}`,
       }
+
       /** Gọi api gửi tin nhắn */
       await fetchAPI(SEND_MESSAGE_API, 'POST', MESSAGE)
       /** Trường hợp là AI Agent thì mới set Trạng thái typing true sau khi gửi */
@@ -634,6 +638,19 @@ function DetailChat({
     (id: string) => {
       /** Lấy thônng tin avatar của staff */
       const STAFF_AVATAR = renderAvatarFromId(id, IS_PAGE_AVATAR, PAGE_AVATAR)
+      /** Trả về link */
+      return STAFF_AVATAR
+    },
+    [employee_list, IS_PAGE_AVATAR, PAGE_AVATAR]
+  )
+  /** Hàm kiểm tra nhân sự có tồn tại không
+   * @string id: Nhan vao id của nhân sự
+   * @returns {string} link avatar
+   */
+  const checkStaffExistAgent = useCallback(
+    (id: string) => {
+      /** Lấy thônng tin avatar của staff */
+      const STAFF_AVATAR = renderAvatarFromIdAgent(id, PAGE_AVATAR)
       /** Trả về link */
       return STAFF_AVATAR
     },
@@ -764,6 +781,7 @@ function DetailChat({
                 item={item}
                 checkStaffExist={checkStaffExist}
                 client_name={client_name}
+                checkAgentExist={checkStaffExistAgent}
               />
             </div>
           ))}

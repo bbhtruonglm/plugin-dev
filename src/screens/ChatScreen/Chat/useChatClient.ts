@@ -207,6 +207,8 @@ export function useChatClient(invalid_page_id_parent?: boolean) {
         }
         /** Client Id */
         const NEW_CLIENT_ID = RESULT.data
+        /** luu vao state */
+        setClientId(NEW_CLIENT_ID)
         /** Lưu client_id */
         localStorage.setItem(`client_id_${PAGE_ID}`, NEW_CLIENT_ID)
         /** Set status init client thành true*/
@@ -224,9 +226,7 @@ export function useChatClient(invalid_page_id_parent?: boolean) {
             client_id: '',
           })
         )
-
-        /** luu vao state */
-        setClientId(NEW_CLIENT_ID)
+        if (AI_STATUS) return
         /** Set is init thành true*/
         setIsInit(true)
         /** Xoá báo lỗi page_id không hợp lệ*/

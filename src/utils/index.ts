@@ -178,6 +178,33 @@ export const renderAvatarFromId = (
     return renderAvatarCDN(ID_DETECT)
   }
 }
+/** Hàm kiểm tra nhân sự có tồn tại không
+ * @string id: Nhan vao id của nhân sự
+ * @returns {string} link avatar
+ */
+export const renderAvatarFromIdAgent = (
+  id: string,
+
+  PAGE_AVATAR: string | undefined
+) => {
+  if (!id) return './images/no_avatar.jpg'
+  /** Lấy ID của nhân viên */
+  const ID_DETECT = id.split('__')[2]
+  /** Nếu không có staff Id thì trả về '' */
+  console.log(ID_DETECT, 'ID_DETECT')
+  /** Nếu không có staff Id thì trả về '' */
+  if (!ID_DETECT) return ''
+  /**
+   * Nếu chưa setup Avatar page
+   */
+  if (ID_DETECT === 'undefined') return PAGE_AVATAR
+  /** Nếu có staff Id thì trả về link avatar */
+  // return renderAvatarCDN(ID_DETECT)
+  const LINK_AVATAR = renderAvatarCDN(ID_DETECT)
+  console.log(LINK_AVATAR, 'LINK_AVATAR ID_DETECT')
+  /** Trả về link avatar */
+  return LINK_AVATAR
+}
 
 /** Trả về link avatar
  * @param {string} id: Nhận vào id của nhân sự

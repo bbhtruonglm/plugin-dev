@@ -22,9 +22,14 @@ interface IProps {
    * Tên của khách hàng
    */
   client_name?: string
+  /**
+   * @param checkStaffExist: (e: any) => string
+   * Kiểm tra xem staff có tồn tại không
+   */
+  checkAgentExist: (e: any) => string | undefined
 }
 const MessageBody = React.memo(
-  ({ item, checkStaffExist, client_name }: IProps) => {
+  ({ item, checkStaffExist, client_name, checkAgentExist }: IProps) => {
     return (
       <div
         className={`flex w-full py-2 gap-1 transition-all duration-300 ease-out  ${
@@ -52,11 +57,24 @@ const MessageBody = React.memo(
         <MessageComponent data={item} />
 
         {item?.message_type === 'client' && (
-          <div
-            className="flex mask-rounded-oval text-white text-sm items-center justify-center w-6 h-6"
-            style={{ background: letterToColorCode(client_name) }}
-          >
-            {nameToLetter(client_name)}
+          <div>
+            {item?.message_metadata ? (
+              <img
+                src={
+                  checkAgentExist(item?.message_metadata)
+                  // ||'./images/Logo_retion_embed.png'
+                }
+                className="w-6 h-6 mask-rounded-oval"
+                alt=""
+              />
+            ) : (
+              <div
+                className="flex mask-rounded-oval text-white text-sm items-center justify-center w-6 h-6"
+                style={{ background: letterToColorCode(client_name) }}
+              >
+                {nameToLetter(client_name)}
+              </div>
+            )}
           </div>
         )}
       </div>

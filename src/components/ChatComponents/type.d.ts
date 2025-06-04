@@ -66,6 +66,8 @@ type Message = {
   text: string
   /** User id */
   user_id?: string
+  /** metadata */
+  metadata?: string
 }
 /** Cấu trúc dữ liệu header */
 interface ChatHeaderProps {
