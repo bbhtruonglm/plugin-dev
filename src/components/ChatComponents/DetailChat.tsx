@@ -333,6 +333,8 @@ function DetailChat({
 
   /** Hàm gọi API để lấy tin nhắn */
   const fetchMessage = async (client_iddd?: string) => {
+    console.log(loading_more, 'loading_more')
+    console.log(has_more, 'has_more')
     /** Đang loading hoặc không có thêm bản ghi sẽ không fetch data nữa */
     if (loading_more || !has_more) return
     /** Lấy vị trí scroll hiện tại, nếu k có thì return */
