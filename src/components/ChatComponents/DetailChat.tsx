@@ -432,12 +432,17 @@ function DetailChat({
        * Set loading more về false
        */
       dispatch(setLoadingGlobal(false))
-      /**
-       * Set loading more về false
-       */
-      setLoadingMore(false)
+      /** nếu là ai trên */
+      if (AI_STATUS) {
+        /**
+         * Set loading more về false
+         */
+        setLoadingMore(false)
+      }
     }, 200)
-
+    if (AI_STATUS) {
+      setLoadingMore(false)
+    }
     /** Cleanup function to clear the timeout */
     return () => {
       /**
@@ -445,7 +450,7 @@ function DetailChat({
        */
       clearTimeout(TIMER)
     }
-  }, [LIST_MESSAGE])
+  }, [LIST_MESSAGE, AI_STATUS])
 
   /** Function kéo xuống dưới cùng */
   const scrollToBottom = () => {
