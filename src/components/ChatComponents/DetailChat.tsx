@@ -433,15 +433,19 @@ function DetailChat({
        */
       dispatch(setLoadingGlobal(false))
       /** nếu là ai trên */
-      if (AI_STATUS) {
+      if (!AI_STATUS) {
         /**
          * Set loading more về false
          */
         setLoadingMore(false)
       }
     }, 200)
+    /** Nếu la ai trên */
     if (AI_STATUS) {
+      /** Loading more về false */
       setLoadingMore(false)
+      /** Set Has more */
+      setHasMore(true)
     }
     /** Cleanup function to clear the timeout */
     return () => {
