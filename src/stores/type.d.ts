@@ -175,6 +175,8 @@ export interface AppState {
   current_user_id?: string
   /** Fixed data client */
   fixed_data_client?: any
+  /** Consultation */
+  consultation_global?: any
 }
 /** Định nghĩa kiểu dữ liệu cho danh sách nhân viên */
 interface EmployeeList {

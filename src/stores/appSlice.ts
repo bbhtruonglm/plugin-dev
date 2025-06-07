@@ -55,6 +55,7 @@ const INITIAL_STATE: AppState = {
   is_view_screen: false,
   current_user_id: undefined,
   fixed_data_client: undefined,
+  consultation_global: undefined,
 }
 
 export const appSlice = createSlice({
@@ -261,6 +262,10 @@ export const appSlice = createSlice({
     setFixedDataClient: (state, action: PayloadAction<any>) => {
       state.fixed_data_client = action.payload
     },
+    /** Trạng thái consultation */
+    setConsultationGlobal: (state, action: PayloadAction<boolean>) => {
+      state.consultation_global = action.payload
+    },
   },
 })
 
@@ -304,6 +309,7 @@ export const {
   setIsViewScreen,
   setCurrentUserId,
   setFixedDataClient,
+  setConsultationGlobal,
 } = appSlice.actions
 
 /** chọn đến page id */
@@ -429,5 +435,8 @@ export const selectCurrentUserId = (state: RootState) =>
 /** Fixed data client */
 export const selectFixedDataClient = (state: RootState) =>
   state.app.fixed_data_client
+/** Trạng thái consultation */
+export const selectConsultationGlobal = (state: RootState) =>
+  state.app.consultation_global
 
 export default appSlice.reducer

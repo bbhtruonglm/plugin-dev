@@ -1287,6 +1287,7 @@ const ChatApp = ({
                 setHideForMobile={setHideForMobile}
                 page_name={page_name}
                 employee_list={EMPLOYEE_LIST}
+                consultation={consultation}
               />
             )}
           </div>

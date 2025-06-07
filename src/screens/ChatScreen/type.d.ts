@@ -36,6 +36,8 @@ interface ChatProps {
   // list_unread_message: MessageInfo[]
   /** invalid_page_id_parent */
   invalid_page_id_parent?: boolean
+  /** Trạng thái mở nhanh */
+  consultation?: boolean
 }
 
 interface HomeProps {

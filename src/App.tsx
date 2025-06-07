@@ -11,12 +11,14 @@ import {
 } from './utils'
 import {
   resetConversation,
+  selectConsultationGlobal,
   selectEmbedPosition,
   selectEmbedPositionDetail,
   selectPageId,
   setActiveAiAgent,
   setAiMessageAutoSend,
   setClientNameStore,
+  setConsultationGlobal,
   setCurrentHeight,
   setCurrentUserId,
   setCurrentWidth,
@@ -275,7 +277,7 @@ function App() {
            * Nếu trạng thái mặc định sẽ lấy theo field default_language (Trong Setting)
            * hoặc Default config
            */
-          case WEB_LANGUAGE === 'DEFAULT':
+          case DEFAULT_LANGUAGE:
             embed_locale = DEFAULT_LANGUAGE || DEFAULT_LANGUAGE_CONFIG
             break
           /**
@@ -335,6 +337,8 @@ function App() {
          * Lưu kiểu type_consultation là true để hiển thị popup tư vấn
          */
         setTypeConsultation(true)
+        /** Lưu vào store */
+        dispatch(setConsultationGlobal(true))
         /**
          * Kiểm tra xem popup đã mở chưa
          */
@@ -348,6 +352,7 @@ function App() {
            */
           setShow(true)
         }
+        return
       }
 
       /** Lưu thông tin user vào store
@@ -560,7 +565,7 @@ function App() {
            * Nếu không có case nào thoả mã thì lấy mặc định (fix cứng Tiếng việt)
            */
           default:
-            embed_locale = DEFAULT_LANGUAGE_CONFIG
+            embed_locale = DEFAULT_LANGUAGE || DEFAULT_LANGUAGE_CONFIG
             break
         }
 
@@ -841,6 +846,8 @@ function App() {
                   saveTimeClosePopup(PAGE_ID)
                   /** Lưu trạng thái tư vấn là false*/
                   setTypeConsultation(false)
+                  /** Lưu vào store */
+                  dispatch(setConsultationGlobal(false))
                 }
               }}
               show={is_show}

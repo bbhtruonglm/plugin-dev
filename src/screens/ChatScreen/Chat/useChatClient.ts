@@ -1,5 +1,6 @@
 import { apiImage, fetchAPI, useAPI } from '@/api/api'
 import {
+  selectConsultationGlobal,
   selectGlobalClientId,
   selectIsViewScreen,
   selectPageId,
@@ -12,6 +13,8 @@ import {
 } from '@/stores/appSlice'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+
+import { t } from 'i18next'
 
 /**
  * Kiểu dữ liệu khởi tạo input
@@ -60,6 +63,8 @@ export function useChatClient(invalid_page_id_parent?: boolean) {
 
   /** Client ID toàn cục lưu trong Redux */
   const GLOBAL_CLIENT_ID = useSelector(selectGlobalClientId)
+  /** Trạng thái consultation */
+  const GLOBAL_CONSULTATION = useSelector(selectConsultationGlobal)
 
   /** Client ID đang được sử dụng trong hook */
   const [client_id, setClientId] = useState<string | null | any>('')
@@ -276,7 +281,14 @@ export function useChatClient(invalid_page_id_parent?: boolean) {
   )
 
   useEffect(() => {
-    console.log('first', AI_STATUS, GLOBAL_CLIENT_ID, PAGE_ID, USER_INFO)
+    console.log(
+      'first',
+      AI_STATUS,
+      GLOBAL_CLIENT_ID,
+      PAGE_ID,
+      USER_INFO,
+      GLOBAL_CONSULTATION
+    )
     if (
       AI_STATUS &&
       !GLOBAL_CLIENT_ID &&
@@ -292,7 +304,30 @@ export function useChatClient(invalid_page_id_parent?: boolean) {
         client_id: USER_INFO.client_id,
       })
     }
-  }, [AI_STATUS, GLOBAL_CLIENT_ID, PAGE_ID, USER_INFO, IS_VIEW_SCREEN])
+    // if (
+    //   GLOBAL_CONSULTATION &&
+    //   !GLOBAL_CLIENT_ID &&
+    //   PAGE_ID &&
+    //   // USER_INFO?.client_id?.trim() &&
+    //   !IS_VIEW_SCREEN
+    // ) {
+    //   /**
+    //    * Gọi hàm khởi tạo client
+    //    */
+    //   safeInitGetClientId({
+    //     page_id: PAGE_ID,
+    //     // client_id: USER_INFO.client_id,
+    //     name: t('anynomous'),
+    //   })
+    // }
+  }, [
+    AI_STATUS,
+    GLOBAL_CLIENT_ID,
+    PAGE_ID,
+    USER_INFO,
+    IS_VIEW_SCREEN,
+    // GLOBAL_CONSULTATION,
+  ])
 
   /** Normal user init client */
   useEffect(() => {

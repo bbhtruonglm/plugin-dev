@@ -5,6 +5,7 @@ import { renderAvatarFromId, renderAvatarFromIdAgent } from '@/utils'
 import {
   selectActiveAiAgent,
   selectAiId,
+  selectConsultationGlobal,
   selectCurrentUserId,
   selectFixedDataClient,
   selectGlobalClientId,
@@ -73,6 +74,8 @@ function DetailChat({
    */
   const CLIENT_ID_GLOBAL = useSelector(selectGlobalClientId)
 
+  /** Trạng thái consultation */
+  const GLOBAL_CONSULTATION = useSelector(selectConsultationGlobal)
   /**
    * CURRENT_USER_ID
    */
@@ -305,6 +308,21 @@ function DetailChat({
 
   /** Bước 2: Chỉ chạy logic anonymous khi đã biết chắc chắn user_id là null */
   useEffect(() => {
+    console.log(
+      FORM_BEFORE_CHAT,
+      local_user_id,
+      FIXED_CLIENT_INFO,
+      GLOBAL_CONSULTATION,
+      'chay vao day'
+    )
+
+    console.log(
+      local_user_id === undefined,
+      'chay vao day local_user_id === undefined'
+    )
+    console.log(AI_STATUS, 'chay vao day AI_STATUS')
+    console.log(!PAGE_ID, 'chay vao day PAGE_ID')
+    console.log(FIXED_CLIENT_INFO, 'chay vao day FIXED_CLIENT_INFO')
     /** Đnag load thông tin */
     if (
       local_user_id === undefined ||
@@ -313,7 +331,7 @@ function DetailChat({
       FIXED_CLIENT_INFO
     )
       return // Đang load từ localStorage, chưa xong
-    console.log(FORM_BEFORE_CHAT, 'chay vao day')
+
     /**
      * Khi user_id khóng null
      */
@@ -329,7 +347,13 @@ function DetailChat({
         })
       }
     }
-  }, [FORM_BEFORE_CHAT, local_user_id, AI_STATUS, IS_VIEW_SCREEN])
+  }, [
+    FORM_BEFORE_CHAT,
+    local_user_id,
+    AI_STATUS,
+    IS_VIEW_SCREEN,
+    GLOBAL_CONSULTATION,
+  ])
 
   /** Hàm gọi API để lấy tin nhắn */
   const fetchMessage = async (client_iddd?: string) => {

@@ -9,6 +9,7 @@ function ChatScreen({
   page_name,
   employee_list,
   invalid_page_id_parent,
+  consultation,
 }: ChatProps) {
   const {
     client_id,
