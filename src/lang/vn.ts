@@ -89,5 +89,7 @@ export const vn = {
     based_on_sources: 'Dựa trên {{count}} nguồn thông tin',
 
     page_id_required: 'Yêu cầu ID Trang',
+
+    selected_one_image: 'Đã chọn 1 ảnh',
   },
 }

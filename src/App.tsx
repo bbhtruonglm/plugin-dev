@@ -38,6 +38,7 @@ import {
   setPageId,
   setPageInfoAI,
   setPageLogo,
+  setPageLogoBlack,
   setRefreshData,
   setShowForm,
   setShowHome,
@@ -437,6 +438,8 @@ function App() {
           dispatch(setOrgAllowLogo(true))
           /** Lưu logo trong store */
           dispatch(setPageLogo('./images/Logo_AIG.svg'))
+          /** Lưu logo black trong store */
+          dispatch(setPageLogoBlack('./images/AIG_white.png'))
           // dispatch(setPageLogo(''))
         }
 

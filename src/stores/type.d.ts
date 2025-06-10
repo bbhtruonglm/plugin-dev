@@ -166,6 +166,8 @@ export interface AppState {
   org_allow_logo?: boolean
   /** Logo page custom */
   logo_page_custom?: string
+  /** Logo page custom black */
+  logo_page_custom_black?: string
   /** TIn nhắn suggest tự động gửi */
   ai_message_auto_send?: string
 

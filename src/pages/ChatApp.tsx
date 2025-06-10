@@ -35,6 +35,7 @@ import {
   selectPageAvatar,
   selectPageId,
   selectPageLogo,
+  selectPageLogoBlack,
   selectRefreshData,
   selectShowHome,
   selectShowSupportStaff,
@@ -122,6 +123,8 @@ const ChatApp = ({
   const ORG_ALLOW_LOGO = useSelector(selectOrgAllowLogo)
   /** link logo   */
   const LOGO_PAGE_CUSTOM = useSelector(selectPageLogo)
+  /** link logo   */
+  const LOGO_PAGE_CUSTOM_BLACK = useSelector(selectPageLogoBlack)
   /** Các đầu api */
   const { READ_PAGE_INFO, SOCKET_API } = useAPI()
   /** Trạng thái online */
@@ -1200,7 +1203,7 @@ const ChatApp = ({
               <div>
                 {/* <RetionLogo /> */}
                 <img
-                  src={renderLogo(ORG_ALLOW_LOGO, LOGO_PAGE_CUSTOM, '')}
+                  src={renderLogo(ORG_ALLOW_LOGO, LOGO_PAGE_CUSTOM_BLACK, '')}
                   alt="Logo Retion"
                   width={30}
                   height={30}

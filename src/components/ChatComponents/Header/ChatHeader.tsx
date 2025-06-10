@@ -7,10 +7,9 @@ import {
   selectLoadingGlobal,
   selectOrgAllowLogo,
   selectPageAvatar,
-  selectPageLogo,
+  selectPageLogoBlack,
   selectShowHome,
   selectShowSupportStaff,
-  setIsAvatar,
 } from '@/stores/appSlice'
 import { useEffect, useState } from 'react'
 
@@ -74,7 +73,7 @@ function ChatHeader({
   /**
    * link logo
    */
-  const LOGO_PAGE_CUSTOM = useSelector(selectPageLogo)
+  const LOGO_PAGE_CUSTOM_BLACK = useSelector(selectPageLogoBlack)
   /**
    * Trạng thái hiện thị home page
    */
@@ -258,7 +257,7 @@ function ChatHeader({
                     <img
                       src={renderLogo(
                         ORG_ALLOW_LOGO,
-                        LOGO_PAGE_CUSTOM,
+                        LOGO_PAGE_CUSTOM_BLACK,
                         './images/Logo_retion_white.png'
                       )}
                     />

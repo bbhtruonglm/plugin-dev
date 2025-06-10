@@ -470,7 +470,7 @@ function DetailChat({
       /** Loading more về false */
       setLoadingMore(false)
       /** Set Has more */
-      setHasMore(true)
+      // setHasMore(true)
     }
     /** Cleanup function to clear the timeout */
     return () => {

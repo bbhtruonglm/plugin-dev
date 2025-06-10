@@ -360,6 +360,11 @@ function InputChat({
    * @param event React.ClipboardEvent<HTMLTextAreaElement>
    */
   const handlePaste = (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    /** Nếu là Trạng thái AI thì không cho gửi ảnh */
+    if (AI_STATUS) {
+      return
+    }
+
     /** Lấy item trong clipboard */
     const ITEMS = event.clipboardData.items
     /** Tạo vòng lắp */
@@ -469,7 +474,9 @@ function InputChat({
             // disabled={preview_url ? true : false}
             value={value}
             onKeyDown={(e) => {
+              /** Nếu không có error */
               if (!error_message) {
+                /** Xuất sự kiện */
                 handleKeyDown(e)
               }
             }}
@@ -481,7 +488,7 @@ function InputChat({
             id="input-embed-chat"
             placeholder={
               preview_url
-                ? 'Đã chọn 1 ảnh'
+                ? t('selected_one_image')
                 : t('send_message_to_us') +
                   (AI_STATUS ? ' ' + t('virtual_assistant') + ' ' : ' ') +
                   (renderPageName(page_name)
