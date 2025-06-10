@@ -1,5 +1,6 @@
 import {
   selectAiMessageAutoSend,
+  selectCurrentUserId,
   selectPageId,
   selectPageInfoAI,
   selectStatusAI,
@@ -34,7 +35,8 @@ function InputChat({
   /**
    * Input Ref
    */
-  const INPUT_REF = useRef<HTMLInputElement>(null)
+  // const INPUT_REF = useRef<HTMLInputElement>(null)
+  const INPUT_REF = useRef<HTMLTextAreaElement>(null)
 
   /**
    * @param SHOW_POPUP: boolean
@@ -85,6 +87,10 @@ function InputChat({
    * Tin nhắn tự động gửi
    */
   const AI_MESSAGE_AUTO_SEND = useSelector(selectAiMessageAutoSend)
+  /**
+   * CURRENT_USER_ID
+   */
+  const CURRENT_USER_ID = useSelector(selectCurrentUserId)
 
   /**
    *  Hàm upload file
@@ -104,6 +110,13 @@ function InputChat({
        * Tạo form data
        */
       const FORM_DATA = new FormData()
+
+      /** Lấy ID người dùng */
+      const META_DATA_ID = CURRENT_USER_ID || client_id
+      /** Thêm metadata vào form data  */
+      if (META_DATA_ID) {
+        FORM_DATA.append('metadata', `__user_normal__${META_DATA_ID}`)
+      }
       /**
        * Thêm file vào form data
        */
@@ -206,33 +219,56 @@ function InputChat({
    * @returns void
    */
 
-  const handleKeyDown = (
-    event: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    /** Nếu key là enter */
+  // const handleKeyDown = (
+  //   event: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>
+  // ) => {
+  //   console.log(event, 'eventttt')
+  //   /** Nếu key là enter */
+  //   if (event.key === 'Enter') {
+  //     /** Nếu đang gõ tiếng Việt, bỏ qua */
+  //     if (is_composing) return
+  //     /** Nếu shift key */
+  //     if (event.shiftKey) {
+  //       /** Cho phép xuống dòng (nếu là <textarea>) */
+  //       return
+  //     }
+  //     /**
+  //      * Nếu value tồn tại
+  //      */
+  //     if (value) {
+  //       /**
+  //        * Ngăn chặn mặc định của event
+  //        */
+  //       event.preventDefault()
+  //       /**
+  //        * Gửi tin nhắn đi
+  //        */
+  //       handleSend(value)
+  //       /**
+  //        * Reset value
+  //        */
+  //       setValue('')
+  //     }
+  //   }
+  // }
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === 'Enter') {
-      /** Nếu đang gõ tiếng Việt, bỏ qua */
       if (is_composing) return
-      /** Nếu shift key */
-      if (event.shiftKey) {
-        /** Cho phép xuống dòng (nếu là <textarea>) */
+
+      // Cho phép xuống dòng khi Shift + Enter
+      if (event.shiftKey) return
+
+      event.preventDefault()
+
+      // Ưu tiên upload ảnh nếu có
+      if (file) {
+        uploadFile(file)
         return
       }
-      /**
-       * Nếu value tồn tại
-       */
-      if (value) {
-        /**
-         * Ngăn chặn mặc định của event
-         */
-        event.preventDefault()
-        /**
-         * Gửi tin nhắn đi
-         */
+
+      // Nếu không có ảnh nhưng có text thì gửi
+      if (value.trim()) {
         handleSend(value)
-        /**
-         * Reset value
-         */
         setValue('')
       }
     }
@@ -320,6 +356,56 @@ function InputChat({
     }
   }, [AI_MESSAGE_AUTO_SEND])
 
+  /** Hàm xử lý paste
+   * @param event React.ClipboardEvent<HTMLTextAreaElement>
+   */
+  const handlePaste = (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    /** Lấy item trong clipboard */
+    const ITEMS = event.clipboardData.items
+    /** Tạo vòng lắp */
+    for (let i = 0; i < ITEMS.length; i++) {
+      /** Lấy item */
+      const ITEM = ITEMS[i]
+      /**
+       *  Nếu item là file
+       */
+      if (ITEM.kind === 'file') {
+        /**
+         * Lấy file
+         */
+        const FILE = ITEM.getAsFile()
+        /**
+         * Nếu file la image
+         */
+        if (FILE && FILE.type.startsWith('image/')) {
+          /**
+           * Set file
+           */
+          setFile(FILE)
+          /**
+           * Tạo đối tượng FileReader
+           */
+          const READER = new FileReader()
+          /**
+           * Xuất file
+           */
+          READER.onload = () => {
+            setPreviewUrl(READER.result as string)
+          }
+          /**
+           * Xử lý khi load xong file
+           */
+          READER.readAsDataURL(FILE)
+          /**
+           * Ngăn chặn mặc định của event
+           */
+          event.preventDefault()
+          return
+        }
+      }
+    }
+  }
+
   return (
     <div
       className={`absolute flex justify-center items-center bg-transparent w-full ${
@@ -362,7 +448,13 @@ function InputChat({
         {SUGGEST_MESSAGE && (
           <div
             onClick={() => {
+              /**
+               * Gửi suggest message
+               */
               handleSend(SUGGEST_MESSAGE)
+              /**
+               * Reset suggest message
+               */
               dispatch(setSuggestMessage(''))
             }}
             className="outline outline-1 outline-slate-200 rounded-full w-fit px-2 p-1 text-xs cursor-pointer"
@@ -371,24 +463,22 @@ function InputChat({
           </div>
         )}
         <div className="flex justify-between items-center w-full">
-          <input
+          <textarea
             ref={INPUT_REF}
-            onChange={(e) => {
-              // e.preventDefault()
-              setValue(e.target.value)
-            }}
-            disabled={preview_url ? true : false}
+            onChange={(e) => setValue(e.target.value)}
+            // disabled={preview_url ? true : false}
             value={value}
             onKeyDown={(e) => {
               if (!error_message) {
                 handleKeyDown(e)
               }
             }}
+            rows={1}
             onCompositionStart={handleCompositionStart}
             onCompositionEnd={handleCompositionEnd}
+            onPaste={handlePaste} // ✨ thêm xử lý paste
             autoComplete="off"
             id="input-embed-chat"
-            type="text"
             placeholder={
               preview_url
                 ? 'Đã chọn 1 ảnh'
@@ -398,11 +488,7 @@ function InputChat({
                     ? renderPageName(page_name)
                     : CLIENT_INFO?.page_name)
             }
-            className="bg-transparent outline-none flex-grow placeholder:text-slate-500 text-sm font-medium py-1.5 px-1"
-            onFocus={() => {
-              setIsKeyboardOpen(true)
-              setIsShowKeyboard && setIsShowKeyboard(true)
-            }}
+            className="bg-transparent outline-none flex-grow placeholder:text-slate-500 text-sm font-medium py-1.5 px-1 resize-none"
           />
 
           {AI_STATUS && value && (
