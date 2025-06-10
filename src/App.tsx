@@ -184,7 +184,7 @@ function App() {
   const handleMessage = async (event: MessageEvent) => {
     /** @type {Object} PAYLOAD - Dữ liệu từ event */
     let PAYLOAD: any
-
+    console.log(event, 'event')
     try {
       /** Nếu event.data là string, cố gắng parse nó */
       PAYLOAD =

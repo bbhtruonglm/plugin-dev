@@ -451,6 +451,7 @@ function DetailChat({
    * Hàm debounce xử lý scroll
    */
   useEffect(() => {
+    console.log(LIST_MESSAGE, 'LIST_MESSAGE')
     const TIMER = setTimeout(() => {
       /**
        * Set loading more về false
@@ -589,23 +590,31 @@ function DetailChat({
   /** Hàm Xử lý gửi tin nhắn
    * @param {string} input - Nội dung tin nhắn text
    */
+
   const sendMessage = async (input: any) => {
-    /**  Nhắn toàn khoảng trắng không cho gửi đi */
     if (input.trim() === '') return
-    /** Tiến hành gửi tin nhắn */
+
     try {
+      /** Lấy ID người dùng */
+      const META_DATA_ID = CURRENT_USER_ID || user_id
+
       /** Khởi tạo body tin nhắn */
       const MESSAGE: Message = {
         page_id: PAGE_ID,
         client_id: user_id,
         text: input,
         user_id: CURRENT_USER_ID,
-        metadata: `__ai_agent__${CURRENT_USER_ID}`,
+        ...(META_DATA_ID && {
+          metadata: AI_STATUS
+            ? `__ai_agent__${META_DATA_ID}`
+            : `__user_normal__${META_DATA_ID}`,
+        }),
       }
-
       /** Gọi api gửi tin nhắn */
       await fetchAPI(SEND_MESSAGE_API, 'POST', MESSAGE)
-      /** Trường hợp là AI Agent thì mới set Trạng thái typing true sau khi gửi */
+      /**
+       * Trường hợp là AI Agent thì mới set Trạng thái typing true sau khi gửi
+       */
       if (AI_STATUS) {
         dispatch(setTypingStatus(true))
       }
@@ -613,6 +622,7 @@ function DetailChat({
       /** Gửi tin nhắn thành công, scroll xuống cuối trang */
       scrollToBottom()
     } catch (error) {
+      console.error('Gửi tin nhắn thất bại:', error)
     } finally {
       setLoading(false)
     }
