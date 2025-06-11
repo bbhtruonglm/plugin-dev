@@ -30,6 +30,7 @@ import {
   setIsViewScreen,
   setLatestMessageGlobal,
   setListMessage,
+  setListUnreadMessage,
   setLoadingGlobal,
   setNoAiId,
   setNoViewport,
@@ -859,6 +860,12 @@ function App() {
                 dispatch(setGlobalPreviewUrl(''))
                 /** Lưu thời gian vào localstorage Khi đóng popup */
                 saveTimeClosePopup(PAGE_ID)
+
+                /** set Type consultation */
+                setTypeConsultation(false)
+                /** Lưu vào store */
+                dispatch(setConsultationGlobal(false))
+
                 handleOff()
               }}
               consultation={type_consultation}

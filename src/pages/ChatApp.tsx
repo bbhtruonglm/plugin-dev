@@ -20,6 +20,7 @@ import {
   truncateString,
 } from '@/utils'
 import {
+  selectConsultationGlobal,
   selectCurrentHeight,
   selectCurrentWidth,
   selectEmbedPosition,
@@ -172,6 +173,9 @@ const ChatApp = ({
     undefined
   )
 
+  /** Trạng thái consultation */
+  const GLOBAL_CONSULTATION = useSelector(selectConsultationGlobal)
+
   useEffect(() => {
     /** Trạng thái refresh data thì đóng web socket */
     if (REFRESH_DATA) {
@@ -192,7 +196,7 @@ const ChatApp = ({
     /** Nếu trạng thái mở AI hoặc trạng thái consultation thì vào luôn tab message */
     if (
       AI_STATUS ||
-      consultation ||
+      GLOBAL_CONSULTATION ||
       IS_VIEW_SCREEN ||
       (IS_SHOW_HOME !== undefined && !IS_SHOW_HOME)
     ) {
@@ -201,8 +205,23 @@ const ChatApp = ({
       setCurrentTab('message')
       /** Set show welcome message là false */
       setShowWelcomeMessage(false)
+      /** Khi ấn vào tab message,
+       * reset tin nhắn mới nhất
+       * reset mảng tin nhắn chưa đọc
+       * => Vì khi vào trong tab sẽ fetch api đọc tin nhắn,
+       * => không cần các state này nữa
+       *  */
+      dispatch(setListUnreadMessage([]))
+      dispatch(setLatestMessageGlobal(null))
+      dispatch(setGlobalUnreadCount(0))
+      dispatch(setLoadingGlobal(true))
+      /** 4. Reset Số tin nhắn chưa đọc localStorage */
+      saveQuickChatCount(PAGE_ID, CLIENT_STORED, 0)
+
+      /** 5. Reset tin nhắn mới nhất trong localStorage */
+      saveQuickChatLatestMessage(PAGE_ID, CLIENT_STORED, null)
     }
-  }, [AI_STATUS, consultation, IS_SHOW_HOME, IS_VIEW_SCREEN])
+  }, [AI_STATUS, GLOBAL_CONSULTATION, IS_SHOW_HOME, IS_VIEW_SCREEN])
 
   /** hàm dispatch đến store */
   const dispatch = useDispatch()
