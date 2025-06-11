@@ -1583,7 +1583,14 @@ const ChatApp = ({
             /**
              * Khi click vào
              */
-            if (!show && current_tab === 'message') {
+            if (!show && (current_tab === 'message' || !IS_SHOW_HOME)) {
+              /**
+               * Khi click vào ẩn tin nhắn chào mừng,
+               */
+              setShowWelcomeMessage(false)
+              /** Khi click vào trả lời, xoá unread_count */
+              saveQuickChatCount(PAGE_ID, CLIENT_STORED, 0)
+
               /** Reset hết data trong store */
               dispatch(setLatestMessageGlobal(null))
               dispatch(setListUnreadMessage([]))
