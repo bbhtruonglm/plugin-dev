@@ -34,10 +34,11 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import ChatHeader from './Header/ChatHeader'
+import { ChevronDownIcon } from '@heroicons/react/24/solid'
 import { ReactComponent as Close } from '@/assets/close.svg'
 import { ReactComponent as Down } from '@/assets/arrow.svg'
 import InitClient from './Body/InitClient'
-import InputChat from './Body/InputChat'
+import InputChat from './Body/InputChat/InputChat'
 import Loading from '../Loading/Loading'
 import LoadingDots from '../Loading/LoadingDot'
 import LoadingJumping from '../Loading/LoadingJumping'
@@ -756,7 +757,6 @@ function DetailChat({
               resetData={invalid_page_id}
               onInitClient={(e: any) => {
                 setLoadingInit(true)
-                console.log(e, 'eeeee')
                 onInitClient({ ...e, page_id: PAGE_ID })
               }}
             />
@@ -871,15 +871,11 @@ function DetailChat({
       {show_jump_button && user_id && (
         <button
           onClick={scrollToBottom}
-          className={`absolute flex justify-center items-center h-7 w-7 shadow-md bg-white rounded-full z-[999999] ${
+          className={`absolute flex justify-center items-center h-7 w-7 shadow-md bg-white rounded-full z-[40] ${
             AI_STATUS ? 'bottom-[16%]' : 'bottom-[13%]'
           } right-[45%]`}
         >
-          <Down
-            width={10}
-            height={5}
-            stroke="#000000"
-          />
+          <ChevronDownIcon className="size-4" />
         </button>
       )}
       {/** Khi upload lỗi, thông báo cho user */}

@@ -1,5 +1,6 @@
 import 'react-loading-skeleton/dist/skeleton.css' // Đảm bảo CSS được import
 
+import { ChevronLeftIcon, XMarkIcon } from '@heroicons/react/24/solid'
 import {
   selectCurrentWidth,
   selectIsAvatar,
@@ -13,9 +14,7 @@ import {
 } from '@/stores/appSlice'
 import { useEffect, useState } from 'react'
 
-import { ReactComponent as BackArrow } from '@/assets/white-arrow.svg'
 import { ChatHeaderProps } from '../type'
-import { ReactComponent as Close } from '@/assets/close.svg'
 import OnlineStaff from '../../Container/OnlineStaff'
 import Skeleton from 'react-loading-skeleton'
 import { renderLogo } from '@/utils'
@@ -24,7 +23,7 @@ import { useSelector } from 'react-redux'
 
 function ChatHeader({
   onCancel,
-  user_id,
+  user_id = '',
   setHideForMobile,
   page_name,
   staff_name,
@@ -94,8 +93,12 @@ function ChatHeader({
             <div className="flex justify-between items-center w-full h-16 py-3 px-5">
               <div className="flex justify-center items-center gap-x-3 py-4 h-16">
                 {is_show_home ? (
-                  <BackArrow
-                    className="w-7 h-7 cursor-pointer"
+                  // <BackArrow
+                  //   className="w-7 h-7 cursor-pointer"
+                  //   onClick={() => onCancel()}
+                  // />
+                  <ChevronLeftIcon
+                    className="size-7 cursor-pointer text-white"
                     onClick={() => onCancel()}
                   />
                 ) : (
@@ -125,8 +128,12 @@ function ChatHeader({
             <div className="flex flex-col w-full items-center py-3 px-5 gap-2 h-44">
               <div className="flex justify-between w-full ">
                 {is_show_home ? (
-                  <BackArrow
-                    className="w-7 h-7 cursor-pointer"
+                  // <BackArrow
+                  //   className="w-7 h-7 cursor-pointer"
+                  //   onClick={() => onCancel()}
+                  // />
+                  <ChevronLeftIcon
+                    className="size-7 cursor-pointer text-white"
                     onClick={() => onCancel()}
                   />
                 ) : (
@@ -168,8 +175,12 @@ function ChatHeader({
             <div className="flex justify-between items-center w-full gap-x-2">
               <div className="flex gap-2 items-center flex-1 overflow-hidden">
                 {is_show_home && !IS_VIEW_SCREEN ? (
-                  <BackArrow
-                    className="w-7 h-7 cursor-pointer"
+                  // <BackArrow
+                  //   className="w-7 h-7 cursor-pointer"
+                  //   onClick={() => onCancel()}
+                  // />
+                  <ChevronLeftIcon
+                    className="size-7 cursor-pointer text-white"
                     onClick={() => onCancel()}
                   />
                 ) : (
@@ -213,7 +224,7 @@ function ChatHeader({
                       : 'hidden'
                   }`}
                 >
-                  <Close />
+                  <XMarkIcon className="size-7 text-white" />
                 </div>
               </div>
             </div>
@@ -221,8 +232,12 @@ function ChatHeader({
             <div className="flex flex-col items-center w-full gap-y-1">
               <div className="flex w-full justify-between items-center h-[30px] ">
                 {is_show_home && !IS_VIEW_SCREEN ? (
-                  <BackArrow
-                    className="w-7 h-7 cursor-pointer"
+                  // <BackArrow
+                  //   className="w-7 h-7 cursor-pointer"
+                  //   onClick={() => onCancel()}
+                  // />
+                  <ChevronLeftIcon
+                    className="size-7 cursor-pointer text-white"
                     onClick={() => onCancel()}
                   />
                 ) : (
@@ -240,7 +255,7 @@ function ChatHeader({
                     onClick={setHideForMobile}
                     className="w-8 h-8  flex justify-center items-center cursor-pointer"
                   >
-                    <Close className="flex cursor-pointer " />
+                    <XMarkIcon className="flex cursor-pointer text-white size-7" />
                   </div>
                 ) : (
                   <div className=" flex justify-center items-center w-7 h-7"></div>

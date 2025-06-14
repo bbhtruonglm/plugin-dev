@@ -1695,7 +1695,7 @@ const ChatApp = ({
         {GLOBAL_PREVIEW_URL && (
           <img
             src={GLOBAL_PREVIEW_URL}
-            className="max-w-[880px] min-w-80 w-full h-auto min-h-20 object-contain rounded-lg bg-slate-200"
+            className="max-w-[880px] min-w-96 w-full h-auto min-h-32 object-contain rounded-lg bg-slate-200"
             alt="Full Attachment"
           />
         )}
