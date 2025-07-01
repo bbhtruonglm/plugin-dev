@@ -70,6 +70,13 @@ function DetailChat({
   const MESSAGE_CONTAINER_REF = useRef<HTMLDivElement | null>(null)
   /** lấy Api từ hooks api */
   const { READ_MESSAGE_API, SEND_MESSAGE_API } = useAPI()
+  /** List CTA */
+  const LIST_CTA = [
+    'Tư vấn',
+    'Gọi lại cho tôi',
+    'Bảng giá',
+    'Thông tin Khuyến mãi Thông tin Khuyến mãiThông tin Khuyến mãiThông tin Khuyến mãiThông tin Khuyến mãi',
+  ]
   /**
    * Global client ID
    */
@@ -110,6 +117,19 @@ function DetailChat({
   }, [IS_ACTIVE_AGENT_AI])
   /** Biến check no message */
   const [check_no_message_ai, setCheckNoMessageAi] = useState(false)
+
+  /** Loading first tiem */
+  const [loading_first_time, setLoadingFirstTime] = useState(true)
+  /** Xử lý bật trạng thái */
+  useEffect(() => {
+    /** Tạo hàm timeout */
+    const TIMER = setTimeout(() => {
+      setLoadingFirstTime(false)
+    }, 1000) // 0.2 giây
+
+    /** Cleanup nếu component unmount trước khi timeout xong */
+    return () => clearTimeout(TIMER)
+  }, [])
   /** Delay time */
   let delay = 800
   /** Set timeout 0.4s thì bật cờ */
@@ -894,6 +914,27 @@ function DetailChat({
           </h4>
         </div>
       )}
+
+      {user_id &&
+        !AI_STATUS &&
+        !LOADING_GLOBAL &&
+        !loading_first_time &&
+        LIST_MESSAGE &&
+        LIST_MESSAGE.length < 2 && (
+          <div className="absolute bottom-[15%] left-[6%] flex flex-col gap-2 w-full">
+            {LIST_CTA.slice(0, 3).map((item: any, index: number) => (
+              <div
+                key={index}
+                onClick={() => {
+                  sendMessage(item)
+                }}
+                className="font-medium border-slate-700 bg-white border hover:border-blue-500 hover:bg-blue-500 hover:text-white shadow-lg outline outline-1 outline-slate-200 rounded-lg w-fit max-w-[60%] px-2 p-1 text-sm cursor-pointer truncate "
+              >
+                {item}
+              </div>
+            ))}
+          </div>
+        )}
 
       {/* ô input  Khi có text trong input thì hiển thị thêm icon send */}
       {user_id && (
