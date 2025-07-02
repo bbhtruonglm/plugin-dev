@@ -1,23 +1,10 @@
-import {
-  selectAiMessageAutoSend,
-  selectCurrentUserId,
-  selectPageId,
-  selectPageInfoAI,
-  selectStatusAI,
-  selectStatusPopup,
-  selectSuggestMessage,
-  setAiMessageAutoSend,
-  setSuggestMessage,
-} from '@/stores/appSlice'
-import { useDispatch, useSelector } from 'react-redux'
-import { useEffect, useRef, useState } from 'react'
-
 import { ArrowUpCircleIcon } from '@heroicons/react/16/solid'
 import { InputProps } from '../../type'
 import Upload from '../Upload'
 import { XMarkIcon } from '@heroicons/react/24/solid'
+import { setSuggestMessage } from '@/stores/appSlice'
 import { t } from 'i18next'
-import { useAPI } from '@/api/api'
+import { useDispatch } from 'react-redux'
 import { useInputChat } from './useInputChat'
 
 function InputChat({

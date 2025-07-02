@@ -225,8 +225,6 @@ function DetailChat({
      * Đoạn này cần sửa lại
      */
     if (REFRESH_DATA && CLIENT_ID_GLOBAL) {
-      console.log('first ====', CLIENT_ID_GLOBAL)
-      console.log('first ====', REFRESH_DATA)
       /**
        * Fetch data với client id truyền vào
        */
@@ -576,8 +574,9 @@ function DetailChat({
   }, [scroll_at_bottom, DEBOUNCED_SCROLL_TO_BOTTOM])
 
   useEffect(() => {
+    /** Khai báo timeout */
     let timeout_id: NodeJS.Timeout
-
+    /** Nếu là AI thì bỏ qua */
     if (AI_STATUS) return
     /** Nếu Mới khởi tạo client, call api fetch tin nhắn nhưng cần settimeout */
     if (is_init) {
@@ -922,7 +921,7 @@ function DetailChat({
         LIST_MESSAGE &&
         LIST_MESSAGE.length < 2 && (
           <div className="absolute bottom-[15%] left-[6%] flex flex-col gap-2 w-full">
-            {LIST_CTA.slice(0, 3).map((item: any, index: number) => (
+            {LIST_CTA.slice(0, 4).map((item: any, index: number) => (
               <div
                 key={index}
                 onClick={() => {
