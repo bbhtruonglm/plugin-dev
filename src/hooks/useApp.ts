@@ -252,7 +252,7 @@ export function useApp() {
         /**
          * Ngôn ngữ Mặc định
          */
-        const DEFAULT_LANGUAGE_CONFIG = 'en'
+        const DEFAULT_LANGUAGE_CONFIG = 'vi'
 
         /** Khai báo biến lưu trữ ngôn ngữ */
         let embed_locale
@@ -521,7 +521,7 @@ export function useApp() {
         /**
          * Ngôn ngữ Mặc định
          */
-        const DEFAULT_LANGUAGE_CONFIG = 'en'
+        const DEFAULT_LANGUAGE_CONFIG = 'vn'
         /**
          * Lấy ngôn ngữ từ URL
          */
@@ -557,7 +557,7 @@ export function useApp() {
             embed_locale = DEFAULT_LANGUAGE || DEFAULT_LANGUAGE_CONFIG
             break
         }
-
+        /**Check trường hợp AI */
         if (IS_AI) {
           /** Lấy ngôn ngữ của LOCALE_PARAMS */
           const LOCALE = IS_VALID_LOCALE
