@@ -914,7 +914,7 @@ function DetailChat({
         </div>
       )}
 
-      {user_id &&
+      {/* {user_id &&
         !AI_STATUS &&
         !LOADING_GLOBAL &&
         !loading_first_time &&
@@ -933,7 +933,7 @@ function DetailChat({
               </div>
             ))}
           </div>
-        )}
+        )} */}
 
       {/* ô input  Khi có text trong input thì hiển thị thêm icon send */}
       {user_id && (

@@ -521,7 +521,7 @@ export function useApp() {
         /**
          * Ngôn ngữ Mặc định
          */
-        const DEFAULT_LANGUAGE_CONFIG = 'vn'
+        const DEFAULT_LANGUAGE_CONFIG = 'vi'
         /**
          * Lấy ngôn ngữ từ URL
          */
