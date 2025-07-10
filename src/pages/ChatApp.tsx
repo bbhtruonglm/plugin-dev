@@ -1237,11 +1237,14 @@ const ChatApp = ({
                 </div>
                 <div
                   onClick={setHideForMobile}
-                  className={`cursor-pointer w-10 h-10 flex justify-center items-center  ${
-                    CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
-                      ? 'flex'
-                      : 'hidden'
-                  }`}
+                  className={`cursor-pointer w-10 h-10 flex justify-center items-center  
+                    ${
+                      // CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
+                      //   ? 'flex'
+                      //   : 'hidden'
+                      ''
+                    }
+                      `}
                 >
                   <Close />
                 </div>

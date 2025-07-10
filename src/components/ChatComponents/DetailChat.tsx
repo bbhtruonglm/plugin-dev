@@ -75,7 +75,7 @@ function DetailChat({
     'Tư vấn',
     'Gọi lại cho tôi',
     'Bảng giá',
-    'Thông tin Khuyến mãi Thông tin Khuyến mãiThông tin Khuyến mãiThông tin Khuyến mãiThông tin Khuyến mãi',
+    'Thông tin Khuyến mãi',
   ]
   /**
    * Global client ID

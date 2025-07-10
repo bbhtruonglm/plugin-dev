@@ -1,6 +1,5 @@
 import 'react-loading-skeleton/dist/skeleton.css' // Đảm bảo CSS được import
 
-import { ChevronLeftIcon, XMarkIcon } from '@heroicons/react/24/solid'
 import {
   selectCurrentWidth,
   selectIsAvatar,
@@ -15,8 +14,10 @@ import {
 import { useEffect, useState } from 'react'
 
 import { ChatHeaderProps } from '../type'
+import { ChevronLeftIcon } from '@heroicons/react/24/solid'
 import OnlineStaff from '../../Container/OnlineStaff'
 import Skeleton from 'react-loading-skeleton'
+import { XMarkIcon } from '@heroicons/react/20/solid'
 import { renderLogo } from '@/utils'
 import { t } from 'i18next'
 import { useSelector } from 'react-redux'
@@ -219,12 +220,13 @@ function ChatHeader({
                 <div
                   onClick={setHideForMobile}
                   className={`${
-                    CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
-                      ? 'flex w-9 h-9 items-center justify-center'
-                      : 'hidden'
+                    // CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
+                    // ?
+                    'flex w-9 h-9 items-center justify-center'
+                    // : 'hidden'
                   }`}
                 >
-                  <XMarkIcon className="size-7 text-white" />
+                  <XMarkIcon className="size-8 text-white" />
                 </div>
               </div>
             </div>
@@ -250,16 +252,16 @@ function ChatHeader({
                     {page_name}
                   </h2>
                 )}
-                {CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0 ? (
-                  <div
-                    onClick={setHideForMobile}
-                    className="w-8 h-8  flex justify-center items-center cursor-pointer"
-                  >
-                    <XMarkIcon className="flex cursor-pointer text-white size-7" />
-                  </div>
-                ) : (
+                {/* {CURRENT_WIDTH !== 0 ? ( */}
+                <div
+                  onClick={setHideForMobile}
+                  className="w-8 h-8  flex justify-center items-center cursor-pointer"
+                >
+                  <XMarkIcon className="flex cursor-pointer text-white size-8" />
+                </div>
+                {/* ) : (
                   <div className=" flex justify-center items-center w-7 h-7"></div>
-                )}
+                )} */}
               </div>
               <div className="flex items-center py-3 justify-center h-[72px] w-full">
                 <div className="flex h-12 justify-center">
