@@ -301,9 +301,6 @@ function DetailChat({
   /** Fixed client info */
   const FIXED_CLIENT_INFO = useSelector(selectFixedDataClient)
 
-  console.log(FIXED_CLIENT_INFO, 'FIXED_CLIENT_INFO')
-
-  console.log(FORM_BEFORE_CHAT, 'FORM_BEFORE_CHAT')
   /**
    * State lưu user_id trong localStorage
    */

@@ -43,6 +43,8 @@ import {
   selectStatusAI,
   selectStatusIsInit,
   selectStatusPopup,
+  setEmbedPosition,
+  setEmbedPositionDetail,
   setGlobalPreviewUrl,
   setGlobalUnreadCount,
   setLatestMessageGlobal,
@@ -460,22 +462,29 @@ const ChatApp = ({
     /**
      * Lưu thông tin vị trí chatbox
      */
-    // dispatch(setEmbedPosition(RES?.data?.display_position.toLowerCase()))
-    // /** Lưu các giá trị vị trí từ page setting */
-    // /** Bottom */
-    // const BOTTOM = RES?.data?.bottom_distance
-    // /** Right */
-    // const RIGHT = RES?.data?.right_distance
-    // /** Left */
-    // const LEFT = RES?.data?.left_distance
+    dispatch(setEmbedPosition(RES?.data?.display_position.toLowerCase()))
+    /** Lưu các giá trị vị trí từ page setting */
+    /** Bottom */
+    const BOTTOM =
+      RES?.data?.bottom_distance != null
+        ? Math.min(RES.data.bottom_distance, 160)
+        : undefined
+    /** Căn Phải */
+    const RIGHT =
+      RES?.data?.right_distance != null
+        ? Math.min(RES.data.right_distance, 160)
+        : undefined
+    /** Cắn trái */
+    const LEFT =
+      RES?.data?.left_distance != null
+        ? Math.min(RES.data.left_distance, 160)
+        : undefined
     /**
      * Lưu thông tin chi tiết vị trí của chatbox
      */
-    // dispatch(
-    //   setEmbedPositionDetail({ bottom: BOTTOM, right: RIGHT, left: LEFT })
-    // )
-
-    // dispatch(setEmbedPosition('bottom_right'))
+    dispatch(
+      setEmbedPositionDetail({ bottom: BOTTOM, right: RIGHT, left: LEFT })
+    )
 
     /**
      *  Tạm ẩn để deploy lên production
