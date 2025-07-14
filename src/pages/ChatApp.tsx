@@ -1,5 +1,4 @@
 import { ChatAppProps, EmployeeList } from './type'
-import { ChevronDownIcon, HomeIcon } from '@heroicons/react/24/solid'
 import {
   closeSocketConnect,
   onSocketFromChatboxServer,
@@ -59,10 +58,12 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import { ReactComponent as ActiveMessage } from '@/assets/messageA.svg'
 import ChatScreen from '@/screens/ChatScreen/Chat/Chat'
+import { ChevronDownIcon } from '@heroicons/react/16/solid'
 import { ReactComponent as Close } from '@/assets/close.svg'
 import { ReactComponent as CloseSlate } from '@/assets/close-black.svg'
 import { Employee } from '@/components/ChatComponents/type'
 import Home from '@/screens/ChatScreen/Home'
+import { HomeIcon } from '@heroicons/react/24/solid'
 import { HomeIcon as HomeIconOutline } from '@heroicons/react/24/outline'
 import { ReactComponent as InactiveMessage } from '@/assets/message.svg'
 import { MessageInfo } from '@/utils/type'
@@ -1246,7 +1247,7 @@ const ChatApp = ({
                 </div>
                 <div
                   onClick={setHideForMobile}
-                  className={`cursor-pointer w-10 h-10 flex justify-center items-center  
+                  className={`cursor-pointer size-7 flex justify-center items-center  
                     ${
                       // CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
                       //   ? 'flex'
@@ -1684,7 +1685,7 @@ const ChatApp = ({
         </div>
         <div className="">
           {show ? (
-            <ChevronDownIcon className="size-6" />
+            <ChevronDownIcon className="size-8" />
           ) : (
             <img
               src={renderLogo(

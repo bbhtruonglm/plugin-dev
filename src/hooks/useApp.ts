@@ -156,6 +156,7 @@ export function useApp() {
 
   /** Trạng thái hiển thị Popup */
   const [is_show, setShow] = useState(false)
+
   /** Trạng thái hiển thị Popup tư vấn */
   const [type_consultation, setTypeConsultation] = useState(false)
   /** Page_id được lưu trong Store */
@@ -457,8 +458,11 @@ export function useApp() {
         if (STORED_PAGE_ID) {
           page_setting = await fetchPageSetting(STORED_PAGE_ID)
         }
+        /** Trạng thái mở popup lần đầu */
+        const AUTO_OPEN_INIT = page_setting?.auto_open || false
 
-        console.log(page_setting, 'PAGE_SETTING')
+        /** Cập nhật trạng thái */
+        setShow(AUTO_OPEN_INIT)
 
         /**  Lấy ngôn ngữ từ trình duyệt*/
         const BROWSER_LANGUAGE = navigator.language || navigator.languages[0]
