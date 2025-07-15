@@ -191,7 +191,7 @@ export const renderAvatarFromIdAgent = (
   /** Lấy ID của nhân viên */
   const ID_DETECT = id.split('__')[2]
   /** Nếu không có staff Id thì trả về '' */
-  console.log(ID_DETECT, 'ID_DETECT')
+  // console.log(ID_DETECT, 'ID_DETECT')
   /** Nếu không có staff Id thì trả về '' */
   if (!ID_DETECT) return ''
   /**
@@ -201,7 +201,7 @@ export const renderAvatarFromIdAgent = (
   /** Nếu có staff Id thì trả về link avatar */
   // return renderAvatarCDN(ID_DETECT)
   const LINK_AVATAR = renderAvatarCDN(ID_DETECT)
-  console.log(LINK_AVATAR, 'LINK_AVATAR ID_DETECT')
+  // console.log(LINK_AVATAR, 'LINK_AVATAR ID_DETECT')
   /** Trả về link avatar */
   return LINK_AVATAR
 }

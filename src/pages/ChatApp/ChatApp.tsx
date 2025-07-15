@@ -1,19 +1,11 @@
 import {
-  postMessageToParent,
   renderLogo,
   renderStaffName,
   saveQuickChatCount,
   saveQuickChatLatestMessage,
-  saveTimeClosePopup,
   truncateSentences,
   truncateString,
 } from '@/utils'
-import {
-  setGlobalUnreadCount,
-  setLatestMessageGlobal,
-  setListMessage,
-  setListUnreadMessage,
-} from '@/stores/appSlice'
 
 import { ReactComponent as ActiveMessage } from '@/assets/messageA.svg'
 import { ChatAppProps } from '../type'
@@ -84,7 +76,16 @@ const ChatApp = ({
     GLOBAL_PREVIEW_URL,
   } = useChatApp({ show })
   /** Các hàm action trong hooks */
-  const { userOutChat, onHomeNavigate, onClickMenu } = useChatAppAction({
+  const {
+    userOutChat,
+    onHomeNavigate,
+    onClickMenu,
+    handleClickQuickChat,
+    handleClickCloseQuickChat,
+    handleClickWelcomeMessage,
+    handleClickCloseWelcomeMessage,
+    handleTriggerLogo,
+  } = useChatAppAction({
     setCurrentTab,
     dispatch,
     PAGE_ID,
@@ -92,6 +93,13 @@ const ChatApp = ({
     saveQuickChatCount,
     saveQuickChatLatestMessage,
     setErrorMessage,
+    handleBtn,
+    POSITION_DETAIL,
+    POSITION,
+    setShowWelcomeMessage,
+    show,
+    current_tab,
+    IS_SHOW_HOME,
   })
 
   /**
@@ -285,19 +293,7 @@ const ChatApp = ({
                 </div>
                 <div
                   className="flex flex-col flex-grow min-w-0 h-full bg-white rounded-xl p-3 hover:bg-slate-50 cursor-pointer shadow-md"
-                  onClick={() => {
-                    /** Khi click trả lời sẽ  reset hết data trong store */
-                    dispatch(setLatestMessageGlobal(null))
-                    dispatch(setListUnreadMessage([]))
-                    dispatch(setListMessage([]))
-                    dispatch(setGlobalUnreadCount(0))
-                    /** Khi click vào trả lời, xoá unread_count */
-                    saveQuickChatCount(PAGE_ID, CLIENT_STORED, 0)
-                    /* Chuyển tab thành message */
-                    setCurrentTab('message')
-                    /** trigger hàm đóng mở popup */
-                    handleBtn()
-                  }}
+                  onClick={() => handleClickQuickChat()}
                 >
                   <div className="flex justify-between items-center w-full gap-x-1 flex-shrink-0">
                     {/* Phần hiển thị thông tin tin nhắn */}
@@ -336,27 +332,7 @@ const ChatApp = ({
 
                     {/* Nút đóng */}
                     <div
-                      onClick={(event) => {
-                        event.stopPropagation()
-                        dispatch(setLatestMessageGlobal(null))
-                        dispatch(setGlobalUnreadCount(0))
-                        saveTimeClosePopup(PAGE_ID)
-                        saveQuickChatLatestMessage(PAGE_ID, CLIENT_STORED, null)
-                        localStorage.setItem(
-                          `status_quick_chat__${PAGE_ID}`,
-                          'hide_quick_chat'
-                        )
-                        postMessageToParent(
-                          false,
-                          false,
-                          undefined,
-                          undefined,
-                          POSITION,
-                          POSITION_DETAIL?.bottom,
-                          POSITION_DETAIL?.right,
-                          POSITION_DETAIL?.left
-                        )
-                      }}
+                      onClick={(event) => handleClickCloseQuickChat(event)}
                       className="h-5 w-5 cursor-pointer flex justify-center items-center"
                     >
                       <CloseSlate className="h-3 w-3" />
@@ -372,20 +348,7 @@ const ChatApp = ({
               <div className="flex gap-x-2 h-11">
                 <div className="w-8 h-8"></div>
                 <div
-                  onClick={() => {
-                    /** Khi click trả lời sẽ  reset hết data trong store */
-                    dispatch(setLatestMessageGlobal(null))
-                    dispatch(setListUnreadMessage([]))
-                    dispatch(setListMessage([]))
-                    dispatch(setGlobalUnreadCount(0))
-                    /** Khi click vào trả lời, xoá unread_count */
-                    saveQuickChatCount(PAGE_ID, CLIENT_STORED, 0)
-
-                    /* Chuyển tab thành message */
-                    setCurrentTab('message')
-                    /** trigger hàm đóng mở popup */
-                    handleBtn()
-                  }}
+                  onClick={() => handleClickQuickChat()}
                   className="h-11 bg-white text-slate-400 text-sm flex w-full rounded-xl shadow-md p-3  items-center truncate overflow-hidden whitespace-nowrap"
                 >
                   {t('reply') +
@@ -410,41 +373,12 @@ const ChatApp = ({
       {show_welcome_message && (
         <div
           className="flex bg-white shadow-lg justify-between w-full gap-x-2 rounded-xl h-16 px-3 py-3 cursor-pointer hover:bg-gray-100"
-          onClick={() => {
-            /** Khi click trả lời sẽ  reset hết data trong store */
-            dispatch(setLatestMessageGlobal(null))
-            dispatch(setListUnreadMessage([]))
-            dispatch(setListMessage([]))
-            dispatch(setGlobalUnreadCount(0))
-            /**
-             * Khi click vào ẩn tin nhắn chào mừng,
-             */
-            setShowWelcomeMessage(false)
-            /** Khi click vào trả lời, xoá unread_count */
-            saveQuickChatCount(PAGE_ID, CLIENT_STORED, 0)
-            /* Chuyển tab thành message */
-            setCurrentTab('message')
-            /** trigger hàm đóng mở popup */
-            handleBtn()
-          }}
+          onClick={() => handleClickWelcomeMessage()}
         >
           <h4 className="text-sm line-clamp-2">{welcome_message?.message}</h4>
           {/* Nút đóng */}
           <div
-            onClick={(event) => {
-              event.stopPropagation()
-              postMessageToParent(
-                false,
-                false,
-                undefined,
-                undefined,
-                POSITION,
-                POSITION_DETAIL?.bottom,
-                POSITION_DETAIL?.right,
-                POSITION_DETAIL?.left
-              )
-              setShowWelcomeMessage(false)
-            }}
+            onClick={(event) => handleClickCloseWelcomeMessage(event)}
             className="h-6 w-6 cursor-pointer flex justify-center items-center hover:bg-gray-300 rounded-full p-2"
           >
             <CloseSlate className="h-3 w-3" />
@@ -453,51 +387,7 @@ const ChatApp = ({
       )}
       {/*  Nút trigger hiện thị bong bóng chat */}
       <button
-        onClick={() => {
-          setTimeout(() => {
-            /**
-             * Khi click vào
-             */
-            if (!show && (current_tab === 'message' || !IS_SHOW_HOME)) {
-              /**
-               * Khi click vào ẩn tin nhắn chào mừng,
-               */
-              setShowWelcomeMessage(false)
-              /** Khi click vào trả lời, xoá unread_count */
-              saveQuickChatCount(PAGE_ID, CLIENT_STORED, 0)
-
-              /** Reset hết data trong store */
-              dispatch(setLatestMessageGlobal(null))
-              dispatch(setListUnreadMessage([]))
-              dispatch(setListMessage([]))
-              dispatch(setGlobalUnreadCount(0))
-              postMessageToParent(
-                false,
-                false,
-                undefined,
-                undefined,
-                POSITION,
-                POSITION_DETAIL?.bottom,
-                POSITION_DETAIL?.right,
-                POSITION_DETAIL?.left
-              )
-            }
-            /**
-             * Khi click vào nút trigger,
-             * nếu đang ở tab message thì reset tin nhắn mới nhất và tin nhắn chưa đọc
-             */
-            handleBtn('no_toggle')
-            /**
-             * Reset tin nhắn mới nhất trong store
-             */
-            setErrorMessage('')
-            /**
-             * Reset tin nhắn mới nhất trong store
-             */
-            setShowWelcomeMessage(false)
-            /** Delay 200ms */
-          }, 200)
-        }}
+        onClick={() => handleTriggerLogo()}
         className={`absolute justify-center items-center bottom-4 ${
           POSITION === 'bottom_left'
             ? 'left-2'

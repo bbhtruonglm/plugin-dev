@@ -503,7 +503,7 @@ export function useApp() {
           /** Lưu vào store */
           dispatch(setShowForm(SHOW_FORM))
         }
-        console.log(page_setting, 'PAGE_SETTING')
+
         /** Show home page */
         const SHOW_HOME_PAGE = page_setting?.is_visible_home_page || false
         /**
