@@ -1136,7 +1136,7 @@ function useChatApp({ show }: { show: boolean }) {
     },
     [IS_PAGE_AVATAR, PAGE_AVATAR]
   )
-
+  /** Trả về các hàm sử dụng */
   return {
     getContainerLayout,
     GLOBAL_UNREAD_MESSAGE_COUNT,

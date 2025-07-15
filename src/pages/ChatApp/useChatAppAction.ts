@@ -17,12 +17,19 @@ function useChatAppAction({
   saveQuickChatLatestMessage,
   setErrorMessage,
 }: {
+  /** Hàm set current tab */
   setCurrentTab: React.Dispatch<React.SetStateAction<string>>
+  /** Hàm dispatch */
   dispatch: any
+  /** Page id */
   PAGE_ID: string
+  /** ID client  */
   CLIENT_STORED: string | null
+  /** Hàm set Số tin nhắn chưa đọc */
   saveQuickChatCount: any
+  /** Hàm set tin nhắn mới nhất */
   saveQuickChatLatestMessage: any
+  /** Hàm set Lỗi */
   setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>
 }) {
   /** Hàm thoát khỏi màn chat */
@@ -92,7 +99,7 @@ function useChatAppAction({
       }
     }
   }
-
+  /** Trả về các hàm sử dụng */
   return {
     userOutChat,
     onHomeNavigate,
