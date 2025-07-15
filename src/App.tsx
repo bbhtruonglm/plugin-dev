@@ -4,7 +4,7 @@ import './i18n'
 import { Route, Routes } from 'react-router-dom'
 
 import ActiveSDK from './pages/ActiveSDK'
-import ChatApp from './pages/ChatApp'
+import ChatApp from './pages/ChatApp/ChatApp'
 import { useApp } from './hooks/useApp'
 import { useChatHandlers } from './hooks/useChathandlers'
 

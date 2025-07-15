@@ -172,7 +172,8 @@ export function useApp() {
   const handleMessage = async (event: MessageEvent) => {
     /** @type {Object} PAYLOAD - Dữ liệu từ event */
     let PAYLOAD: any
-    console.log(event, 'event')
+
+    console.log('EVENT::', event)
     try {
       /** Nếu event.data là string, cố gắng parse nó */
       PAYLOAD =
@@ -181,7 +182,6 @@ export function useApp() {
       console.error('Lỗi khi parse event.data:', error)
       return
     }
-    console.log('EVENT::', event)
     /**
      * @type {string} user_name - Tên người dùng
      * @type {string} user_email - Email người dùng
@@ -781,8 +781,6 @@ export function useApp() {
   ) => {
     /** Nếu không có client_id hoặc page_id thì setClientName(null) */
     if (!client_id || !page_id) {
-      /** Set tên client là null */
-      // setClientName(null)
       /** Reset tên client */
       dispatch(setClientNameStore(undefined))
       return

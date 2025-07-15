@@ -1,4 +1,3 @@
-import { ChatAppProps, EmployeeList } from './type'
 import {
   closeSocketConnect,
   onSocketFromChatboxServer,
@@ -9,14 +8,9 @@ import {
   hasAttachmentOfType,
   postMessageToParent,
   renderAvatarFromId,
-  renderLogo,
   renderPosition,
-  renderStaffName,
   saveQuickChatCount,
   saveQuickChatLatestMessage,
-  saveTimeClosePopup,
-  truncateSentences,
-  truncateString,
 } from '@/utils'
 import {
   selectConsultationGlobal,
@@ -56,73 +50,15 @@ import {
 import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { ReactComponent as ActiveMessage } from '@/assets/messageA.svg'
-import ChatScreen from '@/screens/ChatScreen/Chat/Chat'
-import { ChevronDownIcon } from '@heroicons/react/16/solid'
-import { ReactComponent as Close } from '@/assets/close.svg'
-import { ReactComponent as CloseSlate } from '@/assets/close-black.svg'
 import { Employee } from '@/components/ChatComponents/type'
-import Home from '@/screens/ChatScreen/Home'
-import { HomeIcon } from '@heroicons/react/24/solid'
-import { HomeIcon as HomeIconOutline } from '@heroicons/react/24/outline'
-import { ReactComponent as InactiveMessage } from '@/assets/message.svg'
+import { EmployeeList } from '../type'
 import { MessageInfo } from '@/utils/type'
-import Modal from '@/components/ChatComponents/Modal/Modal'
 import { NetworkContext } from '@/components/NWProvider'
-import OnlineStaff from '@/components/Container/OnlineStaff'
-import TemplateMessageComponent from '@/components/ChatComponents/MessageComponent/TemplateMessageComponent'
-import TimeAgo from '@/components/TimeAgo'
 import { useTranslation } from 'react-i18next'
 
-const ChatApp = ({
-  handleBtn,
-  show,
-  setHideForMobile,
-  consultation,
-}: ChatAppProps) => {
+function useChatApp({ show }: { show: boolean }) {
   /** Dịch ngôn ngữ */
   const { t, i18n: I18N } = useTranslation()
-
-  /**
-   * Tab menu với các mục chính gồm:
-   * - Home
-   * - Message
-   * - Support (đã bị ẩn)
-   * - News (đã bị ẩn)
-   *
-   * @type {Array<Object>}
-   * @property {string} name - Tên của tab (hiển thị cho người dùng)
-   * @property {string} src - Đường dẫn đến icon không hoạt động (inactive)
-   * @property {string} value - Giá trị định danh của tab
-   * @property {string} srcA - Đường dẫn đến icon hoạt động (active)
-   *
-   */
-  const MENU_LIST = [
-    {
-      name: t('home'),
-      src: HomeIconOutline,
-      value: 'home',
-      srcA: HomeIcon,
-    },
-    {
-      name: t('message'),
-      src: InactiveMessage,
-      value: 'message',
-      srcA: ActiveMessage,
-    },
-    // {
-    //   name: 'Hỗ trợ',
-    //   src: inactiveSupport,
-    //   srcA: activeSupport,
-    //   value: 'support',
-    // },
-    // {
-    //   name: 'Tin tức',
-    //   src: inactiveNews,
-    //   srcA: activeNew,
-    //   value: 'news',
-    // },
-  ]
   /** org custom logo*/
   const ORG_ALLOW_LOGO = useSelector(selectOrgAllowLogo)
   /** link logo   */
@@ -450,7 +386,7 @@ const ChatApp = ({
     const RES = await fetchAPI(URL_READ.toString(), 'GET')
     /** lưu tên page vào state */
     setPageName(RES?.data?.name)
-    console.log(RES, 'RES asdfasdfasd')
+
     /** Nếu lỗi 403 thì hiện cờ  */
     if (RES?.code === 403) {
       setInvalidPageId(true)
@@ -540,7 +476,6 @@ const ChatApp = ({
       delay: RES?.data?.welcome_message?.delay * 1000 || 5000,
       is_active: RES?.data?.welcome_message?.is_active || false,
     })
-    console.log(RES, 'ress')
     console.log(I18N.language)
     /** Lưu thông tin biểu mẫu */
     setWebForm({
@@ -1202,519 +1137,45 @@ const ChatApp = ({
     [IS_PAGE_AVATAR, PAGE_AVATAR]
   )
 
-  return (
-    /** Hiển thị thông tin Layout cả SDK */
-    <div
-      className={`flex flex-col relative ${getContainerLayout(
-        show,
-        GLOBAL_UNREAD_MESSAGE_COUNT,
-        LATEST_MESSAGE,
-        CURRENT_WIDTH,
-        SHOW_QUICK_CHAT
-      )}`}
-    >
-      {/* Popup tin nhắn hiển thị nội dung chính */}
-      {show && (
-        <div
-          className={`flex flex-col ${getMainPopupLayout(
-            show,
-            GLOBAL_UNREAD_MESSAGE_COUNT,
-            CURRENT_WIDTH
-          )}`}
-        >
-          {/* header */}
-          {current_tab !== 'message' && (
-            <div
-              className={`flex justify-between items-center px-5 py-3 bg-slate-800 text-white ${
-                AI_STATUS || IS_VIEW_SCREEN ? 'hidden' : 'flex'
-              }`}
-            >
-              <div>
-                {/* <RetionLogo /> */}
-                <img
-                  src={renderLogo(ORG_ALLOW_LOGO, LOGO_PAGE_CUSTOM_BLACK, '')}
-                  alt="Logo Retion"
-                  width={30}
-                  height={30}
-                />
-              </div>
-
-              <div className="flex items-center gap-x-5">
-                <div className="flex items-center h-8">
-                  {SHOW_SUPPORT_STAFF && SHOW_SUPPORT_STAFF?.is_active && (
-                    <OnlineStaff data={EMPLOYEE_LIST} />
-                  )}
-                </div>
-                <div
-                  onClick={setHideForMobile}
-                  className={`cursor-pointer size-7 flex justify-center items-center  
-                    ${
-                      // CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
-                      //   ? 'flex'
-                      //   : 'hidden'
-                      ''
-                    }
-                      `}
-                >
-                  <Close />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* body check theo bien current tab de render data */}
-          <div
-            className={`flex flex-col h-full resize-none outline-none scrollbar-thin scrollbar-webkit overflow-y-auto overflow-x-hidden ${
-              IS_VIEW_SCREEN ? 'h-screen' : 'md:max-h-[600px]'
-            }  relative`}
-          >
-            {!IS_ONLINE && (
-              <div className="absolute top-28 left-[30%] text-xs bg-blue-300 p-2 rounded-lg text-white z-10">
-                {t('no_internet_connection')}
-              </div>
-            )}
-            {current_tab === 'home' && (
-              <Home
-                onNavigate={() => {
-                  setCurrentTab('message')
-                  /** 1. Reset Số tin nhắn chưa đọc localStorage */
-                  saveQuickChatCount(PAGE_ID, CLIENT_STORED, 0)
-                  /** 2. Reset tin nhắn mới nhất trong localStorage */
-                  saveQuickChatLatestMessage(PAGE_ID, CLIENT_STORED, null)
-                  /** 3. Set loading global */
-                  dispatch(setLoadingGlobal(true))
-                  /** 4. Reset danh sách tin nhắn chưa đọc trong Store */
-                  dispatch(setListUnreadMessage([]))
-                  /** 5. Reset unread count */
-                  dispatch(setGlobalUnreadCount(0))
-                }}
-                onError={() => {
-                  setErrorMessage(t('errorMessage'))
-                  setCurrentTab('message')
-                }}
-                social_link={social_link}
-                web_form={web_form}
-                social_description={social_description}
-              />
-            )}
-            {current_tab === 'message' && (
-              <ChatScreen
-                userOutChat={() => {
-                  /** Khi back ra thì về trang Home */
-                  setCurrentTab('home')
-                  /** Reset store khi thoát khỏi màn chat */
-                  /** 1. Tin nhắn mới nhất */
-                  dispatch(setLatestMessageGlobal(null))
-                  /** 2. Reset danh sách tin nhắn trong store */
-                  dispatch(setListMessage([]))
-                  /** 3. Reset Số tin nhắn chưa đọc localStorage */
-                  saveQuickChatCount(PAGE_ID, CLIENT_STORED, 0)
-                  /** 4. Reset tin nhắn mới nhất trong localStorage */
-                  saveQuickChatLatestMessage(PAGE_ID, CLIENT_STORED, null)
-                  /** 5. Reset danh sách tin nhắn chưa đọc trong Store */
-                  dispatch(setListUnreadMessage([]))
-                  /** 6. Reset unread count */
-                  dispatch(setGlobalUnreadCount(0))
-                }}
-                invalid_page_id_parent={invalid_page_id}
-                error_message={error_message}
-                onError={() => setErrorMessage('')}
-                setHideForMobile={setHideForMobile}
-                page_name={page_name}
-                employee_list={EMPLOYEE_LIST}
-                consultation={consultation}
-              />
-            )}
-          </div>
-
-          {/* Hiển thị Menu */}
-          {/* Nếu tab hiện tại không phải chat thì hiển thị menu */}
-          {current_tab !== 'message' && (
-            <div className="md:w-[400px] flex flex-shrink-0 h-16 flex-col justify-evenly">
-              <div className="p-2 h-16 w-full">
-                <div className="flex">
-                  {MENU_LIST.map(
-                    (
-                      { src: IconComponent, srcA: IconComponentA, value, name },
-                      index
-                    ) => (
-                      <div
-                        key={index}
-                        className="flex flex-col w-full h-full justify-center items-center cursor-pointer"
-                        onClick={() => {
-                          if (value !== 'message') {
-                            setCurrentTab(value)
-                          } else {
-                            setCurrentTab('message')
-                            /** Khi ấn vào tab message,
-                             * reset tin nhắn mới nhất
-                             * reset mảng tin nhắn chưa đọc
-                             * => Vì khi vào trong tab sẽ fetch api đọc tin nhắn,
-                             * => không cần các state này nữa
-                             *  */
-                            dispatch(setListUnreadMessage([]))
-                            dispatch(setLatestMessageGlobal(null))
-                            dispatch(setGlobalUnreadCount(0))
-                            dispatch(setLoadingGlobal(true))
-                            /** 4. Reset Số tin nhắn chưa đọc localStorage */
-                            saveQuickChatCount(PAGE_ID, CLIENT_STORED, 0)
-
-                            /** 5. Reset tin nhắn mới nhất trong localStorage */
-                            saveQuickChatLatestMessage(
-                              PAGE_ID,
-                              CLIENT_STORED,
-                              null
-                            )
-
-                            if (PAGE_ID === null) {
-                              /** Không có page_id thì tạo message Lỗi */
-                              setErrorMessage(t('errorMessage'))
-                            }
-                          }
-                        }}
-                      >
-                        <div className="relative">
-                          <div className="">
-                            {value === 'message' &&
-                              GLOBAL_UNREAD_MESSAGE_COUNT > 0 && (
-                                <div className="flex justify-center items-center text-xxs text-white border absolute right-0 top-0 w-4 h-4 bg-red-500 rounded-full translate-x-1 -translate-y-1">
-                                  {GLOBAL_UNREAD_MESSAGE_COUNT < 10
-                                    ? GLOBAL_UNREAD_MESSAGE_COUNT
-                                    : '9+'}
-                                </div>
-                              )}
-                          </div>
-                          {/* active menu tab */}
-                          {current_tab === value ? (
-                            <IconComponentA className="size-5" />
-                          ) : (
-                            <IconComponent className="size-5" />
-                          )}
-                        </div>
-                        <p className={'text-sm font-medium'}>{name}</p>
-                      </div>
-                    )
-                  )}
-                </div>
-                {/* Thông tin đơn vị phát triển */}
-                <h4 className="text-xs text-center text-slate-700">
-                  powered by{' '}
-                  <a
-                    href="https://retion.ai"
-                    className="underline"
-                    target="_blank"
-                  >
-                    Retion.ai
-                  </a>
-                </h4>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-      {/* Quick chat */}
-      <div
-        className={getQuickchatLayout(
-          show,
-          LATEST_MESSAGE,
-          GLOBAL_UNREAD_MESSAGE_COUNT,
-          SHOW_QUICK_CHAT
-        )}
-      >
-        <div className="flex h-full w-full">
-          {LATEST_MESSAGE?.message_type === 'page' && (
-            <div className="flex flex-col w-full gap-2">
-              {/* Hiển thị avatar theo role user / shop */}
-              <div
-                className={`flex gap-x-1 flex-grow min-h-0 justify-start items-end `}
-              >
-                <div className="flex flex-shrink-0 ">
-                  {LATEST_MESSAGE?.message_type === 'page' && (
-                    <img
-                      src={
-                        checkStaffExist(LATEST_MESSAGE?.message_metadata) ||
-                        './images/earth.svg'
-                      }
-                      className="w-8 h-8  mask-rounded-oval bg-gray-200"
-                      alt=""
-                    />
-                  )}
-                </div>
-                <div
-                  className="flex flex-col flex-grow min-w-0 h-full bg-white rounded-xl p-3 hover:bg-slate-50 cursor-pointer shadow-md"
-                  onClick={() => {
-                    /** Khi click trả lời sẽ  reset hết data trong store */
-                    dispatch(setLatestMessageGlobal(null))
-                    dispatch(setListUnreadMessage([]))
-                    dispatch(setListMessage([]))
-                    dispatch(setGlobalUnreadCount(0))
-                    /** Khi click vào trả lời, xoá unread_count */
-                    saveQuickChatCount(PAGE_ID, CLIENT_STORED, 0)
-                    /* Chuyển tab thành message */
-                    setCurrentTab('message')
-                    /** trigger hàm đóng mở popup */
-                    handleBtn()
-                  }}
-                >
-                  <div className="flex justify-between items-center w-full gap-x-1 flex-shrink-0">
-                    {/* Phần hiển thị thông tin tin nhắn */}
-                    <div className="flex justify-between w-full overflow-hidden">
-                      <div className="text-slate-500 text-xs font-medium flex items-center overflow-hidden flex-1">
-                        {/* Hiển thị tên nhân viên */}
-                        {IS_PAGE_AVATAR && (
-                          <div className="flex-shrink-0">
-                            <span>
-                              {truncateSentences(
-                                renderStaffName(
-                                  staff_list,
-                                  LATEST_MESSAGE?.message_metadata
-                                ),
-                                6
-                              )}
-                            </span>
-                            <span className="mx-0.5">{t('from')}</span>
-                          </div>
-                        )}
-
-                        {/* Hiển thị tên trang, có thể bị cắt ngắn nếu quá dài */}
-                        <span className="mx-0.5 truncate whitespace-nowrap overflow-hidden text-ellipsis flex-1">
-                          {!IS_PAGE_AVATAR
-                            ? page_name
-                            : truncateString(page_name, 10)}
-                        </span>
-                      </div>
-
-                      {/* Hiển thị thời gian tin nhắn */}
-                      <span className="text-slate-500 text-xs font-medium truncate flex items-center flex-shrink-0">
-                        <span className="mx-0.5">•</span>
-                        <TimeAgo timestamp={LATEST_MESSAGE?.createdAt} />
-                      </span>
-                    </div>
-
-                    {/* Nút đóng */}
-                    <div
-                      onClick={(event) => {
-                        event.stopPropagation()
-                        dispatch(setLatestMessageGlobal(null))
-                        dispatch(setGlobalUnreadCount(0))
-                        saveTimeClosePopup(PAGE_ID)
-                        saveQuickChatLatestMessage(PAGE_ID, CLIENT_STORED, null)
-                        localStorage.setItem(
-                          `status_quick_chat__${PAGE_ID}`,
-                          'hide_quick_chat'
-                        )
-                        postMessageToParent(
-                          false,
-                          false,
-                          undefined,
-                          undefined,
-                          POSITION,
-                          POSITION_DETAIL?.bottom,
-                          POSITION_DETAIL?.right,
-                          POSITION_DETAIL?.left
-                        )
-                      }}
-                      className="h-5 w-5 cursor-pointer flex justify-center items-center"
-                    >
-                      <CloseSlate className="h-3 w-3" />
-                    </div>
-                  </div>
-
-                  {/* Phần nội dung tin nhắn được hiển thị */}
-                  <div className="flex flex-grow min-h-0">
-                    <TemplateMessageComponent data={LATEST_MESSAGE} />
-                  </div>
-                </div>
-              </div>
-              <div className="flex gap-x-2 h-11">
-                <div className="w-8 h-8"></div>
-                <div
-                  onClick={() => {
-                    /** Khi click trả lời sẽ  reset hết data trong store */
-                    dispatch(setLatestMessageGlobal(null))
-                    dispatch(setListUnreadMessage([]))
-                    dispatch(setListMessage([]))
-                    dispatch(setGlobalUnreadCount(0))
-                    /** Khi click vào trả lời, xoá unread_count */
-                    saveQuickChatCount(PAGE_ID, CLIENT_STORED, 0)
-
-                    /* Chuyển tab thành message */
-                    setCurrentTab('message')
-                    /** trigger hàm đóng mở popup */
-                    handleBtn()
-                  }}
-                  className="h-11 bg-white text-slate-400 text-sm flex w-full rounded-xl shadow-md p-3  items-center truncate overflow-hidden whitespace-nowrap"
-                >
-                  {t('reply') +
-                    ' ' +
-                    (!IS_PAGE_AVATAR
-                      ? page_name
-                      : truncateSentences(
-                          renderStaffName(
-                            staff_list,
-                            LATEST_MESSAGE?.message_metadata
-                          ),
-                          6
-                        ))}
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Hiển thị tin nhắn chào mừng */}
-      {show_welcome_message && (
-        <div
-          className="flex bg-white shadow-lg justify-between w-full gap-x-2 rounded-xl h-16 px-3 py-3 cursor-pointer hover:bg-gray-100"
-          onClick={() => {
-            /** Khi click trả lời sẽ  reset hết data trong store */
-            dispatch(setLatestMessageGlobal(null))
-            dispatch(setListUnreadMessage([]))
-            dispatch(setListMessage([]))
-            dispatch(setGlobalUnreadCount(0))
-            /**
-             * Khi click vào ẩn tin nhắn chào mừng,
-             */
-            setShowWelcomeMessage(false)
-            /** Khi click vào trả lời, xoá unread_count */
-            saveQuickChatCount(PAGE_ID, CLIENT_STORED, 0)
-            /* Chuyển tab thành message */
-            setCurrentTab('message')
-            /** trigger hàm đóng mở popup */
-            handleBtn()
-          }}
-        >
-          <h4 className="text-sm line-clamp-2">{welcome_message?.message}</h4>
-          {/* Nút đóng */}
-          <div
-            onClick={(event) => {
-              event.stopPropagation()
-              postMessageToParent(
-                false,
-                false,
-                undefined,
-                undefined,
-                POSITION,
-                POSITION_DETAIL?.bottom,
-                POSITION_DETAIL?.right,
-                POSITION_DETAIL?.left
-              )
-              setShowWelcomeMessage(false)
-            }}
-            className="h-6 w-6 cursor-pointer flex justify-center items-center hover:bg-gray-300 rounded-full p-2"
-          >
-            <CloseSlate className="h-3 w-3" />
-          </div>
-        </div>
-      )}
-      {/*  Nút trigger hiện thị bong bóng chat */}
-      <button
-        onClick={() => {
-          setTimeout(() => {
-            /**
-             * Khi click vào
-             */
-            if (!show && (current_tab === 'message' || !IS_SHOW_HOME)) {
-              /**
-               * Khi click vào ẩn tin nhắn chào mừng,
-               */
-              setShowWelcomeMessage(false)
-              /** Khi click vào trả lời, xoá unread_count */
-              saveQuickChatCount(PAGE_ID, CLIENT_STORED, 0)
-
-              /** Reset hết data trong store */
-              dispatch(setLatestMessageGlobal(null))
-              dispatch(setListUnreadMessage([]))
-              dispatch(setListMessage([]))
-              dispatch(setGlobalUnreadCount(0))
-              postMessageToParent(
-                false,
-                false,
-                undefined,
-                undefined,
-                POSITION,
-                POSITION_DETAIL?.bottom,
-                POSITION_DETAIL?.right,
-                POSITION_DETAIL?.left
-              )
-            }
-            /**
-             * Khi click vào nút trigger,
-             * nếu đang ở tab message thì reset tin nhắn mới nhất và tin nhắn chưa đọc
-             */
-            handleBtn('no_toggle')
-            /**
-             * Reset tin nhắn mới nhất trong store
-             */
-            setErrorMessage('')
-            /**
-             * Reset tin nhắn mới nhất trong store
-             */
-            setShowWelcomeMessage(false)
-            /** Delay 200ms */
-          }, 200)
-        }}
-        className={`absolute justify-center items-center bottom-4 ${
-          POSITION === 'bottom_left'
-            ? 'left-2'
-            : GLOBAL_PREVIEW_URL
-            ? 'right-5 bottom-5'
-            : 'right-2'
-        }  h-12 w-12 bg-white shadow-lg rounded-full  hover:scale-110 ${
-          AI_STATUS || IS_VIEW_SCREEN ? 'hidden' : ''
-        }  ${
-          !show
-            ? ' flex z-30 '
-            : CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
-            ? ' hidden'
-            : ' flex z-30'
-        }`}
-      >
-        <div
-          className={`absolute ${
-            /** Khi không có tin nhắn, hoặc đang show, thì không hiện */
-            GLOBAL_UNREAD_MESSAGE_COUNT === 0 || show
-              ? 'hidden'
-              : 'flex justify-center items-center'
-          } text-white text-xs truncate right-0 top-0 bg-red-500 h-5 w-5 rounded-full border-2 border-white translate-x-1 -translate-y-1`}
-        >
-          {GLOBAL_UNREAD_MESSAGE_COUNT < 10
-            ? GLOBAL_UNREAD_MESSAGE_COUNT
-            : '9+'}
-        </div>
-        <div className="">
-          {show ? (
-            <ChevronDownIcon className="size-8" />
-          ) : (
-            <img
-              src={renderLogo(
-                ORG_ALLOW_LOGO,
-                LOGO_PAGE_CUSTOM,
-                './images/Logo_retion_embed.png'
-              )}
-              alt="Logo Retion"
-              width={30}
-              height={30}
-            />
-          )}
-        </div>
-      </button>
-      {/* Preview Ảnh */}
-      <Modal
-        is_open={!!GLOBAL_PREVIEW_URL}
-        onClose={handleCloseModal}
-      >
-        {GLOBAL_PREVIEW_URL && (
-          <img
-            src={GLOBAL_PREVIEW_URL}
-            className="max-w-[880px] min-w-96 w-full h-auto min-h-32 object-contain rounded-lg bg-slate-200"
-            alt="Full Attachment"
-          />
-        )}
-      </Modal>
-    </div>
-  )
+  return {
+    getContainerLayout,
+    GLOBAL_UNREAD_MESSAGE_COUNT,
+    LATEST_MESSAGE,
+    CURRENT_WIDTH,
+    SHOW_QUICK_CHAT,
+    getMainPopupLayout,
+    current_tab,
+    AI_STATUS,
+    IS_VIEW_SCREEN,
+    checkStaffExist,
+    ORG_ALLOW_LOGO,
+    LOGO_PAGE_CUSTOM_BLACK,
+    SHOW_SUPPORT_STAFF,
+    EMPLOYEE_LIST,
+    handleCloseModal,
+    IS_ONLINE,
+    setCurrentTab,
+    PAGE_ID,
+    CLIENT_STORED,
+    setErrorMessage,
+    social_link,
+    web_form,
+    social_description,
+    invalid_page_id,
+    error_message,
+    page_name,
+    getQuickchatLayout,
+    IS_PAGE_AVATAR,
+    staff_list,
+    POSITION,
+    POSITION_DETAIL,
+    show_welcome_message,
+    setShowWelcomeMessage,
+    welcome_message,
+    IS_SHOW_HOME,
+    LOGO_PAGE_CUSTOM,
+    GLOBAL_PREVIEW_URL,
+  }
 }
 
-export default ChatApp
+export default useChatApp
