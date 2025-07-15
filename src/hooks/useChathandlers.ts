@@ -1,20 +1,25 @@
 import { saveQuickChatLatestMessage, saveTimeClosePopup } from '@/utils'
 import { setConsultationGlobal, setGlobalPreviewUrl } from '@/stores/appSlice'
 
-import { useApp } from './useApp'
 import { useDispatch } from 'react-redux'
 
-export const useChatHandlers = () => {
-  /** Lấy hàm từ hook useApp */
-  const {
-    is_show,
-    setShow,
-    handleToggle,
-    handleOff,
-    PAGE_ID,
-    CLIENT_ID,
-    setTypeConsultation,
-  } = useApp()
+export const useChatHandlers = ({
+  is_show,
+  setShow,
+  handleToggle,
+  handleOff,
+  PAGE_ID,
+  CLIENT_ID,
+  setTypeConsultation,
+}: {
+  is_show: boolean
+  setShow: React.Dispatch<React.SetStateAction<boolean>>
+  handleToggle: () => void
+  handleOff: () => void
+  PAGE_ID: string
+  CLIENT_ID: string | null
+  setTypeConsultation: React.Dispatch<React.SetStateAction<boolean>>
+}) => {
   /** Hàm dispatch */
   const dispatch = useDispatch()
 
@@ -71,6 +76,5 @@ export const useChatHandlers = () => {
   return {
     handleBtn,
     setHideForMobile,
-    is_show,
   }
 }

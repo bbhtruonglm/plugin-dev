@@ -144,7 +144,7 @@ export function useApp() {
   }
 
   /** Lấy thông tin vị trí */
-  const POSTION = useSelector(selectEmbedPosition)
+  const POSITION = useSelector(selectEmbedPosition)
 
   /** Vị trí chi tiết của chatbox */
   const POSITION_DETAIL = useSelector(selectEmbedPositionDetail)
@@ -401,11 +401,11 @@ export function useApp() {
      */
     const fetchData = async () => {
       try {
-        /** @type {string} Lấy url của page cha */
+        /** Lấy url của page cha */
         const FULL_SRC = window.location.href
-        /** @type {URL} URL_PARENT - URL của page cha */
+        /** URL_PARENT - URL của page cha đúng dạng URL*/
         const URL_PARENT = new URL(FULL_SRC)
-        /** @type {URLSearchParams} URL_PARAMS - Tham số của URL */
+        /** URL_PARAMS - Tham số của URL */
         const URL_PARAMS = new URLSearchParams(window.location.search)
 
         console.log('URL_PARENT::', URL_PARENT)
@@ -419,9 +419,7 @@ export function useApp() {
          */
         if (STORED_PAGE_ID === '860086820907512') {
           // if (STORED_PAGE_ID === '388339911461476') {
-          /**
-           * Lưu trạng thái logo trong store
-           */
+          /** Lưu trạng thái logo trong store*/
           dispatch(setOrgAllowLogo(true))
           /** Lưu logo trong store */
           dispatch(setPageLogo('./images/Logo_AIG.svg'))
@@ -450,11 +448,8 @@ export function useApp() {
         setShow(IS_AI || IS_VIEW_SCREEN)
         /** Khai báo cài đặt trang */
         let page_setting = {} as any
-        /** Nếu có page_id thì lấy cài đặt trang */
 
-        /** Nếu có page_id
-         * Lấy cài đặt trang
-         */
+        /** Nếu có page_id ====> call API Lấy cài đặt trang */
         if (STORED_PAGE_ID) {
           page_setting = await fetchPageSetting(STORED_PAGE_ID)
         }
@@ -466,8 +461,6 @@ export function useApp() {
 
         /**  Lấy ngôn ngữ từ trình duyệt*/
         const BROWSER_LANGUAGE = navigator.language || navigator.languages[0]
-
-        console.log(BROWSER_LANGUAGE) // Ví dụ: "vi-VN", "en-US", "ja-JP"
 
         /** Nếu chỉ cần mã ngôn ngữ chính (không có region) */
         const PRIMARY_LANGUAGE = BROWSER_LANGUAGE.split('-')[0]
@@ -740,7 +733,7 @@ export function useApp() {
         console.error('Error fetching data:', error)
       }
     }
-
+    /** Goi Hàm xử lý */
     fetchData()
   }, [])
 
@@ -754,7 +747,7 @@ export function useApp() {
       false,
       undefined,
       undefined,
-      POSTION,
+      POSITION,
       POSITION_DETAIL?.bottom,
       POSITION_DETAIL?.right,
       POSITION_DETAIL?.left
@@ -771,7 +764,7 @@ export function useApp() {
       false,
       undefined,
       undefined,
-      POSTION,
+      POSITION,
       POSITION_DETAIL?.bottom,
       POSITION_DETAIL?.right,
       POSITION_DETAIL?.left

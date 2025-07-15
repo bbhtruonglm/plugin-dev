@@ -10,9 +10,26 @@ import { useChatHandlers } from './hooks/useChathandlers'
 
 function App() {
   /** Lấy thông tin từ hook useApp */
-  const { type_consultation } = useApp()
+  const {
+    type_consultation,
+    setShow,
+    handleToggle,
+    handleOff,
+    PAGE_ID,
+    CLIENT_ID,
+    setTypeConsultation,
+    is_show,
+  } = useApp()
   /** Lấy hàm từ hook useChatHandlers */
-  const { setHideForMobile, handleBtn, is_show } = useChatHandlers()
+  const { setHideForMobile, handleBtn } = useChatHandlers({
+    is_show,
+    setShow,
+    handleToggle,
+    handleOff,
+    PAGE_ID,
+    CLIENT_ID,
+    setTypeConsultation,
+  })
   return (
     <div
       className="flex flex-col justify-center items-center w-full h-full overflow-hidden px-5"
