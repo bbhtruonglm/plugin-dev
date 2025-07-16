@@ -176,7 +176,7 @@ const ChatApp = ({
           />
           {/* body check theo bien current tab de render data */}
           <div
-            className={`relative flex flex-col h-full resize-none outline-none scrollbar-thin scrollbar-webkit overflow-y-auto overflow-x-hidden ${
+            className={`relative flex flex-col h-full resize-none outline-none scrollbar-thin scrollbar-webkit overflow-hidden overflow-y-auto ${
               IS_VIEW_SCREEN ? 'h-screen' : 'md:max-h-[600px]'
             }`}
           >

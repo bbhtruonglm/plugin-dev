@@ -4,6 +4,7 @@ import { ChevronDownIcon } from '@heroicons/react/24/solid'
 import { ReactComponent as Close } from '@/assets/close.svg'
 import InitClient from '../Body/InitClient'
 import InputChat from '../Body/InputChat/InputChat'
+import InputChatNoUI from '../Body/InputChat/InputChatNoUI'
 import Loading from '../../Loading/Loading'
 import LoadingDots from '../../Loading/LoadingDot'
 import LoadingJumping from '../../Loading/LoadingJumping'
@@ -67,7 +68,7 @@ function DetailChat({
   })
   return (
     <div
-      className={`flex flex-col w-full h-full ${
+      className={`flex flex-col w-full h-full   ${
         AI_STATUS && 'bg-ai-bg'
       }  relative `}
     >
@@ -271,7 +272,7 @@ function DetailChat({
         )}
 
       {/* ô input  Khi có text trong input thì hiển thị thêm icon send */}
-      {user_id && (
+      {user_id ? (
         <InputChat
           error_message={error_message}
           handleSend={(e: string) => {
@@ -286,6 +287,8 @@ function DetailChat({
             setErrorUpload(e)
           }}
         />
+      ) : (
+        <InputChatNoUI />
       )}
     </div>
   )
