@@ -8,9 +8,6 @@ function SendMessage({ onNavigate, onError }: SendMessageProps) {
   /** danh sách id page */
   const PAGE_ID = useSelector(selectPageId)
 
-  /** Số tin nhắn chưa đọc lấy trong STORE */
-  const GLOBAL_UNREAD_COUNT = useSelector(selectGlobalUnreadCount)
-
   return (
     <div
       onClick={() => {
@@ -30,13 +27,6 @@ function SendMessage({ onNavigate, onError }: SendMessageProps) {
       <div>
         <h4 className="text-base font-semibold flex items-center gap-x-1">
           {t('sendUs')}
-          {/* <span
-            className={`text-white bg-red-500 text-xxs rounded-full h-4 w-4 ${
-              !GLOBAL_UNREAD_COUNT ? 'hidden' : 'block'
-            } flex justify-center items-center`}
-          >
-            {GLOBAL_UNREAD_COUNT < 10 ? GLOBAL_UNREAD_COUNT : '9+'}
-          </span> */}
         </h4>
         <h5 className="flex gap-2 items-center text-sm text-onlineColor">
           <div className="w-3 h-3 rounded-full bg-onlineColor"></div>

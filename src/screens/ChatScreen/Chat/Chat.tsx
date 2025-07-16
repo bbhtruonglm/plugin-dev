@@ -1,5 +1,5 @@
 import { ChatProps } from '../type'
-import DetailChat from '@/components/ChatComponents/DetailChat'
+import DetailChat from '@/components/ChatComponents/DetailChat/DetailChat'
 import { useChatClient } from './useChatClient'
 
 function ChatScreen({

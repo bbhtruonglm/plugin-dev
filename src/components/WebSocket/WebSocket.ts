@@ -125,16 +125,16 @@ export function onSocketFromChatboxServer({
     if (!size(socket_data)) return
     /** Lấy tin nhắn từ socket */
     let { message, sender_action } = socket_data
-    console.log(sender_action, 'socket data')
+    // console.log(sender_action, 'socket data')
     /** Nếu có trạng thái typing */
     if (sender_action === 'typing_on') {
       /** Nếu có trạng thái typing thì hiển thị */
-      console.log('typing_on')
+      // console.log('typing_on')
       dispatch(setTypingStatus(true))
     }
     if (sender_action === 'typing_off') {
       /** Nếu có trạng thái typing thì hiển thị */
-      console.log('typing_off')
+      // console.log('typing_off')
       dispatch(setTypingStatus(false))
     }
 
@@ -199,7 +199,6 @@ export function onSocketFromChatboxServer({
     if (message && IS_SHOW_REF.current && TAB_REF.current === 'message') {
       /** Không nhận tin nhắn từ hệ thống */
       if (message?.message_type !== 'system') {
-        console.log(message, 'message sockettttt')
         dispatch(setLatestMessageGlobal(message))
         /** Cần lưu ý (với data của redux, WS đang lưu giá trị [] ban đầu)
          * Vì Latest mesage chỉ gọi hàm setListMessage
@@ -249,7 +248,6 @@ export function closeSocketConnect(
   WS: React.MutableRefObject<WebSocket | null>,
   setIsForceCloseSocket: React.Dispatch<React.SetStateAction<boolean>>
 ) {
-  console.log('hehee')
   /** Gắn cờ ngăn chặn kết nối tự động mở lại */
   setIsForceCloseSocket(true)
   /** Đóng kết nối WebSocket hiện tại */

@@ -172,7 +172,7 @@ export function useApp() {
     /** @type {Object} PAYLOAD - Dữ liệu từ event */
     let PAYLOAD: any
 
-    console.log('EVENT::', event)
+    // console.log('EVENT::', event)
     try {
       /** Nếu event.data là string, cố gắng parse nó */
       PAYLOAD =
@@ -406,8 +406,6 @@ export function useApp() {
         /** URL_PARAMS - Tham số của URL */
         const URL_PARAMS = new URLSearchParams(window.location.search)
 
-        console.log('URL_PARENT::', URL_PARENT)
-
         /** Lấy page_id */
         const STORED_PAGE_ID = URL_PARENT.searchParams.get('page_id') || null
 
@@ -437,9 +435,6 @@ export function useApp() {
         /** Lưu trạng thái view screen vào store */
         dispatch(setIsViewScreen(IS_VIEW_SCREEN))
 
-        console.log(IS_VIEW_SCREEN, 'IS_VIEW_SCREEN')
-
-        console.log(IS_AI, 'IS_AI')
         /** Cập nhật trạng thái hiển thị popup
          * Nếu có AI hoặc view screen thì luôn mở popup
          */

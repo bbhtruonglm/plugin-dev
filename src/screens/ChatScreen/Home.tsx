@@ -73,10 +73,6 @@ function Home({
           social_description={social_description[I18N.language]}
         />
       )}
-      {/* Giới thiệu AI */}
-      {/* <IntroAI /> */}
-      {/* Tìm kiếm trợ giúp */}
-      {/* <Help /> */}
     </div>
   )
 }

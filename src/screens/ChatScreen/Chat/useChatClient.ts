@@ -14,8 +14,6 @@ import {
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { t } from 'i18next'
-
 /**
  * Kiểu dữ liệu khởi tạo input
  */
@@ -128,29 +126,6 @@ export function useChatClient(invalid_page_id_parent?: boolean) {
     if (client_id) fetchClientData(client_id, PAGE_ID)
   }, [client_id])
 
-  /** AI mode init client */
-  // useEffect(() => {
-  //   /**
-  //    * Kiểm tra USER_INFO có chứa ít nhất một giá trị thực
-  //    */
-  //   const HAS_VALID_USER = USER_INFO && USER_INFO?.client_id?.trim()
-  //   if (
-  //     AI_STATUS &&
-  //     !GLOBAL_CLIENT_ID &&
-  //     PAGE_ID &&
-  //     HAS_VALID_USER &&
-  //     !IS_VIEW_SCREEN
-  //   ) {
-  //     const PARAMS: INIT_INPUT = {
-  //       page_id: PAGE_ID,
-  //       client_id: USER_INFO.client_id,
-  //     }
-  //     /**
-  //      * Gọi hàm khởi tạo client id
-  //      */
-  //     initGetClientId(PARAMS)
-  //   }
-  // }, [AI_STATUS, GLOBAL_CLIENT_ID, PAGE_ID, USER_INFO, IS_VIEW_SCREEN])
   /** Token */
   const LATEST_TOKEN = useRef<symbol | null>(null)
   /**
@@ -281,14 +256,6 @@ export function useChatClient(invalid_page_id_parent?: boolean) {
   )
 
   useEffect(() => {
-    console.log(
-      'first',
-      AI_STATUS,
-      GLOBAL_CLIENT_ID,
-      PAGE_ID,
-      USER_INFO,
-      GLOBAL_CONSULTATION
-    )
     if (
       AI_STATUS &&
       !GLOBAL_CLIENT_ID &&
@@ -304,22 +271,6 @@ export function useChatClient(invalid_page_id_parent?: boolean) {
         client_id: USER_INFO.client_id,
       })
     }
-    // if (
-    //   GLOBAL_CONSULTATION &&
-    //   !GLOBAL_CLIENT_ID &&
-    //   PAGE_ID &&
-    //   // USER_INFO?.client_id?.trim() &&
-    //   !IS_VIEW_SCREEN
-    // ) {
-    //   /**
-    //    * Gọi hàm khởi tạo client
-    //    */
-    //   safeInitGetClientId({
-    //     page_id: PAGE_ID,
-    //     // client_id: USER_INFO.client_id,
-    //     name: t('anynomous'),
-    //   })
-    // }
   }, [
     AI_STATUS,
     GLOBAL_CLIENT_ID,
@@ -362,65 +313,6 @@ export function useChatClient(invalid_page_id_parent?: boolean) {
     }
   }, [CLIENT_ID, USER_INFO, AI_STATUS])
 
-  /** Init client id */
-  // const initGetClientId = useCallback(
-  //   async (value: INIT_INPUT) => {
-  //     try {
-  //       /** Set loading */
-  //       setLoading(true)
-  //       /** Tạo đối tượng URL từ chuỗi init URL client */
-  //       const URL_CLIENT = new URL(INIT_CLIENT_API)
-  //       /**
-  //        * Gán chuỗi truy vấn vào URL
-  //        */
-  //       URL_CLIENT.search = new URLSearchParams(value as any).toString()
-  //       /** Lấy client_ID */
-  //       const RES = await fetch(URL_CLIENT.toString(), { method: 'GET' })
-  //       /** Chuyển đổi dữ liệu trả về thành JSON*/
-  //       const RESULT = await RES.json()
-  //       /**  Nếu lỗi 403 thì lưu lại chuỗi rỗng*/
-  //       if (RESULT.code === 403) {
-  //         /** Nếu lỗi thì lưu lại chuỗi rỗng */
-  //         localStorage.setItem(`client_id_${PAGE_ID}`, '')
-  //         /** Báo lỗi page_id không hợp lệ*/
-  //         setInvalidPageId(true)
-
-  //         return
-  //       }
-  //       /** Client Id */
-  //       const NEW_CLIENT_ID = RESULT.data
-  //       /** luu vao state */
-  //       setClientId(NEW_CLIENT_ID)
-  //       /** Lưu client_id */
-  //       localStorage.setItem(`client_id_${PAGE_ID}`, NEW_CLIENT_ID)
-  //       /** Set status init client thành true*/
-  //       dispatch(setStatusIsInit(true))
-  //       /** Set global client id*/
-  //       dispatch(setGlobalClientId(NEW_CLIENT_ID))
-  //       /** Lưu tên client vào store */
-  //       dispatch(setClientNameStore(value?.name))
-  //       /** Sau khi khởi tạo client thì xoá hết thông tin trong store*/
-  //       dispatch(
-  //         setUserInfo({
-  //           user_name: '',
-  //           user_phone: '',
-  //           user_email: '',
-  //           client_id: '',
-  //         })
-  //       )
-  //       if (AI_STATUS) return
-  //       /** Set is init thành true*/
-  //       setIsInit(true)
-  //       /** Xoá báo lỗi page_id không hợp lệ*/
-  //       setInvalidPageId(false)
-  //     } catch (err) {
-  //       console.error('initGetClientId error:', err)
-  //     } finally {
-  //       setLoading(false)
-  //     }
-  //   },
-  //   [INIT_CLIENT_API, dispatch, PAGE_ID]
-  // )
   /**
    * Hàm lấy dữ liệu client
    * @param {string} client_id - ID client

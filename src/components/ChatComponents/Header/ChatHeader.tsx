@@ -44,11 +44,10 @@ function ChatHeader({
    * Hiển thị avatar nhân viên/page
    */
   const IS_AVATAR = useSelector(selectIsAvatar)
-  console.log(IS_AVATAR, 'is avatar')
 
   /**Show support staff */
   const SHOW_SUPPORT_STAFF = useSelector(selectShowSupportStaff)
-  console.log(SHOW_SUPPORT_STAFF, 'show support staff')
+
   /**
    * link avatar cua page
    */
@@ -78,7 +77,7 @@ function ChatHeader({
    * Trạng thái hiện thị home page
    */
   useEffect(() => {
-    console.log(IS_SHOW_HOME, 'is show home')
+    /** Hiện thị trang chủ */
     setIsShowHome(IS_SHOW_HOME || false)
   }, [IS_SHOW_HOME])
 

@@ -265,8 +265,7 @@ function useChatApp({ show }: { show: boolean }) {
         setShowWelcomeMessage(false)
         return
       }
-      console.log(isEmpty(LATEST_MESSAGE), 'isEmpty(LATEST_MESSAGE)')
-      console.log(SHOW_QUICK_CHAT, 'SHOW_QUICK_CHAT')
+
       /**
        * Nếu không có tin nhắn mới nhất và trạng thái show_quick_chat
        */
@@ -423,22 +422,6 @@ function useChatApp({ show }: { show: boolean }) {
       setEmbedPositionDetail({ bottom: BOTTOM, right: RIGHT, left: LEFT })
     )
 
-    /**
-     *  Tạm ẩn để deploy lên production
-     */
-    // /**
-    //  * Lưu thông tin vị trí chatbox
-    //  */
-    // dispatch(setEmbedPosition('bottom_right'))
-    // /**
-    //  * Lưu thông tin chi tiết vị trí của chatbox
-    //  */
-    // dispatch(setEmbedPositionDetail({ bottom: 4, right: 12, left: 12 }))
-
-    // // dispatch(setEmbedPosition('bottom_right'))
-
-    // postMessagePosition('bottom_right')
-
     // /**
     //  * Gửi list path sang SDK
     //  */
@@ -481,10 +464,6 @@ function useChatApp({ show }: { show: boolean }) {
     setWebForm({
       is_active: RES?.data?.web_form?.is_active || false,
       source: RES?.data?.web_form?.source || {},
-      // source:
-      //   RES?.data?.web_form?.source?.[
-      //     renderLocale(I18N.language) || RES?.data?.default_language || 'vi'
-      //   ] || {},
     })
 
     /** Lưu danh sách nhân viên */
