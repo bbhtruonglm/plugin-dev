@@ -89,8 +89,6 @@ function DetailChat({
    */
   const CURRENT_USER_ID = useSelector(selectCurrentUserId)
 
-  console.log(CURRENT_USER_ID, 'CURRENT_USER_ID')
-
   /** hàm dispatch đến store */
   const dispatch = useDispatch()
   /**
@@ -720,12 +718,6 @@ function DetailChat({
     },
     [employee_list, IS_PAGE_AVATAR, PAGE_AVATAR]
   )
-  const [url, setUrl] = useState('')
-
-  useEffect(() => {
-    console.log(window.location, 'window.location.href')
-    setUrl(window.location.href)
-  }, [])
 
   return (
     <div

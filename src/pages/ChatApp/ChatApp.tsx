@@ -142,7 +142,7 @@ const ChatApp = ({
     //   value: 'news',
     // },
   ]
-
+  console.log(show, 'show')
   return (
     /** Hiển thị thông tin Layout cả SDK */
     <div

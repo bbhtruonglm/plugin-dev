@@ -138,7 +138,6 @@ export function useApp() {
     /** khai báo biến lưu trữ dữ liệu khách hàng + init dữ liệu lần đầu */
     let client = await WIDGET.getClientInfo()
 
-    console.log(client, 'heheheh')
     /** Trả về client */
     return client
   }
@@ -203,7 +202,6 @@ export function useApp() {
       reset_conversation,
       reset_page_id,
     } = PAYLOAD
-    console.log('DATA::', PAYLOAD)
 
     /** Nếu từ chatbox và là tin nhắn từ khách hàng thì gửi tin nhắn suggest
      * AI_AGENT
@@ -454,10 +452,12 @@ export function useApp() {
           page_setting = await fetchPageSetting(STORED_PAGE_ID)
         }
         /** Trạng thái mở popup lần đầu */
-        const AUTO_OPEN_INIT = page_setting?.auto_open || false
+        if (!IS_AI && !IS_VIEW_SCREEN) {
+          const AUTO_OPEN_INIT = page_setting?.auto_open || false
 
-        /** Cập nhật trạng thái */
-        setShow(AUTO_OPEN_INIT)
+          /** Cập nhật trạng thái */
+          setShow(AUTO_OPEN_INIT)
+        }
 
         /**  Lấy ngôn ngữ từ trình duyệt*/
         const BROWSER_LANGUAGE = navigator.language || navigator.languages[0]
