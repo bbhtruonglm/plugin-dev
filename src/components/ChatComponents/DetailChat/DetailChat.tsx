@@ -68,7 +68,7 @@ function DetailChat({
   })
   return (
     <div
-      className={`flex flex-col w-full h-full   ${
+      className={`flex flex-col w-full h-full ${
         AI_STATUS && 'bg-ai-bg'
       }  relative `}
     >

@@ -12,6 +12,7 @@ import {
   setCurrentHeight,
   setCurrentUserId,
   setCurrentWidth,
+  setCustomBackground,
   setFixedDataClient,
   setGlobalClientId,
   setGlobalUnreadCount,
@@ -452,6 +453,11 @@ export function useApp() {
 
           /** Cập nhật trạng thái */
           setShow(AUTO_OPEN_INIT)
+        }
+
+        if (!IS_AI) {
+          const CUSTOM_BACKGROUND = page_setting?.custom_background || false
+          dispatch(setCustomBackground(CUSTOM_BACKGROUND))
         }
 
         /**  Lấy ngôn ngữ từ trình duyệt*/

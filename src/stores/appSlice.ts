@@ -57,6 +57,7 @@ const INITIAL_STATE: AppState = {
   current_user_id: undefined,
   fixed_data_client: undefined,
   consultation_global: undefined,
+  is_custom_background: false,
 }
 
 export const appSlice = createSlice({
@@ -273,6 +274,11 @@ export const appSlice = createSlice({
     setConsultationGlobal: (state, action: PayloadAction<boolean>) => {
       state.consultation_global = action.payload
     },
+
+    /** Set custom background */
+    setCustomBackground: (state, action: PayloadAction<boolean>) => {
+      state.is_custom_background = action.payload
+    },
   },
 })
 
@@ -318,6 +324,7 @@ export const {
   setFixedDataClient,
   setConsultationGlobal,
   setPageLogoBlack,
+  setCustomBackground,
 } = appSlice.actions
 
 /** chọn đến page id */
@@ -449,5 +456,9 @@ export const selectFixedDataClient = (state: RootState) =>
 /** Trạng thái consultation */
 export const selectConsultationGlobal = (state: RootState) =>
   state.app.consultation_global
+
+/** Custom background */
+export const selectCustomBackground = (state: RootState) =>
+  state.app.is_custom_background
 
 export default appSlice.reducer

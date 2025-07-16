@@ -179,6 +179,8 @@ export interface AppState {
   fixed_data_client?: any
   /** Consultation */
   consultation_global?: any
+  /**  is_custom_background */
+  is_custom_background?: boolean
 }
 /** Định nghĩa kiểu dữ liệu cho danh sách nhân viên */
 interface EmployeeList {

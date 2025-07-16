@@ -16,6 +16,7 @@ import {
   selectConsultationGlobal,
   selectCurrentHeight,
   selectCurrentWidth,
+  selectCustomBackground,
   selectEmbedPosition,
   selectEmbedPositionDetail,
   selectGlobalClientId,
@@ -114,6 +115,8 @@ function useChatApp({ show }: { show: boolean }) {
 
   /** Trạng thái consultation */
   const GLOBAL_CONSULTATION = useSelector(selectConsultationGlobal)
+  /** CUSTOM BACKGROUND */
+  const IS_CUSTOM_BACKGROUND = useSelector(selectCustomBackground)
 
   useEffect(() => {
     /** Trạng thái refresh data thì đóng web socket */
@@ -941,8 +944,9 @@ function useChatApp({ show }: { show: boolean }) {
     const HAS_NO_UNREAD_MESSAGE = GLOBAL_UNREAD_MESSAGE_COUNT === 0
 
     /** CSS Base */
-    const BASE_CLASSES =
-      'flex justify-between relative bg-bg-gradient overflow-hidden shadow-md'
+    const BASE_CLASSES = `flex justify-between relative  ${
+      !IS_CUSTOM_BACKGROUND ? ' bg-bg-gradient ' : ' bg-slate-400 '
+    }  overflow-hidden shadow-md`
     /** CSS Size */
     const SIZE_CLASSES = IS_MOBILE
       ? 'w-screen h-screen rounded-none'
@@ -1154,6 +1158,7 @@ function useChatApp({ show }: { show: boolean }) {
     IS_SHOW_HOME,
     LOGO_PAGE_CUSTOM,
     GLOBAL_PREVIEW_URL,
+    IS_CUSTOM_BACKGROUND,
   }
 }
 

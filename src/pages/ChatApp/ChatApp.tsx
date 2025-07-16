@@ -1,3 +1,4 @@
+import { ChevronDownIcon, XMarkIcon } from '@heroicons/react/16/solid'
 import {
   renderLogo,
   renderStaffName,
@@ -10,7 +11,6 @@ import {
 import { ReactComponent as ActiveMessage } from '@/assets/messageA.svg'
 import { ChatAppProps } from '../type'
 import ChatScreen from '@/screens/ChatScreen/Chat/Chat'
-import { ChevronDownIcon } from '@heroicons/react/16/solid'
 import { ReactComponent as CloseSlate } from '@/assets/close-black.svg'
 import Header from './components/Header'
 import Home from '@/screens/ChatScreen/Home'
@@ -74,6 +74,7 @@ const ChatApp = ({
     IS_SHOW_HOME,
     LOGO_PAGE_CUSTOM,
     GLOBAL_PREVIEW_URL,
+    IS_CUSTOM_BACKGROUND,
   } = useChatApp({ show })
   /** Các hàm action trong hooks */
   const {
@@ -292,13 +293,17 @@ const ChatApp = ({
                   )}
                 </div>
                 <div
-                  className="flex flex-col flex-grow min-w-0 h-full bg-white rounded-xl p-3 hover:bg-slate-50 cursor-pointer shadow-md"
+                  className={`flex flex-col flex-grow min-w-0 h-full ${
+                    IS_CUSTOM_BACKGROUND
+                      ? 'bg-slate-400 hover:bg-slate-500 text-white'
+                      : 'bg-white hover:bg-slate-50 text-slate-500'
+                  } rounded-xl p-3  cursor-pointer shadow-md`}
                   onClick={() => handleClickQuickChat()}
                 >
                   <div className="flex justify-between items-center w-full gap-x-1 flex-shrink-0">
                     {/* Phần hiển thị thông tin tin nhắn */}
                     <div className="flex justify-between w-full overflow-hidden">
-                      <div className="text-slate-500 text-xs font-medium flex items-center overflow-hidden flex-1">
+                      <div className=" text-xs font-medium flex items-center overflow-hidden flex-1">
                         {/* Hiển thị tên nhân viên */}
                         {IS_PAGE_AVATAR && (
                           <div className="flex-shrink-0">
@@ -324,7 +329,7 @@ const ChatApp = ({
                       </div>
 
                       {/* Hiển thị thời gian tin nhắn */}
-                      <span className="text-slate-500 text-xs font-medium truncate flex items-center flex-shrink-0">
+                      <span className=" text-xs font-medium truncate flex items-center flex-shrink-0">
                         <span className="mx-0.5">•</span>
                         <TimeAgo timestamp={LATEST_MESSAGE?.createdAt} />
                       </span>
@@ -335,12 +340,12 @@ const ChatApp = ({
                       onClick={(event) => handleClickCloseQuickChat(event)}
                       className="h-5 w-5 cursor-pointer flex justify-center items-center"
                     >
-                      <CloseSlate className="h-3 w-3" />
+                      <XMarkIcon className="size-5" />
                     </div>
                   </div>
 
                   {/* Phần nội dung tin nhắn được hiển thị */}
-                  <div className="flex flex-grow min-h-0">
+                  <div className="flex flex-grow min-h-0 ">
                     <TemplateMessageComponent data={LATEST_MESSAGE} />
                   </div>
                 </div>
@@ -349,7 +354,11 @@ const ChatApp = ({
                 <div className="w-8 h-8"></div>
                 <div
                   onClick={() => handleClickQuickChat()}
-                  className="h-11 bg-white text-slate-400 text-sm flex w-full rounded-xl shadow-md p-3  items-center truncate overflow-hidden whitespace-nowrap"
+                  className={`h-11 ${
+                    IS_CUSTOM_BACKGROUND
+                      ? 'bg-slate-400 text-white'
+                      : 'bg-white text-slate-400'
+                  }  text-sm flex w-full rounded-xl shadow-md p-3  items-center truncate overflow-hidden whitespace-nowrap`}
                 >
                   {t('reply') +
                     ' ' +
@@ -372,16 +381,20 @@ const ChatApp = ({
       {/* Hiển thị tin nhắn chào mừng */}
       {show_welcome_message && (
         <div
-          className="flex bg-white shadow-lg justify-between w-full gap-x-2 rounded-xl h-16 px-3 py-3 cursor-pointer hover:bg-gray-100"
+          className={`flex ${
+            IS_CUSTOM_BACKGROUND
+              ? 'bg-slate-400 hover:bg-gray-500 text-white'
+              : 'bg-white hover:bg-gray-100 text-slate-500'
+          } shadow-lg justify-between w-full gap-x-2 rounded-xl h-16 px-3 py-3 cursor-pointer `}
           onClick={() => handleClickWelcomeMessage()}
         >
           <h4 className="text-sm line-clamp-2">{welcome_message?.message}</h4>
           {/* Nút đóng */}
           <div
             onClick={(event) => handleClickCloseWelcomeMessage(event)}
-            className="h-6 w-6 cursor-pointer flex justify-center items-center hover:bg-gray-300 rounded-full p-2"
+            className="size-6 cursor-pointer flex justify-center items-center hover:bg-slate-400 rounded-full "
           >
-            <CloseSlate className="h-3 w-3" />
+            <XMarkIcon className="size-4" />
           </div>
         </div>
       )}
@@ -394,7 +407,9 @@ const ChatApp = ({
             : GLOBAL_PREVIEW_URL
             ? 'right-5 bottom-5'
             : 'right-2'
-        }  h-12 w-12 bg-white shadow-lg rounded-full  hover:scale-110 ${
+        }  h-12 w-12 ${
+          IS_CUSTOM_BACKGROUND ? 'bg-slate-400 text-white' : 'bg-white'
+        } shadow-lg rounded-full  hover:scale-110 ${
           AI_STATUS || IS_VIEW_SCREEN ? 'hidden' : ''
         }  ${
           !show
