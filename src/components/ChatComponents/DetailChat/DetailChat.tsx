@@ -60,6 +60,9 @@ function DetailChat({
     setLoading,
     loading_first_time,
     LIST_CTA,
+    status_list,
+    list_cta_message,
+    LIST_CTA_MESSAGE,
   } = useDetailChat({
     user_id,
     onInitClient,
@@ -191,7 +194,7 @@ function DetailChat({
           {TYPING_STATUS && (
             <div className="text-lg font-semibold flex items-center gap-x-2 py-2 px-4 rounded-full bg-slate-300 w-fit">
               <span className="text-xs text-slate-700">
-                {STATUSES[status_index]}
+                {status_list[status_index]}
               </span>
 
               <div className="flex  ">
@@ -255,9 +258,10 @@ function DetailChat({
         !LOADING_GLOBAL &&
         !loading_first_time &&
         LIST_MESSAGE &&
-        LIST_MESSAGE.length < 2 && (
+        LIST_MESSAGE.length < 2 &&
+        LIST_CTA_MESSAGE?.is_active && (
           <div className="absolute bottom-[15%] left-[6%] flex flex-col gap-2 w-full">
-            {LIST_CTA.slice(0, 4).map((item: any, index: number) => (
+            {list_cta_message.slice(0, 4).map((item: any, index: number) => (
               <div
                 key={index}
                 onClick={() => {

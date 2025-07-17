@@ -58,6 +58,8 @@ const INITIAL_STATE: AppState = {
   fixed_data_client: undefined,
   consultation_global: undefined,
   is_custom_background: false,
+  list_ai_render_text: { is_active: false, data: [] },
+  list_cta_message: { is_active: false, data: [] },
 }
 
 export const appSlice = createSlice({
@@ -279,6 +281,15 @@ export const appSlice = createSlice({
     setCustomBackground: (state, action: PayloadAction<boolean>) => {
       state.is_custom_background = action.payload
     },
+
+    /** TIn nhắn ai đang phản hồi */
+    setListAiRenderText: (state, action: PayloadAction<any>) => {
+      state.list_ai_render_text = action.payload
+    },
+    /** CTA message */
+    setListCTAMessage: (state, action: PayloadAction<any>) => {
+      state.list_cta_message = action.payload
+    },
   },
 })
 
@@ -325,6 +336,8 @@ export const {
   setConsultationGlobal,
   setPageLogoBlack,
   setCustomBackground,
+  setListAiRenderText,
+  setListCTAMessage,
 } = appSlice.actions
 
 /** chọn đến page id */
@@ -460,5 +473,13 @@ export const selectConsultationGlobal = (state: RootState) =>
 /** Custom background */
 export const selectCustomBackground = (state: RootState) =>
   state.app.is_custom_background
+
+/** TIn nhắn ai đang phản hồi */
+export const selectListAiRenderText = (state: RootState) =>
+  state.app.list_ai_render_text
+
+/** TIn nhắn CTA */
+export const selectListCTAMessage = (state: RootState) =>
+  state.app.list_cta_message
 
 export default appSlice.reducer

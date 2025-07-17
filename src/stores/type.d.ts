@@ -181,6 +181,20 @@ export interface AppState {
   consultation_global?: any
   /**  is_custom_background */
   is_custom_background?: boolean
+  /** List AI render text */
+  list_ai_render_text?: {
+    /** Trạng thái kích hoạt */
+    is_active: boolean
+    /** Dữ liệu */
+    data?: any
+  }
+  /** List CTA render text */
+  list_cta_message?: {
+    /** Trạng thái kích hoạt */
+    is_active: boolean
+    /** Dữ liệu */
+    data?: any
+  }
 }
 /** Định nghĩa kiểu dữ liệu cho danh sách nhân viên */
 interface EmployeeList {

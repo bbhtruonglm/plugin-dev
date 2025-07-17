@@ -19,6 +19,8 @@ import {
   setIsAvatar,
   setIsViewScreen,
   setLatestMessageGlobal,
+  setListAiRenderText,
+  setListCTAMessage,
   setListMessage,
   setLoadingGlobal,
   setNoAiId,
@@ -454,11 +456,63 @@ export function useApp() {
           /** Cập nhật trạng thái */
           setShow(AUTO_OPEN_INIT)
         }
-
+        /** Trạng thái không phải AI */
         if (!IS_AI) {
-          const CUSTOM_BACKGROUND = page_setting?.custom_background || false
+          /** Lưu cài đặt background từ setting */
+          const CUSTOM_BACKGROUND = page_setting?.custom_background || true
+          /** Lưu cài đặt background vào store */
           dispatch(setCustomBackground(CUSTOM_BACKGROUND))
+          /** Lưu cái đặt CTA message từ setting */
+          // const CUSTOM_CTA_MESSAGE = page_setting?.custom_cta_message
+          /** Lưu cài đặt CTA message vào store */
+          dispatch(
+            setListCTAMessage(
+              page_setting?.custom_cta_message || {
+                is_active: true,
+                data: {
+                  vi: [
+                    'Chat với AI',
+                    'Tư vấn giải pháp',
+                    'Hỗ trợ cài đặt',
+                    'Liên hệ cho tôi',
+                  ],
+                  en: [
+                    'Chat with AI',
+                    'Solve your problem',
+                    'Support setting',
+                    'Contact me',
+                  ],
+                },
+              }
+            )
+          )
         }
+        /** Lưu dũe liệu ai_render_text */
+        dispatch(
+          setListAiRenderText(
+            page_setting?.ai_render_text || {
+              is_active: false,
+              data: {
+                vi: [
+                  'Đang xử lý',
+                  'AI đang phân tích',
+                  'AI đang chạy',
+                  'AI đang tìm kiếm',
+                  'AI đang chạy',
+                  'AI đang tìm kiếm',
+                ],
+                en: [
+                  'AI is processing',
+                  'AI is analyzing',
+                  'AI is running',
+                  'AI is searching',
+                  'AI is running',
+                  'AI is searching',
+                ],
+              },
+            }
+          )
+        )
 
         /**  Lấy ngôn ngữ từ trình duyệt*/
         const BROWSER_LANGUAGE = navigator.language || navigator.languages[0]

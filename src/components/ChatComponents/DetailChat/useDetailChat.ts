@@ -13,6 +13,8 @@ import {
   selectIsAvatar,
   selectIsViewScreen,
   selectLatestMessage,
+  selectListAiRenderText,
+  selectListCTAMessage,
   selectListMessage,
   selectLoadingGlobal,
   selectPageAvatar,
@@ -34,6 +36,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { t } from 'i18next'
+import { useTranslation } from 'react-i18next'
 
 const useDetailChat = ({
   user_id,
@@ -48,6 +51,10 @@ const useDetailChat = ({
   is_init: boolean
   setIsInit: () => void
 }) => {
+  /** Ngôn ngữ */
+  const { i18n: I18N } = useTranslation()
+  /** Lấy ngôn ngữ */
+  const LANGUAGE = I18N.language
   /** Bắt vị trí end scroll ở bottom */
   const MESSAGE_END_REF = useRef<HTMLDivElement | null>(null)
   /** Bắt vị trí ref ở đầu tin nhắn */
@@ -90,9 +97,7 @@ const useDetailChat = ({
   const [is_loaded, setIsLoaded] = useState(false)
   /** Set loaded */
   useEffect(() => {
-    /**
-     * Neu IS_ACTIVE_AGENT_AI la boolean
-     */
+    /** Neu IS_ACTIVE_AGENT_AI la boolean */
     if (typeof IS_ACTIVE_AGENT_AI === 'boolean') {
       setIsLoaded(true)
     }
@@ -116,11 +121,15 @@ const useDetailChat = ({
   let delay = 800
   /** Set timeout 0.4s thì bật cờ */
   useEffect(() => {
+    /** Kiểm tra nếu check_no_message_ai la false */
     if (!check_no_message_ai) {
-      const timer = setTimeout(() => {
+      /** Tạo hàm timeout */
+      const TIMER = setTimeout(() => {
+        /** Bật cờ */
         setCheckNoMessageAi(true)
       }, delay)
-      return () => clearTimeout(timer)
+      /** Cleanup */
+      return () => clearTimeout(TIMER)
     }
   }, [check_no_message_ai])
 
@@ -155,26 +164,49 @@ const useDetailChat = ({
     t('ai_still_thinking'),
     t('ai_already_thinking'),
   ]
+  /** list trạng thái ai message */
+  const [status_list, setStatusList] = useState(STATUSES)
+
+  /** List CTA message */
+  const [list_cta_message, setListCTAMessage] = useState(LIST_CTA)
+  /** list text render từ setting */
+  const LIST_AI_RENDER_TEXT = useSelector(selectListAiRenderText)
+  /** List CTA render message */
+  const LIST_CTA_MESSAGE = useSelector(selectListCTAMessage)
+
+  useEffect(() => {
+    /** Nếu list trạng thái thay đổi */
+    if (LIST_AI_RENDER_TEXT) {
+      /** Nếu list trạng thái hóa được kích hoạt */
+      if (LIST_AI_RENDER_TEXT?.is_active) {
+        /** Set list trạng thái */
+        setStatusList(LIST_AI_RENDER_TEXT.data?.[LANGUAGE])
+      }
+    }
+  }, [LIST_AI_RENDER_TEXT, LANGUAGE])
+
+  useEffect(() => {
+    /** Nếu list trạng thái thay đổi */
+    if (LIST_CTA_MESSAGE) {
+      /** Set list trạng thái */
+      setListCTAMessage(LIST_CTA_MESSAGE.data?.[LANGUAGE])
+    }
+  }, [LIST_CTA_MESSAGE, LANGUAGE])
   /**
    * Trạng thái loading khi gửi tin nhắn
    */
   const [status_index, setStatusIndex] = useState(0)
 
-  /**
-   * Cập nhật trạng thái loading khi gửi tin nhắn
-   */
+  /** Cập nhật trạng thái loading khi gửi tin nhắn*/
   useEffect(() => {
-    /**
-     * Nếu trạng thái typing thay đổi
-     */
+    /** Nếu trạng thái typing thay đổi*/
     if (TYPING_STATUS) {
       /** Reset trạng thái khi bắt đầu typing */
       setStatusIndex(0)
-      /**
-       * Set interval để thay đổi trạng thái
-       */
+      /** Set interval để thay đổi trạng thái */
       const INTERVAL = setInterval(() => {
-        setStatusIndex((prev) => (prev + 1) % STATUSES.length)
+        /** Tăng giá trị index trạng thái */
+        setStatusIndex((prev) => (prev + 1) % status_list.length)
       }, 3000)
 
       return () => clearInterval(INTERVAL)
@@ -292,13 +324,9 @@ const useDetailChat = ({
 
   // Bước 1: Lấy user_id từ localStorage
   useEffect(() => {
-    /**
-     * Khi user_id khóng null
-     */
+    /** Khi user_id khóng null*/
     if (PAGE_ID === undefined) return
-    /**
-     * Lấy user_id trong localStorage
-     */
+    /** Lấy user_id trong localStorage */
     const STORED_CLIENT_ID = localStorage.getItem(`client_id_${PAGE_ID}`)
     /** Lưu user_id */
     setLocalUserId(STORED_CLIENT_ID) // có thể là null nếu chưa có
@@ -315,13 +343,9 @@ const useDetailChat = ({
     )
       return // Đang load từ localStorage, chưa xong
 
-    /**
-     * Khi user_id khóng null
-     */
+    /** Khi user_id khóng null*/
     if (!isEmpty(FORM_BEFORE_CHAT)) {
-      /**
-       * Khi chưa tạo tài khoản ẩn danh
-       */
+      /** Khi chưa tạo tài khoản ẩn danh*/
       if (!FORM_BEFORE_CHAT?.is_active && !local_user_id) {
         /** Tạo thành tài khoản ẩn danh */
         onInitClient({
@@ -382,13 +406,9 @@ const useDetailChat = ({
         /** Kết quả trả về */
         result = await fetchAPI(URL_READ.toString(), 'GET')
 
-        /**
-         * Lưu kết quả trả về
-         */
+        /** Lưu kết quả trả về */
         const RESULT = await result
-        /**
-         * Nếu data trả về = LIMIT thì còn tin nhắn cũ
-         */
+        /** Nếu data trả về = LIMIT thì còn tin nhắn cũ */
         if (RESULT.data.length === LIMIT) {
           /** Cập nhật ref mà không gây re-render */
           SKIP_REF.current += RESULT.data.length
@@ -713,6 +733,9 @@ const useDetailChat = ({
     setLoading,
     loading_first_time,
     LIST_CTA,
+    status_list,
+    list_cta_message,
+    LIST_CTA_MESSAGE,
   }
 }
 
