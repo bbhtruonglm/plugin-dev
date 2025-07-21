@@ -1,7 +1,5 @@
-import { apiImage } from '@/api/api'
-import { renderAvatar } from '@/utils'
+import { renderAvatarCDN } from '@/utils'
 import { selectShowSupportStaff } from '@/stores/appSlice'
-import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
 
 interface StaffProps {
@@ -63,8 +61,8 @@ function OnlineStaff({ data, size = 'small' }: StaffProps) {
       {/* Check list nhân viên có ai online không, có 1 nhân viên thì hiện avatar như bt */}
       {FILTERED_STAFF && FILTERED_STAFF.length === 1 && (
         <img
-          key={FILTERED_STAFF[0]?.fb_staff_id}
-          src={renderAvatar(FILTERED_STAFF[0]?.fb_staff_id)}
+          key={FILTERED_STAFF[0]?.user_id}
+          src={renderAvatarCDN(FILTERED_STAFF[0]?.user_id)}
           alt="employee_avatar"
           className={` shadow border  ${
             FILTERED_STAFF[0]?.is_online ? '' : ' opacity-75 '
@@ -79,8 +77,8 @@ function OnlineStaff({ data, size = 'small' }: StaffProps) {
         FILTERED_STAFF.length > 1 &&
         FILTERED_STAFF.slice(0, 3).map((employee, index) => (
           <img
-            key={employee.fb_staff_id + index}
-            src={renderAvatar(employee.fb_staff_id) || './images/no_avatar.jpg'}
+            key={employee.user_id + index}
+            src={renderAvatarCDN(employee?.user_id)}
             alt="employee_avatar"
             className={` shadow border  ${
               employee.is_online ? '' : ' opacity-75 '

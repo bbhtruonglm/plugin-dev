@@ -1,13 +1,22 @@
-import { VITE_APP_BE_HOST, VITE_APP_SOCKET_HOST } from './env/production'
 import {
+  ID_WIDGET,
+  VITE_APP_BE_HOST,
+  VITE_APP_SOCKET_HOST,
+  VITE_CDN,
+  VITE_IMAGE_HOST,
+} from './env/production'
+import {
+  ID_WIDGET as ID_WIDGET_DEVELOPMENT,
   VITE_APP_BE_HOST as VITE_APP_BE_HOST_DEVELOPMENT,
   VITE_APP_SOCKET_HOST as VITE_APP_SOCKET_HOST_DEVELOPMENT,
+  VITE_CDN as VITE_CDN_DEVELOPMENT,
+  VITE_IMAGE_HOST as VITE_IMAGE_HOST_DEVELOPMENT,
 } from './env/staging'
 
 /**
  * - Kiểu dữ liệu cho các đường dẫn API:
  */
-type EndPointType = {
+export type EndPointType = {
   /**
    * - Đường dẫn API cho môi trường production:
    */
@@ -19,6 +28,8 @@ type EndPointType = {
     READ_PAGE_INFO: string
     READ_CLIENT_INFO: string
     IMAGE: string
+    IMAGE_CDN: string
+    ID_WIDGET: string
   }
   /**
    * - Đường dẫn API cho môi trường staging:
@@ -31,12 +42,14 @@ type EndPointType = {
     READ_PAGE_INFO: string
     READ_CLIENT_INFO: string
     IMAGE: string
+    IMAGE_CDN: string
+    ID_WIDGET: string
   }
 }
 /**
  * - Các đường dẫn API:
  */
-const API_END_POINTS = {
+export const API_END_POINTS = {
   production: {
     SOCKET_API: VITE_APP_SOCKET_HOST,
     READ_MESSAGE_API: `${VITE_APP_BE_HOST}/embed/message/read_message`,
@@ -44,7 +57,9 @@ const API_END_POINTS = {
     INIT_CLIENT_API: `${VITE_APP_BE_HOST}/embed/conversation/init_identify`,
     READ_PAGE_INFO: `${VITE_APP_BE_HOST}/embed/page/read_page`,
     READ_CLIENT_INFO: `${VITE_APP_BE_HOST}/embed/conversation/read_client`,
-    IMAGE: `https://chatbox-static-v3.botbanhang.vn`,
+    IMAGE: VITE_IMAGE_HOST,
+    IMAGE_CDN: VITE_CDN,
+    ID_WIDGET: ID_WIDGET,
   },
   development: {
     SOCKET_API: VITE_APP_SOCKET_HOST_DEVELOPMENT,
@@ -53,7 +68,9 @@ const API_END_POINTS = {
     INIT_CLIENT_API: `${VITE_APP_BE_HOST_DEVELOPMENT}/embed/conversation/init_identify`,
     READ_PAGE_INFO: `${VITE_APP_BE_HOST_DEVELOPMENT}/embed/page/read_page`, // sử dụng BE_HOST của production
     READ_CLIENT_INFO: `${VITE_APP_BE_HOST_DEVELOPMENT}/embed/conversation/read_client`, // sử dụng BE_HOST của production
-    IMAGE: `https://chatbox-static-v3.botbanhang.vn`,
+    IMAGE: VITE_IMAGE_HOST_DEVELOPMENT,
+    IMAGE_CDN: VITE_CDN_DEVELOPMENT,
+    ID_WIDGET: ID_WIDGET_DEVELOPMENT,
   },
   staging: {
     SOCKET_API: VITE_APP_SOCKET_HOST_DEVELOPMENT,
@@ -62,7 +79,9 @@ const API_END_POINTS = {
     INIT_CLIENT_API: `${VITE_APP_BE_HOST_DEVELOPMENT}/embed/conversation/init_identify`,
     READ_PAGE_INFO: `${VITE_APP_BE_HOST_DEVELOPMENT}/embed/page/read_page`, // sử dụng BE_HOST của production
     READ_CLIENT_INFO: `${VITE_APP_BE_HOST_DEVELOPMENT}/embed/conversation/read_client`, // sử dụng BE_HOST của production
-    IMAGE: `https://chatbox-static-v3.botbanhang.vn`,
+    IMAGE: VITE_IMAGE_HOST_DEVELOPMENT,
+    IMAGE_CDN: VITE_CDN_DEVELOPMENT,
+    ID_WIDGET: ID_WIDGET_DEVELOPMENT,
   },
 } as EndPointType
 /**

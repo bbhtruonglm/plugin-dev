@@ -47,6 +47,12 @@ import WIDGET from 'bbh-chatbox-widget-js-sdk'
 import i18next from 'i18next'
 
 export function useApp() {
+  /**
+   * @type {Object} API - API lấy thông tin khách hàng
+   * @type {string} READ_CLIENT_INFO - URL API lấy thông tin khách hàng
+   */
+  const { READ_CLIENT_INFO, READ_PAGE_INFO, ID_WIDGET } = useAPI()
+
   useEffect(() => {
     /** Load WIDGET nếu trang hiện tại là trang AI Assistant*/
     if (
@@ -57,7 +63,7 @@ export function useApp() {
         /** Bật chế độ debug */
         WIDGET.debugOn()
         /** Load WIDGET */
-        WIDGET.load('00de4446885a43c5b58ef16dba0f5058')
+        WIDGET.load(ID_WIDGET)
       } catch (error) {
         console.error('Lỗi khi giải mã token:', error)
       }
@@ -150,11 +156,6 @@ export function useApp() {
 
   /** Vị trí chi tiết của chatbox */
   const POSITION_DETAIL = useSelector(selectEmbedPositionDetail)
-  /**
-   * @type {Object} API - API lấy thông tin khách hàng
-   * @type {string} READ_CLIENT_INFO - URL API lấy thông tin khách hàng
-   */
-  const { READ_CLIENT_INFO, READ_PAGE_INFO } = useAPI()
 
   /** Trạng thái hiển thị Popup */
   const [is_show, setShow] = useState(false)
@@ -459,7 +460,7 @@ export function useApp() {
         /** Trạng thái không phải AI */
         if (!IS_AI) {
           /** Lưu cài đặt background từ setting */
-          const CUSTOM_BACKGROUND = page_setting?.custom_background || true
+          const CUSTOM_BACKGROUND = page_setting?.custom_background || false
           /** Lưu cài đặt background vào store */
           dispatch(setCustomBackground(CUSTOM_BACKGROUND))
           /** Lưu cái đặt CTA message từ setting */
@@ -468,7 +469,7 @@ export function useApp() {
           dispatch(
             setListCTAMessage(
               page_setting?.custom_cta_message || {
-                is_active: true,
+                is_active: false,
                 data: {
                   vi: [
                     'Chat với AI',

@@ -23,7 +23,6 @@ function DetailChat({
   error_message,
   setHideForMobile,
   page_name,
-  staff_avatar,
   staff_name,
   loading_staff,
   client_name,
@@ -82,7 +81,6 @@ function DetailChat({
           user_id={CLIENT_ID}
           setHideForMobile={setHideForMobile}
           page_name={page_name}
-          staff_avatar={staff_avatar}
           staff_name={staff_name}
           loading_staff={loading_staff}
           employee_list={employee_list}

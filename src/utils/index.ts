@@ -1,8 +1,8 @@
+import { apiImage, useAPI } from '@/api/api'
+
 import { EmployeeList } from '@/pages/type'
 import { MessageInfo } from './type'
-import { apiImage } from '@/api/api'
 import { get } from 'lodash'
-import { setPageLogo } from '@/stores/appSlice'
 import { t } from 'i18next'
 
 /** Hàm tìm locale từ URL
@@ -211,15 +211,11 @@ export const renderAvatarFromIdAgent = (
  * @returns {string} link avatar
  */
 export const renderAvatarCDN = (id: string) => {
-  /** Lấy ENV */
-  const ENV = import.meta.env.VITE_APP_ENV
+  const { IMAGE_CDN } = useAPI()
   /**
    * Link avatar của nhân sự
    */
-  const LINK_AVATAR =
-    ENV === 'production'
-      ? `https://cdn.botbanhang.vn/media/s/${id}/user`
-      : `https://dev-api.botbanhang.vn/v1/n6_static/cdn/media/s/${id}/user`
+  const LINK_AVATAR = `${IMAGE_CDN}/media/s/${id}/user`
 
   /**
    * Trả về link avatar

@@ -79,7 +79,7 @@ export function onSocketFromChatboxServer({
 }: WebSocketProps) {
   /** Kết nối tới WebSocket server */
   WS.current = new WebSocket(SOCKET_API || '')
-  // WS.current = new WebSocket('https://chatbox-public-v2.botbanhang.vn/socket')
+
   /** Lưu lại id vòng lặp */
   let ping_interval_id: number | any
   /** kết nối được mở */
