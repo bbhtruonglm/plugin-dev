@@ -1,16 +1,24 @@
 import {
+  APP_URL,
+  APP_V2_URL,
+  CHATBOT_URL,
   ID_WIDGET,
   VITE_APP_BE_HOST,
   VITE_APP_SOCKET_HOST,
   VITE_CDN,
   VITE_IMAGE_HOST,
+  WIDGET_URL,
 } from './env/production'
 import {
+  APP_URL as APP_URL_DEVELOPMENT,
+  APP_V2_URL as APP_V2_URL_DEVELOPMENT,
+  CHATBOT_URL as CHATBOT_URL_DEVELOPMENT,
   ID_WIDGET as ID_WIDGET_DEVELOPMENT,
   VITE_APP_BE_HOST as VITE_APP_BE_HOST_DEVELOPMENT,
   VITE_APP_SOCKET_HOST as VITE_APP_SOCKET_HOST_DEVELOPMENT,
   VITE_CDN as VITE_CDN_DEVELOPMENT,
   VITE_IMAGE_HOST as VITE_IMAGE_HOST_DEVELOPMENT,
+  WIDGET_URL as WIDGET_URL_DEVELOPMENT,
 } from './env/staging'
 
 /**
@@ -30,6 +38,12 @@ export type EndPointType = {
     IMAGE: string
     IMAGE_CDN: string
     ID_WIDGET: string
+    DATA_WIDGET: {
+      APP: string
+      WIDGET: string
+      CHATBOT: string
+      APP_V2: string
+    }
   }
   /**
    * - Đường dẫn API cho môi trường staging:
@@ -44,6 +58,12 @@ export type EndPointType = {
     IMAGE: string
     IMAGE_CDN: string
     ID_WIDGET: string
+    DATA_WIDGET: {
+      APP: string
+      WIDGET: string
+      CHATBOT: string
+      APP_V2: string
+    }
   }
 }
 /**
@@ -60,6 +80,12 @@ export const API_END_POINTS = {
     IMAGE: VITE_IMAGE_HOST,
     IMAGE_CDN: VITE_CDN,
     ID_WIDGET: ID_WIDGET,
+    DATA_WIDGET: {
+      APP: APP_URL,
+      WIDGET: WIDGET_URL,
+      CHATBOT: CHATBOT_URL,
+      APP_V2: APP_V2_URL,
+    },
   },
   development: {
     SOCKET_API: VITE_APP_SOCKET_HOST_DEVELOPMENT,
@@ -71,6 +97,12 @@ export const API_END_POINTS = {
     IMAGE: VITE_IMAGE_HOST_DEVELOPMENT,
     IMAGE_CDN: VITE_CDN_DEVELOPMENT,
     ID_WIDGET: ID_WIDGET_DEVELOPMENT,
+    DATA_WIDGET: {
+      APP: APP_URL_DEVELOPMENT,
+      WIDGET: WIDGET_URL_DEVELOPMENT,
+      CHATBOT: CHATBOT_URL_DEVELOPMENT,
+      APP_V2: APP_V2_URL_DEVELOPMENT,
+    },
   },
   staging: {
     SOCKET_API: VITE_APP_SOCKET_HOST_DEVELOPMENT,
@@ -82,6 +114,12 @@ export const API_END_POINTS = {
     IMAGE: VITE_IMAGE_HOST_DEVELOPMENT,
     IMAGE_CDN: VITE_CDN_DEVELOPMENT,
     ID_WIDGET: ID_WIDGET_DEVELOPMENT,
+    DATA_WIDGET: {
+      APP: APP_URL_DEVELOPMENT,
+      WIDGET: WIDGET_URL_DEVELOPMENT,
+      CHATBOT: CHATBOT_URL_DEVELOPMENT,
+      APP_V2: APP_V2_URL_DEVELOPMENT,
+    },
   },
 } as EndPointType
 /**

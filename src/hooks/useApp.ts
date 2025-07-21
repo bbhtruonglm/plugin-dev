@@ -51,7 +51,7 @@ export function useApp() {
    * @type {Object} API - API lấy thông tin khách hàng
    * @type {string} READ_CLIENT_INFO - URL API lấy thông tin khách hàng
    */
-  const { READ_CLIENT_INFO, READ_PAGE_INFO, ID_WIDGET } = useAPI()
+  const { READ_CLIENT_INFO, READ_PAGE_INFO, ID_WIDGET, DATA_WIDGET } = useAPI()
 
   useEffect(() => {
     /** Load WIDGET nếu trang hiện tại là trang AI Assistant*/
@@ -62,8 +62,14 @@ export function useApp() {
       try {
         /** Bật chế độ debug */
         WIDGET.debugOn()
-        /** Load WIDGET */
-        WIDGET.load(ID_WIDGET)
+
+        if (DATA_WIDGET && DATA_WIDGET.APP?.trim()) {
+          /** Load WIDGET */
+          WIDGET.load(ID_WIDGET, DATA_WIDGET)
+        } else {
+          /** Load WIDGET */
+          WIDGET.load(ID_WIDGET)
+        }
       } catch (error) {
         console.error('Lỗi khi giải mã token:', error)
       }

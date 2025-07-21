@@ -228,3 +228,15 @@ export interface StaffSocket {
 * đồng bộ trạng thái dữ liệu, không đẩy lên đầu
 */
 export type SocketEvent = 'SYNC_DATA'
+
+/** Init widget */
+export interface InitWidget {
+  /**Địa chỉ miền của ứng dụng Chatbox */
+  APP: string
+  /**Địa chỉ miền của Chatbox Widget */
+  WIDGET: string
+  /**Địa chỉ miền của Chatbot */
+  CHATBOT: string
+  /** Địa chỉn miền ứng dụng Chatbox version 2 */
+  APP_V2: string
+}
