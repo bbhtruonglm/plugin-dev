@@ -289,6 +289,8 @@
 
 // export default TemplateMessageComponent
 
+import ReactMarkdown, { Components } from 'react-markdown'
+
 import AudioAttachment from './components/QuickPreview/AudioAttachment'
 import ButtonTemplate from './components/QuickPreview/ButtonTemplate'
 import FallbackLink from './components/QuickPreview/FallbackLink'
@@ -298,12 +300,27 @@ import GenericTemplate from './components/QuickPreview/GenericTemplate'
 import ImageAttachment from './components/QuickPreview/ImageAttachment'
 import { MessageProps } from '../type'
 import MultipleImageGallery from './components/QuickPreview/MultipleImageGallery'
-import ReactMarkdown from 'react-markdown'
 import VideoAttachment from './components/QuickPreview/VideoAttachment'
 import { checkMD } from '@/utils'
 import remarkGfm from 'remark-gfm'
 
 function TemplateMessageComponent({ data }: MessageProps) {
+  /** markdown components */
+  const MARKDOWN_COMPONENTS: Components = {
+    a: (props) => {
+      const { href, children, ...rest } = props
+      return (
+        <a
+          href={'#'}
+          rel="noopener noreferrer"
+          className="text-blue-600 underline"
+          {...rest}
+        >
+          {children}
+        </a>
+      )
+    },
+  }
   return (
     <div className="flex flex-col rounded-lg group relative w-full h-full justify-center items-center">
       {/* TEXT */}
@@ -315,7 +332,10 @@ function TemplateMessageComponent({ data }: MessageProps) {
           <div className="flex w-full">
             <p className="text-sm min-h-4 break-words whitespace-pre-line line-clamp-2 w-full">
               {checkMD(data?.message_text) ? (
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={MARKDOWN_COMPONENTS}
+                >
                   {data?.message_text}
                 </ReactMarkdown>
               ) : (

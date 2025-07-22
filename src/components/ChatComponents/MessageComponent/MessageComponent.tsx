@@ -1,654 +1,654 @@
-import { BtnType, ElementType, MessageProps } from '../type'
-import {
-  checkMD,
-  extractMessageId,
-  formatDate,
-  isValidUrl,
-  postMessageToParent,
-} from '@/utils'
-import {
-  selectEmbedPosition,
-  selectEmbedPositionDetail,
-  selectStatusAI,
-  selectStatusPopup,
-  setGlobalPreviewUrl,
-} from '@/stores/appSlice'
-import { useDispatch, useSelector } from 'react-redux'
-
-import AudioPlayer from './AudioPlayer'
-import { ReactComponent as BookOpen } from '@/assets/book-open.svg'
-import { ReactComponent as ChatBubble } from '@/assets/chat-bubble-oval-left-ellipsis.svg'
-import type { Components } from 'react-markdown'
-import { ReactComponent as FileIcon } from '@/assets/document-text.svg'
-import React from 'react'
-import ReactMarkdown from 'react-markdown'
-import VideoPlayer from './VideoPlayer'
-import remarkGfm from 'remark-gfm'
-import { t } from 'i18next'
-
-/**
- * Khai báo kiểu dữ liệu cho MessageComponent
- */
-declare global {
-  /**
-   * Khai báo kiểu dữ liệu cho window
-   */
-  interface Window {
-    /**
-     * Khai báo kiểu dữ liệu cho ReactNativeWebView
-     */
-    ReactNativeWebView?: {
-      /**
-       *  Hàm postMessage
-       * @param message   - Tin nhắn
-       * @returns       - Trả về void
-       */
-      postMessage: (message: string) => void
-    }
-  }
-}
-
-const MessageComponent = React.memo(({ data }: MessageProps) => {
-  /** Trạng thái AI_STATUS */
-  const AI_STATUS = useSelector(selectStatusAI)
-
-  /** Hàm render css khi check type tin nhắn
-   * @param {string} messageType - Loại tin nhắn
-   */
-  const getMessageClasses = (messageType: string) => {
-    /** Kiểm tra nếu messageType là 'page' */
-    if (messageType === 'page') {
-      /** Trả về các lớp CSS tương ứng nếu messageType là 'page' */
-      if (AI_STATUS) {
-        return 'max-w-[80%]'
-      }
-      /**
-       * Mặc định trả về các lớp CSS cho messageType khác
-       */
-      return 'bg-white max-w-[60%]'
-    }
-    /** Kiểm tra nếu messageType là 'client' */
-    if (messageType === 'client') {
-      /**
-       * Nếu AI_STATUS là true thì trả về các lớp CSS tương ứng
-       */
-      if (AI_STATUS) {
-        return 'max-w-[80%]'
-      }
-      /** Nếu messageType không phải là 'system' hay 'page' */
-      /** Trả về các lớp CSS mặc định cho các loại message khác */
-      return 'bg-messBg max-w-[60%]'
-    }
-  }
-
-  /**
-   * Hàm dispatch action
-   */
-  const dispatch = useDispatch()
-  /** Hàm xử lý khi click xem preview ảnh
-   * @param {string} url - Link preview
-   * @action lưu URL vào stroe
-   * @action gọi đến sdk để thay đổi kích thước hiển thị
-   */
-  const handleClickPreview = (url?: string) => {
-    /**
-     * Nếu không có url
-     */
-    if (!url) return
-    /** Lưu vào STORE */
-    dispatch(setGlobalPreviewUrl(url))
-    /** Click vào ảnh thì gửi thông tin cho sdk
-     * Có thể lưu data và STORE
-     */
-    postMessageToParent(
-      true,
-      false,
-      674,
-      url,
-      POSITION,
-      POSITION_DETAIL?.bottom,
-      POSITION_DETAIL?.right,
-      POSITION_DETAIL?.left
-    )
-  }
-  /** Trạng thái Đóng/ Mở Popup */
-  const SHOW_POPUP = useSelector(selectStatusPopup)
-  /** Trạng thái vị trí của embed */
-  const POSITION = useSelector(selectEmbedPosition)
-  /** Trạng thái vị trí chi tiết của embed */
-  const POSITION_DETAIL = useSelector(selectEmbedPositionDetail)
-  /** markdown components */
-  const MARKDOWN_COMPONENTS: Components = {
-    a: (props) => {
-      const { href, children, ...rest } = props
-      return (
-        <a
-          href={href}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-600 underline"
-          {...rest}
-        >
-          {children}
-        </a>
-      )
-    },
-  }
-  /**
-   *  Hàm format text với link
-   * @param text - Nội dung tin nhắn
-   * @returns
-   */
-  const formatTextWithLinks = (text: string) => {
-    /** Tìm kế tìm link trong text */
-    const URL_REGEX = /(https?:\/\/[^\s]+)/g
-    /** Return text với link */
-    return text.split(URL_REGEX).map((part, index) =>
-      URL_REGEX.test(part) ? (
-        <a
-          key={index}
-          href={part}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-500 underline"
-        >
-          {part}
-        </a>
-      ) : (
-        part
-      )
-    )
-  }
-
-  return (
-    <div
-      className={`flex flex-col transition-all duration-300 ease-out gap-y-4 rounded-lg group relative ${getMessageClasses(
-        data?.message_type
-      )}`}
-    >
-      {/* Tooltip */}
-      <div
-        className={`absolute w-36 bottom-full ${
-          data?.message_type === 'page' ? 'left-0' : 'right-0'
-        }  text-xs font-semibold text-slate-700 bg-transparent rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
-      >
-        {formatDate(data?.time || data?.createdAt)}
-      </div>
-      {/* Hiện thị data dạng text */}
-      {!AI_STATUS &&
-        data?.message_text &&
-        data?.message_type !== 'system' &&
-        data?.message_type !== 'note' &&
-        (!data?.message_attachments?.length ||
-          !data?.message_attachments?.[0]?.type) && (
-          <div className="flex p-2">
-            <div className="text-sm min-h-4 break-words whitespace-pre-line overflow-hidden">
-              {/* {data?.message_text} */}
-              {/* {formatTextWithLinks(data?.message_text)} */}
-
-              {checkMD(data?.message_text) ? (
-                <ReactMarkdown
-                  remarkPlugins={[remarkGfm]}
-                  components={MARKDOWN_COMPONENTS}
-                >
-                  {data?.message_text}
-                </ReactMarkdown>
-              ) : (
-                formatTextWithLinks(data?.message_text)
-              )}
-            </div>
-          </div>
-        )}
-      {/* Hiện thị data dạng text AI và có BTN */}
-
-      {AI_STATUS &&
-        data?.message_text &&
-        // data?.message_type === 'ai-suggest' &&
-        data?.message_type !== 'system' &&
-        data?.message_type !== 'note' &&
-        (!data?.message_attachments?.length ||
-          !data?.message_attachments?.[0]?.type) && (
-          <div className="flex flex-col gap-y-2">
-            <div
-              className={`${
-                data?.message_type !== 'client' ? 'bg-white' : 'bg-yellow-100'
-              } flex flex-col gap-y-2 p-2 rounded-lg shadow-sm`}
-            >
-              <div className="text-sm min-h-4 break-words whitespace-pre-line overflow-hidden">
-                {/* {data?.message_text} */}
-
-                {/* {formatTextWithLinks(data?.message_text)} */}
-
-                {checkMD(data?.message_text) ? (
-                  <ReactMarkdown
-                    remarkPlugins={[remarkGfm]}
-                    components={MARKDOWN_COMPONENTS}
-                  >
-                    {data?.message_text}
-                  </ReactMarkdown>
-                ) : (
-                  formatTextWithLinks(data?.message_text)
-                )}
-              </div>
-              {data?.message_type !== 'client' && (
-                <div className="flex flex-col gap-y-2">
-                  <div
-                    onClick={() => {
-                      window.ReactNativeWebView?.postMessage(
-                        JSON.stringify({
-                          type: 'x',
-                          message: data?.message_text,
-                        })
-                      )
-                      window.parent.postMessage(
-                        {
-                          content: data?.message_text,
-                          _type: 'WIDGET',
-                        },
-                        '*'
-                      )
-                    }}
-                    className={`flex bg-slate-800 cursor-pointer text-yellow-200 hover:bg-slate-600 px-4 py-2 gap-1 rounded-lg justify-center items-center text-sm font-medium`}
-                  >
-                    {t('add_to_chat')}
-                    <ChatBubble className="w-4 h-4" />
-                  </div>
-                </div>
-              )}
-            </div>
-            {data?.llm_sources && data?.llm_sources.length > 0 && (
-              <div className="flex flex-col gap-y-1 text-xs">
-                <div className="flex gap-x-1">
-                  <BookOpen className="w-4 h-4" />
-                  <p className="text-xs">
-                    {/* Dựa trên {data?.llm_sources.length} nguồn thông tin: */}
-                    {t('based_on_sources', {
-                      count: data?.llm_sources?.length || 0,
-                    })}
-                  </p>
-                </div>
-                <div className="pl-4">
-                  {data?.llm_sources?.map((item, index) => (
-                    <div
-                      key={index}
-                      // href={item?.link || '#'}
-                      // href={'#'}
-                      // target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex gap-x-2 items-center"
-                    >
-                      •<span className="">{item?.title}</span>
-                      {/* <Share className="w-3 h-3 stroke-current flex-shrink-0" /> */}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-      {/* Hiển thị data dạng 1 ảnh */}
-      {data?.message_attachments?.length === 1 &&
-        data?.message_attachments?.[0]?.type === 'image' && (
-          <div className="flex rounded-lg">
-            <img
-              src={data?.message_attachments?.[0]?.payload?.url}
-              className="w-32 h-32 object-contain bg-slate-200 rounded-lg hover:cursor-pointer"
-              alt=""
-              onClick={() => {
-                handleClickPreview(data?.message_attachments?.[0]?.payload?.url)
-              }}
-              loading="lazy"
-            />
-          </div>
-        )}
-
-      {/* Hiển thị data dạng nhiều ảnh */}
-      {data?.message_attachments?.length > 1 &&
-        data?.message_attachments?.[0]?.type === 'image' && (
-          <div className="overflow-x-auto p-2 bg-transparent rounded-lg max-h-[216px]">
-            <div
-              className={`grid gap-2 ${
-                /** Khi chỉ có 1 ảnh, grid có 1 cột và chiều rộng nhỏ hơn */
-                data?.message_attachments?.length === 1
-                  ? 'grid-cols-1 w-32 h-32'
-                  : /** Khi có 2 ảnh, grid có 2 cột */
-                  data?.message_attachments?.length === 2
-                  ? 'grid-cols-2 w-[200px]'
-                  : /** Khi có <= 3 ảnh, grid có 3 cột */
-                  data?.message_attachments?.length <= 3
-                  ? 'grid-cols-3 w-[304px]'
-                  : /** Khi có > 3 ảnh, chia thành 2 hàng */
-                    'grid-cols-3 grid-rows-2 w-[304px]'
-              }`}
-            >
-              {data?.message_attachments
-                ?.slice(0, 6) // Giới hạn chỉ hiển thị tối đa 6 ảnh
-                ?.map((attachment, index) => (
-                  <div
-                    key={attachment?.payload?.url}
-                    className="relative w-24 h-24 bg-slate-200 rounded-lg overflow-hidden border border-slate-100"
-                  >
-                    <img
-                      src={attachment?.payload?.url}
-                      className="object-cover w-full h-full"
-                      alt={`attachment ${index + 1}`}
-                      onClick={() => {
-                        /** Lưu vào STORE */
-                        dispatch(setGlobalPreviewUrl(attachment?.payload?.url))
-                        /** Click vào ảnh thì gửi thông tin cho sdk
-                         * Có thể lưu data và STORE
-                         */
-                        postMessageToParent(
-                          SHOW_POPUP,
-                          false,
-                          674,
-                          attachment?.payload?.url,
-                          POSITION
-                        )
-                      }}
-                      loading="lazy"
-                    />
-
-                    {index === 5 && data?.message_attachments?.length > 6 && (
-                      <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center text-white text-xl font-bold">
-                        +{data?.message_attachments?.length - 6}
-                      </div>
-                    )}
-                  </div>
-                ))}
-            </div>
-          </div>
-        )}
-
-      {/* Hiển thị data dạng video */}
-      {data?.message_attachments?.[0]?.type === 'video' && (
-        <div className="">
-          <VideoPlayer src={'https://www.w3schools.com/html/mov_bbb.mp4'} />
-        </div>
-      )}
-
-      {/* Hiển thị data dạng audio */}
-      {data?.message_attachments?.[0]?.type === 'audio' && (
-        <div className="p-2">
-          <AudioPlayer src={data?.message_attachments?.[0]?.payload?.url} />
-        </div>
-      )}
-
-      {/* Hiển thị data dạng file */}
-      {data?.message_attachments?.[0]?.type === 'file' && (
-        <div className="bg-white rounded-lg p-2 gap-y-1 flex flex-col">
-          <div className="flex h-9 w-9 items-center justify-center p-2 rounded-full bg-slate-300">
-            <FileIcon className="h-5 w-5" />
-          </div>
-
-          {/* Thẻ <a> để xử lý chức năng tải file */}
-          <a
-            /** URL của tệp */
-            href={data?.message_attachments?.[0]?.payload?.url}
-            download // Thuộc tính download giúp tải tệp
-            className="text-slate-700 truncate underline text-sm"
-          >
-            {extractMessageId(data?.message_attachments?.[0]?.payload?.url)}
-          </a>
-        </div>
-      )}
-
-      {/* Hiện thị data dạng URL fallback */}
-      {data?.message_text &&
-        data?.message_type !== 'system' &&
-        data?.message_attachments?.[0]?.type === 'fallback' && (
-          <div className="flex p-2">
-            <a
-              className="text-sm min-h-4 break-words whitespace-pre-line overflow-hidden break-all text-ellipsis underline hover:text-blue-500"
-              href={
-                data?.message_text && isValidUrl(data.message_text)
-                  ? data.message_text
-                  : 'about:blank'
-              }
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {data?.message_text || 'No link available'}
-            </a>
-          </div>
-        )}
-      {/* Hiện thị data dạng buttom */}
-      {data?.message_attachments?.[0]?.type === 'template' &&
-        data?.message_attachments?.[0]?.payload?.template_type === 'button' && (
-          <div className="flex flex-col p-2 gap-y-1">
-            <h4 className="text-sm font-medium enter-line min-h-4 truncate">
-              {data?.message_attachments?.[0]?.title}
-            </h4>
-            <div className="flex flex-col gap-y-2">
-              {data?.message_attachments?.[0]?.payload?.buttons?.map(
-                (button: BtnType, index: number) => (
-                  <div
-                    onClick={() => {
-                      if (button?.type === 'web_url') {
-                        window.open(button?.url, '_blank')
-                      }
-                    }}
-                    key={index}
-                    className={`flex ${
-                      button?.type === 'web_url'
-                        ? 'bg-slate-800 cursor-pointer text-yellow-200'
-                        : 'bg-slate-200 text-black cursor-not-allowed'
-                    }  px-4 py-2 gap-1 rounded-lg justify-center items-center text-sm font-medium`}
-                  >
-                    {button?.title}
-                    {button?.type === 'web_url' && (
-                      <svg
-                        viewBox="0 0 16 16"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="w-3.5 h-3.5"
-                      >
-                        <path
-                          d="M12 8.66667V12.6667C12 13.0203 11.8595 13.3594 11.6095 13.6095C11.3594 13.8595 11.0203 14 10.6667 14H3.33333C2.97971 14 2.64057 13.8595 2.39052 13.6095C2.14048 13.3594 2 13.0203 2 12.6667V5.33333C2 4.97971 2.14048 4.64057 2.39052 4.39052C2.64057 4.14048 2.97971 4 3.33333 4H7.33333M10 2H14M14 2V6M14 2L6.66667 9.33333"
-                          stroke="currentColor"
-                          strokeWidth="1.33"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    )}
-                  </div>
-                )
-              )}
-            </div>
-          </div>
-        )}
-      {/* Hiển thị dạng generic */}
-      {data?.message_attachments?.[0]?.type === 'template' &&
-        data?.message_attachments?.[0]?.payload?.template_type ===
-          'generic' && (
-          <div className="flex gap-x-1 overflow-x-auto">
-            {data?.message_attachments?.[0]?.payload?.elements?.map(
-              (element: ElementType, index) => (
-                <div
-                  key={index}
-                  className="rounded-lg p-2 flex flex-col gap-x-2 flex-shrink-0 w-40"
-                >
-                  {/* Hình ảnh */}
-                  <div className="cursor-pointer hover:brightness-90 rounded-lg overflow-hidden">
-                    <div className="bg-gray-50 rounded-lg w-[160px] h-[160px]">
-                      <img
-                        src={element?.image_url}
-                        alt={element?.title}
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Tiêu đề và phụ đề */}
-                  <div className="text-sm">
-                    <div className="font-medium text-black truncate">
-                      {element?.title}
-                    </div>
-                    <div className="text-slate-500 truncate">
-                      {element?.subtitle}
-                    </div>
-                  </div>
-
-                  {/* Các nút */}
-                  <div className="flex flex-col gap-2">
-                    {element?.buttons?.map((button, buttonIndex) => (
-                      <button
-                        key={buttonIndex}
-                        onClick={() => {
-                          if (button?.type === 'web_url') {
-                            window.open(button?.url, '_blank')
-                          }
-                        }}
-                        className={`py-2 px-4 rounded-lg text-sm font-medium flex items-center justify-center gap-1 ${
-                          button.type === 'web_url'
-                            ? 'bg-slate-800 text-yellow-200'
-                            : button.type === 'phone_number'
-                            ? 'bg-slate-200 text-black'
-                            : 'bg-slate-200 text-black cursor-not-allowed'
-                        }`}
-                      >
-                        {button?.title}
-                        {button?.type === 'web_url' && (
-                          <svg
-                            viewBox="0 0 16 16"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="w-3.5 h-3.5"
-                          >
-                            <path
-                              d="M12 8.66667V12.6667C12 13.0203 11.8595 13.3594 11.6095 13.6095C11.3594 13.8595 11.0203 14 10.6667 14H3.33333C2.97971 14 2.64057 13.8595 2.39052 13.6095C2.14048 13.3594 2 13.0203 2 12.6667V5.33333C2 4.97971 2.14048 4.64057 2.39052 4.39052C2.64057 4.14048 2.97971 4 3.33333 4H7.33333M10 2H14M14 2V6M14 2L6.66667 9.33333"
-                              stroke="currentColor"
-                              strokeWidth="1.33"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )
-            )}
-          </div>
-        )}
-    </div>
-  )
-})
-
-export default MessageComponent
-
+// import { BtnType, ElementType, MessageProps } from '../type'
+// import {
+//   checkMD,
+//   extractMessageId,
+//   formatDate,
+//   isValidUrl,
+//   postMessageToParent,
+// } from '@/utils'
 // import {
 //   selectEmbedPosition,
 //   selectEmbedPositionDetail,
 //   selectStatusAI,
 //   selectStatusPopup,
+//   setGlobalPreviewUrl,
 // } from '@/stores/appSlice'
+// import { useDispatch, useSelector } from 'react-redux'
 
-// import MessageAudio from './components/Message/MessageAudio'
-// import MessageButtonTemplate from './components/Message/MessageButtonTemplate'
-// import MessageFallback from './components/Message/MessageFallback'
-// import MessageFile from './components/Message/MessageFile'
-// import MessageGenericTemplate from './components/Message/MessageGenericTemplate'
-// import MessageImage from './components/Message/MessageImage'
-// import { MessageProps } from '../type'
-// import MessageSources from './components/Message/MessageSources'
-// import MessageText from './components/Message/MessageText'
-// import MessageVideo from './components/Message/MessageVideo'
-// // ==== MessageComponent.tsx ====
+// import AudioPlayer from './AudioPlayer'
+// import { ReactComponent as BookOpen } from '@/assets/book-open.svg'
+// import { ReactComponent as ChatBubble } from '@/assets/chat-bubble-oval-left-ellipsis.svg'
+// import type { Components } from 'react-markdown'
+// import { ReactComponent as FileIcon } from '@/assets/document-text.svg'
 // import React from 'react'
-// import { formatDate } from '@/utils'
-// import { useSelector } from 'react-redux'
+// import ReactMarkdown from 'react-markdown'
+// import VideoPlayer from './VideoPlayer'
+// import remarkGfm from 'remark-gfm'
+// import { t } from 'i18next'
 
-// // const getMessageClasses = (messageType: string, AI_STATUS?: boolean) => {
-// //   if (messageType === 'page') {
-// //     return AI_STATUS ? 'max-w-[80%] bg-[#f4f4f4]' : 'bg-messBg max-w-[60%]'
-// //   } else if (messageType === 'client') {
-// //     return 'bg-blue-100 max-w-[60%] self-end'
-// //   } else if (messageType === 'system') {
-// //     return 'text-center text-gray-500 text-sm py-2'
-// //   }
-// //   return ''
-// // }
-// /** Hàm render css khi check type tin nhắn
-//  * @param {string} messageType - Loại tin nhắn
+// /**
+//  * Khai báo kiểu dữ liệu cho MessageComponent
 //  */
-// const getMessageClasses = (messageType: string, AI_STATUS?: boolean) => {
-//   /** Kiểm tra nếu messageType là 'page' */
-//   if (messageType === 'page') {
-//     /** Trả về các lớp CSS tương ứng nếu messageType là 'page' */
-//     if (AI_STATUS) {
-//       return ' max-w-[80%]'
-//     }
+// declare global {
+//   /**
+//    * Khai báo kiểu dữ liệu cho window
+//    */
+//   interface Window {
 //     /**
-//      * Mặc định trả về các lớp CSS cho messageType khác
+//      * Khai báo kiểu dữ liệu cho ReactNativeWebView
 //      */
-//     return ' bg-white max-w-[60%]'
-//   }
-//   /** Kiểm tra nếu messageType là 'client' */
-//   if (messageType === 'client') {
-//     /**
-//      * Nếu AI_STATUS là true thì trả về các lớp CSS tương ứng
-//      */
-//     if (AI_STATUS) {
-//       return ' max-w-[80%] bg-messBg '
+//     ReactNativeWebView?: {
+//       /**
+//        *  Hàm postMessage
+//        * @param message   - Tin nhắn
+//        * @returns       - Trả về void
+//        */
+//       postMessage: (message: string) => void
 //     }
-//     /** Nếu messageType không phải là 'system' hay 'page' */
-//     /** Trả về các lớp CSS mặc định cho các loại message khác */
-//     return ' bg-messBg max-w-[60%]'
 //   }
 // }
 
 // const MessageComponent = React.memo(({ data }: MessageProps) => {
 //   /** Trạng thái AI_STATUS */
 //   const AI_STATUS = useSelector(selectStatusAI)
-//   /** Hàm xử lý khi click xem preview ảnh */
+
+//   /** Hàm render css khi check type tin nhắn
+//    * @param {string} messageType - Loại tin nhắn
+//    */
+//   const getMessageClasses = (messageType: string) => {
+//     /** Kiểm tra nếu messageType là 'page' */
+//     if (messageType === 'page') {
+//       /** Trả về các lớp CSS tương ứng nếu messageType là 'page' */
+//       if (AI_STATUS) {
+//         return 'max-w-[80%]'
+//       }
+//       /**
+//        * Mặc định trả về các lớp CSS cho messageType khác
+//        */
+//       return 'bg-white max-w-[60%]'
+//     }
+//     /** Kiểm tra nếu messageType là 'client' */
+//     if (messageType === 'client') {
+//       /**
+//        * Nếu AI_STATUS là true thì trả về các lớp CSS tương ứng
+//        */
+//       if (AI_STATUS) {
+//         return 'max-w-[80%]'
+//       }
+//       /** Nếu messageType không phải là 'system' hay 'page' */
+//       /** Trả về các lớp CSS mặc định cho các loại message khác */
+//       return 'bg-messBg max-w-[60%]'
+//     }
+//   }
+
+//   /**
+//    * Hàm dispatch action
+//    */
+//   const dispatch = useDispatch()
+//   /** Hàm xử lý khi click xem preview ảnh
+//    * @param {string} url - Link preview
+//    * @action lưu URL vào stroe
+//    * @action gọi đến sdk để thay đổi kích thước hiển thị
+//    */
+//   const handleClickPreview = (url?: string) => {
+//     /**
+//      * Nếu không có url
+//      */
+//     if (!url) return
+//     /** Lưu vào STORE */
+//     dispatch(setGlobalPreviewUrl(url))
+//     /** Click vào ảnh thì gửi thông tin cho sdk
+//      * Có thể lưu data và STORE
+//      */
+//     postMessageToParent(
+//       true,
+//       false,
+//       674,
+//       url,
+//       POSITION,
+//       POSITION_DETAIL?.bottom,
+//       POSITION_DETAIL?.right,
+//       POSITION_DETAIL?.left
+//     )
+//   }
+//   /** Trạng thái Đóng/ Mở Popup */
 //   const SHOW_POPUP = useSelector(selectStatusPopup)
 //   /** Trạng thái vị trí của embed */
 //   const POSITION = useSelector(selectEmbedPosition)
 //   /** Trạng thái vị trí chi tiết của embed */
 //   const POSITION_DETAIL = useSelector(selectEmbedPositionDetail)
-//   /** Lấy kiểu tin nhắn từ dữ liệu */
-//   const MESSAGE_TYPE = data?.message_type || ''
-//   /** Lấy các lớp CSS dựa trên kiểu tin nhắn và trạng thái AI */
-//   const CONTAINER_CLASS = getMessageClasses(MESSAGE_TYPE, AI_STATUS)
+//   /** markdown components */
+//   const MARKDOWN_COMPONENTS: Components = {
+//     a: (props) => {
+//       const { href, children, ...rest } = props
+//       return (
+//         <a
+//           href={href}
+//           target="_blank"
+//           rel="noopener noreferrer"
+//           className="text-blue-600 underline"
+//           {...rest}
+//         >
+//           {children}
+//         </a>
+//       )
+//     },
+//   }
+//   /**
+//    *  Hàm format text với link
+//    * @param text - Nội dung tin nhắn
+//    * @returns
+//    */
+//   const formatTextWithLinks = (text: string) => {
+//     /** Tìm kế tìm link trong text */
+//     const URL_REGEX = /(https?:\/\/[^\s]+)/g
+//     /** Return text với link */
+//     return text.split(URL_REGEX).map((part, index) =>
+//       URL_REGEX.test(part) ? (
+//         <a
+//           key={index}
+//           href={part}
+//           target="_blank"
+//           rel="noopener noreferrer"
+//           className="text-blue-500 underline"
+//         >
+//           {part}
+//         </a>
+//       ) : (
+//         part
+//       )
+//     )
+//   }
 
 //   return (
 //     <div
-//       className={`group relative flex flex-col transition-all duration-300 ease-out gap-y-4 rounded-lg ${CONTAINER_CLASS}`}
-//       // className={`flex flex-col transition-all duration-300 ease-out gap-y-4 rounded-lg group relative ${getMessageClasses(
-//       //   data?.message_type
-//       // )}`}
+//       className={`flex flex-col transition-all duration-300 ease-out gap-y-4 rounded-lg group relative ${getMessageClasses(
+//         data?.message_type
+//       )}`}
 //     >
-//       {(MESSAGE_TYPE === 'page' || MESSAGE_TYPE === 'client') && (
-//         <div
-//           className={`absolute w-36 bottom-full ${
-//             data?.message_type === 'page' ? 'left-0' : 'right-0'
-//           }  text-xs font-semibold text-slate-700 bg-transparent rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
-//         >
-//           {formatDate(data?.time || data?.createdAt)}
+//       {/* Tooltip */}
+//       <div
+//         className={`absolute w-36 bottom-full ${
+//           data?.message_type === 'page' ? 'left-0' : 'right-0'
+//         }  text-xs font-semibold text-slate-700 bg-transparent rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
+//       >
+//         {formatDate(data?.time || data?.createdAt)}
+//       </div>
+//       {/* Hiện thị data dạng text */}
+//       {!AI_STATUS &&
+//         data?.message_text &&
+//         data?.message_type !== 'system' &&
+//         data?.message_type !== 'note' &&
+//         (!data?.message_attachments?.length ||
+//           !data?.message_attachments?.[0]?.type) && (
+//           <div className="flex p-2">
+//             <div className="text-sm min-h-4 break-words whitespace-pre-line overflow-hidden">
+//               {/* {data?.message_text} */}
+//               {/* {formatTextWithLinks(data?.message_text)} */}
+
+//               {checkMD(data?.message_text) ? (
+//                 <ReactMarkdown
+//                   remarkPlugins={[remarkGfm]}
+//                   components={MARKDOWN_COMPONENTS}
+//                 >
+//                   {data?.message_text}
+//                 </ReactMarkdown>
+//               ) : (
+//                 formatTextWithLinks(data?.message_text)
+//               )}
+//             </div>
+//           </div>
+//         )}
+//       {/* Hiện thị data dạng text AI và có BTN */}
+
+//       {AI_STATUS &&
+//         data?.message_text &&
+//         // data?.message_type === 'ai-suggest' &&
+//         data?.message_type !== 'system' &&
+//         data?.message_type !== 'note' &&
+//         (!data?.message_attachments?.length ||
+//           !data?.message_attachments?.[0]?.type) && (
+//           <div className="flex flex-col gap-y-2">
+//             <div
+//               className={`${
+//                 data?.message_type !== 'client' ? 'bg-white' : 'bg-yellow-100'
+//               } flex flex-col gap-y-2 p-2 rounded-lg shadow-sm`}
+//             >
+//               <div className="text-sm min-h-4 break-words whitespace-pre-line overflow-hidden">
+//                 {/* {data?.message_text} */}
+
+//                 {/* {formatTextWithLinks(data?.message_text)} */}
+
+//                 {checkMD(data?.message_text) ? (
+//                   <ReactMarkdown
+//                     remarkPlugins={[remarkGfm]}
+//                     components={MARKDOWN_COMPONENTS}
+//                   >
+//                     {data?.message_text}
+//                   </ReactMarkdown>
+//                 ) : (
+//                   formatTextWithLinks(data?.message_text)
+//                 )}
+//               </div>
+//               {data?.message_type !== 'client' && (
+//                 <div className="flex flex-col gap-y-2">
+//                   <div
+//                     onClick={() => {
+//                       window.ReactNativeWebView?.postMessage(
+//                         JSON.stringify({
+//                           type: 'x',
+//                           message: data?.message_text,
+//                         })
+//                       )
+//                       window.parent.postMessage(
+//                         {
+//                           content: data?.message_text,
+//                           _type: 'WIDGET',
+//                         },
+//                         '*'
+//                       )
+//                     }}
+//                     className={`flex bg-slate-800 cursor-pointer text-yellow-200 hover:bg-slate-600 px-4 py-2 gap-1 rounded-lg justify-center items-center text-sm font-medium`}
+//                   >
+//                     {t('add_to_chat')}
+//                     <ChatBubble className="w-4 h-4" />
+//                   </div>
+//                 </div>
+//               )}
+//             </div>
+//             {data?.llm_sources && data?.llm_sources.length > 0 && (
+//               <div className="flex flex-col gap-y-1 text-xs">
+//                 <div className="flex gap-x-1">
+//                   <BookOpen className="w-4 h-4" />
+//                   <p className="text-xs">
+//                     {/* Dựa trên {data?.llm_sources.length} nguồn thông tin: */}
+//                     {t('based_on_sources', {
+//                       count: data?.llm_sources?.length || 0,
+//                     })}
+//                   </p>
+//                 </div>
+//                 <div className="pl-4">
+//                   {data?.llm_sources?.map((item, index) => (
+//                     <div
+//                       key={index}
+//                       // href={item?.link || '#'}
+//                       // href={'#'}
+//                       // target="_blank"
+//                       rel="noopener noreferrer"
+//                       className="flex gap-x-2 items-center"
+//                     >
+//                       •<span className="">{item?.title}</span>
+//                       {/* <Share className="w-3 h-3 stroke-current flex-shrink-0" /> */}
+//                     </div>
+//                   ))}
+//                 </div>
+//               </div>
+//             )}
+//           </div>
+//         )}
+//       {/* Hiển thị data dạng 1 ảnh */}
+//       {data?.message_attachments?.length === 1 &&
+//         data?.message_attachments?.[0]?.type === 'image' && (
+//           <div className="flex rounded-lg">
+//             <img
+//               src={data?.message_attachments?.[0]?.payload?.url}
+//               className="w-32 h-32 object-contain bg-slate-200 rounded-lg hover:cursor-pointer"
+//               alt=""
+//               onClick={() => {
+//                 handleClickPreview(data?.message_attachments?.[0]?.payload?.url)
+//               }}
+//               loading="lazy"
+//             />
+//           </div>
+//         )}
+
+//       {/* Hiển thị data dạng nhiều ảnh */}
+//       {data?.message_attachments?.length > 1 &&
+//         data?.message_attachments?.[0]?.type === 'image' && (
+//           <div className="overflow-x-auto p-2 bg-transparent rounded-lg max-h-[216px]">
+//             <div
+//               className={`grid gap-2 ${
+//                 /** Khi chỉ có 1 ảnh, grid có 1 cột và chiều rộng nhỏ hơn */
+//                 data?.message_attachments?.length === 1
+//                   ? 'grid-cols-1 w-32 h-32'
+//                   : /** Khi có 2 ảnh, grid có 2 cột */
+//                   data?.message_attachments?.length === 2
+//                   ? 'grid-cols-2 w-[200px]'
+//                   : /** Khi có <= 3 ảnh, grid có 3 cột */
+//                   data?.message_attachments?.length <= 3
+//                   ? 'grid-cols-3 w-[304px]'
+//                   : /** Khi có > 3 ảnh, chia thành 2 hàng */
+//                     'grid-cols-3 grid-rows-2 w-[304px]'
+//               }`}
+//             >
+//               {data?.message_attachments
+//                 ?.slice(0, 6) // Giới hạn chỉ hiển thị tối đa 6 ảnh
+//                 ?.map((attachment, index) => (
+//                   <div
+//                     key={attachment?.payload?.url}
+//                     className="relative w-24 h-24 bg-slate-200 rounded-lg overflow-hidden border border-slate-100"
+//                   >
+//                     <img
+//                       src={attachment?.payload?.url}
+//                       className="object-cover w-full h-full"
+//                       alt={`attachment ${index + 1}`}
+//                       onClick={() => {
+//                         /** Lưu vào STORE */
+//                         dispatch(setGlobalPreviewUrl(attachment?.payload?.url))
+//                         /** Click vào ảnh thì gửi thông tin cho sdk
+//                          * Có thể lưu data và STORE
+//                          */
+//                         postMessageToParent(
+//                           SHOW_POPUP,
+//                           false,
+//                           674,
+//                           attachment?.payload?.url,
+//                           POSITION
+//                         )
+//                       }}
+//                       loading="lazy"
+//                     />
+
+//                     {index === 5 && data?.message_attachments?.length > 6 && (
+//                       <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center text-white text-xl font-bold">
+//                         +{data?.message_attachments?.length - 6}
+//                       </div>
+//                     )}
+//                   </div>
+//                 ))}
+//             </div>
+//           </div>
+//         )}
+
+//       {/* Hiển thị data dạng video */}
+//       {data?.message_attachments?.[0]?.type === 'video' && (
+//         <div className="">
+//           <VideoPlayer src={'https://www.w3schools.com/html/mov_bbb.mp4'} />
 //         </div>
 //       )}
 
-//       <MessageText
-//         data={data}
-//         AI_STATUS={AI_STATUS}
-//       />
-//       <MessageImage
-//         data={data}
-//         SHOW_POPUP={SHOW_POPUP}
-//         POSITION={POSITION}
-//         POSITION_DETAIL={POSITION_DETAIL}
-//       />
-//       <MessageVideo data={data} />
-//       <MessageAudio data={data} />
-//       <MessageFile data={data} />
-//       <MessageButtonTemplate data={data} />
-//       <MessageGenericTemplate data={data} />
-//       <MessageFallback data={data} />
+//       {/* Hiển thị data dạng audio */}
+//       {data?.message_attachments?.[0]?.type === 'audio' && (
+//         <div className="p-2">
+//           <AudioPlayer src={data?.message_attachments?.[0]?.payload?.url} />
+//         </div>
+//       )}
+
+//       {/* Hiển thị data dạng file */}
+//       {data?.message_attachments?.[0]?.type === 'file' && (
+//         <div className="bg-white rounded-lg p-2 gap-y-1 flex flex-col">
+//           <div className="flex h-9 w-9 items-center justify-center p-2 rounded-full bg-slate-300">
+//             <FileIcon className="h-5 w-5" />
+//           </div>
+
+//           {/* Thẻ <a> để xử lý chức năng tải file */}
+//           <a
+//             /** URL của tệp */
+//             href={data?.message_attachments?.[0]?.payload?.url}
+//             download // Thuộc tính download giúp tải tệp
+//             className="text-slate-700 truncate underline text-sm"
+//           >
+//             {extractMessageId(data?.message_attachments?.[0]?.payload?.url)}
+//           </a>
+//         </div>
+//       )}
+
+//       {/* Hiện thị data dạng URL fallback */}
+//       {data?.message_text &&
+//         data?.message_type !== 'system' &&
+//         data?.message_attachments?.[0]?.type === 'fallback' && (
+//           <div className="flex p-2">
+//             <a
+//               className="text-sm min-h-4 break-words whitespace-pre-line overflow-hidden break-all text-ellipsis underline hover:text-blue-500"
+//               href={
+//                 data?.message_text && isValidUrl(data.message_text)
+//                   ? data.message_text
+//                   : 'about:blank'
+//               }
+//               target="_blank"
+//               rel="noopener noreferrer"
+//             >
+//               {data?.message_text || 'No link available'}
+//             </a>
+//           </div>
+//         )}
+//       {/* Hiện thị data dạng buttom */}
+//       {data?.message_attachments?.[0]?.type === 'template' &&
+//         data?.message_attachments?.[0]?.payload?.template_type === 'button' && (
+//           <div className="flex flex-col p-2 gap-y-1">
+//             <h4 className="text-sm font-medium enter-line min-h-4 truncate">
+//               {data?.message_attachments?.[0]?.title}
+//             </h4>
+//             <div className="flex flex-col gap-y-2">
+//               {data?.message_attachments?.[0]?.payload?.buttons?.map(
+//                 (button: BtnType, index: number) => (
+//                   <div
+//                     onClick={() => {
+//                       if (button?.type === 'web_url') {
+//                         window.open(button?.url, '_blank')
+//                       }
+//                     }}
+//                     key={index}
+//                     className={`flex ${
+//                       button?.type === 'web_url'
+//                         ? 'bg-slate-800 cursor-pointer text-yellow-200'
+//                         : 'bg-slate-200 text-black cursor-not-allowed'
+//                     }  px-4 py-2 gap-1 rounded-lg justify-center items-center text-sm font-medium`}
+//                   >
+//                     {button?.title}
+//                     {button?.type === 'web_url' && (
+//                       <svg
+//                         viewBox="0 0 16 16"
+//                         fill="none"
+//                         xmlns="http://www.w3.org/2000/svg"
+//                         className="w-3.5 h-3.5"
+//                       >
+//                         <path
+//                           d="M12 8.66667V12.6667C12 13.0203 11.8595 13.3594 11.6095 13.6095C11.3594 13.8595 11.0203 14 10.6667 14H3.33333C2.97971 14 2.64057 13.8595 2.39052 13.6095C2.14048 13.3594 2 13.0203 2 12.6667V5.33333C2 4.97971 2.14048 4.64057 2.39052 4.39052C2.64057 4.14048 2.97971 4 3.33333 4H7.33333M10 2H14M14 2V6M14 2L6.66667 9.33333"
+//                           stroke="currentColor"
+//                           strokeWidth="1.33"
+//                           strokeLinecap="round"
+//                           strokeLinejoin="round"
+//                         />
+//                       </svg>
+//                     )}
+//                   </div>
+//                 )
+//               )}
+//             </div>
+//           </div>
+//         )}
+//       {/* Hiển thị dạng generic */}
+//       {data?.message_attachments?.[0]?.type === 'template' &&
+//         data?.message_attachments?.[0]?.payload?.template_type ===
+//           'generic' && (
+//           <div className="flex gap-x-1 overflow-x-auto">
+//             {data?.message_attachments?.[0]?.payload?.elements?.map(
+//               (element: ElementType, index) => (
+//                 <div
+//                   key={index}
+//                   className="rounded-lg p-2 flex flex-col gap-x-2 flex-shrink-0 w-40"
+//                 >
+//                   {/* Hình ảnh */}
+//                   <div className="cursor-pointer hover:brightness-90 rounded-lg overflow-hidden">
+//                     <div className="bg-gray-50 rounded-lg w-[160px] h-[160px]">
+//                       <img
+//                         src={element?.image_url}
+//                         alt={element?.title}
+//                         className="w-full h-full object-contain"
+//                       />
+//                     </div>
+//                   </div>
+
+//                   {/* Tiêu đề và phụ đề */}
+//                   <div className="text-sm">
+//                     <div className="font-medium text-black truncate">
+//                       {element?.title}
+//                     </div>
+//                     <div className="text-slate-500 truncate">
+//                       {element?.subtitle}
+//                     </div>
+//                   </div>
+
+//                   {/* Các nút */}
+//                   <div className="flex flex-col gap-2">
+//                     {element?.buttons?.map((button, buttonIndex) => (
+//                       <button
+//                         key={buttonIndex}
+//                         onClick={() => {
+//                           if (button?.type === 'web_url') {
+//                             window.open(button?.url, '_blank')
+//                           }
+//                         }}
+//                         className={`py-2 px-4 rounded-lg text-sm font-medium flex items-center justify-center gap-1 ${
+//                           button.type === 'web_url'
+//                             ? 'bg-slate-800 text-yellow-200'
+//                             : button.type === 'phone_number'
+//                             ? 'bg-slate-200 text-black'
+//                             : 'bg-slate-200 text-black cursor-not-allowed'
+//                         }`}
+//                       >
+//                         {button?.title}
+//                         {button?.type === 'web_url' && (
+//                           <svg
+//                             viewBox="0 0 16 16"
+//                             fill="none"
+//                             xmlns="http://www.w3.org/2000/svg"
+//                             className="w-3.5 h-3.5"
+//                           >
+//                             <path
+//                               d="M12 8.66667V12.6667C12 13.0203 11.8595 13.3594 11.6095 13.6095C11.3594 13.8595 11.0203 14 10.6667 14H3.33333C2.97971 14 2.64057 13.8595 2.39052 13.6095C2.14048 13.3594 2 13.0203 2 12.6667V5.33333C2 4.97971 2.14048 4.64057 2.39052 4.39052C2.64057 4.14048 2.97971 4 3.33333 4H7.33333M10 2H14M14 2V6M14 2L6.66667 9.33333"
+//                               stroke="currentColor"
+//                               strokeWidth="1.33"
+//                               strokeLinecap="round"
+//                               strokeLinejoin="round"
+//                             />
+//                           </svg>
+//                         )}
+//                       </button>
+//                     ))}
+//                   </div>
+//                 </div>
+//               )
+//             )}
+//           </div>
+//         )}
 //     </div>
 //   )
 // })
 
 // export default MessageComponent
+
+import {
+  selectEmbedPosition,
+  selectEmbedPositionDetail,
+  selectStatusAI,
+  selectStatusPopup,
+} from '@/stores/appSlice'
+
+import MessageAudio from './components/Message/MessageAudio'
+import MessageButtonTemplate from './components/Message/MessageButtonTemplate'
+import MessageFallback from './components/Message/MessageFallback'
+import MessageFile from './components/Message/MessageFile'
+import MessageGenericTemplate from './components/Message/MessageGenericTemplate'
+import MessageImage from './components/Message/MessageImage'
+import { MessageProps } from '../type'
+import MessageSources from './components/Message/MessageSources'
+import MessageText from './components/Message/MessageText'
+import MessageVideo from './components/Message/MessageVideo'
+// ==== MessageComponent.tsx ====
+import React from 'react'
+import { formatDate } from '@/utils'
+import { useSelector } from 'react-redux'
+
+// const getMessageClasses = (messageType: string, AI_STATUS?: boolean) => {
+//   if (messageType === 'page') {
+//     return AI_STATUS ? 'max-w-[80%] bg-[#f4f4f4]' : 'bg-messBg max-w-[60%]'
+//   } else if (messageType === 'client') {
+//     return 'bg-blue-100 max-w-[60%] self-end'
+//   } else if (messageType === 'system') {
+//     return 'text-center text-gray-500 text-sm py-2'
+//   }
+//   return ''
+// }
+/** Hàm render css khi check type tin nhắn
+ * @param {string} messageType - Loại tin nhắn
+ */
+const getMessageClasses = (messageType: string, AI_STATUS?: boolean) => {
+  /** Kiểm tra nếu messageType là 'page' */
+  if (messageType === 'page') {
+    /** Trả về các lớp CSS tương ứng nếu messageType là 'page' */
+    if (AI_STATUS) {
+      return ' max-w-[80%]'
+    }
+    /**
+     * Mặc định trả về các lớp CSS cho messageType khác
+     */
+    return ' bg-white max-w-[60%]'
+  }
+  /** Kiểm tra nếu messageType là 'client' */
+  if (messageType === 'client') {
+    /**
+     * Nếu AI_STATUS là true thì trả về các lớp CSS tương ứng
+     */
+    if (AI_STATUS) {
+      return ' max-w-[80%] bg-messBg '
+    }
+    /** Nếu messageType không phải là 'system' hay 'page' */
+    /** Trả về các lớp CSS mặc định cho các loại message khác */
+    return ' bg-messBg max-w-[60%]'
+  }
+}
+
+const MessageComponent = React.memo(({ data }: MessageProps) => {
+  /** Trạng thái AI_STATUS */
+  const AI_STATUS = useSelector(selectStatusAI)
+  /** Hàm xử lý khi click xem preview ảnh */
+  const SHOW_POPUP = useSelector(selectStatusPopup)
+  /** Trạng thái vị trí của embed */
+  const POSITION = useSelector(selectEmbedPosition)
+  /** Trạng thái vị trí chi tiết của embed */
+  const POSITION_DETAIL = useSelector(selectEmbedPositionDetail)
+  /** Lấy kiểu tin nhắn từ dữ liệu */
+  const MESSAGE_TYPE = data?.message_type || ''
+  /** Lấy các lớp CSS dựa trên kiểu tin nhắn và trạng thái AI */
+  const CONTAINER_CLASS = getMessageClasses(MESSAGE_TYPE, AI_STATUS)
+
+  return (
+    <div
+      className={`group relative flex flex-col transition-all duration-300 ease-out gap-y-4 rounded-lg ${CONTAINER_CLASS}`}
+      // className={`flex flex-col transition-all duration-300 ease-out gap-y-4 rounded-lg group relative ${getMessageClasses(
+      //   data?.message_type
+      // )}`}
+    >
+      {(MESSAGE_TYPE === 'page' || MESSAGE_TYPE === 'client') && (
+        <div
+          className={`absolute w-36 bottom-full ${
+            data?.message_type === 'page' ? 'left-0' : 'right-0'
+          }  text-xs font-semibold text-slate-700 bg-transparent rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
+        >
+          {formatDate(data?.time || data?.createdAt)}
+        </div>
+      )}
+
+      <MessageText
+        data={data}
+        AI_STATUS={AI_STATUS}
+      />
+      <MessageImage
+        data={data}
+        SHOW_POPUP={SHOW_POPUP}
+        POSITION={POSITION}
+        POSITION_DETAIL={POSITION_DETAIL}
+      />
+      <MessageVideo data={data} />
+      <MessageAudio data={data} />
+      <MessageFile data={data} />
+      <MessageButtonTemplate data={data} />
+      <MessageGenericTemplate data={data} />
+      <MessageFallback data={data} />
+    </div>
+  )
+})
+
+export default MessageComponent

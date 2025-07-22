@@ -1,10 +1,12 @@
+import ReactMarkdown, { Components } from 'react-markdown'
+
 import { ReactComponent as ChatBubble } from '@/assets/chat-bubble-oval-left-ellipsis.svg'
 import { MessageProps } from '../../../type'
 import MessageSources from './MessageSources'
-import ReactMarkdown from 'react-markdown'
 import { checkMD } from '@/utils'
 import remarkGfm from 'remark-gfm'
 import { t } from 'i18next'
+
 /**
  * Khai báo kiểu dữ liệu cho MessageComponent
  */
@@ -66,6 +68,24 @@ const MessageText = ({
   )
     return null
 
+  /** markdown components */
+  const MARKDOWN_COMPONENTS: Components = {
+    a: (props) => {
+      const { href, children, ...rest } = props
+      return (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-600 underline"
+          {...rest}
+        >
+          {children}
+        </a>
+      )
+    },
+  }
+
   return (
     <div className={`flex flex-col gap-y-2`}>
       <div
@@ -75,7 +95,10 @@ const MessageText = ({
       >
         <div className="text-sm min-h-4 break-words whitespace-pre-line overflow-hidden">
           {checkMD(data?.message_text) ? (
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={MARKDOWN_COMPONENTS}
+            >
               {data?.message_text}
             </ReactMarkdown>
           ) : (
