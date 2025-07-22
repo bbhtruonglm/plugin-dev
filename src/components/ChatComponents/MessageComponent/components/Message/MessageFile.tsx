@@ -1,5 +1,5 @@
 import { ReactComponent as FileIcon } from '@/assets/document-text.svg'
-import { MessageProps } from '../../type'
+import { MessageProps } from '../../../type'
 import { extractMessageId } from '@/utils'
 
 const MessageFile = ({ data }: { data: MessageProps['data'] }) => {

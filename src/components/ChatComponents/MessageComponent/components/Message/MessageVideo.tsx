@@ -1,5 +1,5 @@
-import { MessageProps } from '../../type'
-import VideoPlayer from '../VideoPlayer'
+import { MessageProps } from '../../../type'
+import VideoPlayer from '../../VideoPlayer'
 
 const MessageVideo = ({ data }: { data: MessageProps['data'] }) => {
   /** Nếu không phải dạng video thì trả về null */

@@ -1,5 +1,5 @@
 import { ReactComponent as ChatBubble } from '@/assets/chat-bubble-oval-left-ellipsis.svg'
-import { MessageProps } from '../../type'
+import { MessageProps } from '../../../type'
 import MessageSources from './MessageSources'
 import ReactMarkdown from 'react-markdown'
 import { checkMD } from '@/utils'
@@ -69,7 +69,9 @@ const MessageText = ({
   return (
     <div className={`flex flex-col gap-y-2`}>
       <div
-        className={`${AI_STATUS ? 'bg-white ' : ' '} p-2 rounded-lg shadow-sm`}
+        className={` p-2 rounded-lg shadow-sm ${
+          AI_STATUS && data?.message_type !== 'client' ? 'bg-white' : ''
+        }`}
       >
         <div className="text-sm min-h-4 break-words whitespace-pre-line overflow-hidden">
           {checkMD(data?.message_text) ? (

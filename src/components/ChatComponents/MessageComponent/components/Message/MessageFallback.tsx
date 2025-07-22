@@ -1,4 +1,4 @@
-import { MessageProps } from '../../type'
+import { MessageProps } from '../../../type'
 import { isValidUrl } from '@/utils'
 
 const MessageFallback = ({ data }: { data: MessageProps['data'] }) => {

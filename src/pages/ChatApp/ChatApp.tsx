@@ -11,7 +11,6 @@ import {
 import { ReactComponent as ActiveMessage } from '@/assets/messageA.svg'
 import { ChatAppProps } from '../type'
 import ChatScreen from '@/screens/ChatScreen/Chat/Chat'
-import { ReactComponent as CloseSlate } from '@/assets/close-black.svg'
 import Header from './components/Header'
 import Home from '@/screens/ChatScreen/Home'
 import { HomeIcon } from '@heroicons/react/24/solid'
@@ -456,7 +455,7 @@ const ChatApp = ({
         {GLOBAL_PREVIEW_URL && (
           <img
             src={GLOBAL_PREVIEW_URL}
-            className="max-w-[880px] min-w-96 w-full h-auto min-h-32 object-contain rounded-lg bg-slate-200"
+            className="max-w-[880px] min-w-96 w-full max-h-screen  h-auto min-h-32 object-contain rounded-lg bg-slate-200"
             alt="Full Attachment"
           />
         )}

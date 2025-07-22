@@ -40,7 +40,7 @@ const Modal: React.FC<ModalProps> = ({ is_open, onClose, children }) => {
       onClick={onClose}
     >
       <div
-        className={`relative transform transition-transform duration-100 ${
+        className={`relative transform transition-transform duration-100  ${
           is_open ? 'scale-100' : 'scale-90'
         }`}
         /** Ngăn chặn sự kiện đóng modal khi click vào nội dung */

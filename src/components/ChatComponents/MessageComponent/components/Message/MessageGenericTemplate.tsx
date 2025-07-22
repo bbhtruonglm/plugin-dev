@@ -1,4 +1,4 @@
-import { ElementType } from '../../type'
+import { ElementType } from '../../../type'
 
 const MessageGenericTemplate = ({ data }: any) => {
   /** Check giá trị generic template */

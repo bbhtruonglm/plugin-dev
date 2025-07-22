@@ -1,5 +1,5 @@
-import AudioPlayer from '../AudioPlayer'
-import { MessageProps } from '../../type'
+import AudioPlayer from '../../AudioPlayer'
+import { MessageProps } from '../../../type'
 
 const MessageAudio = ({ data }: { data: MessageProps['data'] }) => {
   /** Nếu không phải dạng audio thì trả về null */

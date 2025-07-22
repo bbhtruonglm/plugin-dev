@@ -1,4 +1,4 @@
-import { BtnType } from '../../type'
+import { BtnType } from '../../../type'
 
 const MessageButtonTemplate = ({ data }: any) => {
   /** Khai báo kiểu dữ liệu
