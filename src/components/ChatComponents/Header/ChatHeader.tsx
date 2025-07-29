@@ -216,17 +216,21 @@ function ChatHeader({
                   </div>
                 )}
 
-                <div
-                  onClick={setHideForMobile}
-                  className={`${
-                    // CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
-                    // ?
-                    'flex w-9 h-9 items-center justify-center'
-                    // : 'hidden'
-                  }`}
-                >
-                  <XMarkIcon className="size-8 text-white" />
-                </div>
+                {!IS_VIEW_SCREEN ? (
+                  <div
+                    onClick={setHideForMobile}
+                    className={`${
+                      // CURRENT_WIDTH < 768 && CURRENT_WIDTH !== 0
+                      // ?
+                      'flex w-9 h-9 items-center justify-center'
+                      // : 'hidden'
+                    }`}
+                  >
+                    <XMarkIcon className="size-8 text-white" />
+                  </div>
+                ) : (
+                  <div></div>
+                )}
               </div>
             </div>
           ) : (
@@ -252,15 +256,16 @@ function ChatHeader({
                   </h2>
                 )}
                 {/* {CURRENT_WIDTH !== 0 ? ( */}
-                <div
-                  onClick={setHideForMobile}
-                  className="w-8 h-8  flex justify-center items-center cursor-pointer"
-                >
-                  <XMarkIcon className="flex cursor-pointer text-white size-8" />
-                </div>
-                {/* ) : (
-                  <div className=" flex justify-center items-center w-7 h-7"></div>
-                )} */}
+                {!IS_VIEW_SCREEN ? (
+                  <div
+                    onClick={setHideForMobile}
+                    className="w-8 h-8  flex justify-center items-center cursor-pointer"
+                  >
+                    <XMarkIcon className="flex cursor-pointer text-white size-8" />
+                  </div>
+                ) : (
+                  <div></div>
+                )}
               </div>
               <div className="flex items-center py-3 justify-center h-[72px] w-full">
                 <div className="flex h-12 justify-center">
