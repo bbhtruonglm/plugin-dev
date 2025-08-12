@@ -142,7 +142,6 @@ function useChatApp({ show }: { show: boolean }) {
       IS_VIEW_SCREEN ||
       (IS_SHOW_HOME !== undefined && !IS_SHOW_HOME)
     ) {
-      // console.log(IS_VIEW_SCREEN, 'IS_VIEW_SCREEN')
       /** Set tab hiện tại là message */
       setCurrentTab('message')
       /** Set show welcome message là false */
@@ -163,7 +162,7 @@ function useChatApp({ show }: { show: boolean }) {
       /** 5. Reset tin nhắn mới nhất trong localStorage */
       saveQuickChatLatestMessage(PAGE_ID, CLIENT_STORED, null)
     }
-  }, [AI_STATUS, GLOBAL_CONSULTATION, IS_SHOW_HOME, IS_VIEW_SCREEN])
+  }, [IS_VIEW_SCREEN, AI_STATUS, GLOBAL_CONSULTATION, IS_SHOW_HOME])
 
   /** hàm dispatch đến store */
   const dispatch = useDispatch()
@@ -388,12 +387,14 @@ function useChatApp({ show }: { show: boolean }) {
     const RES = await fetchAPI(URL_READ.toString(), 'GET')
     /** lưu tên page vào state */
     setPageName(RES?.data?.name)
-
+    /** Khi call api xong thì tắt loading */
+    dispatch(setLoadingGlobal(false))
     /** Nếu lỗi 403 thì hiện cờ  */
     if (RES?.code === 403) {
       setInvalidPageId(true)
       return
     }
+
     setInvalidPageId(false)
     /**
      *  Tạm ẩn để deploy lên production

@@ -127,7 +127,7 @@ function ChatHeader({
           ) : (
             <div className="flex flex-col w-full items-center py-3 px-5 gap-2 h-44">
               <div className="flex justify-between w-full ">
-                {is_show_home ? (
+                {is_show_home && !IS_VIEW_SCREEN ? (
                   // <BackArrow
                   //   className="w-7 h-7 cursor-pointer"
                   //   onClick={() => onCancel()}
@@ -237,10 +237,6 @@ function ChatHeader({
             <div className="flex flex-col items-center w-full gap-y-1">
               <div className="flex w-full justify-between items-center h-[30px] ">
                 {is_show_home && !IS_VIEW_SCREEN ? (
-                  // <BackArrow
-                  //   className="w-7 h-7 cursor-pointer"
-                  //   onClick={() => onCancel()}
-                  // />
                   <ChevronLeftIcon
                     className="size-7 cursor-pointer text-white"
                     onClick={() => onCancel()}
@@ -255,7 +251,7 @@ function ChatHeader({
                     {page_name}
                   </h2>
                 )}
-                {/* {CURRENT_WIDTH !== 0 ? ( */}
+
                 {!IS_VIEW_SCREEN ? (
                   <div
                     onClick={setHideForMobile}
