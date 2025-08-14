@@ -837,3 +837,30 @@ export const renderLogo = (
   /** Trả về logo mặc định */
   return DEFAULT_LOGO
 }
+
+/** Hàm set cookie
+ * @param name
+ * @param value
+ * @param days
+ */
+export function setCookie(name: string, value: string, days: number): void {
+  /** Hạn */
+  const EXPIRES = new Date()
+  /** Tạo date 30 ngày */
+  EXPIRES.setDate(EXPIRES.getDate() + days)
+  /** Loại bỏ cookie */
+  document.cookie = `${name}=${value}; expires=${EXPIRES.toUTCString()}; path=/; SameSite=Lax`
+}
+
+/** Hàm get cookie
+ * @param name
+ */
+export function getCookie(name: string): string | null {
+  /**Giá trị */
+  const VALUE = `; ${document.cookie}`
+  /** Part */
+  const PART = VALUE.split(`; ${name}=`)
+  /** Trả về */
+  if (PART.length === 2) return PART.pop()?.split(';').shift() ?? null
+  return null
+}

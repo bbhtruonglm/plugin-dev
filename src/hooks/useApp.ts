@@ -1,5 +1,10 @@
 import { fetchAPI, useAPI } from '../api/api'
-import { parsedString, postMessageToParent } from '../utils'
+import {
+  getCookie,
+  parsedString,
+  postMessageToParent,
+  setCookie,
+} from '../utils'
 import {
   resetConversation,
   selectEmbedPosition,
@@ -129,6 +134,8 @@ export function useApp() {
 
         /** Reset lại client_id */
         localStorage.setItem(`client_id_${N_PAGE_ID}`, '')
+        /** Lưu vào cookies */
+        setCookie(`client_id_${PAGE_ID}`, N_CLIENT_ID, 30)
 
         console.log('CHẠY VÀO ĐÂY USER_INFO hàm refresh', client)
 
@@ -171,7 +178,12 @@ export function useApp() {
   /** Page_id được lưu trong Store */
   const PAGE_ID = useSelector(selectPageId)
   /** Client_id được lưu trong localStorage theo Page_id */
-  const CLIENT_ID = localStorage.getItem(`client_id_<${PAGE_ID}>`)
+  let stored_client_id = localStorage.getItem(`client_id_${PAGE_ID}`)
+  /** Nếu không có client_id trong localStorage thì lấy từ cookies */
+  if (!stored_client_id) {
+    stored_client_id = getCookie(`client_id_${PAGE_ID}`)
+  }
+  console.log(stored_client_id, 'stored_client_id')
   /** Dispatch */
   const dispatch = useDispatch()
 
@@ -749,23 +761,31 @@ export function useApp() {
           /**
            * Lấy client_id từ localStorage
            */
-          const STORED_CLIENT_ID = localStorage.getItem(
+          let stored_client_id = localStorage.getItem(
             `client_id_${STORED_PAGE_ID}`
           )
+
+          console.log(stored_client_id, 'stored_client_id')
+          console.log(STORED_PAGE_ID, 'STORED_PAGE_ID client_id')
+          /** Nếu không cố client_id thì lưu client_id trong cookie */
+          if (!stored_client_id) {
+            stored_client_id = getCookie(`client_id_${PAGE_ID}`) || ''
+          }
+          console.log(stored_client_id, 'stored_client_id add to store')
           /**
            * Trường hợp KHông phải chat AI thì lưu client_id vào store
            */
-          dispatch(setGlobalClientId(STORED_CLIENT_ID || ''))
+          dispatch(setGlobalClientId(stored_client_id || ''))
           /**
            * Lấy dữ liệu khách hàng
            */
-          fetchClientData(STORED_CLIENT_ID, STORED_PAGE_ID)
+          fetchClientData(stored_client_id, STORED_PAGE_ID)
           /**
            * Lấy tin nhắn mới nhất
            */
           const STORED_MESSAGE_LATEST = parsedString(
             localStorage.getItem(
-              `latest_message__${STORED_PAGE_ID}__${STORED_CLIENT_ID}`
+              `latest_message__${STORED_PAGE_ID}__${stored_client_id}`
             ) || ''
           )
           /**
@@ -773,7 +793,7 @@ export function useApp() {
            */
           const STORED_UNREAD_COUNT = Number(
             localStorage.getItem(
-              `count_unread__${STORED_PAGE_ID}__${STORED_CLIENT_ID}`
+              `count_unread__${STORED_PAGE_ID}__${stored_client_id}`
             )
           )
           /** Lưu trạng thái hiển thị popup */
@@ -871,7 +891,7 @@ export function useApp() {
     handleToggle,
     handleOff,
     PAGE_ID,
-    CLIENT_ID,
+    stored_client_id,
     setTypeConsultation,
     type_consultation,
   }

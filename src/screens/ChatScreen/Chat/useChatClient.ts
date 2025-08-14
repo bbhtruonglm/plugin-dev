@@ -1,4 +1,5 @@
 import { apiImage, fetchAPI, useAPI } from '@/api/api'
+import { getCookie, setCookie } from '@/utils'
 import {
   selectConsultationGlobal,
   selectGlobalClientId,
@@ -95,11 +96,13 @@ export function useChatClient(invalid_page_id_parent?: boolean) {
   const [is_init, setIsInit] = useState(false)
 
   /** Lấy client_id từ localStorage (nếu có) theo page_id */
-  const CLIENT_ID =
+  let stored_client_id =
     typeof window !== 'undefined'
       ? localStorage.getItem(`client_id_${PAGE_ID}`) ?? ''
       : ''
-
+  if (!stored_client_id) {
+    stored_client_id = getCookie(`client_id_${PAGE_ID}`) || ''
+  }
   /** Handle invalid page_id */
   useEffect(() => {
     /** Phải có giá trị invalid thì mới cập nhật */
@@ -113,12 +116,12 @@ export function useChatClient(invalid_page_id_parent?: boolean) {
     /** Nếu có page_id thì mới xử lý tiếp
      *  Nếu có CLIENT_ID thì set CLIENT_ID
      */
-    if (PAGE_ID && CLIENT_ID && CLIENT_ID !== 'undefined') {
-      setClientId(CLIENT_ID)
+    if (PAGE_ID && stored_client_id && stored_client_id !== 'undefined') {
+      setClientId(stored_client_id)
     } else if (PAGE_ID && !AI_STATUS) {
       setClientId('')
     }
-  }, [PAGE_ID, CLIENT_ID])
+  }, [PAGE_ID, stored_client_id])
 
   /** Fetch client info */
   useEffect(() => {
@@ -175,6 +178,9 @@ export function useChatClient(invalid_page_id_parent?: boolean) {
         if (RESULT.code === 403) {
           /** Xóa client_id trong localStorage */
           localStorage.setItem(`client_id_${PAGE_ID}`, '')
+          /** Lưu vào cookies  */
+          setCookie(`client_id_${PAGE_ID}`, '', 30)
+
           /**
            * Set invalid page_id
            */
@@ -193,6 +199,11 @@ export function useChatClient(invalid_page_id_parent?: boolean) {
          * Lưu client_id mới vào localStorage
          */
         localStorage.setItem(`client_id_${PAGE_ID}`, NEW_CLIENT_ID)
+        /** Lưu client_id mới vào cookies */
+        setCookie(`client_id_${PAGE_ID}`, NEW_CLIENT_ID, 30)
+
+        console.log('hehheheh client_id', NEW_CLIENT_ID)
+
         /**
          * Lưu trạng thái mới init
          */
@@ -294,7 +305,7 @@ export function useChatClient(invalid_page_id_parent?: boolean) {
     /**
      * Nếu có USER_INFO và chưa có CLIENT_ID
      */
-    if (HAS_VALID_USER && !CLIENT_ID && !AI_STATUS) {
+    if (HAS_VALID_USER && !stored_client_id && !AI_STATUS) {
       /**
        * Gọi hàm khởi tạo client id
        */
@@ -311,7 +322,7 @@ export function useChatClient(invalid_page_id_parent?: boolean) {
       if (USER_INFO.client_id) setClientId(USER_INFO.client_id)
       initGetClientId(PARAM)
     }
-  }, [CLIENT_ID, USER_INFO, AI_STATUS])
+  }, [stored_client_id, USER_INFO, AI_STATUS])
 
   /**
    * Hàm lấy dữ liệu client

@@ -32,7 +32,7 @@ function DetailChat({
 }: ChatScreenProps) {
   const {
     AI_STATUS,
-    CLIENT_ID,
+    client_id: CLIENT_ID,
     loading_more,
     MESSAGE_CONTAINER_REF,
     PAGE_ID,

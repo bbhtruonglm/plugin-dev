@@ -5,6 +5,7 @@ import {
 import { fetchAPI, useAPI } from '@/api/api'
 import { get, isEmpty, map, values } from 'lodash'
 import {
+  getCookie,
   hasAttachmentOfType,
   postMessageToParent,
   renderAvatarFromId,
@@ -157,10 +158,10 @@ function useChatApp({ show }: { show: boolean }) {
       dispatch(setGlobalUnreadCount(0))
       dispatch(setLoadingGlobal(true))
       /** 4. Reset Số tin nhắn chưa đọc localStorage */
-      saveQuickChatCount(PAGE_ID, CLIENT_STORED, 0)
+      saveQuickChatCount(PAGE_ID, stored_client_id, 0)
 
       /** 5. Reset tin nhắn mới nhất trong localStorage */
-      saveQuickChatLatestMessage(PAGE_ID, CLIENT_STORED, null)
+      saveQuickChatLatestMessage(PAGE_ID, stored_client_id, null)
     }
   }, [IS_VIEW_SCREEN, AI_STATUS, GLOBAL_CONSULTATION, IS_SHOW_HOME])
 
@@ -231,8 +232,14 @@ function useChatApp({ show }: { show: boolean }) {
   const IS_INIT_CLIENT = useSelector(selectStatusIsInit)
   /** GLobal client_id */
   const GLOBAL_CLIENT_ID = useSelector(selectGlobalClientId)
+
+  console.log(GLOBAL_CLIENT_ID, 'GLOBAL_CLIENT_ID client_id')
   /** Lấy client_id từ localStorage*/
-  const CLIENT_STORED = localStorage.getItem(`client_id_${PAGE_ID}`)
+  let stored_client_id = localStorage.getItem(`client_id_${PAGE_ID}`)
+  /** Lấy client_id từ cookie */
+  if (!stored_client_id) {
+    stored_client_id = getCookie(`client_id_${PAGE_ID}`)
+  }
 
   /** Tin nhắn chào mừng  */
   const [welcome_message, setWelcomeMessage] = useState<any>({
@@ -334,11 +341,12 @@ function useChatApp({ show }: { show: boolean }) {
       }
       /** Luôn gọi API lấy dữ liệu trang */
       fetchPageData(PAGE_ID)
-      if (CLIENT_STORED) {
+      /** Nếu nhận được client_id từ localStorage */
+      if (stored_client_id) {
         /** Tạo WebSocket mới */
         onSocketFromChatboxServer({
           page_id: PAGE_ID,
-          client_id: CLIENT_STORED,
+          client_id: stored_client_id,
           WS,
           dispatch,
           REF_LIST_UNREAD_MESSAGE,
@@ -354,7 +362,7 @@ function useChatApp({ show }: { show: boolean }) {
       /** Sau khi khởi tạo WebSocket, đặt lại cờ */
       dispatch(setStatusIsInit(false))
     }
-  }, [PAGE_ID, GLOBAL_CLIENT_ID, CLIENT_STORED])
+  }, [PAGE_ID, GLOBAL_CLIENT_ID, stored_client_id])
 
   /**
    * Vị trí của chatbox
@@ -1140,7 +1148,7 @@ function useChatApp({ show }: { show: boolean }) {
     IS_ONLINE,
     setCurrentTab,
     PAGE_ID,
-    CLIENT_STORED,
+    stored_client_id,
     setErrorMessage,
     social_link,
     web_form,

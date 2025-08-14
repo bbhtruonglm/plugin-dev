@@ -16,7 +16,7 @@ function App() {
     handleToggle,
     handleOff,
     PAGE_ID,
-    CLIENT_ID,
+    stored_client_id,
     setTypeConsultation,
     is_show,
   } = useApp()
@@ -27,7 +27,7 @@ function App() {
     handleToggle,
     handleOff,
     PAGE_ID,
-    CLIENT_ID,
+    CLIENT_ID: stored_client_id,
     setTypeConsultation,
   })
   return (

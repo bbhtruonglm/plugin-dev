@@ -1,7 +1,7 @@
 import { Employee, Message } from '../type'
 import { debounce, isEmpty, keys } from 'lodash'
 import { fetchAPI, useAPI } from '@/api/api'
-import { renderAvatarFromId, renderAvatarFromIdAgent } from '@/utils'
+import { getCookie, renderAvatarFromId, renderAvatarFromIdAgent } from '@/utils'
 import {
   selectActiveAiAgent,
   selectAiId,
@@ -148,8 +148,12 @@ const useDetailChat = ({
   /**
    * CLIENT_ID
    */
-  const CLIENT_ID = localStorage.getItem(`client_id_${PAGE_ID}`)
-
+  let client_id = localStorage.getItem(`client_id_${PAGE_ID}`)
+  /** 2. Nếu localStorage không có → thử lấy từ cookie */
+  if (!client_id) {
+    client_id = getCookie(`client_id_${PAGE_ID}`)
+  }
+  console.log('client_id', client_id)
   /**
    * State loading khi gửi tin nhắn
    */
@@ -322,14 +326,21 @@ const useDetailChat = ({
     undefined
   )
 
-  // Bước 1: Lấy user_id từ localStorage
+  /** Bước 1: Lấy user_id từ localStorage */
   useEffect(() => {
     /** Khi user_id khóng null*/
     if (PAGE_ID === undefined) return
     /** Lấy user_id trong localStorage */
-    const STORED_CLIENT_ID = localStorage.getItem(`client_id_${PAGE_ID}`)
+    let stored_client_id = localStorage.getItem(`client_id_${PAGE_ID}`)
+
+    console.log('stored_client_id', stored_client_id)
+    /** Nếu k có lcient id thì lấy trong cookie */
+    if (!stored_client_id) {
+      stored_client_id = getCookie(`client_id_${PAGE_ID}`)
+    }
+
     /** Lưu user_id */
-    setLocalUserId(STORED_CLIENT_ID) // có thể là null nếu chưa có
+    setLocalUserId(stored_client_id) // có thể là null nếu chưa có
   }, [PAGE_ID, user_id])
 
   /** Bước 2: Chỉ chạy logic anonymous khi đã biết chắc chắn user_id là null */
@@ -566,7 +577,7 @@ const useDetailChat = ({
       /** Đặt timeout để call API sau 0.1 giây */
       timeout_id = setTimeout(() => {
         /**  Gọi API sau khi đợi 1 giây */
-        fetchMessage(CLIENT_ID as string)
+        fetchMessage(client_id as string)
         /** Khi khởi tạo và call API sau 0.1 giây . set lại trạng thái Không là tin nhắn khởi tạo nữa */
         setIsInit()
         console.log('API called after 1 second because is_init is true')
@@ -574,8 +585,8 @@ const useDetailChat = ({
     }
 
     /** Khi user_id thay đổi, Trạng thái đã Khởi tạo thì gọi fetchMessage ngay lập tức */
-    if (CLIENT_ID && !is_init) {
-      fetchMessage(CLIENT_ID)
+    if (client_id && !is_init) {
+      fetchMessage(client_id)
     }
 
     /** Cleanup: Hủy bỏ timeout nếu is_init thay đổi hoặc component bị unmount */
@@ -587,7 +598,7 @@ const useDetailChat = ({
         clearTimeout(timeout_id)
       }
     }
-  }, [CLIENT_ID, is_init])
+  }, [client_id, is_init])
 
   /** Hàm Xử lý gửi tin nhắn
    * @param {string} input - Nội dung tin nhắn text
@@ -706,7 +717,7 @@ const useDetailChat = ({
   )
   return {
     AI_STATUS,
-    CLIENT_ID,
+    client_id,
     loading_more,
     MESSAGE_CONTAINER_REF,
     PAGE_ID,

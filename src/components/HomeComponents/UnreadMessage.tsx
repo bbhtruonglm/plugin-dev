@@ -32,10 +32,6 @@ function UnreadMessage({ onNavigate, onError }: SendMessageProps) {
    * Danh sách nhân viên
    */
   const STAFF_LIST = useSelector(selectStaffList)
-  /**
-   * Lấy client_id từ localStorage
-   */
-  const CLIENT_STORED = localStorage.getItem(`client_id_${PAGE_ID}`)
 
   /**
    * link avatar cua page
