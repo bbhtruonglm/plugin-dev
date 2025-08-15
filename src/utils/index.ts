@@ -849,7 +849,7 @@ export function setCookie(name: string, value: string, days: number): void {
   /** Tạo date 30 ngày */
   EXPIRES.setDate(EXPIRES.getDate() + days)
   /** Loại bỏ cookie */
-  document.cookie = `${name}=${value}; expires=${EXPIRES.toUTCString()}; path=/; SameSite=Lax`
+  document.cookie = `${name}=${value}; expires=${EXPIRES.toUTCString()}; path=/; SameSite=None; Secure`
 }
 
 /** Hàm get cookie
