@@ -139,8 +139,10 @@ export function useApp() {
           {
             from: 'BBH-EMBED-IFRAME',
             type: 'CLIENT_ID',
-            client_id: N_CLIENT_ID,
-            page_id: N_PAGE_ID,
+            data_embed_chat: {
+              page_id: N_PAGE_ID,
+              client_id: N_CLIENT_ID,
+            },
           },
           '*'
         )
@@ -240,15 +242,17 @@ export function useApp() {
       locale,
       reset_conversation,
       reset_page_id,
-      client_id_parent,
-      page_id_parent,
+      data_embed_chat,
     } = PAYLOAD
     /** Nếu có client_id_parent */
-    if (client_id_parent) {
+    if (data_embed_chat && data_embed_chat?.page_id) {
       /** Lưu client_id vào store */
-      dispatch(setGlobalClientId(client_id_parent))
+      dispatch(setGlobalClientId(data_embed_chat?.client_id))
       /** Lưu client_id vào localStorage */
-      localStorage.setItem(`client_id_${page_id_parent}`, client_id_parent)
+      localStorage.setItem(
+        `client_id_${data_embed_chat?.page_id}`,
+        data_embed_chat?.client_id
+      )
     }
 
     /** Nếu từ chatbox và là tin nhắn từ khách hàng thì gửi tin nhắn suggest

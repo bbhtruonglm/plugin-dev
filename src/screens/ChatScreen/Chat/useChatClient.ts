@@ -184,8 +184,10 @@ export function useChatClient(invalid_page_id_parent?: boolean) {
             {
               from: 'BBH-EMBED-IFRAME',
               type: 'CLIENT_ID',
-              client_id: '',
-              page_id: PAGE_ID,
+              data_embed_chat: {
+                client_id: '',
+                page_id: PAGE_ID,
+              },
             },
             '*'
           )
@@ -213,8 +215,10 @@ export function useChatClient(invalid_page_id_parent?: boolean) {
           {
             from: 'BBH-EMBED-IFRAME',
             type: 'CLIENT_ID',
-            client_id: NEW_CLIENT_ID,
-            page_id: PAGE_ID,
+            data_embed_chat: {
+              client_id: NEW_CLIENT_ID,
+              page_id: PAGE_ID,
+            },
           },
           '*'
         )

@@ -32,10 +32,10 @@ import {
   setRefreshData,
   setTypingStatus,
 } from '@/stores/appSlice'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { t, use } from 'i18next'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { t } from 'i18next'
 import { useTranslation } from 'react-i18next'
 
 const useDetailChat = ({
@@ -163,11 +163,10 @@ const useDetailChat = ({
   /**
    * Mock data trạng thái AI
    */
-  const STATUSES = [
-    t('ai_thinking'),
-    t('ai_still_thinking'),
-    t('ai_already_thinking'),
-  ]
+  const STATUSES = useMemo(
+    () => [t('ai_thinking'), t('ai_still_thinking'), t('ai_already_thinking')],
+    [t]
+  )
   /** list trạng thái ai message */
   const [status_list, setStatusList] = useState(STATUSES)
 
