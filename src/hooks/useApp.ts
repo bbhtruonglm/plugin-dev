@@ -211,7 +211,7 @@ export function useApp() {
     /** @type {Object} PAYLOAD - Dữ liệu từ event */
     let PAYLOAD: any
 
-    // console.log('EVENT::', event)
+    console.log('EVENT::', event)
     try {
       /** Nếu event.data là string, cố gắng parse nó */
       PAYLOAD =
