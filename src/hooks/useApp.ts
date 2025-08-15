@@ -244,15 +244,16 @@ export function useApp() {
       reset_page_id,
       data_embed_chat,
     } = PAYLOAD
-    /** Nếu có client_id_parent */
-    if (data_embed_chat && data_embed_chat?.page_id) {
-      /** Lưu client_id vào store */
-      dispatch(setGlobalClientId(data_embed_chat?.client_id))
+    /**CHeck embed chat */
+    if (data_embed_chat) {
+      /** Destructuring */
+      const { page_id, client_id } = JSON.parse(data_embed_chat)
+
+      /**  Lưu client_id vào store*/
+      dispatch(setGlobalClientId(client_id))
+
       /** Lưu client_id vào localStorage */
-      localStorage.setItem(
-        `client_id_${data_embed_chat?.page_id}`,
-        data_embed_chat?.client_id
-      )
+      localStorage.setItem(`client_id_${page_id}`, client_id)
     }
 
     /** Nếu từ chatbox và là tin nhắn từ khách hàng thì gửi tin nhắn suggest
