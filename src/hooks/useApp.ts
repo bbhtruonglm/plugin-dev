@@ -134,8 +134,16 @@ export function useApp() {
 
         /** Reset lại client_id */
         localStorage.setItem(`client_id_${N_PAGE_ID}`, '')
-        /** Lưu vào cookies */
-        setCookie(`client_id_${PAGE_ID}`, N_CLIENT_ID, 30)
+        /** Gửi sang SDK */
+        window.parent.postMessage(
+          {
+            from: 'BBH-EMBED-IFRAME',
+            type: 'CLIENT_ID',
+            client_id: N_CLIENT_ID,
+            page_id: N_PAGE_ID,
+          },
+          '*'
+        )
 
         console.log('CHẠY VÀO ĐÂY USER_INFO hàm refresh', client)
 
@@ -232,7 +240,16 @@ export function useApp() {
       locale,
       reset_conversation,
       reset_page_id,
+      client_id_parent,
+      page_id_parent,
     } = PAYLOAD
+    /** Nếu có client_id_parent */
+    if (client_id_parent) {
+      /** Lưu client_id vào store */
+      dispatch(setGlobalClientId(client_id_parent))
+      /** Lưu client_id vào localStorage */
+      localStorage.setItem(`client_id_${page_id_parent}`, client_id_parent)
+    }
 
     /** Nếu từ chatbox và là tin nhắn từ khách hàng thì gửi tin nhắn suggest
      * AI_AGENT

@@ -178,8 +178,17 @@ export function useChatClient(invalid_page_id_parent?: boolean) {
         if (RESULT.code === 403) {
           /** Xóa client_id trong localStorage */
           localStorage.setItem(`client_id_${PAGE_ID}`, '')
-          /** Lưu vào cookies  */
-          setCookie(`client_id_${PAGE_ID}`, '', 30)
+
+          /** Gửi sang SDK , do lỗi nên lưu là rỗng */
+          window.parent.postMessage(
+            {
+              from: 'BBH-EMBED-IFRAME',
+              type: 'CLIENT_ID',
+              client_id: '',
+              page_id: PAGE_ID,
+            },
+            '*'
+          )
 
           /**
            * Set invalid page_id
@@ -199,8 +208,16 @@ export function useChatClient(invalid_page_id_parent?: boolean) {
          * Lưu client_id mới vào localStorage
          */
         localStorage.setItem(`client_id_${PAGE_ID}`, NEW_CLIENT_ID)
-        /** Lưu client_id mới vào cookies */
-        setCookie(`client_id_${PAGE_ID}`, NEW_CLIENT_ID, 30)
+        /** Gửi sang SDK */
+        window.parent.postMessage(
+          {
+            from: 'BBH-EMBED-IFRAME',
+            type: 'CLIENT_ID',
+            client_id: NEW_CLIENT_ID,
+            page_id: PAGE_ID,
+          },
+          '*'
+        )
 
         console.log('hehheheh client_id', NEW_CLIENT_ID)
 
