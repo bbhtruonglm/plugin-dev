@@ -4,7 +4,6 @@ import ChatOption from '@/components/HomeComponents/ChatOption'
 import { HomeProps } from './type'
 import SendMessage from '@/components/HomeComponents/SendMessage'
 import UnreadMessage from '@/components/HomeComponents/UnreadMessage'
-import { t } from 'i18next'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 

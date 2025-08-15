@@ -233,7 +233,6 @@ function useChatApp({ show }: { show: boolean }) {
   /** GLobal client_id */
   const GLOBAL_CLIENT_ID = useSelector(selectGlobalClientId)
 
-  console.log(GLOBAL_CLIENT_ID, 'GLOBAL_CLIENT_ID client_id')
   /** Lấy client_id từ localStorage*/
   let stored_client_id = localStorage.getItem(`client_id_${PAGE_ID}`)
   /** Lấy client_id từ cookie */

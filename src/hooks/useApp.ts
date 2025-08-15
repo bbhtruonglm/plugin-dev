@@ -183,7 +183,16 @@ export function useApp() {
   if (!stored_client_id) {
     stored_client_id = getCookie(`client_id_${PAGE_ID}`)
   }
-  console.log(stored_client_id, 'stored_client_id')
+
+  useEffect(() => {
+    /** Nếu co client_id */
+    if (stored_client_id) {
+      /** Lưu client_id */
+      dispatch(setGlobalClientId(stored_client_id))
+      /** Lấy thông tin client */
+      fetchClientData(stored_client_id, PAGE_ID)
+    }
+  }, [stored_client_id])
   /** Dispatch */
   const dispatch = useDispatch()
 
@@ -315,16 +324,13 @@ export function useApp() {
        * va reset conversation
        */
       if (reset_conversation) {
-        /**
-         * Xóa client_id trong localStorage
-         */
+        /** Xóa client_id trong localStorage*/
         localStorage?.removeItem(`client_id_${reset_page_id}`)
 
-        /**
-         * Reset conversation
-         */
+        /** Reset conversation*/
         dispatch(resetConversation())
 
+        /** Reset tên client */
         dispatch(setClientNameStore(undefined))
       }
     }
@@ -765,32 +771,22 @@ export function useApp() {
             `client_id_${STORED_PAGE_ID}`
           )
 
-          console.log(stored_client_id, 'stored_client_id')
-          console.log(STORED_PAGE_ID, 'STORED_PAGE_ID client_id')
           /** Nếu không cố client_id thì lưu client_id trong cookie */
           if (!stored_client_id) {
             stored_client_id = getCookie(`client_id_${PAGE_ID}`) || ''
           }
-          console.log(stored_client_id, 'stored_client_id add to store')
-          /**
-           * Trường hợp KHông phải chat AI thì lưu client_id vào store
-           */
+
+          /** Trường hợp KHông phải chat AI thì lưu client_id vào store*/
           dispatch(setGlobalClientId(stored_client_id || ''))
-          /**
-           * Lấy dữ liệu khách hàng
-           */
+          /** Lấy dữ liệu khách hàng */
           fetchClientData(stored_client_id, STORED_PAGE_ID)
-          /**
-           * Lấy tin nhắn mới nhất
-           */
+          /** Lấy tin nhắn mới nhất */
           const STORED_MESSAGE_LATEST = parsedString(
             localStorage.getItem(
               `latest_message__${STORED_PAGE_ID}__${stored_client_id}`
             ) || ''
           )
-          /**
-           * Lấy số tin nhắn chưa đọc
-           */
+          /** Lấy số tin nhắn chưa đọc*/
           const STORED_UNREAD_COUNT = Number(
             localStorage.getItem(
               `count_unread__${STORED_PAGE_ID}__${stored_client_id}`

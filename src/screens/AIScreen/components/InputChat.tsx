@@ -1,13 +1,9 @@
-import { selectPageId, selectStatusPopup } from '@/stores/appSlice'
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 
 import { ReactComponent as Arrow } from '@/assets/Icon_up_circle.svg'
 import { ReactComponent as ArrowSlate } from '@/assets/Icon_up_circle_slate.svg'
-import { ReactComponent as Close } from '@/assets/close.svg'
 import { InputProps } from './type'
 import { t } from 'i18next'
-import { useAPI } from '@/api/api'
-import { useSelector } from 'react-redux'
 
 function InputChat({
   handleSend,

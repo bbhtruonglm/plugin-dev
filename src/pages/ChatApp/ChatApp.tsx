@@ -54,7 +54,7 @@ const ChatApp = ({
     IS_ONLINE,
     setCurrentTab,
     PAGE_ID,
-    CLIENT_STORED,
+    stored_client_id: CLIENT_STORED,
     setErrorMessage,
     social_link,
     web_form,

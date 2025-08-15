@@ -153,7 +153,7 @@ const useDetailChat = ({
   if (!client_id) {
     client_id = getCookie(`client_id_${PAGE_ID}`)
   }
-  console.log('client_id', client_id)
+
   /**
    * State loading khi gửi tin nhắn
    */
@@ -333,7 +333,6 @@ const useDetailChat = ({
     /** Lấy user_id trong localStorage */
     let stored_client_id = localStorage.getItem(`client_id_${PAGE_ID}`)
 
-    console.log('stored_client_id', stored_client_id)
     /** Nếu k có lcient id thì lấy trong cookie */
     if (!stored_client_id) {
       stored_client_id = getCookie(`client_id_${PAGE_ID}`)
