@@ -843,13 +843,34 @@ export const renderLogo = (
  * @param value
  * @param days
  */
+// export function setCookie(name: string, value: string, days: number): void {
+//   /** Hạn */
+//   const EXPIRES = new Date()
+//   /** Tạo date 30 ngày */
+//   EXPIRES.setDate(EXPIRES.getDate() + days)
+//   /** Loại bỏ cookie */
+//   // document.cookie = `${name}=${value}; expires=${EXPIRES.toUTCString()}; path=/; SameSite=Lax`
+//   document.cookie = `${name}=${value}; expires=${EXPIRES.toUTCString()}; path=/; SameSite=none; Secure`
+// }
+
 export function setCookie(name: string, value: string, days: number): void {
-  /** Hạn */
   const EXPIRES = new Date()
-  /** Tạo date 30 ngày */
   EXPIRES.setDate(EXPIRES.getDate() + days)
-  /** Loại bỏ cookie */
-  document.cookie = `${name}=${value}; expires=${EXPIRES.toUTCString()}; path=/; SameSite=None; Secure`
+  try {
+    const cookieString = `${name}=${encodeURIComponent(
+      value
+    )}; expires=${EXPIRES.toUTCString()}; path=/; SameSite=None; Secure`
+    document.cookie = cookieString
+    // Kiểm tra xem cookie có được lưu không
+    const storedValue = getCookie(name)
+    if (storedValue === value) {
+      console.log(`Cookie set successfully: ${name}=${value}`)
+    } else {
+      console.error(`Failed to set cookie: ${name}`)
+    }
+  } catch (e) {
+    console.error('Error setting cookie:', e)
+  }
 }
 
 /** Hàm get cookie
