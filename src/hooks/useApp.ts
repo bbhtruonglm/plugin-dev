@@ -139,6 +139,7 @@ export function useApp() {
           {
             from: 'BBH-EMBED-IFRAME',
             type: 'CLIENT_ID',
+            key: `data_embed_chat_${N_PAGE_ID}`,
             data_embed_chat: {
               page_id: N_PAGE_ID,
               client_id: N_CLIENT_ID,
@@ -482,7 +483,12 @@ export function useApp() {
         if (IS_VIEW_SCREEN) {
           /** Lưu trạng thái view screen vào store */
           window.parent.postMessage(
-            { from: 'BBH-EMBED-IFRAME', is_view_screen: true, status: 'READY' },
+            {
+              from: 'BBH-EMBED-IFRAME',
+              is_view_screen: true,
+              status: 'READY',
+              key: `data_embed_chat_${STORED_PAGE_ID}`,
+            },
             '*'
           )
         }
