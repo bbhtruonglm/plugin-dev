@@ -478,6 +478,14 @@ export function useApp() {
         const IS_AI = URL_PARENT?.pathname.includes('ai-assistant')
         /** Kiểm tra xem có phải view screen */
         const IS_VIEW_SCREEN = URL_PARENT?.pathname.includes('view-screen')
+        /** Nếu là view scree thì gửi tin nhắn báo iframe ready */
+        if (IS_VIEW_SCREEN) {
+          /** Lưu trạng thái view screen vào store */
+          window.parent.postMessage(
+            { from: 'BBH-EMBED-IFRAME', is_view_screen: true, status: 'READY' },
+            '*'
+          )
+        }
 
         /** Lưu trạng thái AI vào store*/
         dispatch(setStatusIsAI(IS_AI))
