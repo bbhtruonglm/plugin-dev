@@ -195,7 +195,75 @@ export interface AppState {
     /** Dữ liệu */
     data?: any
   }
+  /** page_setting */
   page_setting?: {}
+  /** open when access */
+  open_popup_when_access?: {
+    /** Options */
+    option?: string
+    /** Delay */
+    delay?: number
+  }
+  /** Custom màu */
+  custom_color?: {
+    /** Màu chính */
+    primary_color?: string
+    /** Màu chữ */
+    text_color?: string
+  }
+  /** Button effect */
+  button_effect?: boolean
+  /** Button icon url */
+  button_icon_url?: {
+    /** Link logo hiện tại */
+    current_url?: string
+    /** List link logo */
+    list_url?: string[]
+  }
+  /** ai_responding */
+  ai_responding?: {
+    /** Trạng thái kích hoạt */
+    type: {
+      is_active: {
+        type: Boolean
+      }
+      /** Dữ liệu */
+      data: {
+        type: [
+          {
+            /** Nguồn */
+            source: {}
+            /** trạng thái kích hoạt */
+            is_active: {
+              type: Boolean
+            }
+          }
+        ]
+      }
+    }
+  }
+  /** faq_custom_cta */
+  faq_custom_cta?: {
+    /** Trạng thái kích hoạt */
+    type: {
+      is_active: {
+        type: Boolean
+      }
+      /** Dữ liệu */
+      data: {
+        type: [
+          {
+            /** Nguồn */
+            source: {}
+            /** trạng thái kích hoạt */
+            is_active: {
+              type: Boolean
+            }
+          }
+        ]
+      }
+    }
+  }
 }
 /** Định nghĩa kiểu dữ liệu cho danh sách nhân viên */
 interface EmployeeList {

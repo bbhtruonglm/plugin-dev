@@ -31,6 +31,7 @@ import {
   setPageInfoAI,
   setPageLogo,
   setPageLogoBlack,
+  setPageSettingGlobal,
   setRefreshData,
   setShowForm,
   setShowHome,
@@ -488,8 +489,11 @@ export function useApp() {
 
         /** Nếu có page_id ====> call API Lấy cài đặt trang */
         if (STORED_PAGE_ID) {
+          /** Lấy cài đặt trang */
           page_setting = await fetchPageSetting(STORED_PAGE_ID)
         }
+        /** Lưu cài đặt trang vào store */
+        dispatch(setPageSettingGlobal(page_setting))
         /**
          * Fix cứng với page_id 860086820907512 của khách cần hotfix
          * se Update lại
@@ -528,22 +532,38 @@ export function useApp() {
           /** Lưu cài đặt CTA message vào store */
           dispatch(
             setListCTAMessage(
-              page_setting?.custom_cta_message || {
+              page_setting?.faq_custom_cta || {
                 is_active: false,
-                data: {
-                  vi: [
-                    'Chat với AI',
-                    'Tư vấn giải pháp',
-                    'Hỗ trợ cài đặt',
-                    'Liên hệ cho tôi',
-                  ],
-                  en: [
-                    'Chat with AI',
-                    'Solve your problem',
-                    'Support setting',
-                    'Contact me',
-                  ],
-                },
+                data: [
+                  {
+                    source: {
+                      vi: 'Chat với AI',
+                      en: 'Chat with AI',
+                    },
+                    is_active: true,
+                  },
+                  {
+                    source: {
+                      vi: 'Hỗ trợ cài đặt',
+                      en: 'Solve your problem',
+                    },
+                    is_active: true,
+                  },
+                  {
+                    source: {
+                      vi: 'Tư vấn giải pháp',
+                      en: 'Support setting',
+                    },
+                    is_active: true,
+                  },
+                  {
+                    source: {
+                      vi: 'Liên hệ cho tôi',
+                      en: 'Contact me',
+                    },
+                    is_active: true,
+                  },
+                ],
               }
             )
           )
@@ -611,17 +631,20 @@ export function useApp() {
         dispatch(setShowSupportStaff(SHOW_SUPPORT_STAFF))
         /** Hiển thị form*/
         const SHOW_FORM = page_setting?.form_before_chat
+
         /** Nếu hiển thị form */
         if (SHOW_FORM) {
-          /** Chuyển field thành lowercase */
-          SHOW_FORM.data = SHOW_FORM?.data.map((item: any) => ({
-            ...item,
-            field: item.field.toLowerCase(),
-          }))
+          /** Tạo bản sao mới, tránh mutate object gốc */
+          const NEW_SHOW_FORM = {
+            ...SHOW_FORM,
+            data: SHOW_FORM.data.map((item: any) => ({
+              ...item,
+              field: item.field.toLowerCase(),
+            })),
+          }
 
-          /**  Trạng thái Hiển thị trang chủ */
           /** Lưu vào store */
-          dispatch(setShowForm(SHOW_FORM))
+          dispatch(setShowForm(NEW_SHOW_FORM))
         }
 
         /** Show home page */
