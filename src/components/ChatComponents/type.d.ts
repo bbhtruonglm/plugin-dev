@@ -68,6 +68,8 @@ type Message = {
   user_id?: string
   /** metadata */
   metadata?: string
+  /** Disable ai */
+  is_disable_ai?: boolean
 }
 /** Cấu trúc dữ liệu header */
 interface ChatHeaderProps {

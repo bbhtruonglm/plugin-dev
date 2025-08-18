@@ -1,8 +1,13 @@
-import { selectGlobalClientId, selectPageId } from '@/stores/appSlice'
+import { BtnType, Message } from '../../../type'
+import { fetchAPI, useAPI } from '@/api/api'
+import {
+  selectGlobalClientId,
+  selectPageId,
+  setSuggestMessage,
+} from '@/stores/appSlice'
+import { useDispatch, useSelector } from 'react-redux'
 
-import { BtnType } from '../../../type'
-import { useAPI } from '@/api/api'
-import { useSelector } from 'react-redux'
+import SendMessage from '@/components/HomeComponents/SendMessage'
 
 const MessageButtonTemplate = ({ data }: any) => {
   const { DOMAIN_TRIGGER_BTN } = useAPI()
@@ -16,13 +21,14 @@ const MessageButtonTemplate = ({ data }: any) => {
   if (!IS_BUTTON_TEMPLATE) return null
   /** Khai báo kiểu dữ liệu */
   const BUTTONS: BtnType[] = data.message_attachments[0]?.payload?.buttons || []
-
+  /** lấy Api từ hooks api */
+  const { SEND_MESSAGE_API } = useAPI()
   /** Lấy client id */
   const USER_ID = useSelector(selectGlobalClientId)
 
   /** Lấy page id */
   const PAGE_ID = useSelector(selectPageId)
-
+  const dispatch = useDispatch()
   /** Hàm postback */
   const handlePostback = async (
     message_id: string | undefined,
@@ -36,6 +42,7 @@ const MessageButtonTemplate = ({ data }: any) => {
       button_index: button_idx,
     }
 
+    /** call api */
     try {
       await fetch(DOMAIN_TRIGGER_BTN, {
         method: 'POST',
@@ -46,6 +53,25 @@ const MessageButtonTemplate = ({ data }: any) => {
       })
     } catch (error) {}
   }
+  /** Hàm gửi tin nhắn sử dụng api */
+  const sendMessage = async (text: string) => {
+    /** Lấy ID người dùng */
+    const META_DATA_ID = USER_ID
+
+    /** Khởi tạo body tin nhắn */
+    const MESSAGE: Message = {
+      page_id: PAGE_ID,
+      client_id: USER_ID,
+      text: text,
+      user_id: USER_ID,
+      ...(META_DATA_ID && {
+        metadata: `__user_normal__${META_DATA_ID}`,
+      }),
+      is_disable_ai: true,
+    }
+    /** Gọi api gửi tin nhắn */
+    await fetchAPI(SEND_MESSAGE_API, 'POST', MESSAGE)
+  }
 
   /** Hàm click nút bấm */
   const handleOnClick = (button: any, button_index: number) => {
@@ -53,8 +79,12 @@ const MessageButtonTemplate = ({ data }: any) => {
     if (button?.type === 'web_url') {
       window.open(button?.url, '_blank')
     }
+    console.log(data, 'data')
     /** Dạng postback */
     if (button?.type === 'postback') {
+      /** Gọi gửi tin nhắn */
+      sendMessage(button.title)
+      /** Gọi hàm postback */
       handlePostback(data?.message_mid, button_index)
     }
     /** Dạng sđt */
