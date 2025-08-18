@@ -1,10 +1,5 @@
 import { fetchAPI, useAPI } from '../api/api'
-import {
-  getCookie,
-  parsedString,
-  postMessageToParent,
-  setCookie,
-} from '../utils'
+import { getCookie, parsedString, postMessageToParent } from '../utils'
 import {
   resetConversation,
   selectEmbedPosition,
@@ -460,21 +455,6 @@ export function useApp() {
         /** Lấy page_id */
         const STORED_PAGE_ID = URL_PARENT.searchParams.get('page_id') || null
 
-        /**
-         * Fix cứng với page_id 860086820907512 của khách cần hotfix
-         * se Update lại
-         */
-        if (STORED_PAGE_ID === '860086820907512') {
-          // if (STORED_PAGE_ID === '388339911461476') {
-          /** Lưu trạng thái logo trong store*/
-          dispatch(setOrgAllowLogo(true))
-          /** Lưu logo trong store */
-          dispatch(setPageLogo('./images/Logo_AIG.svg'))
-          /** Lưu logo black trong store */
-          dispatch(setPageLogoBlack('./images/AIG_white.png'))
-          // dispatch(setPageLogo(''))
-        }
-
         /** Kiểm tra xem có phải AI không*/
         const IS_AI = URL_PARENT?.pathname.includes('ai-assistant')
         /** Kiểm tra xem có phải view screen */
@@ -510,6 +490,26 @@ export function useApp() {
         if (STORED_PAGE_ID) {
           page_setting = await fetchPageSetting(STORED_PAGE_ID)
         }
+        /**
+         * Fix cứng với page_id 860086820907512 của khách cần hotfix
+         * se Update lại
+         */
+        if (STORED_PAGE_ID === '860086820907512') {
+          // if (STORED_PAGE_ID === '388339911461476') {
+          /** Lưu trạng thái logo trong store*/
+          dispatch(setOrgAllowLogo(true))
+          /** Lưu logo trong store */
+          dispatch(setPageLogo('./images/Logo_AIG.svg'))
+          /** Lưu logo black trong store */
+          dispatch(setPageLogoBlack('./images/AIG_white.png'))
+          // dispatch(setPageLogo(''))
+          /** Lấy data từ page setting, lấy thông tin từ page setting */
+          /** App logo */
+          const APP_LOGO = page_setting?.app_logo || null
+          /** App avatar */
+          const APP_AVATAR_PAGE = page_setting?.app_avatar_page || null
+        }
+
         /** Trạng thái mở popup lần đầu */
         if (!IS_AI && !IS_VIEW_SCREEN) {
           const AUTO_OPEN_INIT = page_setting?.auto_open || false

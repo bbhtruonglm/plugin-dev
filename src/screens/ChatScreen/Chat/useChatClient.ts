@@ -1,5 +1,4 @@
 import { apiImage, fetchAPI, useAPI } from '@/api/api'
-import { getCookie, setCookie } from '@/utils'
 import {
   selectConsultationGlobal,
   selectGlobalClientId,
@@ -14,6 +13,8 @@ import {
 } from '@/stores/appSlice'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+
+import { getCookie } from '@/utils'
 
 /**
  * Kiểu dữ liệu khởi tạo input

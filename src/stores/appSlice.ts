@@ -60,6 +60,7 @@ const INITIAL_STATE: AppState = {
   is_custom_background: false,
   list_ai_render_text: { is_active: false, data: [] },
   list_cta_message: { is_active: false, data: [] },
+  page_setting: {},
 }
 
 export const appSlice = createSlice({
@@ -290,6 +291,10 @@ export const appSlice = createSlice({
     setListCTAMessage: (state, action: PayloadAction<any>) => {
       state.list_cta_message = action.payload
     },
+    /** Lưu trữ Page setting */
+    setPageSettingGlobal: (state, action: PayloadAction<any>) => {
+      state.page_setting = action.payload
+    },
   },
 })
 
@@ -338,6 +343,7 @@ export const {
   setCustomBackground,
   setListAiRenderText,
   setListCTAMessage,
+  setPageSettingGlobal,
 } = appSlice.actions
 
 /** chọn đến page id */
@@ -481,5 +487,8 @@ export const selectListAiRenderText = (state: RootState) =>
 /** TIn nhắn CTA */
 export const selectListCTAMessage = (state: RootState) =>
   state.app.list_cta_message
+
+/** Page setting */
+export const selectPageSetting = (state: RootState) => state.app.page_setting
 
 export default appSlice.reducer

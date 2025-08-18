@@ -195,6 +195,7 @@ export interface AppState {
     /** Dữ liệu */
     data?: any
   }
+  page_setting?: {}
 }
 /** Định nghĩa kiểu dữ liệu cho danh sách nhân viên */
 interface EmployeeList {

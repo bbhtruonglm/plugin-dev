@@ -165,10 +165,17 @@ const useDetailChat = ({
    */
   const STATUSES = useMemo(
     () => [t('ai_thinking'), t('ai_still_thinking'), t('ai_already_thinking')],
-    [t]
+    [LANGUAGE]
   )
+
   /** list trạng thái ai message */
   const [status_list, setStatusList] = useState(STATUSES)
+
+  /** Cập nhật lại status_list mỗi khi STATUSES thay đổi */
+  useEffect(() => {
+    /** Set list trạng thái */
+    setStatusList(STATUSES)
+  }, [STATUSES])
 
   /** List CTA message */
   const [list_cta_message, setListCTAMessage] = useState(LIST_CTA)
@@ -338,7 +345,7 @@ const useDetailChat = ({
     }
 
     /** Lưu user_id */
-    setLocalUserId(stored_client_id) // có thể là null nếu chưa có
+    setLocalUserId(stored_client_id)
   }, [PAGE_ID, user_id])
 
   /** Bước 2: Chỉ chạy logic anonymous khi đã biết chắc chắn user_id là null */
@@ -350,7 +357,8 @@ const useDetailChat = ({
       !PAGE_ID ||
       FIXED_CLIENT_INFO
     )
-      return // Đang load từ localStorage, chưa xong
+      /** Đang load từ localStorage, chưa xong */
+      return
 
     /** Khi user_id khóng null*/
     if (!isEmpty(FORM_BEFORE_CHAT)) {
@@ -667,12 +675,11 @@ const useDetailChat = ({
      * sau khi thêm xong thì clear danh sách tin nhắn chưa đọc trong store
      */
 
-    /** Đoạn này chắc bỏ được */
-
     if (GLOBAL_UNREAD_COUNT && GLOBAL_UNREAD_COUNT > 0 && SHOW_POPUP) {
       console.log('chatbox opened and has unread message')
       /** Khi mở vào tin nhắn, Reset lại số lượng tin nhắn chưa đọc */
       dispatch(setGlobalUnreadCount(0))
+      /** Thêm timeout */
       setTimeout(() => {
         /** Sau khi xử lý xong thì scroll xuống bottom */
         scrollToBottom()

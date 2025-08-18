@@ -30,6 +30,7 @@ function App() {
     CLIENT_ID: stored_client_id,
     setTypeConsultation,
   })
+
   return (
     <div
       className="flex flex-col justify-center items-center w-full h-full overflow-hidden px-5"
