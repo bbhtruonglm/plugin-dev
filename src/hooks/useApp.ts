@@ -578,9 +578,13 @@ export function useApp() {
         /**  Lấy ngôn ngữ từ trình duyệt*/
         const BROWSER_LANGUAGE = navigator.language || navigator.languages[0]
 
+        console.log(BROWSER_LANGUAGE, 'BROWSER_LANGUAGE')
+
         /** Nếu chỉ cần mã ngôn ngữ chính (không có region) */
         const PRIMARY_LANGUAGE = BROWSER_LANGUAGE.split('-')[0]
         console.log(PRIMARY_LANGUAGE) // Ví dụ: "vi", "en", "ja"
+
+        console.log(PRIMARY_LANGUAGE, 'PRIMARY_LANGUAGE')
 
         /** Trạng thái hình thị avatar*/
         const IS_AVATAR = page_setting?.is_use_persona_id

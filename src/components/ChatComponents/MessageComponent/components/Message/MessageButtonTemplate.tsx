@@ -22,23 +22,25 @@ const MessageButtonTemplate = ({ data }: any) => {
 
   /** Lấy page id */
   const PAGE_ID = useSelector(selectPageId)
-  const handlePostback = async (payload: string | undefined) => {
-    /** Lấy id flow */
-    const FLOW_ID = payload?.split('_')[1]
-    /** End point trigger kích hoạt kịch bản */
 
+  /** Hàm postback */
+  const handlePostback = async (
+    message_id: string | undefined,
+    button_idx: number
+  ) => {
     /**Payload */
     const PAYLOAD = {
-      flow_id: FLOW_ID,
+      message_id: message_id,
       client_id: USER_ID,
       page_id: PAGE_ID,
+      button_index: button_idx,
     }
+
     try {
       await fetch(DOMAIN_TRIGGER_BTN, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: 'mjzollPs8nC8aGX4qDWnGmpClXl8BQZcV5F3TtXsITw',
         },
         body: JSON.stringify(PAYLOAD),
       })
@@ -46,14 +48,14 @@ const MessageButtonTemplate = ({ data }: any) => {
   }
 
   /** Hàm click nút bấm */
-  const handleOnClick = (button: any) => {
+  const handleOnClick = (button: any, button_index: number) => {
     /** Dạng web */
     if (button?.type === 'web_url') {
       window.open(button?.url, '_blank')
     }
     /** Dạng postback */
     if (button?.type === 'postback') {
-      handlePostback(button?.payload)
+      handlePostback(data?.message_mid, button_index)
     }
     /** Dạng sđt */
     if (button?.type === 'phone_number') {
@@ -73,7 +75,7 @@ const MessageButtonTemplate = ({ data }: any) => {
           <div
             key={index}
             onClick={() => {
-              handleOnClick(button)
+              handleOnClick(button, index)
             }}
             className={`flex ${
               button?.type === 'web_url' || button?.type === 'postback'

@@ -15,7 +15,7 @@ export const VITE_CDN = 'https://cdn.botbanhang.vn'
 export const ID_WIDGET = '00de4446885a43c5b58ef16dba0f5058'
 
 export const DOMAIN_TRIGGER_BTN =
-  'https://chatbot-api.botbanhang.vn/private/json'
+  'https://chatbot-api.botbanhang.vn/public/json/chatbot_website'
 /** API WIDGET */
 export const APP_URL = ''
 export const WIDGET_URL = ''
