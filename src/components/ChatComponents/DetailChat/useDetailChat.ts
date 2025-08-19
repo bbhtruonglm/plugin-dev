@@ -27,6 +27,7 @@ import {
   selectStatusPopup,
   selectStatusViewport,
   selectTypingStatus,
+  setDataQuickChat,
   setGlobalUnreadCount,
   setListMessage,
   setLoadingGlobal,
@@ -69,30 +70,28 @@ const useDetailChat = ({
     'Bảng giá',
     'Thông tin Khuyến mãi',
   ]
-  /**
-   * Global client ID
-   */
+  /** Global client ID */
   const CLIENT_ID_GLOBAL = useSelector(selectGlobalClientId)
+
+  /** Lấy client id */
+  const USER_ID = useSelector(selectGlobalClientId)
 
   /** Trạng thái consultation */
   const GLOBAL_CONSULTATION = useSelector(selectConsultationGlobal)
-  /**
-   * CURRENT_USER_ID
-   */
+  /** CURRENT_USER_ID */
   const CURRENT_USER_ID = useSelector(selectCurrentUserId)
+
+  /** Lấy Api từ hooks api */
+  const { DOMAIN_TRIGGER_BTN } = useAPI()
 
   /** hàm dispatch đến store */
   const dispatch = useDispatch()
-  /**
-   * Trạng thái có ID Trợ lý ảo
-   */
+  /** Trạng thái có ID Trợ lý ảo */
   const NO_AI_ID = useSelector(selectAiId)
 
   /** IS View screen */
   const IS_VIEW_SCREEN = useSelector(selectIsViewScreen)
-  /**
-   * Trạng thái có ID Trợ lý ảo
-   */
+  /** Trạng thái có ID Trợ lý ảo */
   const IS_ACTIVE_AGENT_AI = useSelector(selectActiveAiAgent)
   /** Trạng thái loaded */
   const [is_loaded, setIsLoaded] = useState(false)
@@ -186,7 +185,6 @@ const useDetailChat = ({
   const SOCKET_QUICK_CHAT = useSelector(selectDataQuickChat)
   /** Lấy socket quick chat  */
   useEffect(() => {
-    console.log(SOCKET_QUICK_CHAT, 'SOCKET_QUICK_CHAT')
     /** Nếu socket quick chat thay đổi */
     if (SOCKET_QUICK_CHAT) {
       /** Set socket quick chat */
@@ -735,6 +733,53 @@ const useDetailChat = ({
     },
     [employee_list, IS_PAGE_AVATAR, PAGE_AVATAR]
   )
+
+  /** Hàm gửi tin nhắn
+   * @param item: Tin nhan
+   */
+  const handleSendMessage = (item: any, payload: any) => {
+    /** Gửi tin nhắn */
+    sendMessage(item)
+
+    /** Handle Postback */
+    handlePostback(payload?.message_mid, payload?.button_index)
+    /** Reset state */
+    setSocketQuickChat([])
+    console.log(`data_quick_chat__${PAGE_ID}__${user_id}`)
+    /** reset storage */
+    localStorage.setItem(
+      `data_quick_chat__${PAGE_ID}__${user_id}`,
+      JSON.stringify([])
+    )
+    /** reset store */
+    dispatch(setDataQuickChat([]))
+  }
+
+  /** Hàm postback */
+  const handlePostback = async (
+    message_id: string | undefined,
+    button_idx: number
+  ) => {
+    /**Payload */
+    const PAYLOAD = {
+      message_id: message_id,
+      client_id: USER_ID,
+      page_id: PAGE_ID,
+      button_index: button_idx,
+    }
+
+    /** call api */
+    try {
+      await fetch(DOMAIN_TRIGGER_BTN, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(PAYLOAD),
+      })
+    } catch (error) {}
+  }
+
   return {
     AI_STATUS,
     client_id,
@@ -769,6 +814,7 @@ const useDetailChat = ({
     LIST_CTA_MESSAGE,
     socket_quick_chat,
     setSocketQuickChat,
+    handleSendMessage,
   }
 }
 

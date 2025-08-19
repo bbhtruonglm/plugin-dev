@@ -3,6 +3,7 @@ import {
   saveQuickChatCount,
   saveQuickChatLatestMessage,
 } from '@/utils'
+import { fetchAPI, useAPI } from '@/api/api'
 import {
   setDataQuickChat,
   setGlobalUnreadCount,
@@ -78,6 +79,8 @@ export function onSocketFromChatboxServer({
   SOCKET_API,
   is_force_close_socket,
 }: WebSocketProps) {
+  /** Lấy Api từ hooks api */
+  const { READ_CLIENT_INFO } = useAPI()
   /** Kết nối tới WebSocket server */
   WS.current = new WebSocket(SOCKET_API || '')
 
@@ -140,6 +143,29 @@ export function onSocketFromChatboxServer({
     }
 
     console.log(message, 'message')
+
+    /** Lấy thông tin client_id */
+    const fetchClientData = async () => {
+      /** Lấy URL */
+      const URL_READ = new URL(READ_CLIENT_INFO)
+      /** Body */
+      const BODY = {
+        client_id: client_id,
+        page_id: page_id,
+      }
+      /** Thêm search vào URL */
+      URL_READ.search = new URLSearchParams(BODY as any).toString()
+      /**  Lấy thông tin client */
+      const RES = await fetchAPI(URL_READ.toString(), 'GET')
+      /** Xử lý client tiếp */
+      console.log(RES, 'res')
+    }
+
+    /** Nội dung cơ bản */
+    if (message) {
+      fetchClientData()
+    }
+
     /** Nội dung cơ bản */
     // if (data_socket_quick_chat) {
     data_socket_quick_chat = [

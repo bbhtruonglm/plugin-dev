@@ -66,14 +66,13 @@ function DetailChat({
     LIST_CTA_MESSAGE,
     socket_quick_chat,
     setSocketQuickChat,
+    handleSendMessage,
   } = useDetailChat({
     user_id,
     onInitClient,
     is_init,
     setIsInit,
   })
-  /** Hàm dispatch */
-  const dispatch = useDispatch()
 
   return (
     <div
@@ -201,18 +200,10 @@ function DetailChat({
               <div
                 key={index}
                 onClick={() => {
-                  /** Gửi tin nhắn */
-                  sendMessage(item)
-                  /** Reset state */
-                  setSocketQuickChat([])
-                  console.log(`data_quick_chat__${PAGE_ID}__${user_id}`)
-                  /** reset storage */
-                  localStorage.setItem(
-                    `data_quick_chat__${PAGE_ID}__${user_id}`,
-                    JSON.stringify([])
-                  )
-                  /** reset store */
-                  dispatch(setDataQuickChat([]))
+                  handleSendMessage(item, {
+                    message_mid: item.message_mid,
+                    button_index: item.button_index,
+                  })
                 }}
                 className="font-medium border-slate-700 bg-white border hover:border-blue-500 hover:bg-blue-500 hover:text-white shadow-lg outline outline-1 outline-slate-200 rounded-lg w-fit max-w-[60%] px-2 p-1 text-sm cursor-pointer truncate "
               >

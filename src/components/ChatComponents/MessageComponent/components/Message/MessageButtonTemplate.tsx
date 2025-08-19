@@ -1,9 +1,11 @@
 import { BtnType, Message } from '../../../type'
 import { fetchAPI, useAPI } from '@/api/api'
 import { selectGlobalClientId, selectPageId } from '@/stores/appSlice'
-import { useDispatch, useSelector } from 'react-redux'
+
+import { useSelector } from 'react-redux'
 
 const MessageButtonTemplate = ({ data }: any) => {
+  /** Lấy Api từ hooks api */
   const { DOMAIN_TRIGGER_BTN } = useAPI()
   /** Khai báo kiểu dữ liệu
    *
