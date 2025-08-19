@@ -61,6 +61,7 @@ const INITIAL_STATE: AppState = {
   list_ai_render_text: { is_active: false, data: [] },
   list_cta_message: { is_active: false, data: [] },
   page_setting: {},
+  quick_chat: [],
 }
 
 export const appSlice = createSlice({
@@ -295,6 +296,10 @@ export const appSlice = createSlice({
     setPageSettingGlobal: (state, action: PayloadAction<any>) => {
       state.page_setting = action.payload
     },
+    /** Lưu trưa Quick chat */
+    setDataQuickChat: (state, action: PayloadAction<any>) => {
+      state.quick_chat = action.payload
+    },
   },
 })
 
@@ -344,6 +349,7 @@ export const {
   setListAiRenderText,
   setListCTAMessage,
   setPageSettingGlobal,
+  setDataQuickChat,
 } = appSlice.actions
 
 /** chọn đến page id */
@@ -490,5 +496,8 @@ export const selectListCTAMessage = (state: RootState) =>
 
 /** Page setting */
 export const selectPageSetting = (state: RootState) => state.app.page_setting
+
+/** Quick chat */
+export const selectDataQuickChat = (state: RootState) => state.app.quick_chat
 
 export default appSlice.reducer

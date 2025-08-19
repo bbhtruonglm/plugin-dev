@@ -4,6 +4,7 @@ import {
   saveQuickChatLatestMessage,
 } from '@/utils'
 import {
+  setDataQuickChat,
   setGlobalUnreadCount,
   setLatestMessageGlobal,
   setListUnreadMessage,
@@ -109,10 +110,10 @@ export function onSocketFromChatboxServer({
     let socket_data: {
       /**dữ liệu tin nhắn mới */
       message?: MessageInfo
-      /**
-       * Trạng thái của người gửi
-       */
+      /** Trạng thái của người gửi*/
       sender_action?: 'typing_on' | 'typing_off'
+      /** Data socket */
+      data_socket_quick_chat?: any
     } = {}
     /**  cố gắng giải mã dữ liệu*/
     try {
@@ -124,7 +125,7 @@ export function onSocketFromChatboxServer({
     /** Kiểm tra socket_data có dữ liệu không */
     if (!size(socket_data)) return
     /** Lấy tin nhắn từ socket */
-    let { message, sender_action } = socket_data
+    let { message, sender_action, data_socket_quick_chat } = socket_data
     // console.log(sender_action, 'socket data')
     /** Nếu có trạng thái typing */
     if (sender_action === 'typing_on') {
@@ -137,6 +138,29 @@ export function onSocketFromChatboxServer({
       // console.log('typing_off')
       dispatch(setTypingStatus(false))
     }
+
+    console.log(message, 'message')
+    /** Nội dung cơ bản */
+    // if (data_socket_quick_chat) {
+    data_socket_quick_chat = [
+      '+84902296974',
+      'Chương trình khuyến mãi',
+      'Gọi điện cho tôi',
+      '+84902296973',
+      'Chương trình khuyến mãi1',
+      'Gọi điện cho tôi1',
+      '+84902296975',
+      'Chương trình khuyến mãi2',
+      'Gọi điện cho tôi2',
+    ]
+    /** Lưu data với redux */
+    dispatch(setDataQuickChat(data_socket_quick_chat))
+    /** Lưu data với localstorage */
+    localStorage.setItem(
+      `data_quick_chat__${page_id}__${client_id}`,
+      JSON.stringify(data_socket_quick_chat)
+    )
+    // }
 
     /**
      * Phải lấy data trong REF,

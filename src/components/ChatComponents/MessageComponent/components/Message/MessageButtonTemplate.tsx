@@ -1,13 +1,7 @@
 import { BtnType, Message } from '../../../type'
 import { fetchAPI, useAPI } from '@/api/api'
-import {
-  selectGlobalClientId,
-  selectPageId,
-  setSuggestMessage,
-} from '@/stores/appSlice'
+import { selectGlobalClientId, selectPageId } from '@/stores/appSlice'
 import { useDispatch, useSelector } from 'react-redux'
-
-import SendMessage from '@/components/HomeComponents/SendMessage'
 
 const MessageButtonTemplate = ({ data }: any) => {
   const { DOMAIN_TRIGGER_BTN } = useAPI()
@@ -28,7 +22,7 @@ const MessageButtonTemplate = ({ data }: any) => {
 
   /** Lấy page id */
   const PAGE_ID = useSelector(selectPageId)
-  const dispatch = useDispatch()
+
   /** Hàm postback */
   const handlePostback = async (
     message_id: string | undefined,
@@ -89,7 +83,9 @@ const MessageButtonTemplate = ({ data }: any) => {
     }
     /** Dạng sđt */
     if (button?.type === 'phone_number') {
+      /** Nếu có payload */
       if (button?.payload) {
+        /** Gọi sđt */
         window.open(`tel:${button.payload}`, '_blank')
       }
     }

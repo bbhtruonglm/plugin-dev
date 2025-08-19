@@ -7,6 +7,7 @@ import {
   selectAiId,
   selectConsultationGlobal,
   selectCurrentUserId,
+  selectDataQuickChat,
   selectFixedDataClient,
   selectGlobalClientId,
   selectGlobalUnreadCount,
@@ -179,6 +180,20 @@ const useDetailChat = ({
 
   /** List CTA message */
   const [list_cta_message, setListCTAMessage] = useState(LIST_CTA)
+  /** Data Quick chat */
+  const [socket_quick_chat, setSocketQuickChat] = useState([])
+  /** Socket quick chat */
+  const SOCKET_QUICK_CHAT = useSelector(selectDataQuickChat)
+  /** Lấy socket quick chat  */
+  useEffect(() => {
+    console.log(SOCKET_QUICK_CHAT, 'SOCKET_QUICK_CHAT')
+    /** Nếu socket quick chat thay đổi */
+    if (SOCKET_QUICK_CHAT) {
+      /** Set socket quick chat */
+      setSocketQuickChat(SOCKET_QUICK_CHAT)
+    }
+  }, [SOCKET_QUICK_CHAT])
+
   /** list text render từ setting */
   const LIST_AI_RENDER_TEXT = useSelector(selectListAiRenderText)
   /** List CTA render message */
@@ -752,6 +767,8 @@ const useDetailChat = ({
     status_list,
     list_cta_message,
     LIST_CTA_MESSAGE,
+    socket_quick_chat,
+    setSocketQuickChat,
   }
 }
 

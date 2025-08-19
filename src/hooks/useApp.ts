@@ -13,6 +13,7 @@ import {
   setCurrentUserId,
   setCurrentWidth,
   setCustomBackground,
+  setDataQuickChat,
   setFixedDataClient,
   setGlobalClientId,
   setGlobalUnreadCount,
@@ -190,6 +191,18 @@ export function useApp() {
   if (!stored_client_id) {
     stored_client_id = getCookie(`client_id_${PAGE_ID}`)
   }
+  /** data_quick_chat */
+  let data_quick_chat = localStorage.getItem(
+    `data_quick_chat__${PAGE_ID}__${stored_client_id}`
+  )
+  /** Sử dụng useEffect */
+  useEffect(() => {
+    /** Nếu data_quick_chat */
+    if (data_quick_chat) {
+      /** Lưu data_quick_chat */
+      dispatch(setDataQuickChat(JSON.parse(data_quick_chat)))
+    }
+  }, [data_quick_chat])
 
   useEffect(() => {
     /** Nếu co client_id */

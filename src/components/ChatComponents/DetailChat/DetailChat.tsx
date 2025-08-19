@@ -9,8 +9,10 @@ import Loading from '../../Loading/Loading'
 import LoadingDots from '../../Loading/LoadingDot'
 import LoadingJumping from '../../Loading/LoadingJumping'
 import MessageBody from '../Body/MessageBody'
+import { setDataQuickChat } from '@/stores/appSlice'
 import { t } from 'i18next'
 import useDetailChat from './useDetailChat'
+import { useDispatch } from 'react-redux'
 
 /** Chi tiết component chat */
 function DetailChat({
@@ -62,12 +64,17 @@ function DetailChat({
     status_list,
     list_cta_message,
     LIST_CTA_MESSAGE,
+    socket_quick_chat,
+    setSocketQuickChat,
   } = useDetailChat({
     user_id,
     onInitClient,
     is_init,
     setIsInit,
   })
+  /** Hàm dispatch */
+  const dispatch = useDispatch()
+
   return (
     <div
       className={`flex flex-col w-full h-full ${
@@ -188,6 +195,32 @@ function DetailChat({
               />
             </div>
           ))}
+        {!AI_STATUS && (
+          <div className="flex flex-wrap gap-2 w-full">
+            {socket_quick_chat.map((item: any, index: number) => (
+              <div
+                key={index}
+                onClick={() => {
+                  /** Gửi tin nhắn */
+                  sendMessage(item)
+                  /** Reset state */
+                  setSocketQuickChat([])
+                  console.log(`data_quick_chat__${PAGE_ID}__${user_id}`)
+                  /** reset storage */
+                  localStorage.setItem(
+                    `data_quick_chat__${PAGE_ID}__${user_id}`,
+                    JSON.stringify([])
+                  )
+                  /** reset store */
+                  dispatch(setDataQuickChat([]))
+                }}
+                className="font-medium border-slate-700 bg-white border hover:border-blue-500 hover:bg-blue-500 hover:text-white shadow-lg outline outline-1 outline-slate-200 rounded-lg w-fit max-w-[60%] px-2 p-1 text-sm cursor-pointer truncate "
+              >
+                {item}
+              </div>
+            ))}
+          </div>
+        )}
         <div>
           {TYPING_STATUS && (
             <div className="text-lg font-semibold flex items-center gap-x-2 py-2 px-4 rounded-full bg-slate-300 w-fit">

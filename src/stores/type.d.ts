@@ -264,6 +264,7 @@ export interface AppState {
       }
     }
   }
+  quick_chat?: any
 }
 /** Định nghĩa kiểu dữ liệu cho danh sách nhân viên */
 interface EmployeeList {
