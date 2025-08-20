@@ -201,7 +201,6 @@ function DetailChat({
                   /** Flow id */
                   const FLOW_ID = item?.payload?.split('_')[1]
 
-                  console.log(LIST_MESSAGE, 'LATEST_MESSAGE')
                   /** Hàm gửi tin nhắn */
                   handleSendMessage(item?.title, {
                     message_mid:
