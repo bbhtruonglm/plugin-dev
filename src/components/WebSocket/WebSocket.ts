@@ -156,8 +156,6 @@ export function onSocketFromChatboxServer({
       dispatch(setTypingStatus(false))
     }
 
-    console.log(message, 'message')
-
     /** Lấy thông tin client_id */
     const fetchClientData = async () => {
       /** Lấy URL */
