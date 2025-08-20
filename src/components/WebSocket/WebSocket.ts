@@ -141,14 +141,7 @@ export function onSocketFromChatboxServer({
     /** Kiểm tra socket_data có dữ liệu không */
     if (!size(socket_data)) return
     /** Lấy tin nhắn từ socket */
-    let {
-      message,
-      sender_action,
-      data_socket_quick_chat,
-      client_id: CLIENT_ID_FROM_SOCKET,
-      page_id: PAGE_ID_FROM_SOCKET,
-      quick_replies,
-    } = socket_data
+    let { message, sender_action, quick_replies } = socket_data
 
     console.log(socket_data, 'socket data')
 
@@ -191,12 +184,16 @@ export function onSocketFromChatboxServer({
 
     /** Nội dung cơ bản */
     if (quick_replies) {
+      const NEW_QUICK_REPLIES = quick_replies.filter((item: any) => {
+        return item?.title
+      })
+
       /** Lưu data với redux */
-      dispatch(setDataQuickChat(quick_replies))
+      dispatch(setDataQuickChat(NEW_QUICK_REPLIES))
       /** Lưu data với localstorage */
       localStorage.setItem(
         `data_quick_chat__${page_id}__${client_id}`,
-        JSON.stringify(quick_replies)
+        JSON.stringify(NEW_QUICK_REPLIES)
       )
     }
 
