@@ -117,6 +117,19 @@ export function onSocketFromChatboxServer({
       sender_action?: 'typing_on' | 'typing_off'
       /** Data socket */
       data_socket_quick_chat?: any
+      /** Client id */
+      client_id?: string
+      /** page id */
+      page_id?: string
+      /** Quick replies */
+      quick_replies?: {
+        /** Content type */
+        content_type?: string
+        /** Title */
+        title?: string
+        /** Payload */
+        payload?: string
+      }[]
     } = {}
     /**  cố gắng giải mã dữ liệu*/
     try {
@@ -128,7 +141,17 @@ export function onSocketFromChatboxServer({
     /** Kiểm tra socket_data có dữ liệu không */
     if (!size(socket_data)) return
     /** Lấy tin nhắn từ socket */
-    let { message, sender_action, data_socket_quick_chat } = socket_data
+    let {
+      message,
+      sender_action,
+      data_socket_quick_chat,
+      client_id: CLIENT_ID_FROM_SOCKET,
+      page_id: PAGE_ID_FROM_SOCKET,
+      quick_replies,
+    } = socket_data
+
+    console.log(socket_data, 'socket data')
+
     // console.log(sender_action, 'socket data')
     /** Nếu có trạng thái typing */
     if (sender_action === 'typing_on') {
@@ -167,26 +190,15 @@ export function onSocketFromChatboxServer({
     }
 
     /** Nội dung cơ bản */
-    // if (data_socket_quick_chat) {
-    data_socket_quick_chat = [
-      '+84902296974',
-      'Chương trình khuyến mãi',
-      'Gọi điện cho tôi',
-      '+84902296973',
-      'Chương trình khuyến mãi1',
-      'Gọi điện cho tôi1',
-      '+84902296975',
-      'Chương trình khuyến mãi2',
-      'Gọi điện cho tôi2',
-    ]
-    /** Lưu data với redux */
-    dispatch(setDataQuickChat(data_socket_quick_chat))
-    /** Lưu data với localstorage */
-    localStorage.setItem(
-      `data_quick_chat__${page_id}__${client_id}`,
-      JSON.stringify(data_socket_quick_chat)
-    )
-    // }
+    if (quick_replies) {
+      /** Lưu data với redux */
+      dispatch(setDataQuickChat(quick_replies))
+      /** Lưu data với localstorage */
+      localStorage.setItem(
+        `data_quick_chat__${page_id}__${client_id}`,
+        JSON.stringify(quick_replies)
+      )
+    }
 
     /**
      * Phải lấy data trong REF,

@@ -34,10 +34,10 @@ import {
   setRefreshData,
   setTypingStatus,
 } from '@/stores/appSlice'
-import { t, use } from 'i18next'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
+import { t } from 'i18next'
 import { useTranslation } from 'react-i18next'
 
 const useDetailChat = ({
@@ -742,7 +742,11 @@ const useDetailChat = ({
     sendMessage(item)
 
     /** Handle Postback */
-    handlePostback(payload?.message_mid, payload?.button_index)
+    handlePostback(
+      payload?.message_mid,
+      payload?.button_index,
+      payload?.flow_id
+    )
     /** Reset state */
     setSocketQuickChat([])
     console.log(`data_quick_chat__${PAGE_ID}__${user_id}`)
@@ -758,7 +762,8 @@ const useDetailChat = ({
   /** Hàm postback */
   const handlePostback = async (
     message_id: string | undefined,
-    button_idx: number
+    button_idx: number,
+    flow_id?: string
   ) => {
     /**Payload */
     const PAYLOAD = {
@@ -766,6 +771,7 @@ const useDetailChat = ({
       client_id: USER_ID,
       page_id: PAGE_ID,
       button_index: button_idx,
+      flow_id: flow_id,
     }
 
     /** call api */

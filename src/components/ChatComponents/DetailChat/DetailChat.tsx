@@ -9,10 +9,8 @@ import Loading from '../../Loading/Loading'
 import LoadingDots from '../../Loading/LoadingDot'
 import LoadingJumping from '../../Loading/LoadingJumping'
 import MessageBody from '../Body/MessageBody'
-import { setDataQuickChat } from '@/stores/appSlice'
 import { t } from 'i18next'
 import useDetailChat from './useDetailChat'
-import { useDispatch } from 'react-redux'
 
 /** Chi tiết component chat */
 function DetailChat({
@@ -200,14 +198,21 @@ function DetailChat({
               <div
                 key={index}
                 onClick={() => {
-                  handleSendMessage(item, {
-                    message_mid: item.message_mid,
-                    button_index: item.button_index,
+                  /** Flow id */
+                  const FLOW_ID = item?.payload?.split('_')[1]
+
+                  console.log(LIST_MESSAGE, 'LATEST_MESSAGE')
+                  /** Hàm gửi tin nhắn */
+                  handleSendMessage(item?.title, {
+                    message_mid:
+                      LIST_MESSAGE[LIST_MESSAGE.length - 1]?.message_mid,
+                    button_index: index,
+                    flow_id: FLOW_ID,
                   })
                 }}
                 className="font-medium border-slate-700 bg-white border hover:border-blue-500 hover:bg-blue-500 hover:text-white shadow-lg outline outline-1 outline-slate-200 rounded-lg w-fit max-w-[60%] px-2 p-1 text-sm cursor-pointer truncate "
               >
-                {item}
+                {item.title}
               </div>
             ))}
           </div>
