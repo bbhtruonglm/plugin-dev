@@ -143,8 +143,6 @@ export function onSocketFromChatboxServer({
     /** Lấy tin nhắn từ socket */
     let { message, sender_action, quick_replies } = socket_data
 
-    console.log(socket_data, 'socket data')
-
     // console.log(sender_action, 'socket data')
     /** Nếu có trạng thái typing */
     if (sender_action === 'typing_on') {
@@ -174,7 +172,7 @@ export function onSocketFromChatboxServer({
       /**  Lấy thông tin client */
       const RES = await fetchAPI(URL_READ.toString(), 'GET')
       /** Xử lý client tiếp */
-      console.log(RES, 'res')
+      // console.log(RES, 'res')
     }
 
     /** Nội dung cơ bản */
