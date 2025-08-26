@@ -520,11 +520,28 @@ export function useApp() {
           /** Lưu logo black trong store */
           dispatch(setPageLogoBlack('./images/AIG_white.png'))
           // dispatch(setPageLogo(''))
+        } else {
+          if (
+            page_setting?.button_icon_url?.current_url &&
+            page_setting?.button_icon_url?.current_url !== 'default_image'
+          ) {
+            console.log(page_setting, 'haha')
+            /** Lưu trạng thái logo trong store*/
+            dispatch(setOrgAllowLogo(true))
+            /** App logo */
+            const APP_LOGO = page_setting?.button_icon_url?.current_url || null
+            /** Lưu logo vào store */
+            dispatch(setPageLogo(APP_LOGO))
+          }
+
           /** Lấy data từ page setting, lấy thông tin từ page setting */
-          /** App logo */
-          const APP_LOGO = page_setting?.app_logo || null
           /** App avatar */
-          const APP_AVATAR_PAGE = page_setting?.app_avatar_page || null
+          const APP_AVATAR_PAGE = page_setting?.avatar || null
+          /** Nếu có avatar */
+          if (APP_AVATAR_PAGE) {
+            /** Lưu avatar vào store */
+            dispatch(setPageLogoBlack(APP_AVATAR_PAGE))
+          }
         }
 
         /** Trạng thái mở popup lần đầu */

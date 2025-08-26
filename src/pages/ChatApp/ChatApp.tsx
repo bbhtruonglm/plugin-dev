@@ -443,6 +443,11 @@ const ChatApp = ({
               alt="Logo Retion"
               width={30}
               height={30}
+              className={` ${
+                ORG_ALLOW_LOGO && LOGO_PAGE_CUSTOM
+                  ? 'size-8 object-cover rounded-full'
+                  : 'size-7.5 animate-zoom'
+              }`}
             />
           )}
         </div>

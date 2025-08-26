@@ -277,6 +277,7 @@ function ChatHeader({
                         LOGO_PAGE_CUSTOM_BLACK,
                         './images/Logo_retion_white.png'
                       )}
+                      className="rounded-full size-12 object-cover"
                     />
                   )}
                 </div>

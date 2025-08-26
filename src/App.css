@@ -36,3 +36,17 @@
     transform: rotate(360deg);
   }
 }
+
+@keyframes zoom {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.25);
+  }
+}
+
+.animate-zoom {
+  animation: zoom 1.8s ease-in-out infinite;
+}

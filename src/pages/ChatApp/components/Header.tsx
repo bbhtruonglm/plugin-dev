@@ -44,6 +44,7 @@ const Header = ({
               alt="Logo Retion"
               width={30}
               height={30}
+              className="rounded-full size-8 object-cover"
             />
           </div>
 
