@@ -2,6 +2,7 @@ import 'react-loading-skeleton/dist/skeleton.css' // Đảm bảo CSS được i
 
 import {
   selectCurrentWidth,
+  selectCustomColor,
   selectIsAvatar,
   selectIsViewScreen,
   selectLoadingGlobal,
@@ -80,14 +81,22 @@ function ChatHeader({
     /** Hiện thị trang chủ */
     setIsShowHome(IS_SHOW_HOME || false)
   }, [IS_SHOW_HOME])
+  /** CUSTOM color */
+  const CUSTOM_COLOR = useSelector(selectCustomColor)
+
+  /** Lấy màu nền từ custom color hoặc fallback về màu mặc định */
+  const BACKGROUND_COLOR = CUSTOM_COLOR?.primary_color || '#1e293b'
 
   return (
     <>
       {LOADING_GLOBAL ? (
         <div
-          className={`flex w-full absolute justify-center items-center top-0 bg-slate-800 ${
+          className={`flex w-full absolute justify-center items-center top-0 ${
             user_id ? 'h-16 items-center' : 'h-44'
           }`}
+          style={{
+            backgroundColor: BACKGROUND_COLOR,
+          }}
         >
           {user_id ? (
             <div className="flex justify-between items-center w-full h-16 py-3 px-5">
@@ -167,9 +176,12 @@ function ChatHeader({
         </div>
       ) : (
         <div
-          className={`flex bg-slate-800  w-full py-3 px-5 gap-2 absolute top-0 ${
+          className={`flex  w-full py-3 px-5 gap-2 absolute top-0 ${
             user_id ? 'h-16 items-center' : 'h-44'
           }`}
+          style={{
+            backgroundColor: BACKGROUND_COLOR,
+          }}
         >
           {user_id ? (
             <div className="flex justify-between items-center w-full gap-x-2">

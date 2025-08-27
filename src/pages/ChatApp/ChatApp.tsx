@@ -8,14 +8,15 @@ import {
   truncateString,
 } from '@/utils'
 
-import { ReactComponent as ActiveMessage } from '@/assets/messageA.svg'
+import { ChatBubbleOvalLeftEllipsisIcon as ActiveMessage } from '@heroicons/react/24/solid'
 import { ChatAppProps } from '../type'
 import ChatScreen from '@/screens/ChatScreen/Chat/Chat'
 import Header from './components/Header'
 import Home from '@/screens/ChatScreen/Home'
 import { HomeIcon } from '@heroicons/react/24/solid'
 import { HomeIcon as HomeIconOutline } from '@heroicons/react/24/outline'
-import { ReactComponent as InactiveMessage } from '@/assets/message.svg'
+import { ChatBubbleOvalLeftEllipsisIcon as InactiveMessage } from '@heroicons/react/24/outline'
+// import { ReactComponent as InactiveMessage } from '@/assets/message.svg'
 import Modal from '@/components/ChatComponents/Modal/Modal'
 import TemplateMessageComponent from '@/components/ChatComponents/MessageComponent/TemplateMessageComponent'
 import TimeAgo from '@/components/TimeAgo'
@@ -74,6 +75,7 @@ const ChatApp = ({
     LOGO_PAGE_CUSTOM,
     GLOBAL_PREVIEW_URL,
     IS_CUSTOM_BACKGROUND,
+    SELECT_BUTTON_EFFECT,
   } = useChatApp({ show })
   /** Các hàm action trong hooks */
   const {
@@ -446,7 +448,7 @@ const ChatApp = ({
               className={` ${
                 ORG_ALLOW_LOGO && LOGO_PAGE_CUSTOM
                   ? 'size-8 object-cover rounded-full'
-                  : 'size-7.5 animate-zoom'
+                  : `size-7.5 ${SELECT_BUTTON_EFFECT ? 'animate-zoom' : ''}`
               }`}
             />
           )}

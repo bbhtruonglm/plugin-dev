@@ -7,12 +7,14 @@ import {
   selectPageId,
   setActiveAiAgent,
   setAiMessageAutoSend,
+  setButtonEffect,
   setClientNameStore,
   setConsultationGlobal,
   setCurrentHeight,
   setCurrentUserId,
   setCurrentWidth,
   setCustomBackground,
+  setCustomColor,
   setDataQuickChat,
   setFixedDataClient,
   setGlobalClientId,
@@ -525,7 +527,6 @@ export function useApp() {
             page_setting?.button_icon_url?.current_url &&
             page_setting?.button_icon_url?.current_url !== 'default_image'
           ) {
-            console.log(page_setting, 'haha')
             /** Lưu trạng thái logo trong store*/
             dispatch(setOrgAllowLogo(true))
             /** App logo */
@@ -542,6 +543,18 @@ export function useApp() {
             /** Lưu avatar vào store */
             dispatch(setPageLogoBlack(APP_AVATAR_PAGE))
           }
+        }
+        /** Kiểm tra trạng thái button effect */
+        if (page_setting?.button_effect) {
+          /** Lưu trạng thái button effect vào store */
+          dispatch(setButtonEffect(true))
+        } else {
+          dispatch(setButtonEffect(false))
+        }
+        /** Kiểm tra trạng thái màu sắc tùy chỉnh */
+        if (page_setting?.custom_color) {
+          /** Lưu trạng thái màu sắc tùy chỉnh vào store */
+          dispatch(setCustomColor(page_setting?.custom_color))
         }
 
         /** Trạng thái mở popup lần đầu */

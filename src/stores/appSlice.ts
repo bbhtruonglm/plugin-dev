@@ -62,6 +62,11 @@ const INITIAL_STATE: AppState = {
   list_cta_message: { is_active: false, data: [] },
   page_setting: {},
   quick_chat: [],
+  button_effect: false,
+  custom_color: {
+    primary_color: '',
+    text_color: '',
+  },
 }
 
 export const appSlice = createSlice({
@@ -300,6 +305,14 @@ export const appSlice = createSlice({
     setDataQuickChat: (state, action: PayloadAction<any>) => {
       state.quick_chat = action.payload
     },
+    /** Button Effect */
+    setButtonEffect: (state, action: PayloadAction<any>) => {
+      state.button_effect = action.payload
+    },
+    /** custom color */
+    setCustomColor: (state, action: PayloadAction<any>) => {
+      state.custom_color = action.payload
+    },
   },
 })
 
@@ -350,6 +363,8 @@ export const {
   setListCTAMessage,
   setPageSettingGlobal,
   setDataQuickChat,
+  setButtonEffect,
+  setCustomColor,
 } = appSlice.actions
 
 /** chọn đến page id */
@@ -499,5 +514,9 @@ export const selectPageSetting = (state: RootState) => state.app.page_setting
 
 /** Quick chat */
 export const selectDataQuickChat = (state: RootState) => state.app.quick_chat
+/** Button Effect */
+export const selectButtonEffect = (state: RootState) => state.app.button_effect
+/** Custom color */
+export const selectCustomColor = (state: RootState) => state.app.custom_color
 
 export default appSlice.reducer

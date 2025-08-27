@@ -1,6 +1,9 @@
+import { useDispatch, useSelector } from 'react-redux'
+
 import OnlineStaff from '@/components/Container/OnlineStaff'
 import { XMarkIcon } from '@heroicons/react/20/solid'
 import { renderLogo } from '@/utils'
+import { selectCustomColor } from '@/stores/appSlice'
 
 const Header = ({
   current_tab,
@@ -29,16 +32,28 @@ const Header = ({
   /** Ẩn Trạng thái mobile */
   setHideForMobile?: () => void
 }) => {
+  /** Hàm dispatch */
+  const dispatch = useDispatch()
+
+  /** CUSTOM color */
+  const CUSTOM_COLOR = useSelector(selectCustomColor)
+
+  /** Lấy màu nền từ custom color hoặc fallback về màu mặc định */
+  const BACKGROUND_COLOR = CUSTOM_COLOR?.primary_color || '#1e293b'
+
   return (
     <>
       {current_tab !== 'message' && (
         <div
-          className={`flex justify-between items-center px-5 py-3 bg-slate-800 text-white ${
+          className={`flex justify-between items-center px-5 py-3 ${
             AI_STATUS || IS_VIEW_SCREEN ? 'hidden' : 'flex'
           }`}
+          style={{
+            backgroundColor: BACKGROUND_COLOR,
+            color: '#FFFFFF',
+          }}
         >
           <div>
-            {/* <RetionLogo /> */}
             <img
               src={renderLogo(ORG_ALLOW_LOGO, LOGO_PAGE_CUSTOM_BLACK, '')}
               alt="Logo Retion"
@@ -56,7 +71,7 @@ const Header = ({
             </div>
             <div
               onClick={setHideForMobile}
-              className={`cursor-pointer size-7 flex justify-center items-center`}
+              className="cursor-pointer size-7 flex justify-center items-center"
             >
               <XMarkIcon className="size-7" />
             </div>

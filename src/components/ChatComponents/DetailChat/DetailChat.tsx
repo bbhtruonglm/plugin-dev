@@ -1,3 +1,5 @@
+import { useDispatch, useSelector } from 'react-redux'
+
 import ChatHeader from '../Header/ChatHeader'
 import { ChatScreenProps } from '../type'
 import { ChevronDownIcon } from '@heroicons/react/24/solid'
@@ -9,6 +11,7 @@ import Loading from '../../Loading/Loading'
 import LoadingDots from '../../Loading/LoadingDot'
 import LoadingJumping from '../../Loading/LoadingJumping'
 import MessageBody from '../Body/MessageBody'
+import { selectCustomColor } from '@/stores/appSlice'
 import { t } from 'i18next'
 import useDetailChat from './useDetailChat'
 
@@ -72,6 +75,14 @@ function DetailChat({
     setIsInit,
   })
 
+  /** Hàm dispatch */
+  const dispatch = useDispatch()
+
+  /** CUSTOM color */
+  const CUSTOM_COLOR = useSelector(selectCustomColor)
+
+  /** Lấy màu nền từ custom color hoặc fallback về màu mặc định */
+  const BACKGROUND_COLOR = CUSTOM_COLOR?.primary_color || '#1e293b'
   return (
     <div
       className={`flex flex-col w-full h-full ${

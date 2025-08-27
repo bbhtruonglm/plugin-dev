@@ -14,6 +14,7 @@ import {
   saveQuickChatLatestMessage,
 } from '@/utils'
 import {
+  selectButtonEffect,
   selectConsultationGlobal,
   selectCurrentHeight,
   selectCurrentWidth,
@@ -69,6 +70,9 @@ function useChatApp({ show }: { show: boolean }) {
   const LOGO_PAGE_CUSTOM_BLACK = useSelector(selectPageLogoBlack)
   /** Các đầu api */
   const { READ_PAGE_INFO, SOCKET_API } = useAPI()
+
+  /** HIệu ứng Button  */
+  const SELECT_BUTTON_EFFECT = useSelector(selectButtonEffect)
   /** Trạng thái online */
   const IS_ONLINE = useContext(NetworkContext)
   /** Tin nhắn mới nhất */
@@ -83,6 +87,7 @@ function useChatApp({ show }: { show: boolean }) {
   const IS_VIEW_SCREEN = useSelector(selectIsViewScreen)
   /** Trạng thái hiển thị màn home */
   const IS_SHOW_HOME = useSelector(selectShowHome)
+
   /** Khởi tạo websocket */
   const WS = useRef<WebSocket | null>(null)
   /** State Khai báo thông tin */
@@ -1167,6 +1172,7 @@ function useChatApp({ show }: { show: boolean }) {
     LOGO_PAGE_CUSTOM,
     GLOBAL_PREVIEW_URL,
     IS_CUSTOM_BACKGROUND,
+    SELECT_BUTTON_EFFECT,
   }
 }
 

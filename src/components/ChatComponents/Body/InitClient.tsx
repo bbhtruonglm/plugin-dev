@@ -1,10 +1,12 @@
 import { UK_PHONE_REGEX, VN_PHONE_REGEX } from '@/utils'
 // export default InitClient
 import {
+  selectCustomColor,
   selectLoadingGlobal,
   selectShowForm,
   selectUserInfo,
 } from '@/stores/appSlice'
+import { useDispatch, useSelector } from 'react-redux'
 import { useEffect, useState } from 'react'
 
 import { InitClientProps } from '../type'
@@ -14,7 +16,6 @@ import { isEmpty } from 'lodash'
 import { isValidPhoneNumber } from 'libphonenumber-js'
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import { t } from 'i18next'
-import { useSelector } from 'react-redux'
 
 /**
  * Chuẩn hóa số điện thoại
@@ -82,6 +83,11 @@ function InitClient({ resetData, onInitClient }: InitClientProps) {
   /** Form errors */
   const [form_errors, setFormErrors] = useState<Record<string, string>>({})
 
+  /** CUSTOM color */
+  const CUSTOM_COLOR = useSelector(selectCustomColor)
+
+  /** Lấy màu nền từ custom color hoặc fallback về màu mặc định */
+  const BACKGROUND_COLOR = CUSTOM_COLOR?.primary_color || '#1e293b'
   /** Pre-fill nếu có dữ liệu từ store */
   useEffect(() => {
     /** Check nếu có dữ liệu từ store */
@@ -264,7 +270,7 @@ function InitClient({ resetData, onInitClient }: InitClientProps) {
             </div>
           )}
 
-          <button
+          {/* <button
             className={`text-white sticky bottom-0 ${
               IS_DISABLED ? 'bg-slate-400 cursor-not-allowed' : 'bg-black'
             } rounded-md px-4 py-2 text-sm font-medium`}
@@ -280,6 +286,27 @@ function InitClient({ resetData, onInitClient }: InitClientProps) {
               }
             }}
             disabled={IS_DISABLED} // hoặc tự check thiếu form ở đây
+          >
+            {t('start_to_chat')}
+          </button> */}
+          <button
+            className={`text-white sticky bottom-0 rounded-md px-4 py-2 text-sm font-medium`}
+            style={{
+              backgroundColor: IS_DISABLED ? '#94a3b8' : BACKGROUND_COLOR,
+              cursor: IS_DISABLED ? 'not-allowed' : 'pointer',
+            }}
+            onClick={() => {
+              if (!FORM_BEFORE_CHAT?.is_active || validate()) {
+                if (isEmpty(USER_INFO)) {
+                  onInitClient({
+                    user_name: t('anonymous'),
+                  })
+                  return
+                }
+                onInitClient(form_values)
+              }
+            }}
+            disabled={IS_DISABLED}
           >
             {t('start_to_chat')}
           </button>
