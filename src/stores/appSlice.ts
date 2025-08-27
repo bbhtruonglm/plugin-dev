@@ -85,6 +85,7 @@ const INITIAL_STATE: AppState = {
     text_color: '',
   },
   is_active_cta_message: false,
+  on_click_cta: '',
 }
 
 export const appSlice = createSlice({
@@ -337,6 +338,10 @@ export const appSlice = createSlice({
     setCustomColor: (state, action: PayloadAction<any>) => {
       state.custom_color = action.payload
     },
+    /** on click CTA */
+    setOnClickCTA: (state, action: PayloadAction<string>) => {
+      state.on_click_cta = action.payload
+    },
   },
 })
 
@@ -390,6 +395,7 @@ export const {
   setButtonEffect,
   setCustomColor,
   setIsActiveCTAMessage,
+  setOnClickCTA,
 } = appSlice.actions
 
 /** chọn đến page id */
@@ -546,5 +552,8 @@ export const selectDataQuickChat = (state: RootState) => state.app.quick_chat
 export const selectButtonEffect = (state: RootState) => state.app.button_effect
 /** Custom color */
 export const selectCustomColor = (state: RootState) => state.app.custom_color
+
+/** OnClick CTA */
+export const selectOnClickCTA = (state: RootState) => state.app.on_click_cta
 
 export default appSlice.reducer

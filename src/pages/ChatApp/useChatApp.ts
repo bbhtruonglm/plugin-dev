@@ -398,7 +398,7 @@ function useChatApp({ show }: { show: boolean }) {
     /** Thông tin page từ api */
     const RES = await fetchAPI(URL_READ.toString(), 'GET')
     /** lưu tên page vào state */
-    setPageName(RES?.data?.name)
+    setPageName(RES?.data?.alias || RES?.data?.page_name || '')
     /** Khi call api xong thì tắt loading */
     dispatch(setLoadingGlobal(false))
     /** Nếu lỗi 403 thì hiện cờ  */
@@ -466,15 +466,22 @@ function useChatApp({ show }: { show: boolean }) {
       //   ]
       // )
     }
-
-    /** Lưu thông tin tin nhắn chào mừng */
-    setWelcomeMessage({
-      message:
-        RES?.data?.welcome_message?.source?.[I18N.language] ||
-        t('_welcome_message'),
-      delay: RES?.data?.welcome_message?.delay * 1000 || 5000,
-      is_active: RES?.data?.welcome_message?.is_active || false,
-    })
+    /** Lưu thông tin tin nhắn chào mừng custom không */
+    if (RES?.data?.welcome_message?.is_active) {
+      /** Lưu thông tin tin nhắn chào mừng */
+      setWelcomeMessage({
+        message: RES?.data?.welcome_message?.source?.[I18N.language],
+        delay: RES?.data?.welcome_message?.delay * 1000,
+        is_active: RES?.data?.welcome_message?.is_active,
+      })
+    } else {
+      /** Lưu thông tin tin nhắn chào mừng mặc định*/
+      setWelcomeMessage({
+        message: t('_welcome_message'),
+        delay: 5000,
+        is_active: true,
+      })
+    }
     console.log(I18N.language)
     /** Lưu thông tin biểu mẫu */
     setWebForm({

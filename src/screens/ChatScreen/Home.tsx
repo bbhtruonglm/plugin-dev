@@ -3,16 +3,16 @@ import {
   selectIsActiveCTAMessage,
   selectLatestMessage,
   selectListCTAMessage,
+  setOnClickCTA,
 } from '@/stores/appSlice'
+import { useDispatch, useSelector } from 'react-redux'
 
-import { ArrowRightCircleIcon } from '@heroicons/react/16/solid'
 import ChatOption from '@/components/HomeComponents/ChatOption'
 import FAQ from '@/components/HomeComponents/FAQ'
 import { HomeProps } from './type'
 import SendMessage from '@/components/HomeComponents/SendMessage'
 import UnreadMessage from '@/components/HomeComponents/UnreadMessage'
 import { useMemo } from 'react'
-import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 
 function Home({
@@ -40,10 +40,10 @@ function Home({
    * Lấy title và description từ source
    */
   const { title, description } = source[I18N.language] || {}
+  /** Hàm dispatch */
+  const dispatch = useDispatch()
 
-  /**
-   * Tin nhắn mới nhất
-   */
+  /** Tin nhắn mới nhất*/
   const LATEST_MESSAGE = useSelector(selectLatestMessage)
   /** IS ACTIVE CTA */
   const IS_ACTIVE_CTA = useSelector(selectIsActiveCTAMessage)
@@ -61,9 +61,6 @@ function Home({
         .map((item) => item?.source?.[LANGUAGE] || item)
     )
   }, [LIST_CTA, LANGUAGE])
-  console.log(LANGUAGE, 'language')
-
-  console.log(DATA_CTA, 'check')
 
   return (
     <div className="flex flex-col px-5 py-3 gap-y-5">
@@ -108,8 +105,13 @@ function Home({
           title={t('faq_question')}
           data={DATA_CTA}
           onClickCTA={(item) => {
-            console.log(item, 'item')
-            // sendMessage(item)
+            /** Lưu giá trị CTA đã click */
+            dispatch(setOnClickCTA(item))
+            /** Set timeout */
+            setTimeout(() => {
+              /** Navigate sang màn message */
+              onNavigate()
+            }, 200)
           }}
         />
       )}

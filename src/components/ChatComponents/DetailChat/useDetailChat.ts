@@ -1,5 +1,5 @@
 import { Employee, Message } from '../type'
-import { debounce, isEmpty, keys, set } from 'lodash'
+import { debounce, isEmpty, keys } from 'lodash'
 import { fetchAPI, useAPI } from '@/api/api'
 import { getCookie, renderAvatarFromId, renderAvatarFromIdAgent } from '@/utils'
 import {
@@ -19,6 +19,7 @@ import {
   selectListCTAMessage,
   selectListMessage,
   selectLoadingGlobal,
+  selectOnClickCTA,
   selectPageAvatar,
   selectPageId,
   selectPageInfoAI,
@@ -32,6 +33,7 @@ import {
   setGlobalUnreadCount,
   setListMessage,
   setLoadingGlobal,
+  setOnClickCTA,
   setRefreshData,
   setTypingStatus,
 } from '@/stores/appSlice'
@@ -81,6 +83,9 @@ const useDetailChat = ({
   const GLOBAL_CONSULTATION = useSelector(selectConsultationGlobal)
   /** CURRENT_USER_ID */
   const CURRENT_USER_ID = useSelector(selectCurrentUserId)
+
+  /** is onClick CTA */
+  const ON_CLICK_CTA = useSelector(selectOnClickCTA)
 
   /** Lấy Api từ hooks api */
   const { DOMAIN_TRIGGER_BTN } = useAPI()
@@ -641,6 +646,18 @@ const useDetailChat = ({
     }
   }, [client_id, is_init])
 
+  useEffect(() => {
+    /** Check value */
+    if (ON_CLICK_CTA && PAGE_ID && user_id) {
+      /** Gửi tin nhắn */
+      sendMessage(ON_CLICK_CTA)
+      /** Reset trong store */
+      dispatch(setOnClickCTA(''))
+      /** Scroll xuống bottom */
+      scrollToBottom()
+    }
+  }, [ON_CLICK_CTA, scrollToBottom, PAGE_ID, user_id])
+
   /** Hàm Xử lý gửi tin nhắn
    * @param {string} input - Nội dung tin nhắn text
    */
@@ -655,7 +672,7 @@ const useDetailChat = ({
       /** Khởi tạo body tin nhắn */
       const MESSAGE: Message = {
         page_id: PAGE_ID,
-        client_id: user_id,
+        client_id: user_id || CURRENT_USER_ID || '',
         text: input,
         user_id: CURRENT_USER_ID,
         ...(META_DATA_ID && {

@@ -589,8 +589,10 @@ export function useApp() {
           console.log(auto_open_init, 'auto_open_init')
 
           setTimeout(() => {
-            /** Cập nhật trạng thái */
-            setShow(auto_open_init)
+            /** Cập nhật trạng thái phải tự động bật thì bật, không thì thôi */
+            if (auto_open_init) {
+              setShow(auto_open_init)
+            }
           }, OPEN_POPUP_SETTING?.delay * 1000 || 1000)
         }
 

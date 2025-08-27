@@ -228,6 +228,8 @@ export interface AppState {
   is_active_cta_message?: boolean
   /** QUick chat */
   quick_chat?: any
+  /** on_click_cta */
+  on_click_cta?: string
 }
 /** Định nghĩa kiểu dữ liệu cho danh sách nhân viên */
 interface EmployeeList {
