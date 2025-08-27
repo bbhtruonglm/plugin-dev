@@ -19,6 +19,7 @@ import {
   setFixedDataClient,
   setGlobalClientId,
   setGlobalUnreadCount,
+  setIsActiveCTAMessage,
   setIsAvatar,
   setIsViewScreen,
   setLatestMessageGlobal,
@@ -559,11 +560,40 @@ export function useApp() {
 
         /** Trạng thái mở popup lần đầu */
         if (!IS_AI && !IS_VIEW_SCREEN) {
-          const AUTO_OPEN_INIT = page_setting?.auto_open || false
+          /** Lấy giá trị setting */
+          const OPEN_POPUP_SETTING = page_setting?.open_popup_when_access
+          /** Trạng thái mobile */
+          const IS_MOBILE = /Mobi|Android|iPhone|iPad|iPod/i.test(
+            window.navigator.userAgent
+          )
 
-          /** Cập nhật trạng thái */
-          setShow(AUTO_OPEN_INIT)
+          /** Khai báo biến trạng thái mở popup tự động */
+          let auto_open_init = false
+          /** Kiểm tra giá trị setting */
+          switch (OPEN_POPUP_SETTING?.option) {
+            case 'mobile':
+              auto_open_init = IS_MOBILE
+              break
+            case 'website':
+              auto_open_init = !IS_MOBILE
+              break
+            case 'both':
+              auto_open_init = true
+              break
+            case 'off':
+            default:
+              auto_open_init = false
+              break
+          }
+
+          console.log(auto_open_init, 'auto_open_init')
+
+          setTimeout(() => {
+            /** Cập nhật trạng thái */
+            setShow(auto_open_init)
+          }, OPEN_POPUP_SETTING?.delay * 1000 || 1000)
         }
+
         /** Trạng thái không phải AI */
         if (!IS_AI) {
           /** Lưu cài đặt background từ setting */
@@ -572,11 +602,20 @@ export function useApp() {
           dispatch(setCustomBackground(CUSTOM_BACKGROUND))
           /** Lưu cái đặt CTA message từ setting */
           // const CUSTOM_CTA_MESSAGE = page_setting?.custom_cta_message
+
+          /** is activce cta */
+          dispatch(
+            setIsActiveCTAMessage(
+              page_setting?.faq_question_cta?.is_active || false
+            )
+          )
+
           /** Lưu cài đặt CTA message vào store */
           dispatch(
             setListCTAMessage(
-              page_setting?.faq_custom_cta || {
+              page_setting?.faq_question_cta || {
                 is_active: false,
+                is_show_outside: false,
                 data: [
                   {
                     source: {
@@ -614,7 +653,7 @@ export function useApp() {
         /** Lưu dũe liệu ai_render_text */
         dispatch(
           setListAiRenderText(
-            page_setting?.ai_render_text || {
+            page_setting?.ai_responding || {
               is_active: false,
               data: {
                 vi: [

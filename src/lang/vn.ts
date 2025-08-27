@@ -91,5 +91,7 @@ export const vn = {
     page_id_required: 'Yêu cầu ID Trang',
 
     selected_one_image: 'Đã chọn 1 ảnh',
+
+    faq_question: 'Câu hỏi thường gặp',
   },
 }

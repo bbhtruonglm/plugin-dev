@@ -83,6 +83,7 @@ function DetailChat({
 
   /** Lấy màu nền từ custom color hoặc fallback về màu mặc định */
   const BACKGROUND_COLOR = CUSTOM_COLOR?.primary_color || '#1e293b'
+
   return (
     <div
       className={`flex flex-col w-full h-full ${

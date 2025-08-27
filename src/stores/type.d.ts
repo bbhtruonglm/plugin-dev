@@ -221,49 +221,11 @@ export interface AppState {
     list_url?: string[]
   }
   /** ai_responding */
-  ai_responding?: {
-    /** Trạng thái kích hoạt */
-    type: {
-      is_active: {
-        type: Boolean
-      }
-      /** Dữ liệu */
-      data: {
-        type: [
-          {
-            /** Nguồn */
-            source: {}
-            /** trạng thái kích hoạt */
-            is_active: {
-              type: Boolean
-            }
-          }
-        ]
-      }
-    }
-  }
-  /** faq_custom_cta */
-  faq_custom_cta?: {
-    /** Trạng thái kích hoạt */
-    type: {
-      is_active: {
-        type: Boolean
-      }
-      /** Dữ liệu */
-      data: {
-        type: [
-          {
-            /** Nguồn */
-            source: {}
-            /** trạng thái kích hoạt */
-            is_active: {
-              type: Boolean
-            }
-          }
-        ]
-      }
-    }
-  }
+  ai_responding?: AI_RESPONDING
+  /** faq_question_cta */
+  faq_question_cta?: FAQ_QUESTION_CTA
+  /** is_active_cta_message */
+  is_active_cta_message?: boolean
   /** QUick chat */
   quick_chat?: any
 }
@@ -286,4 +248,38 @@ type FormData = {
   is_active: boolean
   /** is_require */
   is_require: boolean
+}
+/** Kiểu dữ liệu danh sách CTA câu hỏi thường gặp */
+type FAQ_QUESTION_CTA = {
+  /** Trạng thái hiển thị */
+  is_active: boolean
+  /** Cho phép hiển thị bên ngoài trang */
+  is_show_outside: boolean
+  /** Dữ liệu - Đa ngôn ngữ */
+  data: [
+    {
+      source: {
+        /** Từ khoá locale */
+        [key: string]: string
+      }
+      /** Kích hoạt */
+      is_active: boolean
+    }
+  ]
+}
+/** Kiểu dữ liệu AI phản hồi */
+type AI_RESPONDING = {
+  /** Trạng thái hiển thị */
+  is_active: boolean
+  /** Dữ liệu  - Đa ngôn ngữ*/
+  data: [
+    {
+      source: {
+        /** Từ khoá locale */
+        [key: string]: string
+      }
+      /** Kích hoạt */
+      is_active: boolean
+    }
+  ]
 }

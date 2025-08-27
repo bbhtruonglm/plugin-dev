@@ -58,8 +58,25 @@ const INITIAL_STATE: AppState = {
   fixed_data_client: undefined,
   consultation_global: undefined,
   is_custom_background: false,
-  list_ai_render_text: { is_active: false, data: [] },
-  list_cta_message: { is_active: false, data: [] },
+  ai_responding: {
+    is_active: false,
+    data: [
+      {
+        source: {},
+        is_active: false,
+      },
+    ],
+  },
+  faq_question_cta: {
+    is_active: false,
+    is_show_outside: false,
+    data: [
+      {
+        source: {},
+        is_active: false,
+      },
+    ],
+  },
   page_setting: {},
   quick_chat: [],
   button_effect: false,
@@ -67,6 +84,7 @@ const INITIAL_STATE: AppState = {
     primary_color: '',
     text_color: '',
   },
+  is_active_cta_message: false,
 }
 
 export const appSlice = createSlice({
@@ -291,12 +309,18 @@ export const appSlice = createSlice({
 
     /** TIn nhắn ai đang phản hồi */
     setListAiRenderText: (state, action: PayloadAction<any>) => {
-      state.list_ai_render_text = action.payload
+      state.ai_responding = action.payload
     },
     /** CTA message */
     setListCTAMessage: (state, action: PayloadAction<any>) => {
-      state.list_cta_message = action.payload
+      state.faq_question_cta = action.payload
     },
+
+    /** is active CTA */
+    setIsActiveCTAMessage: (state, action: PayloadAction<boolean>) => {
+      state.is_active_cta_message = action.payload
+    },
+
     /** Lưu trữ Page setting */
     setPageSettingGlobal: (state, action: PayloadAction<any>) => {
       state.page_setting = action.payload
@@ -365,6 +389,7 @@ export const {
   setDataQuickChat,
   setButtonEffect,
   setCustomColor,
+  setIsActiveCTAMessage,
 } = appSlice.actions
 
 /** chọn đến page id */
@@ -503,11 +528,14 @@ export const selectCustomBackground = (state: RootState) =>
 
 /** TIn nhắn ai đang phản hồi */
 export const selectListAiRenderText = (state: RootState) =>
-  state.app.list_ai_render_text
+  state.app.ai_responding
 
 /** TIn nhắn CTA */
 export const selectListCTAMessage = (state: RootState) =>
-  state.app.list_cta_message
+  state.app.faq_question_cta
+
+export const selectIsActiveCTAMessage = (state: RootState) =>
+  state.app.is_active_cta_message
 
 /** Page setting */
 export const selectPageSetting = (state: RootState) => state.app.page_setting

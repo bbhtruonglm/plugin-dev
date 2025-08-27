@@ -1,9 +1,17 @@
-import { selectClientName, selectLatestMessage } from '@/stores/appSlice'
+import {
+  selectClientName,
+  selectIsActiveCTAMessage,
+  selectLatestMessage,
+  selectListCTAMessage,
+} from '@/stores/appSlice'
 
+import { ArrowRightCircleIcon } from '@heroicons/react/16/solid'
 import ChatOption from '@/components/HomeComponents/ChatOption'
+import FAQ from '@/components/HomeComponents/FAQ'
 import { HomeProps } from './type'
 import SendMessage from '@/components/HomeComponents/SendMessage'
 import UnreadMessage from '@/components/HomeComponents/UnreadMessage'
+import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 
@@ -16,6 +24,9 @@ function Home({
 }: HomeProps) {
   /** Dịch ngôn ngữ */
   const { t, i18n: I18N } = useTranslation()
+
+  /** Lấy ngôn ngữ */
+  const LANGUAGE = I18N.language
 
   /** Client name */
   const CLIENT_NAME = useSelector(selectClientName)
@@ -34,6 +45,25 @@ function Home({
    * Tin nhắn mới nhất
    */
   const LATEST_MESSAGE = useSelector(selectLatestMessage)
+  /** IS ACTIVE CTA */
+  const IS_ACTIVE_CTA = useSelector(selectIsActiveCTAMessage)
+  /** LIST CTA */
+  const LIST_CTA = useSelector(selectListCTAMessage)
+  /** Dữ liệu CTA */
+  const DATA_CTA = useMemo(() => {
+    if (!LIST_CTA?.data) return []
+
+    return (
+      LIST_CTA.data
+        /** Lọc những item đang active */
+        .filter((item) => item?.is_active)
+        /** Lấy dữ liệu theo ngôn ngữ, fallback về item gốc nếu không có */
+        .map((item) => item?.source?.[LANGUAGE] || item)
+    )
+  }, [LIST_CTA, LANGUAGE])
+  console.log(LANGUAGE, 'language')
+
+  console.log(DATA_CTA, 'check')
 
   return (
     <div className="flex flex-col px-5 py-3 gap-y-5">
@@ -70,6 +100,17 @@ function Home({
         <ChatOption
           social_link={social_link}
           social_description={social_description[I18N.language]}
+        />
+      )}
+      {/* FAQ */}
+      {IS_ACTIVE_CTA && DATA_CTA && (
+        <FAQ
+          title={t('faq_question')}
+          data={DATA_CTA}
+          onClickCTA={(item) => {
+            console.log(item, 'item')
+            // sendMessage(item)
+          }}
         />
       )}
     </div>
