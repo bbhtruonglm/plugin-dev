@@ -1,4 +1,12 @@
+import {
+  ChatBubbleOvalLeftEllipsisIcon as ActiveMessage,
+  HomeIcon,
+} from '@heroicons/react/24/solid'
 import { ChevronDownIcon, XMarkIcon } from '@heroicons/react/16/solid'
+import {
+  HomeIcon as HomeIconOutline,
+  ChatBubbleOvalLeftEllipsisIcon as InactiveMessage,
+} from '@heroicons/react/24/outline'
 import {
   renderLogo,
   renderStaffName,
@@ -7,22 +15,19 @@ import {
   truncateSentences,
   truncateString,
 } from '@/utils'
+import { useDispatch, useSelector } from 'react-redux'
 
-import { ChatBubbleOvalLeftEllipsisIcon as ActiveMessage } from '@heroicons/react/24/solid'
 import { ChatAppProps } from '../type'
 import ChatScreen from '@/screens/ChatScreen/Chat/Chat'
 import Header from './components/Header'
 import Home from '@/screens/ChatScreen/Home'
-import { HomeIcon } from '@heroicons/react/24/solid'
-import { HomeIcon as HomeIconOutline } from '@heroicons/react/24/outline'
-import { ChatBubbleOvalLeftEllipsisIcon as InactiveMessage } from '@heroicons/react/24/outline'
-// import { ReactComponent as InactiveMessage } from '@/assets/message.svg'
 import Modal from '@/components/ChatComponents/Modal/Modal'
+// import { ReactComponent as InactiveMessage } from '@/assets/message.svg'
 import TemplateMessageComponent from '@/components/ChatComponents/MessageComponent/TemplateMessageComponent'
 import TimeAgo from '@/components/TimeAgo'
+import { selectIsLoadingFirstTime } from '@/stores/appSlice'
 import useChatApp from './useChatApp'
 import useChatAppAction from './useChatAppAction'
-import { useDispatch } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 
 const ChatApp = ({
@@ -144,6 +149,8 @@ const ChatApp = ({
     //   value: 'news',
     // },
   ]
+  /** Trạng thái loading */
+  const IS_LOADING = useSelector(selectIsLoadingFirstTime)
 
   return (
     /** Hiển thị thông tin Layout cả SDK */
@@ -436,21 +443,27 @@ const ChatApp = ({
           {show ? (
             <ChevronDownIcon className="size-8" />
           ) : (
-            <img
-              src={renderLogo(
-                ORG_ALLOW_LOGO,
-                LOGO_PAGE_CUSTOM,
-                './images/Logo_retion_embed.png'
+            <>
+              {IS_LOADING ? (
+                <div className="size-8 bg-gray-200 rounded-full animate-pulse" />
+              ) : (
+                <img
+                  src={renderLogo(
+                    ORG_ALLOW_LOGO,
+                    LOGO_PAGE_CUSTOM,
+                    './images/Logo_retion_embed.png'
+                  )}
+                  alt="Logo Retion"
+                  width={30}
+                  height={30}
+                  className={` ${
+                    ORG_ALLOW_LOGO && LOGO_PAGE_CUSTOM
+                      ? 'size-8 object-cover rounded-full'
+                      : `size-7.5 ${SELECT_BUTTON_EFFECT ? 'animate-zoom' : ''}`
+                  }`}
+                />
               )}
-              alt="Logo Retion"
-              width={30}
-              height={30}
-              className={` ${
-                ORG_ALLOW_LOGO && LOGO_PAGE_CUSTOM
-                  ? 'size-8 object-cover rounded-full'
-                  : `size-7.5 ${SELECT_BUTTON_EFFECT ? 'animate-zoom' : ''}`
-              }`}
-            />
+            </>
           )}
         </div>
       </button>
@@ -472,3 +485,6 @@ const ChatApp = ({
 }
 
 export default ChatApp
+function selectLoadingFirstTime(arg0: boolean): (state: unknown) => unknown {
+  throw new Error('Function not implemented.')
+}

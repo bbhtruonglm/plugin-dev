@@ -33,6 +33,7 @@ import {
   selectPageId,
   selectPageLogo,
   selectPageLogoBlack,
+  selectPageSetting,
   selectRefreshData,
   selectShowHome,
   selectShowSupportStaff,
@@ -123,6 +124,9 @@ function useChatApp({ show }: { show: boolean }) {
   const GLOBAL_CONSULTATION = useSelector(selectConsultationGlobal)
   /** CUSTOM BACKGROUND */
   const IS_CUSTOM_BACKGROUND = useSelector(selectCustomBackground)
+
+  /** Page setting */
+  const PAGE_SETTING_GLOBAL = useSelector(selectPageSetting)
 
   useEffect(() => {
     /** Trạng thái refresh data thì đóng web socket */
@@ -343,8 +347,11 @@ function useChatApp({ show }: { show: boolean }) {
         // setErrorMessage('PAGE_ID is required')
         return
       }
-      /** Luôn gọi API lấy dữ liệu trang */
-      fetchPageData(PAGE_ID)
+      /** Nếu cố page id thì lấy dữ liệu trang */
+      if (PAGE_SETTING_GLOBAL) {
+        /** Luôn gọi API lấy dữ liệu trang */
+        fetchPageData(PAGE_ID)
+      }
       /** Nếu nhận được client_id từ localStorage */
       if (stored_client_id) {
         /** Tạo WebSocket mới */
@@ -366,7 +373,7 @@ function useChatApp({ show }: { show: boolean }) {
       /** Sau khi khởi tạo WebSocket, đặt lại cờ */
       dispatch(setStatusIsInit(false))
     }
-  }, [PAGE_ID, GLOBAL_CLIENT_ID, stored_client_id])
+  }, [PAGE_ID, GLOBAL_CLIENT_ID, stored_client_id, PAGE_SETTING_GLOBAL])
 
   /**
    * Vị trí của chatbox
@@ -397,8 +404,11 @@ function useChatApp({ show }: { show: boolean }) {
 
     /** Thông tin page từ api */
     const RES = await fetchAPI(URL_READ.toString(), 'GET')
+    /** Lưu dữ liệu trang */
+    const DATA_PAGE_SETTING = PAGE_SETTING_GLOBAL || RES?.data
+
     /** lưu tên page vào state */
-    setPageName(RES?.data?.alias || RES?.data?.page_name || '')
+    setPageName(DATA_PAGE_SETTING?.alias || DATA_PAGE_SETTING?.name || '')
     /** Khi call api xong thì tắt loading */
     dispatch(setLoadingGlobal(false))
     /** Nếu lỗi 403 thì hiện cờ  */
@@ -406,7 +416,7 @@ function useChatApp({ show }: { show: boolean }) {
       setInvalidPageId(true)
       return
     }
-
+    /** Nộp dữ liệu trang với page_id */
     setInvalidPageId(false)
     /**
      *  Tạm ẩn để deploy lên production
@@ -414,22 +424,25 @@ function useChatApp({ show }: { show: boolean }) {
     /**
      * Lưu thông tin vị trí chatbox
      */
-    dispatch(setEmbedPosition(RES?.data?.display_position.toLowerCase()))
+    dispatch(
+      /** Lưu vị trí chatbox */
+      setEmbedPosition(DATA_PAGE_SETTING?.display_position.toLowerCase())
+    )
     /** Lưu các giá trị vị trí từ page setting */
     /** Bottom */
     const BOTTOM =
-      RES?.data?.bottom_distance != null
-        ? Math.min(RES.data.bottom_distance, 160)
+      DATA_PAGE_SETTING?.bottom_distance != null
+        ? Math.min(DATA_PAGE_SETTING.bottom_distance, 160)
         : undefined
     /** Căn Phải */
     const RIGHT =
-      RES?.data?.right_distance != null
-        ? Math.min(RES.data.right_distance, 160)
+      DATA_PAGE_SETTING?.right_distance != null
+        ? Math.min(DATA_PAGE_SETTING.right_distance, 160)
         : undefined
     /** Cắn trái */
     const LEFT =
-      RES?.data?.left_distance != null
-        ? Math.min(RES.data.left_distance, 160)
+      DATA_PAGE_SETTING?.left_distance != null
+        ? Math.min(DATA_PAGE_SETTING.left_distance, 160)
         : undefined
     /**
      * Lưu thông tin chi tiết vị trí của chatbox
@@ -442,10 +455,10 @@ function useChatApp({ show }: { show: boolean }) {
     //  * Gửi list path sang SDK
     //  */
     // postMessageToParentHiddenPath(['child-app'])
-    // postMessageToParentAllowedDomains(RES?.data?.allow_domain)
+    // postMessageToParentAllowedDomains(DATA_PAGE_SETTING?.allow_domain)
 
     /** nếu cài đặt ở setting page is_active = false thì k lưu  */
-    if (!RES?.data?.social_platform?.is_active) {
+    if (!DATA_PAGE_SETTING?.social_platform?.is_active) {
       /**
        * Nếu không có cài đặt mạng xã hội thì trả về null
        */
@@ -454,25 +467,25 @@ function useChatApp({ show }: { show: boolean }) {
       /**
        * Lưu thông tin mạng xã hội
        */
-      setSocialLink(RES?.data?.social_platform?.data)
+      setSocialLink(DATA_PAGE_SETTING?.social_platform?.data)
       /**
        * Lưu thông tin mô tả mạng xã hội
        */
-      setSocialDescription(RES?.data?.social_platform?.description)
+      setSocialDescription(DATA_PAGE_SETTING?.social_platform?.description)
 
       // setSocialDescription(
-      //   RES?.data?.social_platform?.description?.[
-      //     I18N.language || RES?.data?.default_language || 'vi'
+      //   DATA_PAGE_SETTING?.social_platform?.description?.[
+      //     I18N.language || DATA_PAGE_SETTING?.default_language || 'vi'
       //   ]
       // )
     }
     /** Lưu thông tin tin nhắn chào mừng custom không */
-    if (RES?.data?.welcome_message?.is_active) {
+    if (DATA_PAGE_SETTING?.welcome_message?.is_active) {
       /** Lưu thông tin tin nhắn chào mừng */
       setWelcomeMessage({
-        message: RES?.data?.welcome_message?.source?.[I18N.language],
-        delay: RES?.data?.welcome_message?.delay * 1000,
-        is_active: RES?.data?.welcome_message?.is_active,
+        message: DATA_PAGE_SETTING?.welcome_message?.source?.[I18N.language],
+        delay: DATA_PAGE_SETTING?.welcome_message?.delay * 1000,
+        is_active: DATA_PAGE_SETTING?.welcome_message?.is_active,
       })
     } else {
       /** Lưu thông tin tin nhắn chào mừng mặc định*/
@@ -485,13 +498,13 @@ function useChatApp({ show }: { show: boolean }) {
     console.log(I18N.language)
     /** Lưu thông tin biểu mẫu */
     setWebForm({
-      is_active: RES?.data?.web_form?.is_active || false,
-      source: RES?.data?.web_form?.source || {},
+      is_active: DATA_PAGE_SETTING?.web_form?.is_active || false,
+      source: DATA_PAGE_SETTING?.web_form?.source || {},
     })
 
     /** Lưu danh sách nhân viên */
-    setStaffList(RES?.data?.staffs)
-    dispatch(setStaffListStore(RES?.data?.staffs))
+    setStaffList(DATA_PAGE_SETTING?.staffs)
+    dispatch(setStaffListStore(DATA_PAGE_SETTING?.staffs))
   }
 
   /** Ngăn kết nối mở lại */

@@ -132,7 +132,7 @@ function InputChat({
                   (AI_STATUS ? ' ' + t('virtual_assistant') + ' ' : ' ') +
                   renderPageName()
             }
-            className="bg-transparent outline-none flex-grow placeholder:text-slate-500 text-sm font-medium py-1.5 px-1 resize-none"
+            className="bg-transparent outline-none flex-grow placeholder:text-slate-500 text-sm font-medium py-1.5 px-1 resize-none truncate"
           />
 
           {AI_STATUS && value && (

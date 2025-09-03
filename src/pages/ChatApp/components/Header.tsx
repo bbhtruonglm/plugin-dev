@@ -1,9 +1,9 @@
+import { selectCustomColor, selectPageAllowAvatar } from '@/stores/appSlice'
 import { useDispatch, useSelector } from 'react-redux'
 
 import OnlineStaff from '@/components/Container/OnlineStaff'
 import { XMarkIcon } from '@heroicons/react/20/solid'
 import { renderLogo } from '@/utils'
-import { selectCustomColor } from '@/stores/appSlice'
 
 const Header = ({
   current_tab,
@@ -41,6 +41,9 @@ const Header = ({
   /** Lấy màu nền từ custom color hoặc fallback về màu mặc định */
   const BACKGROUND_COLOR = CUSTOM_COLOR?.primary_color || '#1e293b'
 
+  /** Page Allow Avatar */
+  const ORG_ALLOW_AVATAR = useSelector(selectPageAllowAvatar)
+
   return (
     <>
       {current_tab !== 'message' && (
@@ -54,13 +57,30 @@ const Header = ({
           }}
         >
           <div>
-            <img
-              src={renderLogo(ORG_ALLOW_LOGO, LOGO_PAGE_CUSTOM_BLACK, '')}
-              alt="Logo Retion"
-              width={30}
-              height={30}
-              className="rounded-full size-8 object-cover"
-            />
+            {(() => {
+              /** Default logo */
+              const DEFAULT_LOGO = './images/Logo_retion_white.png'
+              /** Link logo */
+              const LOGO_SRC = renderLogo(
+                ORG_ALLOW_AVATAR,
+                LOGO_PAGE_CUSTOM_BLACK,
+                DEFAULT_LOGO
+              )
+              /** Kiểm tra logo mặc định */
+              const IS_DEFAULT_LOGO = LOGO_SRC === DEFAULT_LOGO
+
+              return (
+                <img
+                  src={LOGO_SRC}
+                  alt="Logo Retion"
+                  width={30}
+                  height={30}
+                  className={`${
+                    IS_DEFAULT_LOGO ? '' : 'rounded-full'
+                  } size-8 object-cover`}
+                />
+              )
+            })()}
           </div>
 
           <div className="flex items-center gap-x-5">

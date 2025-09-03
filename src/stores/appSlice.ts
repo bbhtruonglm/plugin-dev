@@ -30,7 +30,7 @@ const INITIAL_STATE: AppState = {
   refresh_data: false,
   typing_status: undefined,
   suggest_message: '',
-  embed_position: 'right',
+  embed_position: 'bottom_right',
   embed_position_detail: {
     left: undefined,
     right: undefined,
@@ -50,6 +50,7 @@ const INITIAL_STATE: AppState = {
   is_visible_home_page: undefined,
   is_active_ai_agent: undefined,
   org_allow_logo: undefined,
+  page_allow_avatar: undefined,
   logo_page_custom: undefined,
   logo_page_custom_black: undefined,
   ai_message_auto_send: '',
@@ -86,6 +87,7 @@ const INITIAL_STATE: AppState = {
   },
   is_active_cta_message: false,
   on_click_cta: '',
+  is_loading_first_time: true,
 }
 
 export const appSlice = createSlice({
@@ -342,6 +344,15 @@ export const appSlice = createSlice({
     setOnClickCTA: (state, action: PayloadAction<string>) => {
       state.on_click_cta = action.payload
     },
+
+    /** Allow avatar */
+    setPageAllowAvatar: (state, action: PayloadAction<boolean>) => {
+      state.page_allow_avatar = action.payload
+    },
+    /** is loading first time */
+    setIsLoadingFirstTime: (state, action: PayloadAction<boolean>) => {
+      state.is_loading_first_time = action.payload
+    },
   },
 })
 
@@ -396,6 +407,8 @@ export const {
   setCustomColor,
   setIsActiveCTAMessage,
   setOnClickCTA,
+  setPageAllowAvatar,
+  setIsLoadingFirstTime,
 } = appSlice.actions
 
 /** chọn đến page id */
@@ -555,5 +568,11 @@ export const selectCustomColor = (state: RootState) => state.app.custom_color
 
 /** OnClick CTA */
 export const selectOnClickCTA = (state: RootState) => state.app.on_click_cta
+/** Page Allow Avatar */
+export const selectPageAllowAvatar = (state: RootState) =>
+  state.app.page_allow_avatar
+/** Is Loading First Time */
+export const selectIsLoadingFirstTime = (state: RootState) =>
+  state.app.is_loading_first_time
 
 export default appSlice.reducer

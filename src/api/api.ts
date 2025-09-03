@@ -53,18 +53,22 @@ export const useAPI = () => {
  * Hàm gọi API chung
  */
 export const fetchAPI = async (url: string, method: string, body?: any) => {
-  const response = await fetch(url, {
+  /** Response */
+  const RESPONSE = await fetch(url, {
     method,
     headers: { 'Content-Type': 'application/json' },
     body: body ? JSON.stringify(body) : undefined,
   })
-  return response.json()
+  /** Trả về response json */
+  return RESPONSE.json()
 }
 
 /**
  * API lấy ảnh
  */
 export const apiImage = (endpoint: string) => {
-  const api = useAPI()
-  return `${api.IMAGE}${endpoint}`
+  /** Lấy api */
+  const API = useAPI()
+  /** Trả về */
+  return `${API.IMAGE}${endpoint}`
 }

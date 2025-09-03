@@ -830,10 +830,12 @@ export const renderLogo = (
 ): string => {
   /** Logo mặc định */
   const DEFAULT_LOGO = base_url || './images/Logo_retion_white.png'
+
   /** Kiểm tra có được hiện logo custom k */
   if (org_allow_logo) {
     return logo_page_custom?.trim() ? logo_page_custom : DEFAULT_LOGO
   }
+
   /** Trả về logo mặc định */
   return DEFAULT_LOGO
 }

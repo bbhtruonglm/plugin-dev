@@ -23,10 +23,9 @@ interface ActiveUsers {
 }
 
 function OnlineStaff({ data, size = 'small' }: StaffProps) {
-  console.log(data, 'data')
   /** List Show Support Staff */
   const SHOW_SUPPORT_STAFF = useSelector(selectShowSupportStaff)
-  console.log(SHOW_SUPPORT_STAFF, 'show support staff')
+
   /** Nếu không có data thì return null */
   if (!data) return null
   /** Hàm xử lý remove những nhân viên khóa

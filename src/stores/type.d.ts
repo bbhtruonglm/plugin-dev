@@ -230,6 +230,10 @@ export interface AppState {
   quick_chat?: any
   /** on_click_cta */
   on_click_cta?: string
+  /** Chấp nhận custom avatar */
+  page_allow_avatar?: boolean
+  /** is loading first time */
+  is_loading_first_time?: boolean
 }
 /** Định nghĩa kiểu dữ liệu cho danh sách nhân viên */
 interface EmployeeList {

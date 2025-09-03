@@ -21,6 +21,7 @@ import {
   setGlobalUnreadCount,
   setIsActiveCTAMessage,
   setIsAvatar,
+  setIsLoadingFirstTime,
   setIsViewScreen,
   setLatestMessageGlobal,
   setListAiRenderText,
@@ -30,6 +31,7 @@ import {
   setNoAiId,
   setNoViewport,
   setOrgAllowLogo,
+  setPageAllowAvatar,
   setPageAvatar,
   setPageId,
   setPageInfoAI,
@@ -534,15 +536,26 @@ export function useApp() {
             const APP_LOGO = page_setting?.button_icon_url?.current_url || null
             /** Lưu logo vào store */
             dispatch(setPageLogo(APP_LOGO))
+            /** is loading first time */
+            dispatch(setIsLoadingFirstTime(false))
           }
+          /** is loading first time */
+          dispatch(setIsLoadingFirstTime(false))
 
           /** Lấy data từ page setting, lấy thông tin từ page setting */
           /** App avatar */
           const APP_AVATAR_PAGE = page_setting?.avatar || null
+
           /** Nếu có avatar */
           if (APP_AVATAR_PAGE) {
+            /** Lưu trạng thái avatar trong store */
+            dispatch(setPageAllowAvatar(true))
+
             /** Lưu avatar vào store */
             dispatch(setPageLogoBlack(APP_AVATAR_PAGE))
+          } else {
+            /** Lưu trạng thái avatar trong store */
+            dispatch(setPageAllowAvatar(false))
           }
         }
         /** Kiểm tra trạng thái button effect */

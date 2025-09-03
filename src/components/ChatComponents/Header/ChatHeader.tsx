@@ -7,6 +7,7 @@ import {
   selectIsViewScreen,
   selectLoadingGlobal,
   selectOrgAllowLogo,
+  selectPageAllowAvatar,
   selectPageAvatar,
   selectPageLogoBlack,
   selectShowHome,
@@ -69,6 +70,8 @@ function ChatHeader({
    * org custom logo
    */
   const ORG_ALLOW_LOGO = useSelector(selectOrgAllowLogo)
+  /** Page Allow Avatar */
+  const ORG_ALLOW_AVATAR = useSelector(selectPageAllowAvatar)
 
   /**
    * link logo
@@ -277,23 +280,38 @@ function ChatHeader({
               </div>
               <div className="flex items-center py-3 justify-center h-[72px] w-full">
                 <div className="flex h-12 justify-center">
-                  {SHOW_SUPPORT_STAFF && SHOW_SUPPORT_STAFF?.is_active ? (
+                  {SHOW_SUPPORT_STAFF?.is_active ? (
                     <OnlineStaff
                       data={employee_list}
                       size="medium"
                     />
                   ) : (
-                    <img
-                      src={renderLogo(
-                        ORG_ALLOW_LOGO,
-                        LOGO_PAGE_CUSTOM_BLACK,
-                        './images/Logo_retion_white.png'
-                      )}
-                      className="rounded-full size-12 object-cover"
-                    />
+                    <div>
+                      {(() => {
+                        /** Logo source */
+                        const LOGO_SRC = renderLogo(
+                          ORG_ALLOW_AVATAR,
+                          LOGO_PAGE_CUSTOM_BLACK,
+                          './images/Logo_retion_white.png'
+                        )
+                        /** Nếu logo source === logo mặc định */
+                        const IS_DEFAULT_LOGO =
+                          LOGO_SRC === './images/Logo_retion_white.png'
+                        return (
+                          <img
+                            src={LOGO_SRC + `?v=${Date.now()}`}
+                            alt="Company Logo"
+                            className={`${
+                              IS_DEFAULT_LOGO ? '' : 'rounded-full'
+                            } size-10 object-cover`}
+                          />
+                        )
+                      })()}
+                    </div>
                   )}
                 </div>
               </div>
+
               <div className="flex flex-col justify-center items-center h-10 gap-1">
                 {ANY_ONLINE ? (
                   <>
