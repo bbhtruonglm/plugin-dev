@@ -220,6 +220,29 @@ export type BtnType = {
 }
 
 /**
+ * Định nghĩa kiểu cho nút (button) trong payload hoặc element
+ */
+export type CouponType = {
+  /** Loại template */
+  template_type?: string
+  /** Tiêu đề hiển thị trên nút */
+  title?: string
+  /** Tiêu đề phụ coupon */
+  subtitle?: string
+  /** coupon code */
+  coupon_code?: string
+  /** coupon url */
+  coupon_url?: string
+  /** coupon url button title */
+  coupon_url_button_title?: string
+  /** coupon pre message */
+  coupon_pre_message?: string
+  /** image_url */
+  image_url?: string
+  /** payload */
+  payload?: string
+}
+/**
  * Định nghĩa kiểu cho props của MessageComponent
  */
 export interface MessageProps {
@@ -257,7 +280,7 @@ export interface MessageProps {
     message_mid: string
 
     /** Danh sách các file đính kèm */
-    message_attachments: MessageAttachment[]
+    message_attachments: MessageAttachment[] | any
 
     /** Metadata của tin nhắn */
     message_metadata: string

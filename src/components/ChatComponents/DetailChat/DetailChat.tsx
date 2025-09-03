@@ -11,6 +11,7 @@ import Loading from '../../Loading/Loading'
 import LoadingDots from '../../Loading/LoadingDot'
 import LoadingJumping from '../../Loading/LoadingJumping'
 import MessageBody from '../Body/MessageBody'
+import MessageComponent from '../MessageComponent/MessageComponent'
 import { selectCustomColor } from '@/stores/appSlice'
 import { t } from 'i18next'
 import useDetailChat from './useDetailChat'
@@ -83,6 +84,44 @@ function DetailChat({
 
   /** Lấy màu nền từ custom color hoặc fallback về màu mặc định */
   const BACKGROUND_COLOR = CUSTOM_COLOR?.primary_color || '#1e293b'
+
+  const MESSAGE_DATA = {
+    _id: '68b81964027a199574cc430f',
+    fb_client_id: '75f2e3db9ae34b86abeb0aa30dcb7192',
+    fb_page_id: '410276362999926',
+    message_mid: 'b1d6ea9d772046f5a6df183c718b5c0b',
+    __v: 0,
+    ai: [{}],
+    createdAt: '2025-09-03T10:33:08.138Z',
+    llm_sources: [],
+    message_attachments: {
+      type: 'template',
+      payload: {
+        template_type: 'coupon',
+        title: '10% off everything',
+        subtitle: '10% off. Limit 1 per customer. Expires on October 1st, 2022',
+        coupon_code: '10PERCENT',
+        coupon_url: 'https://www.myshop.com/',
+        coupon_url_button_title: 'Shop now',
+        coupon_pre_message: "Here's a deal just for you!",
+        image_url: 'https://www.myshop.com/sale-image.png',
+        payload: 'The coupon for 10% off everything that expires 2022-10-1',
+      },
+    },
+    // message_attachments: [
+    //   {
+    //     _id: '68b81964c02243c88813c2b1',
+    //   },
+    // ],
+    message_metadata: '__user_normal__75f2e3db9ae34b86abeb0aa30dcb7192',
+    // message_text: '10% off everything',
+    message_type: 'page',
+    platform_type: 'WEBSITE',
+    recipient_id: '410276362999926',
+    sender_id: '75f2e3db9ae34b86abeb0aa30dcb7192',
+    time: '2025-09-03T10:33:07.920Z',
+    updatedAt: '2025-09-03T10:33:08.610Z',
+  }
 
   return (
     <div
@@ -204,6 +243,11 @@ function DetailChat({
               />
             </div>
           ))}
+
+        <div>
+          {/* Phần nội dung tin nhắn được hiển thị */}
+          {/* <MessageComponent data={MESSAGE_DATA} /> */}
+        </div>
         {!AI_STATUS && (
           <div className="flex flex-wrap gap-2 w-full">
             {socket_quick_chat.map((item: any, index: number) => (

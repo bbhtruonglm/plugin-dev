@@ -53,7 +53,6 @@ function OnlineStaff({ data, size = 'small' }: StaffProps) {
     data,
     SHOW_SUPPORT_STAFF?.allow_staffs
   )
-  console.log(FILTERED_STAFF)
 
   return (
     <div className="flex items-center">

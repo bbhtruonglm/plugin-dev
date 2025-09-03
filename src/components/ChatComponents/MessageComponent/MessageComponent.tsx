@@ -548,6 +548,7 @@ import {
 
 import MessageAudio from './components/Message/MessageAudio'
 import MessageButtonTemplate from './components/Message/MessageButtonTemplate'
+import MessageCouponTemplate from './components/Message/MessageCouponTemplate'
 import MessageFallback from './components/Message/MessageFallback'
 import MessageFile from './components/Message/MessageFile'
 import MessageGenericTemplate from './components/Message/MessageGenericTemplate'
@@ -574,17 +575,24 @@ import { useSelector } from 'react-redux'
 /** Hàm render css khi check type tin nhắn
  * @param {string} messageType - Loại tin nhắn
  */
-const getMessageClasses = (messageType: string, AI_STATUS?: boolean) => {
+const getMessageClasses = (
+  messageType: string,
+  AI_STATUS?: boolean,
+  template_type?: string
+) => {
   /** Kiểm tra nếu messageType là 'page' */
   if (messageType === 'page') {
     /** Trả về các lớp CSS tương ứng nếu messageType là 'page' */
     if (AI_STATUS) {
       return ' max-w-[80%]'
     }
+
     /**
      * Mặc định trả về các lớp CSS cho messageType khác
      */
-    return ' bg-white max-w-[60%]'
+    return `${
+      template_type === 'coupon' ? ' max-w-[80%]' : 'bg-white max-w-[60%]'
+    } `
   }
   /** Kiểm tra nếu messageType là 'client' */
   if (messageType === 'client') {
@@ -612,7 +620,11 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
   /** Lấy kiểu tin nhắn từ dữ liệu */
   const MESSAGE_TYPE = data?.message_type || ''
   /** Lấy các lớp CSS dựa trên kiểu tin nhắn và trạng thái AI */
-  const CONTAINER_CLASS = getMessageClasses(MESSAGE_TYPE, AI_STATUS)
+  const CONTAINER_CLASS = getMessageClasses(
+    MESSAGE_TYPE,
+    AI_STATUS,
+    data?.message_attachments?.payload?.template_type
+  )
 
   return (
     <div
@@ -645,6 +657,7 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
       <MessageAudio data={data} />
       <MessageFile data={data} />
       <MessageButtonTemplate data={data} />
+      <MessageCouponTemplate data={data} />
       <MessageGenericTemplate data={data} />
       <MessageFallback data={data} />
     </div>
