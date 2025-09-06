@@ -10,7 +10,7 @@ const ButtonTemplate = ({ data }: MessageProps) => {
         {data?.message_attachments?.[0]?.title}
       </h4>
       <div className=" flex flex-col items-start w-1/2 gap-2">
-        {BUTTONS.map((button, idx) => (
+        {BUTTONS.map((button: any, idx: any) => (
           <div
             key={idx}
             onClick={() => {}}

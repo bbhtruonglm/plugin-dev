@@ -8,7 +8,7 @@ const GenericTemplate = ({ data }: MessageProps) => {
 
   return (
     <div className="w-full grid grid-cols-1 gap-4">
-      {PAYLOAD.elements.map((element, idx) => (
+      {PAYLOAD.elements.map((element: any, idx: any) => (
         <div
           key={idx}
           className="rounded-lg border border-slate-200 bg-white shadow-sm p-4"
@@ -25,7 +25,7 @@ const GenericTemplate = ({ data }: MessageProps) => {
             {element.subtitle}
           </p>
           <div className="flex flex-wrap gap-2">
-            {element.buttons?.map((btn, btnIdx) => (
+            {element.buttons?.map((btn: any, btnIdx: any) => (
               <button
                 key={btnIdx}
                 className="text-sm px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"

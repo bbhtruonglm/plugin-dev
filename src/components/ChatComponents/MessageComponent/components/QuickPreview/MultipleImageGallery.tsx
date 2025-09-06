@@ -18,7 +18,7 @@ const MultipleImageGallery = ({ data }: MessageProps) => {
   return (
     <div className="overflow-x-auto p-2 bg-transparent rounded-lg max-h-[216px]">
       <div className={`grid gap-2 ${GRID_CLASS}`}>
-        {IMAGES.map((attachment, index) => (
+        {IMAGES.map((attachment: any, index: any) => (
           <div
             key={attachment?.payload?.url}
             className="relative w-24 h-24 bg-slate-200 rounded-lg overflow-hidden border border-slate-100"

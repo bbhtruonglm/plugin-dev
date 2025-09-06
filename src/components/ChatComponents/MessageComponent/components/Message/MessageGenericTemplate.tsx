@@ -12,7 +12,7 @@ const MessageGenericTemplate = ({ data }: any) => {
     data.message_attachments[0]?.payload?.elements || []
 
   return (
-    <div className="flex gap-x-1 overflow-x-auto">
+    <div className="flex gap-x-1 overflow-x-auto bg-red-400">
       {ELEMENTS.map((element, index) => (
         <div
           key={index}
