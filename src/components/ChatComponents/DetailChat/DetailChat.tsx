@@ -11,6 +11,7 @@ import Loading from '../../Loading/Loading'
 import LoadingDots from '../../Loading/LoadingDot'
 import LoadingJumping from '../../Loading/LoadingJumping'
 import MessageBody from '../Body/MessageBody'
+import MessageComponent from '../MessageComponent/MessageComponent'
 import { selectCustomColor } from '@/stores/appSlice'
 import { t } from 'i18next'
 import useDetailChat from './useDetailChat'
@@ -85,6 +86,196 @@ function DetailChat({
   const BACKGROUND_COLOR = CUSTOM_COLOR?.primary_color || '#1e293b'
 
   const MESSAGE_DATA = {
+    _id: '68b81964027a199574cc430f',
+    fb_client_id: '75f2e3db9ae34b86abeb0aa30dcb7192',
+    fb_page_id: '410276362999926',
+    message_mid: 'b1d6ea9d772046f5a6df183c718b5c0b',
+    __v: 0,
+    ai: [{}],
+    createdAt: '2025-09-03T10:33:08.138Z',
+    llm_sources: [],
+    message_attachments: {
+      type: 'template',
+      payload: {
+        template_type: 'coupon',
+        title: '10% off everything',
+        subtitle: '10% off. Limit 1 per customer. Expires on October 1st, 2022',
+        coupon_code: '10PERCENT',
+        coupon_url: 'https://www.myshop.com/',
+        coupon_url_button_title: 'Shop now',
+        coupon_pre_message: "Here's a deal just for you!",
+        image_url: 'https://www.myshop.com/sale-image.png',
+        payload: 'The coupon for 10% off everything that expires 2022-10-1',
+      },
+      // type: 'template',
+      // payload: {
+      //   template_type: 'generic',
+      //   elements: [
+      //     {
+      //       title: 'Welcome!',
+      //       image_url:
+      //         'https://raw.githubusercontent.com/fbsamples/original-coast-clothing/main/public/styles/male-work.jpg',
+      //       subtitle: 'We have the right hat for everyone.',
+      //       default_action: {
+      //         type: 'web_url',
+      //         url: 'https://www.originalcoastclothing.com/',
+      //         webview_height_ratio: 'tall',
+      //       },
+      //       buttons: [
+      //         {
+      //           type: 'web_url',
+      //           url: 'https://www.originalcoastclothing.com/',
+      //           title: 'View Website',
+      //         },
+      //         {
+      //           type: 'postback',
+      //           title: 'Start Chatting',
+      //           payload: 'DEVELOPER_DEFINED_PAYLOAD',
+      //         },
+      //       ],
+      //     },
+      //   ],
+      // },
+
+      // type: 'template',
+      // payload: {
+      //   template_type: 'media',
+      //   elements: [
+      //     // {
+      //     //   media_type: 'video',
+      //     //   url: '<FACEBOOK_URL>',
+      //     // },
+      //     // {
+      //     //   media_type: 'image',
+      //     //   url: 'https://static.botbanhang.vn/chatbox/388339911461476/avatar.png',
+      //     //   buttons: [
+      //     //     {
+      //     //       type: 'web_url',
+      //     //       url: '<WEB_URL>',
+      //     //       title: 'View Website',
+      //     //     },
+      //     //   ],
+      //     // },
+      //     {
+      //       media_type: 'video',
+      //       url: 'https://chatbox-assets.botbanhang.vn/app/e29ddaf986c14f2fad0fe0ca9d6b6740__file_example_MP4_480_1_5MG.mp4.mp4',
+      //       buttons: [
+      //         {
+      //           type: 'web_url',
+      //           url: '<WEB_URL>',
+      //           title: 'View Website',
+      //         },
+      //       ],
+      //     },
+      //   ],
+      // },
+    },
+
+    message_metadata: '__user_normal__75f2e3db9ae34b86abeb0aa30dcb7192',
+    // message_text: '10% off everything',
+    message_type: 'page',
+    platform_type: 'WEBSITE',
+    recipient_id: '410276362999926',
+    sender_id: '75f2e3db9ae34b86abeb0aa30dcb7192',
+    time: '2025-09-03T10:33:07.920Z',
+    updatedAt: '2025-09-03T10:33:08.610Z',
+  }
+  const MESSAGE_DATA2 = {
+    _id: '68b81964027a199574cc430f',
+    fb_client_id: '75f2e3db9ae34b86abeb0aa30dcb7192',
+    fb_page_id: '410276362999926',
+    message_mid: 'b1d6ea9d772046f5a6df183c718b5c0b',
+    __v: 0,
+    ai: [{}],
+    createdAt: '2025-09-03T10:33:08.138Z',
+    llm_sources: [],
+    message_attachments: {
+      // type: 'template',
+      // payload: {
+      //   template_type: 'coupon',
+      //   title: '10% off everything',
+      //   subtitle: '10% off. Limit 1 per customer. Expires on October 1st, 2022',
+      //   coupon_code: '10PERCENT',
+      //   coupon_url: 'https://www.myshop.com/',
+      //   coupon_url_button_title: 'Shop now',
+      //   coupon_pre_message: "Here's a deal just for you!",
+      //   image_url: 'https://www.myshop.com/sale-image.png',
+      //   payload: 'The coupon for 10% off everything that expires 2022-10-1',
+      // },
+      type: 'template',
+      payload: {
+        template_type: 'generic',
+        elements: [
+          {
+            title: 'Welcome!',
+            image_url:
+              'https://raw.githubusercontent.com/fbsamples/original-coast-clothing/main/public/styles/male-work.jpg',
+            subtitle: 'We have the right hat for everyone.',
+            default_action: {
+              type: 'web_url',
+              url: 'https://www.originalcoastclothing.com/',
+              webview_height_ratio: 'tall',
+            },
+            buttons: [
+              {
+                type: 'web_url',
+                url: 'https://www.originalcoastclothing.com/',
+                title: 'View Website',
+              },
+              {
+                type: 'postback',
+                title: 'Start Chatting',
+                payload: 'DEVELOPER_DEFINED_PAYLOAD',
+              },
+            ],
+          },
+        ],
+      },
+
+      // type: 'template',
+      // payload: {
+      //   template_type: 'media',
+      //   elements: [
+      //     // {
+      //     //   media_type: 'video',
+      //     //   url: '<FACEBOOK_URL>',
+      //     // },
+      //     // {
+      //     //   media_type: 'image',
+      //     //   url: 'https://static.botbanhang.vn/chatbox/388339911461476/avatar.png',
+      //     //   buttons: [
+      //     //     {
+      //     //       type: 'web_url',
+      //     //       url: '<WEB_URL>',
+      //     //       title: 'View Website',
+      //     //     },
+      //     //   ],
+      //     // },
+      //     {
+      //       media_type: 'video',
+      //       url: 'https://chatbox-assets.botbanhang.vn/app/e29ddaf986c14f2fad0fe0ca9d6b6740__file_example_MP4_480_1_5MG.mp4.mp4',
+      //       buttons: [
+      //         {
+      //           type: 'web_url',
+      //           url: '<WEB_URL>',
+      //           title: 'View Website',
+      //         },
+      //       ],
+      //     },
+      //   ],
+      // },
+    },
+
+    message_metadata: '__user_normal__75f2e3db9ae34b86abeb0aa30dcb7192',
+    // message_text: '10% off everything',
+    message_type: 'page',
+    platform_type: 'WEBSITE',
+    recipient_id: '410276362999926',
+    sender_id: '75f2e3db9ae34b86abeb0aa30dcb7192',
+    time: '2025-09-03T10:33:07.920Z',
+    updatedAt: '2025-09-03T10:33:08.610Z',
+  }
+  const MESSAGE_DATA3 = {
     _id: '68b81964027a199574cc430f',
     fb_client_id: '75f2e3db9ae34b86abeb0aa30dcb7192',
     fb_page_id: '410276362999926',
@@ -303,7 +494,9 @@ function DetailChat({
 
         <div>
           {/* Phần nội dung tin nhắn được hiển thị */}
-          {/* <MessageComponent data={MESSAGE_DATA} /> */}
+          {/* <MessageComponent data={MESSAGE_DATA} />
+          <MessageComponent data={MESSAGE_DATA2} />
+          <MessageComponent data={MESSAGE_DATA3} /> */}
         </div>
         {!AI_STATUS && (
           <div className="flex flex-wrap gap-2 w-full">

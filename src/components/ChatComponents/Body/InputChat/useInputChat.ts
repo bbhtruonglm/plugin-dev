@@ -262,10 +262,14 @@ export function useInputChat({
        * Focus vào input khi popup mở
        */
       // INPUT_REF.current.focus()
-      /**
-       * Cuộn tới input
-       */
-      INPUT_REF.current.scrollIntoView({ behavior: 'smooth' })
+
+      /** Nếu không phải AI thì không scroll */
+      if (!AI_STATUS) {
+        /**
+         * Cuộn tới input
+         */
+        INPUT_REF.current.scrollIntoView({ behavior: 'smooth' })
+      }
     }
   }
   /**
