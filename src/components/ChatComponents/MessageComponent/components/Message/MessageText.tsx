@@ -7,6 +7,7 @@ import { MessageProps } from '../../../type'
 import MessageSources from './MessageSources'
 import { checkMD } from '@/utils'
 import remarkGfm from 'remark-gfm'
+import remarkLinkify from 'remark-linkify'
 import { t } from 'i18next'
 
 /**
@@ -96,16 +97,16 @@ const MessageText = ({
         }`}
       >
         <div className="text-sm min-h-4 break-words whitespace-pre-line overflow-hidden">
-          {/* {checkMD(data?.message_text) ? (
+          {checkMD(data?.message_text) ? (
             <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
+              remarkPlugins={[remarkLinkify]}
               components={MARKDOWN_COMPONENTS}
             >
               {data?.message_text}
             </ReactMarkdown>
           ) : (
-          )} */}
-          {formatTextWithLinks(data?.message_text)}
+            formatTextWithLinks(data?.message_text)
+          )}
         </div>
         {AI_STATUS && data?.message_type !== 'client' && (
           <div className="flex flex-col gap-y-2">

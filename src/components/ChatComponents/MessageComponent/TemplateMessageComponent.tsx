@@ -305,6 +305,7 @@ import MultipleImageGallery from './components/QuickPreview/MultipleImageGallery
 import VideoAttachment from './components/QuickPreview/VideoAttachment'
 import { checkMD } from '@/utils'
 import remarkGfm from 'remark-gfm'
+import remarkLinkify from 'remark-linkify'
 
 function TemplateMessageComponent({ data }: MessageProps) {
   /** markdown components */
@@ -333,14 +334,16 @@ function TemplateMessageComponent({ data }: MessageProps) {
           !data?.message_attachments?.[0]?.type) && (
           <div className="flex w-full">
             <p className="text-sm min-h-4 break-words whitespace-pre-line line-clamp-2 w-full">
-              {checkMD(data?.message_text)
-                ? // <ReactMarkdown
-                  //   remarkPlugins={[remarkGfm]}
-                  //   components={MARKDOWN_COMPONENTS}
-                  // >
-                  // </ReactMarkdown>
-                  data?.message_text
-                : data?.message_text}
+              {checkMD(data?.message_text) ? (
+                <ReactMarkdown
+                  remarkPlugins={[remarkLinkify]}
+                  components={MARKDOWN_COMPONENTS}
+                >
+                  {data?.message_text}
+                </ReactMarkdown>
+              ) : (
+                data?.message_text
+              )}
             </p>
           </div>
         )}

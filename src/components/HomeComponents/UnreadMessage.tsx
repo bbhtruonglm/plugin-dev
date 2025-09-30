@@ -15,6 +15,7 @@ import { EmployeeList } from '@/pages/type'
 import ReactMarkdown from 'react-markdown'
 import TimeAgo from '../TimeAgo'
 import remarkGfm from 'remark-gfm'
+import remarkLinkify from 'remark-linkify'
 import { t } from 'i18next'
 import { useCallback } from 'react'
 import { useSelector } from 'react-redux'
@@ -100,13 +101,13 @@ function UnreadMessage({ onNavigate, onError }: SendMessageProps) {
               >
                 <span className="text-sm max-h-16 break-words whitespace-pre-line overflow-hidden line-clamp-3">
                   {/* {LATEST_MESSAGE?.message_text} */}
-                  {/* {checkMD(LATEST_MESSAGE?.message_text) ? (
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {checkMD(LATEST_MESSAGE?.message_text) ? (
+                    <ReactMarkdown remarkPlugins={[remarkLinkify]}>
                       {LATEST_MESSAGE?.message_text}
                     </ReactMarkdown>
                   ) : (
-                  )} */}
-                  {LATEST_MESSAGE?.message_text}
+                    LATEST_MESSAGE?.message_text
+                  )}
                 </span>
 
                 {/* Hàng dưới: Tên + thời gian */}
