@@ -289,6 +289,8 @@
 
 // export default TemplateMessageComponent
 
+import 'regexp-polyfill'
+
 import ReactMarkdown, { Components } from 'react-markdown'
 
 import AudioAttachment from './components/QuickPreview/AudioAttachment'

@@ -1,3 +1,5 @@
+import 'regexp-polyfill'
+
 import { checkMD, renderAvatarFromId, renderStaffName } from '@/utils'
 import {
   selectGlobalUnreadCount,

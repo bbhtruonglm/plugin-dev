@@ -1,4 +1,5 @@
 import './index.css'
+import 'regexp-polyfill'
 
 import App from './App'
 import { NetworkProvider } from './components/NWProvider'

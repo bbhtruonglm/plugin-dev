@@ -1,3 +1,5 @@
+import 'regexp-polyfill'
+
 import ReactMarkdown, { Components } from 'react-markdown'
 
 import { ReactComponent as ChatBubble } from '@/assets/chat-bubble-oval-left-ellipsis.svg'
