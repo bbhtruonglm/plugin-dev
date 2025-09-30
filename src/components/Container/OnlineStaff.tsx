@@ -73,7 +73,7 @@ function OnlineStaff({ data, size = 'small' }: StaffProps) {
       )}
       {FILTERED_STAFF &&
         FILTERED_STAFF.length > 1 &&
-        FILTERED_STAFF.slice(0, 3).map((employee, index) => (
+        FILTERED_STAFF.slice(0, 1).map((employee, index) => (
           <img
             key={employee.user_id + index}
             src={renderAvatarCDN(employee?.user_id)}
