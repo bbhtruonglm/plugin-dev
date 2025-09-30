@@ -71,7 +71,7 @@ function OnlineStaff({ data, size = 'small' }: StaffProps) {
           }`}
         />
       )}
-      {/* {FILTERED_STAFF &&
+      {FILTERED_STAFF &&
         FILTERED_STAFF.length > 1 &&
         FILTERED_STAFF.slice(0, 1).map((employee, index) => (
           <img
@@ -86,8 +86,8 @@ function OnlineStaff({ data, size = 'small' }: StaffProps) {
                 : '-mr-1 h-12 w-12 rounded-full'
             }`}
           />
-        ))} */}
-      {/* {FILTERED_STAFF && FILTERED_STAFF.length > 3 && (
+        ))}
+      {FILTERED_STAFF && FILTERED_STAFF.length > 3 && (
         <span
           className={`ml-3 ${
             size == 'small' ? 'text-sm' : ' '
@@ -95,7 +95,7 @@ function OnlineStaff({ data, size = 'small' }: StaffProps) {
         >
           +{FILTERED_STAFF.length - 3}
         </span>
-      )} */}
+      )}
     </div>
   )
 }

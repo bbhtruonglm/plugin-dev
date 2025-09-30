@@ -100,13 +100,13 @@ function UnreadMessage({ onNavigate, onError }: SendMessageProps) {
               >
                 <span className="text-sm max-h-16 break-words whitespace-pre-line overflow-hidden line-clamp-3">
                   {/* {LATEST_MESSAGE?.message_text} */}
-                  {checkMD(LATEST_MESSAGE?.message_text) ? (
+                  {/* {checkMD(LATEST_MESSAGE?.message_text) ? (
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
                       {LATEST_MESSAGE?.message_text}
                     </ReactMarkdown>
                   ) : (
-                    LATEST_MESSAGE?.message_text
-                  )}
+                  )} */}
+                  {LATEST_MESSAGE?.message_text}
                 </span>
 
                 {/* Hàng dưới: Tên + thời gian */}

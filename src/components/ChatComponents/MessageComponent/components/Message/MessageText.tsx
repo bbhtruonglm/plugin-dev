@@ -96,7 +96,7 @@ const MessageText = ({
         }`}
       >
         <div className="text-sm min-h-4 break-words whitespace-pre-line overflow-hidden">
-          {checkMD(data?.message_text) ? (
+          {/* {checkMD(data?.message_text) ? (
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               components={MARKDOWN_COMPONENTS}
@@ -104,8 +104,8 @@ const MessageText = ({
               {data?.message_text}
             </ReactMarkdown>
           ) : (
-            formatTextWithLinks(data?.message_text)
-          )}
+          )} */}
+          {formatTextWithLinks(data?.message_text)}
         </div>
         {AI_STATUS && data?.message_type !== 'client' && (
           <div className="flex flex-col gap-y-2">
