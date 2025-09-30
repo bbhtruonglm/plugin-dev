@@ -18,6 +18,9 @@ export default defineConfig({
       include: '**/*.svg',
     }),
   ],
+  build: {
+    sourcemap: true, // Bật tạo file .map
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
