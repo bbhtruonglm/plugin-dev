@@ -268,7 +268,7 @@ export function useInputChat({
         /**
          * Cuộn tới input
          */
-        INPUT_REF.current.scrollIntoView({ behavior: 'smooth' })
+        // INPUT_REF.current.scrollIntoView({ behavior: 'smooth' })
       }
     }
   }

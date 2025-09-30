@@ -608,7 +608,6 @@ const useDetailChat = ({
       /**
        * Cuộn xuống dưới cùng
        */
-
       DEBOUNCED_SCROLL_TO_BOTTOM()
     }
   }, [scroll_at_bottom, DEBOUNCED_SCROLL_TO_BOTTOM])
@@ -734,7 +733,7 @@ const useDetailChat = ({
       /** Thêm timeout */
       setTimeout(() => {
         /** Sau khi xử lý xong thì scroll xuống bottom */
-        scrollToBottom()
+        // scrollToBottom()
       }, 100)
     }
   }, [SHOW_POPUP, GLOBAL_UNREAD_COUNT])

@@ -191,6 +191,14 @@ export function onSocketFromChatboxServer({
         `data_quick_chat__${page_id}__${client_id}`,
         JSON.stringify(NEW_QUICK_REPLIES)
       )
+    } else {
+      /** reset store */
+      dispatch(setDataQuickChat([]))
+      /** Clear từ socket */
+      localStorage.setItem(
+        `data_quick_chat__${page_id}__${client_id}`,
+        JSON.stringify([])
+      )
     }
 
     /**

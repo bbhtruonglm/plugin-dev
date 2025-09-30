@@ -259,10 +259,23 @@ export function useApp() {
       reset_page_id,
       data_embed_chat,
     } = PAYLOAD
+    console.log(data_embed_chat, 'wtffff')
     /**CHeck embed chat */
     if (data_embed_chat) {
       /** Destructuring */
-      const { page_id, client_id } = JSON.parse(data_embed_chat)
+      let parsed_data
+      /** xử lý trycatch khi parse dữ liệu  */
+      try {
+        parsed_data = JSON.parse(data_embed_chat)
+      } catch (err) {
+        console.error('Invalid JSON:', err)
+        parsed_data = {}
+      }
+      /** Tạo page id lấy được */
+      const page_id = parsed_data.page_id || null
+      /** client id lấy được */
+      const client_id =
+        parsed_data.client_id || parsed_data['client-id'] || null
 
       /**  Lưu client_id vào store*/
       dispatch(setGlobalClientId(client_id))
