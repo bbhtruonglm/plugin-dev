@@ -11,11 +11,12 @@ import MessageCouponTemplate from './components/Message/MessageCouponTemplate'
 import MessageFallback from './components/Message/MessageFallback'
 import MessageFile from './components/Message/MessageFile'
 import MessageGenericTemplate from './components/Message/MessageGenericTemplate'
-import MessageGenericTemplateFeedback from './components/Message/MessageGenericTemplateFeeback'
 import MessageGenericTemplateNew from './components/Message/MessageGenericTemplateNew'
 import MessageImage from './components/Message/MessageImage'
 import MessageMediaTemplate from './components/Message/MessageMediaTemplate'
 import { MessageProps } from '../type'
+import MessageTemplateFeedback from './components/Message/MessageTemplateFeedback'
+import MessageTemplateReceipt from './components/Message/MessageTemplateReceipt'
 import MessageText from './components/Message/MessageText'
 import MessageVideo from './components/Message/MessageVideo'
 import React from 'react'
@@ -90,7 +91,8 @@ const MessageComponent = ({ data }: MessageProps) => {
     <div
       className={`group relative flex flex-col transition-all duration-300 ease-out gap-y-4 ${
         data?.message_attachments?.payload?.template_type ===
-        'customer_feedback'
+          'customer_feedback' ||
+        data?.message_attachments?.payload?.template_type === 'receipt'
           ? 'rounded-2xl'
           : 'rounded-lg'
       } ${CONTAINER_CLASS}`}
@@ -125,7 +127,8 @@ const MessageComponent = ({ data }: MessageProps) => {
       <MessageCouponTemplate data={data} />
       <MessageGenericTemplate data={data} />
       <MessageGenericTemplateNew data={data} />
-      <MessageGenericTemplateFeedback data={data} />
+      <MessageTemplateFeedback data={data} />
+      <MessageTemplateReceipt data={data} />
       <MessageMediaTemplate data={data} />
       <MessageFallback data={data} />
     </div>

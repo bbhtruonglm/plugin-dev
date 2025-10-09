@@ -370,6 +370,7 @@ function DetailChat({
     time: '2025-09-03T10:33:07.920Z',
     updatedAt: '2025-09-03T10:33:08.610Z',
   }
+  /** Template type feedback */
   const MESSAGE_DATA4 = {
     _id: '68b81964027a199574cc430f',
     fb_client_id: '75f2e3db9ae34b86abeb0aa30dcb7192',
@@ -409,6 +410,80 @@ function DetailChat({
           url: 'https://www.example.com',
         },
         expires_in_days: 3,
+      },
+    },
+
+    message_metadata: '__user_normal__75f2e3db9ae34b86abeb0aa30dcb7192',
+    // message_text: '10% off everything',
+    message_type: 'page',
+    platform_type: 'WEBSITE',
+    recipient_id: '410276362999926',
+    sender_id: '75f2e3db9ae34b86abeb0aa30dcb7192',
+    time: '2025-09-03T10:33:07.920Z',
+    updatedAt: '2025-09-03T10:33:08.610Z',
+  }
+  /** Template type feedback */
+  const MESSAGE_DATA5 = {
+    _id: '68b81964027a199574cc430f',
+    fb_client_id: '75f2e3db9ae34b86abeb0aa30dcb7192',
+    fb_page_id: '410276362999926',
+    message_mid: 'b1d6ea9d772046f5a6df183c718b5c0b',
+    __v: 0,
+    ai: [{}],
+    createdAt: '2025-09-03T10:33:08.138Z',
+    llm_sources: [],
+    message_attachments: {
+      type: 'template',
+      payload: {
+        template_type: 'receipt',
+        recipient_name: 'Stephane Crozatier',
+        order_number: '12345678902',
+        currency: 'USD',
+        payment_method: 'Visa 2345',
+        order_url: 'http://petersapparel.parseapp.com/order?order_id=123456',
+        timestamp: '1428444852',
+        address: {
+          street_1: '1 Hacker Way',
+          street_2: '',
+          city: 'Menlo Park',
+          postal_code: '94025',
+          state: 'CA',
+          country: 'US',
+        },
+        summary: {
+          subtotal: 75.0,
+          shipping_cost: 4.95,
+          total_tax: 6.19,
+          total_cost: 56.14,
+        },
+        adjustments: [
+          {
+            name: 'New Customer Discount',
+            amount: 20,
+          },
+          {
+            name: '$10 Off Coupon',
+            amount: 10,
+          },
+        ],
+        elements: [
+          {
+            title: 'Classic White T-Shirt',
+            subtitle: '100% Soft and Luxurious Cotton',
+            quantity: 2,
+            price: 50,
+            currency: 'USD',
+            image_url: 'http://petersapparel.parseapp.com/img/whiteshirt.png',
+          },
+          {
+            title: 'Classic Gray T-Shirt',
+            subtitle: '100% Soft and Luxurious Cotton',
+            quantity: 1,
+            price: 25,
+            currency: 'USD',
+            image_url: 'http://petersapparel.parseapp.com/img/grayshirt.png',
+          },
+        ],
       },
     },
 
@@ -547,7 +622,8 @@ function DetailChat({
           {/* Phần nội dung tin nhắn được hiển thị */}
           {/* <MessageComponent data={MESSAGE_DATA} />
           <MessageComponent data={MESSAGE_DATA2} /> */}
-          <MessageComponent data={MESSAGE_DATA4} />
+          {/* <MessageComponent data={MESSAGE_DATA4} /> */}
+          <MessageComponent data={MESSAGE_DATA5} />
         </div>
         {!AI_STATUS && (
           <div className="flex flex-wrap gap-2 w-full">

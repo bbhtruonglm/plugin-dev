@@ -94,5 +94,7 @@ export const en = {
     selected_one_image: 'You have selected 1 image',
     show_more: 'show more',
     show_less: 'show less',
+
+    order_confirmation: 'Order confirmation',
   },
 }
