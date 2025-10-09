@@ -93,5 +93,8 @@ export const vn = {
     selected_one_image: 'Đã chọn 1 ảnh',
 
     faq_question: 'Câu hỏi thường gặp',
+
+    show_more: 'Xem thêm',
+    show_less: 'Thu gọn',
   },
 }

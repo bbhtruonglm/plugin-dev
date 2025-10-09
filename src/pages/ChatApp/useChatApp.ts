@@ -483,7 +483,9 @@ function useChatApp({ show }: { show: boolean }) {
     if (DATA_PAGE_SETTING?.welcome_message?.is_active) {
       /** Lưu thông tin tin nhắn chào mừng */
       setWelcomeMessage({
-        message: DATA_PAGE_SETTING?.welcome_message?.source?.[I18N.language],
+        message:
+          DATA_PAGE_SETTING?.welcome_message?.source?.[I18N.language] ||
+          t('_welcome_message'),
         delay: DATA_PAGE_SETTING?.welcome_message?.delay * 1000,
         is_active: DATA_PAGE_SETTING?.welcome_message?.is_active,
       })

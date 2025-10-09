@@ -162,6 +162,21 @@ export interface MessageAttachment {
 
     /** Mảng chứa các phần tử (elements) của template */
     elements?: ElementType[]
+    /** Tiêu đề của file đính kèm */
+    title?: string
+    /** Tiêu đồ phụ */
+    subtitle?: string
+    /** Button title */
+    button_title?: string
+
+    feedback_screens: IQuestion[]
+
+    /** business privacy */
+    business_privacy?: {
+      url?: string
+    }
+    /** thời hạn */
+    expires_in_days: number
   }
 
   /** Tiêu đề của file đính kèm */
@@ -169,6 +184,20 @@ export interface MessageAttachment {
 
   /** ID của attachment (nếu có) */
   _id?: string
+}
+
+type IQuestion = {
+  id?: string
+  type?: string
+  title?: string
+  score_label?: string
+  score_option?: string
+  follow_up?: IFollowUp
+}
+
+type IFollowUp = {
+  type?: string
+  placeholder?: string
 }
 
 /**
@@ -189,6 +218,9 @@ export type ElementType = {
 
   /** Hành động mặc định khi người dùng chọn phần tử */
   default_action?: Action[]
+
+  /** Button title  */
+  button_title?: string
 }
 
 /**
@@ -250,7 +282,7 @@ export interface MessageProps {
 
   data: {
     /** ID của tin nhắn */
-    _id: string
+    _id?: string
 
     /** ID của trang Facebook */
     fb_page_id: string

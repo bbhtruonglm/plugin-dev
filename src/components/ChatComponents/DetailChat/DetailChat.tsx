@@ -370,6 +370,57 @@ function DetailChat({
     time: '2025-09-03T10:33:07.920Z',
     updatedAt: '2025-09-03T10:33:08.610Z',
   }
+  const MESSAGE_DATA4 = {
+    _id: '68b81964027a199574cc430f',
+    fb_client_id: '75f2e3db9ae34b86abeb0aa30dcb7192',
+    fb_page_id: '410276362999926',
+    message_mid: 'b1d6ea9d772046f5a6df183c718b5c0b',
+    __v: 0,
+    ai: [{}],
+    createdAt: '2025-09-03T10:33:08.138Z',
+    llm_sources: [],
+    message_attachments: {
+      type: 'template',
+      payload: {
+        template_type: 'customer_feedback',
+        title: 'Rate your experience with Original Coast Clothing.',
+        subtitle:
+          'Let Original Coast Clothing know how they are doing by answering two questions',
+        button_title: 'Rate Experience',
+        feedback_screens: [
+          {
+            questions: [
+              {
+                id: 'hauydmns8',
+                type: 'csat',
+                title:
+                  'How would you rate your experience with Original Coast Clothing?',
+                score_label: 'neg_pos',
+                score_option: 'five_stars',
+                follow_up: {
+                  type: 'free_form',
+                  placeholder: 'Give additional feedback',
+                },
+              },
+            ],
+          },
+        ],
+        business_privacy: {
+          url: 'https://www.example.com',
+        },
+        expires_in_days: 3,
+      },
+    },
+
+    message_metadata: '__user_normal__75f2e3db9ae34b86abeb0aa30dcb7192',
+    // message_text: '10% off everything',
+    message_type: 'page',
+    platform_type: 'WEBSITE',
+    recipient_id: '410276362999926',
+    sender_id: '75f2e3db9ae34b86abeb0aa30dcb7192',
+    time: '2025-09-03T10:33:07.920Z',
+    updatedAt: '2025-09-03T10:33:08.610Z',
+  }
 
   return (
     <div
@@ -495,8 +546,8 @@ function DetailChat({
         <div>
           {/* Phần nội dung tin nhắn được hiển thị */}
           {/* <MessageComponent data={MESSAGE_DATA} />
-          <MessageComponent data={MESSAGE_DATA2} />
-          <MessageComponent data={MESSAGE_DATA3} /> */}
+          <MessageComponent data={MESSAGE_DATA2} /> */}
+          <MessageComponent data={MESSAGE_DATA4} />
         </div>
         {!AI_STATUS && (
           <div className="flex flex-wrap gap-2 w-full">

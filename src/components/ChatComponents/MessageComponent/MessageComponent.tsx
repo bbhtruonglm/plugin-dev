@@ -11,6 +11,7 @@ import MessageCouponTemplate from './components/Message/MessageCouponTemplate'
 import MessageFallback from './components/Message/MessageFallback'
 import MessageFile from './components/Message/MessageFile'
 import MessageGenericTemplate from './components/Message/MessageGenericTemplate'
+import MessageGenericTemplateFeedback from './components/Message/MessageGenericTemplateFeeback'
 import MessageGenericTemplateNew from './components/Message/MessageGenericTemplateNew'
 import MessageImage from './components/Message/MessageImage'
 import MessageMediaTemplate from './components/Message/MessageMediaTemplate'
@@ -67,7 +68,7 @@ const getMessageClasses = (
   }
 }
 
-const MessageComponent = React.memo(({ data }: MessageProps) => {
+const MessageComponent = ({ data }: MessageProps) => {
   /** Trạng thái AI_STATUS */
   const AI_STATUS = useSelector(selectStatusAI)
   /** Hàm xử lý khi click xem preview ảnh */
@@ -87,7 +88,12 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
 
   return (
     <div
-      className={`group relative flex flex-col transition-all duration-300 ease-out gap-y-4 rounded-lg ${CONTAINER_CLASS}`}
+      className={`group relative flex flex-col transition-all duration-300 ease-out gap-y-4 ${
+        data?.message_attachments?.payload?.template_type ===
+        'customer_feedback'
+          ? 'rounded-2xl'
+          : 'rounded-lg'
+      } ${CONTAINER_CLASS}`}
       // className={`flex flex-col transition-all duration-300 ease-out gap-y-4 rounded-lg group relative ${getMessageClasses(
       //   data?.message_type
       // )}`}
@@ -119,10 +125,11 @@ const MessageComponent = React.memo(({ data }: MessageProps) => {
       <MessageCouponTemplate data={data} />
       <MessageGenericTemplate data={data} />
       <MessageGenericTemplateNew data={data} />
+      <MessageGenericTemplateFeedback data={data} />
       <MessageMediaTemplate data={data} />
       <MessageFallback data={data} />
     </div>
   )
-})
+}
 
 export default MessageComponent

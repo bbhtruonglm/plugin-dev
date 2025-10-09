@@ -92,5 +92,7 @@ export const en = {
     page_id_required: 'Page ID is required',
 
     selected_one_image: 'You have selected 1 image',
+    show_more: 'show more',
+    show_less: 'show less',
   },
 }
