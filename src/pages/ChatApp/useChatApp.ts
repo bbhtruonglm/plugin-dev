@@ -553,6 +553,26 @@ function useChatApp({ show }: { show: boolean }) {
       setHasExitedPreview(false)
     }
   }, [GLOBAL_PREVIEW_URL])
+  /** Theo dõi khi GLOBAL_PREVIEW_URL thay đổi và trạng thái preview đã được reset */
+  useEffect(() => {
+    if (isEmpty(GLOBAL_DATA_ORDER)) {
+      /** Đã thoát khỏi trạng thái preview */
+      setHasExitedPreview(true)
+    } else {
+      /** Đang trong trạng thái preview */
+      setHasExitedPreview(false)
+    }
+  }, [GLOBAL_DATA_ORDER])
+  /** Theo dõi khi GLOBAL_PREVIEW_URL thay đổi và trạng thái preview đã được reset */
+  useEffect(() => {
+    if (isEmpty(GLOBAL_DATA_FEEDBACK)) {
+      /** Đã thoát khỏi trạng thái preview */
+      setHasExitedPreview(true)
+    } else {
+      /** Đang trong trạng thái preview */
+      setHasExitedPreview(false)
+    }
+  }, [GLOBAL_DATA_FEEDBACK])
 
   /** Hàm xử lý điều kiện để trả về css render giao diện SDK
    * @param {boolean} show Trạng thái đóng mở giao diện
@@ -584,7 +604,12 @@ function useChatApp({ show }: { show: boolean }) {
     /**
      * Xác định trạng thái xem trước ảnh
      */
-    const IS_PREVIEWING_IMAGE = !!GLOBAL_PREVIEW_URL
+    const IS_PREVIEWING_IMAGE =
+      !!GLOBAL_PREVIEW_URL ||
+      !isEmpty(GLOBAL_DATA_FEEDBACK) ||
+      !isEmpty(GLOBAL_DATA_ORDER)
+
+    console.log(IS_PREVIEWING_IMAGE, 'hahahah')
     /**
      * Xác định có tin nhắn chưa đọc hay không
      */
@@ -721,7 +746,7 @@ function useChatApp({ show }: { show: boolean }) {
           true,
           false,
           undefined,
-          GLOBAL_PREVIEW_URL,
+          GLOBAL_PREVIEW_URL || 'preview',
           POSITION,
           POSITION_DETAIL?.bottom,
           POSITION_DETAIL?.right,
@@ -739,7 +764,7 @@ function useChatApp({ show }: { show: boolean }) {
           true,
           false,
           674,
-          GLOBAL_PREVIEW_URL,
+          GLOBAL_PREVIEW_URL || 'preview',
           POSITION,
           POSITION_DETAIL?.bottom,
           POSITION_DETAIL?.right,

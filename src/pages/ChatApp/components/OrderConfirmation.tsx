@@ -18,17 +18,18 @@ const OrderConfirmationModal: React.FC<OrderConfirmationModalProps> = ({
   onClose,
   data,
 }) => {
+  /** Nếu không open thì return null */
   if (!is_open) return null
-  console.log(data, 'data')
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden relative animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-700 ">
+      <div className="bg-white rounded-2xl shadow-xl w-full h-fit max-h-[96dvh] max-w-md overflow-hidden relative animate-in fade-in duration-200">
         <div className="flex justify-between p-3 border-b">
           <div className="size-8"></div>
 
           {/* Title */}
-          <h2 className="text-center font-semibold text-lg">
-            Order confirmation
+          <h2 className="text-center font-semibold text-2xl">
+            {t('order_title')}
           </h2>
           <button
             onClick={onClose}
@@ -37,12 +38,12 @@ const OrderConfirmationModal: React.FC<OrderConfirmationModalProps> = ({
             <XMarkIcon className="size-6" />
           </button>
         </div>
-        <div className="p-3 font-medium">
+        <div className="p-3 font-medium h-full overflow-y-auto pb-14">
           <div className="flex flex-col p-3 pt-0 gap-3">
             {/* Product Info */}
             <div className="flex flex-col">
               <p className="uppercase text-xs text-slate-400 font-semibold py-2">
-                Items
+                {t('_items')}
               </p>
               <div className="flex flex-col gap-2">
                 {data?.elements &&
@@ -69,7 +70,7 @@ const OrderConfirmationModal: React.FC<OrderConfirmationModalProps> = ({
             {/* Ordered On */}
             <div className="">
               <p className="uppercase text-xs text-slate-400 font-semibold py-2">
-                Ordered on
+                {t('ordered_on')}
               </p>
               <p className="text-slate-700">
                 {formatTimestamp(data?.timestamp)}
@@ -79,7 +80,7 @@ const OrderConfirmationModal: React.FC<OrderConfirmationModalProps> = ({
             {/* Paid With */}
             <div className="">
               <p className="uppercase text-xs text-slate-400 font-semibold py-2">
-                Paid with
+                {t('paid_with')}
               </p>
               <p className="text-slate-700">{data?.payment_method}</p>
             </div>
@@ -87,7 +88,7 @@ const OrderConfirmationModal: React.FC<OrderConfirmationModalProps> = ({
             {/* Deliver To */}
             <div className="">
               <p className="uppercase text-xs text-slate-400 font-semibold">
-                Deliver to
+                {t('deliver_to')}
               </p>
               <p className="text-slate-700 whitespace-pre-line">
                 {data?.address?.street_1 + data?.address?.street_2}
@@ -102,22 +103,28 @@ const OrderConfirmationModal: React.FC<OrderConfirmationModalProps> = ({
             </div>
 
             {/* Summary */}
-            <div>
+            <div className="">
               <p className="uppercase text-xs text-slate-400 font-semibold py-2">
-                Summary
+                {t('summary')}
               </p>
-              <div className="text-slate-700 text-sm flex flex-col gap-2">
+              <div className="text-slate-700 flex flex-col gap-2 text-base">
                 <div className="flex justify-between">
-                  <span>Subtotal</span>
-                  <span>${data?.summary?.subtotal || '0'}</span>
+                  <span className="font-medium">{t('sub_total')}</span>
+                  <span>
+                    ${Number(data?.summary?.subtotal).toFixed(2) || '0'}
+                  </span>
+                </div>
+                <div className="flex justify-between ">
+                  <span>{t('delivery')}</span>
+                  <span>
+                    ${Number(data?.summary?.shipping_cost).toFixed(2) || '0'}
+                  </span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Delivery</span>
-                  <span>${data?.summary?.shipping_cost || '0'}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Estimated tax</span>
-                  <span>${data?.summary?.total_tax || '0'}</span>
+                  <span>{t('estimated_tax')}</span>
+                  <span>
+                    ${Number(data?.summary?.total_tax).toFixed(2) || '0'}
+                  </span>
                 </div>
                 <div className="flex flex-col gap-2">
                   {!isEmpty(data?.adjustments) &&
@@ -127,14 +134,16 @@ const OrderConfirmationModal: React.FC<OrderConfirmationModalProps> = ({
                         key={index}
                       >
                         <span>{adj.name}</span>
-                        <span>- ${adj.amount}</span>
+                        <span>- ${Number(adj.amount).toFixed(2)}</span>
                       </div>
                     ))}
                 </div>
 
                 <div className="flex justify-between font-semibold text-base">
-                  <span>Total</span>
-                  <span>${data?.summary?.total_cost || '0'}</span>
+                  <span> {t('total')}</span>
+                  <span>
+                    ${Number(data?.summary?.total_cost).toFixed(2) || '0'}
+                  </span>
                 </div>
               </div>
             </div>

@@ -1,4 +1,8 @@
-import { setDataFeedback, setGlobalPreviewUrl } from '@/stores/appSlice'
+import {
+  setDataFeedback,
+  setDataOrder,
+  setGlobalPreviewUrl,
+} from '@/stores/appSlice'
 
 import { CheckCircleIcon } from '@heroicons/react/24/solid'
 import { postMessageToParent } from '@/utils'
@@ -26,18 +30,15 @@ const MessageTemplateReceipt = ({
    * @param {string} url - Link preview
    */
   const handleClickPreview = () => {
-    console.log(DATA_DETAIL, 'data detail')
-
     /** Lưu vào STORE */
-    dispatch(setDataFeedback(DATA_DETAIL))
-    /** bật option preview */
-    dispatch(setGlobalPreviewUrl('url'))
+    dispatch(setDataOrder(DATA_DETAIL))
+
     /** Click vào ảnh thì gửi thông tin cho sdk */
     postMessageToParent(
       SHOW_POPUP,
       false,
       674,
-      '',
+      'preview',
       POSITION,
       POSITION_DETAIL?.bottom,
       POSITION_DETAIL?.right,

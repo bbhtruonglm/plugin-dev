@@ -23,18 +23,16 @@ const MessageGenericTemplateFeedback = ({
   /** Hàm xử lý khi click vào hình ảnh
    * @param {string} url - Link preview
    */
-  const handleClickPreview = (url?: string) => {
-    if (!url) return
+  const handleClickPreview = () => {
     /** Lưu vào STORE */
     dispatch(setDataFeedback(ELEMENTS))
-    /** Baajt cowf preview */
-    dispatch(setGlobalPreviewUrl(url))
+
     /** Click vào ảnh thì gửi thông tin cho sdk */
     postMessageToParent(
       SHOW_POPUP,
       false,
       674,
-      url,
+      'preview',
       POSITION,
       POSITION_DETAIL?.bottom,
       POSITION_DETAIL?.right,
@@ -54,7 +52,7 @@ const MessageGenericTemplateFeedback = ({
         </div>
         <div className="p-1 w-full items-center justify-center flex">
           <button
-            onClick={() => {}}
+            onClick={() => handleClickPreview()}
             className={`px-3 bg-gray-200 w-full rounded-lg font-semibold flex items-center leading-8 justify-center`}
           >
             {ELEMENTS?.button_title}

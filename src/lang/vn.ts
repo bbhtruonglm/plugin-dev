@@ -101,5 +101,16 @@ export const vn = {
     items: 'sản phẩm',
 
     deliver_to: 'Giao đến',
+
+    order_title: 'Order confirmation',
+
+    _items: 'Items',
+    ordered_on: 'Ordered on',
+    paid_with: 'Paid with',
+    summary: 'Summary',
+    total: 'Total',
+    sub_total: 'Subtotal',
+    delivery: 'Delivery',
+    estimated_tax: 'Estimated tax',
   },
 }

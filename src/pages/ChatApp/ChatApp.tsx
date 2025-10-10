@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import { ChatAppProps } from '../type'
 import ChatScreen from '@/screens/ChatScreen/Chat/Chat'
+import FeedbackModal from './components/FeedbackModal'
 import Header from './components/Header'
 import Home from '@/screens/ChatScreen/Home'
 import Modal from '@/components/ChatComponents/Modal/Modal'
@@ -484,23 +485,22 @@ const ChatApp = ({
           />
         )}
       </Modal>
-      <Modal
-        is_open={!isEmpty(GLOBAL_DATA_ORDER)}
-        onClose={handleCloseModal}
-      >
-        {GLOBAL_PREVIEW_URL && (
-          <img
-            src={GLOBAL_PREVIEW_URL}
-            className="max-w-[880px] min-w-96 w-full max-h-screen  h-auto min-h-32 object-contain rounded-lg bg-slate-200"
-            alt="Full Attachment"
-          />
-        )}
-      </Modal>
 
-      <OrderConfirmationModal
+      <FeedbackModal
         is_open={!isEmpty(GLOBAL_DATA_FEEDBACK)}
         onClose={handleCloseModal}
+        companyName="Thu Hà Nội 3"
+        avatarUrl="/avatar.jpg"
+        onSubmit={(rating, feedback) => {
+          console.log('Rating:', rating, 'Feedback:', feedback)
+        }}
         data={GLOBAL_DATA_FEEDBACK}
+      />
+
+      <OrderConfirmationModal
+        is_open={!isEmpty(GLOBAL_DATA_ORDER)}
+        onClose={handleCloseModal}
+        data={GLOBAL_DATA_ORDER}
       />
     </div>
   )
