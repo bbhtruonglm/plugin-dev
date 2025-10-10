@@ -22,9 +22,11 @@ import ChatScreen from '@/screens/ChatScreen/Chat/Chat'
 import Header from './components/Header'
 import Home from '@/screens/ChatScreen/Home'
 import Modal from '@/components/ChatComponents/Modal/Modal'
+import OrderConfirmationModal from './components/OrderConfirmation'
 // import { ReactComponent as InactiveMessage } from '@/assets/message.svg'
 import TemplateMessageComponent from '@/components/ChatComponents/MessageComponent/TemplateMessageComponent'
 import TimeAgo from '@/components/TimeAgo'
+import { isEmpty } from 'lodash'
 import { selectIsLoadingFirstTime } from '@/stores/appSlice'
 import useChatApp from './useChatApp'
 import useChatAppAction from './useChatAppAction'
@@ -81,6 +83,8 @@ const ChatApp = ({
     GLOBAL_PREVIEW_URL,
     IS_CUSTOM_BACKGROUND,
     SELECT_BUTTON_EFFECT,
+    GLOBAL_DATA_ORDER,
+    GLOBAL_DATA_FEEDBACK,
   } = useChatApp({ show })
   /** Các hàm action trong hooks */
   const {
@@ -480,11 +484,26 @@ const ChatApp = ({
           />
         )}
       </Modal>
+      <Modal
+        is_open={!isEmpty(GLOBAL_DATA_ORDER)}
+        onClose={handleCloseModal}
+      >
+        {GLOBAL_PREVIEW_URL && (
+          <img
+            src={GLOBAL_PREVIEW_URL}
+            className="max-w-[880px] min-w-96 w-full max-h-screen  h-auto min-h-32 object-contain rounded-lg bg-slate-200"
+            alt="Full Attachment"
+          />
+        )}
+      </Modal>
+
+      <OrderConfirmationModal
+        is_open={!isEmpty(GLOBAL_DATA_FEEDBACK)}
+        onClose={handleCloseModal}
+        data={GLOBAL_DATA_FEEDBACK}
+      />
     </div>
   )
 }
 
 export default ChatApp
-function selectLoadingFirstTime(arg0: boolean): (state: unknown) => unknown {
-  throw new Error('Function not implemented.')
-}

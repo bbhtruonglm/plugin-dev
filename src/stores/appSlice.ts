@@ -88,6 +88,8 @@ const INITIAL_STATE: AppState = {
   is_active_cta_message: false,
   on_click_cta: '',
   is_loading_first_time: true,
+  data_order: {},
+  data_feedback: {},
 }
 
 export const appSlice = createSlice({
@@ -353,6 +355,14 @@ export const appSlice = createSlice({
     setIsLoadingFirstTime: (state, action: PayloadAction<boolean>) => {
       state.is_loading_first_time = action.payload
     },
+    /** Giá trị order  */
+    setDataOrder: (state, action: PayloadAction<any>) => {
+      state.data_order = action.payload
+    },
+    /** Giá trị feedback  */
+    setDataFeedback: (state, action: PayloadAction<any>) => {
+      state.data_feedback = action.payload
+    },
   },
 })
 
@@ -409,6 +419,8 @@ export const {
   setOnClickCTA,
   setPageAllowAvatar,
   setIsLoadingFirstTime,
+  setDataOrder,
+  setDataFeedback,
 } = appSlice.actions
 
 /** chọn đến page id */
@@ -574,5 +586,9 @@ export const selectPageAllowAvatar = (state: RootState) =>
 /** Is Loading First Time */
 export const selectIsLoadingFirstTime = (state: RootState) =>
   state.app.is_loading_first_time
+/** data order */
+export const selectDataOrder = (state: RootState) => state.app.data_order
+/** data feedback */
+export const selectDataFeedback = (state: RootState) => state.app.data_feedback
 
 export default appSlice.reducer

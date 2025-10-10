@@ -1,6 +1,15 @@
+import { setDataFeedback, setGlobalPreviewUrl } from '@/stores/appSlice'
+
 import { ElementType } from '../../../type'
-const MessageGenericTemplateFeedback = ({ data }: any) => {
-  console.log(data, 'data')
+import { postMessageToParent } from '@/utils'
+import { useDispatch } from 'react-redux'
+
+const MessageGenericTemplateFeedback = ({
+  data,
+  SHOW_POPUP,
+  POSITION,
+  POSITION_DETAIL,
+}: any) => {
   /** Check giá trị generic template */
   const IS_TEMPLATE_FEEDBACK =
     data?.message_attachments?.type === 'template' &&
@@ -9,9 +18,31 @@ const MessageGenericTemplateFeedback = ({ data }: any) => {
   if (!IS_TEMPLATE_FEEDBACK) return null
   /** Khai báo kiểu dữ liệu */
   const ELEMENTS: ElementType = data.message_attachments?.payload || {}
-
+  /** Hàm dispatch */
+  const dispatch = useDispatch()
+  /** Hàm xử lý khi click vào hình ảnh
+   * @param {string} url - Link preview
+   */
+  const handleClickPreview = (url?: string) => {
+    if (!url) return
+    /** Lưu vào STORE */
+    dispatch(setDataFeedback(ELEMENTS))
+    /** Baajt cowf preview */
+    dispatch(setGlobalPreviewUrl(url))
+    /** Click vào ảnh thì gửi thông tin cho sdk */
+    postMessageToParent(
+      SHOW_POPUP,
+      false,
+      674,
+      url,
+      POSITION,
+      POSITION_DETAIL?.bottom,
+      POSITION_DETAIL?.right,
+      POSITION_DETAIL?.left
+    )
+  }
   return (
-    <div className="flex overflow-x-auto rounded-2xl shadow-lg gap-1 bg-gray-100">
+    <div className="flex overflow-x-auto rounded-2xl shadow-lg gap-1 bg-gray-100 cursor-pointer">
       <div className="rounded-2xl flex flex-col gap-x-2 flex-shrink-0 w-full p-3 gap-2">
         <div className="text-xs">
           <div className="font-semibold text-lg text-black line-clamp-3 leading-6">

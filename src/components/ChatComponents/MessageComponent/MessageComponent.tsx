@@ -127,8 +127,18 @@ const MessageComponent = ({ data }: MessageProps) => {
       <MessageCouponTemplate data={data} />
       <MessageGenericTemplate data={data} />
       <MessageGenericTemplateNew data={data} />
-      <MessageTemplateFeedback data={data} />
-      <MessageTemplateReceipt data={data} />
+      <MessageTemplateFeedback
+        data={data}
+        SHOW_POPUP={SHOW_POPUP}
+        POSITION={POSITION}
+        POSITION_DETAIL={POSITION_DETAIL}
+      />
+      <MessageTemplateReceipt
+        data={data}
+        SHOW_POPUP={SHOW_POPUP}
+        POSITION={POSITION}
+        POSITION_DETAIL={POSITION_DETAIL}
+      />
       <MessageMediaTemplate data={data} />
       <MessageFallback data={data} />
     </div>

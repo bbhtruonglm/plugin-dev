@@ -97,5 +97,9 @@ export const vn = {
     show_more: 'Xem thêm',
     show_less: 'Thu gọn',
     order_confirmation: 'Order confirmation',
+
+    items: 'sản phẩm',
+
+    deliver_to: 'Giao đến',
   },
 }

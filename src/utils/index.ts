@@ -867,3 +867,24 @@ export function getCookie(name: string): string | null {
   if (PART.length === 2) return PART.pop()?.split(';').shift() ?? null
   return null
 }
+/** format time stamp */
+export function formatTimestamp(timestamp?: number | string): string {
+  /** Nếu k có timestamp return - */
+  if (!timestamp) return '-'
+
+  /** Ép sang số */
+  const NUM = Number(timestamp)
+
+  /** Nếu nhỏ hơn 10^12 → tính bằng giây, cần nhân 1000 để ra mili-giây */
+  const TIME = NUM < 1e12 ? new Date(NUM * 1000) : new Date(NUM)
+
+  /** Trả về chuỗi định dạng giống ví dụ bạn gửi */
+  return TIME.toLocaleString('en-US', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}

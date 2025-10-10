@@ -19,6 +19,8 @@ import {
   selectCurrentHeight,
   selectCurrentWidth,
   selectCustomBackground,
+  selectDataFeedback,
+  selectDataOrder,
   selectEmbedPosition,
   selectEmbedPositionDetail,
   selectGlobalClientId,
@@ -40,6 +42,8 @@ import {
   selectStatusAI,
   selectStatusIsInit,
   selectStatusPopup,
+  setDataFeedback,
+  setDataOrder,
   setEmbedPosition,
   setEmbedPositionDetail,
   setGlobalPreviewUrl,
@@ -199,6 +203,10 @@ function useChatApp({ show }: { show: boolean }) {
   const REF_LIST_UNREAD_MESSAGE = useRef(LIST_UNREAD_MESSAGE)
   /** Giá trị của preview URL */
   const GLOBAL_PREVIEW_URL = useSelector(selectGlobalPreviewUrl)
+  /** Data order */
+  const GLOBAL_DATA_ORDER = useSelector(selectDataOrder)
+  /** Data feedback */
+  const GLOBAL_DATA_FEEDBACK = useSelector(selectDataFeedback)
 
   useEffect(() => {
     /** Cập nhật giá trị trong ref một khi LIST_UNREAD_MESSAGE thay đổi */
@@ -1120,6 +1128,11 @@ function useChatApp({ show }: { show: boolean }) {
      * Gọi hàm đóng popup
      */
     dispatch(setGlobalPreviewUrl(null))
+    /** Data feedback */
+    dispatch(setDataFeedback({}))
+    /** Data order */
+    dispatch(setDataOrder({}))
+
     /**
      * Gọi hàm đến Parent
      */
@@ -1195,6 +1208,8 @@ function useChatApp({ show }: { show: boolean }) {
     GLOBAL_PREVIEW_URL,
     IS_CUSTOM_BACKGROUND,
     SELECT_BUTTON_EFFECT,
+    GLOBAL_DATA_ORDER,
+    GLOBAL_DATA_FEEDBACK,
   }
 }
 

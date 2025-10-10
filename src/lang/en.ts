@@ -96,5 +96,7 @@ export const en = {
     show_less: 'show less',
 
     order_confirmation: 'Order confirmation',
+    items: 'items',
+    deliver_to: 'Deliver to',
   },
 }

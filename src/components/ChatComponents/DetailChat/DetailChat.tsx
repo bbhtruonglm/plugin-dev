@@ -473,7 +473,8 @@ function DetailChat({
             quantity: 2,
             price: 50,
             currency: 'USD',
-            image_url: 'http://petersapparel.parseapp.com/img/whiteshirt.png',
+            image_url:
+              'https://classicfella.com/cdn/shop/files/TShirt_White_Trans_0.5x_8537c1fa-10c5-4246-b7fb-55ff5b3a9eb1.png?v=1690384635&width=1600',
           },
           {
             title: 'Classic Gray T-Shirt',
@@ -481,7 +482,8 @@ function DetailChat({
             quantity: 1,
             price: 25,
             currency: 'USD',
-            image_url: 'http://petersapparel.parseapp.com/img/grayshirt.png',
+            image_url:
+              'https://www.trueclassictees.com/cdn/shop/products/4000_HEATHERGREY_1_GRAY.jpg?v=1751940310&width=1420',
           },
         ],
       },

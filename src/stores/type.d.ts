@@ -234,6 +234,11 @@ export interface AppState {
   page_allow_avatar?: boolean
   /** is loading first time */
   is_loading_first_time?: boolean
+
+  /** data order */
+  data_order?: Object
+  /** data feedback */
+  data_feedback?: Object
 }
 /** Định nghĩa kiểu dữ liệu cho danh sách nhân viên */
 interface EmployeeList {
