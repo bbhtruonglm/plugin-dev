@@ -624,8 +624,8 @@ function DetailChat({
           {/* Phần nội dung tin nhắn được hiển thị */}
           {/* <MessageComponent data={MESSAGE_DATA} />
           <MessageComponent data={MESSAGE_DATA2} /> */}
-          {/* <MessageComponent data={MESSAGE_DATA4} /> */}
-          {/* <MessageComponent data={MESSAGE_DATA5} /> */}
+          {/* <MessageComponent data={MESSAGE_DATA4} />
+          <MessageComponent data={MESSAGE_DATA5} /> */}
         </div>
         {!AI_STATUS && (
           <div className="flex flex-wrap gap-2 w-full">
