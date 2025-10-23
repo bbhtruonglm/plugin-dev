@@ -90,6 +90,7 @@ const INITIAL_STATE: AppState = {
   is_loading_first_time: true,
   data_order: {},
   data_feedback: {},
+  show_staff_not_ai: false,
 }
 
 export const appSlice = createSlice({
@@ -363,6 +364,11 @@ export const appSlice = createSlice({
     setDataFeedback: (state, action: PayloadAction<any>) => {
       state.data_feedback = action.payload
     },
+
+    /** Hiện trường thông tin nhân viên thay vì AI */
+    setShowStaffNotAI: (state, action: PayloadAction<boolean>) => {
+      state.show_staff_not_ai = action.payload
+    },
   },
 })
 
@@ -421,6 +427,7 @@ export const {
   setIsLoadingFirstTime,
   setDataOrder,
   setDataFeedback,
+  setShowStaffNotAI,
 } = appSlice.actions
 
 /** chọn đến page id */
@@ -590,5 +597,8 @@ export const selectIsLoadingFirstTime = (state: RootState) =>
 export const selectDataOrder = (state: RootState) => state.app.data_order
 /** data feedback */
 export const selectDataFeedback = (state: RootState) => state.app.data_feedback
+/** show staff not ai */
+export const selectShowStaffNotAI = (state: RootState) =>
+  state.app.show_staff_not_ai
 
 export default appSlice.reducer

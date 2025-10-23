@@ -175,7 +175,7 @@ export function onSocketFromChatboxServer({
 
     /** Nội dung cơ bản */
     if (message) {
-      fetchClientData()
+      // fetchClientData()
     }
 
     /** Nội dung cơ bản */

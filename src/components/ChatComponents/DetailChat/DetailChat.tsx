@@ -12,6 +12,7 @@ import LoadingDots from '../../Loading/LoadingDot'
 import LoadingJumping from '../../Loading/LoadingJumping'
 import MessageBody from '../Body/MessageBody'
 import MessageComponent from '../MessageComponent/MessageComponent'
+import { isEmpty } from 'lodash'
 import { selectCustomColor } from '@/stores/appSlice'
 import { t } from 'i18next'
 import useDetailChat from './useDetailChat'
@@ -653,7 +654,12 @@ function DetailChat({
         )}
         <div>
           {TYPING_STATUS && (
-            <div className="text-lg font-semibold flex items-center gap-x-2 py-2 px-4 rounded-full bg-slate-300 w-fit">
+            <div
+              className={`text-lg font-semibold flex items-center ${
+                isEmpty(status_list) ? '' : 'gap-x-2'
+              }
+                  py-2 px-4 rounded-full bg-slate-300 w-fit`}
+            >
               <span className="text-xs text-slate-700">
                 {status_list[status_index]}
               </span>

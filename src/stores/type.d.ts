@@ -239,6 +239,9 @@ export interface AppState {
   data_order?: Object
   /** data feedback */
   data_feedback?: Object
+
+  /** Hiện trường thông tin nhân viên thay vì AI */
+  show_staff_not_ai?: boolean
 }
 /** Định nghĩa kiểu dữ liệu cho danh sách nhân viên */
 interface EmployeeList {

@@ -215,7 +215,7 @@ export function useApp() {
       /** Lưu client_id */
       dispatch(setGlobalClientId(stored_client_id))
       /** Lấy thông tin client */
-      fetchClientData(stored_client_id, PAGE_ID)
+      // fetchClientData(stored_client_id, PAGE_ID)
     }
   }, [stored_client_id])
   /** Dispatch */
@@ -259,7 +259,7 @@ export function useApp() {
       reset_page_id,
       data_embed_chat,
     } = PAYLOAD
-    console.log(data_embed_chat, 'wtffff')
+
     /**CHeck embed chat */
     if (data_embed_chat) {
       /** Destructuring */

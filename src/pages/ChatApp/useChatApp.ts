@@ -38,6 +38,7 @@ import {
   selectPageSetting,
   selectRefreshData,
   selectShowHome,
+  selectShowStaffNotAI,
   selectShowSupportStaff,
   selectStatusAI,
   selectStatusIsInit,
@@ -52,6 +53,7 @@ import {
   setListMessage,
   setListUnreadMessage,
   setLoadingGlobal,
+  setShowStaffNotAI,
   setStaffListStore,
   setStatusIsInit,
 } from '@/stores/appSlice'
@@ -458,6 +460,9 @@ function useChatApp({ show }: { show: boolean }) {
     dispatch(
       setEmbedPositionDetail({ bottom: BOTTOM, right: RIGHT, left: LEFT })
     )
+    /** Hiển thị thông tin staff thay vì AI */
+    dispatch(setShowStaffNotAI(!!DATA_PAGE_SETTING?.show_staff_not_ai))
+    // dispatch(setShowStaffNotAI(true))
 
     // /**
     //  * Gửi list path sang SDK
@@ -488,23 +493,53 @@ function useChatApp({ show }: { show: boolean }) {
       // )
     }
     /** Lưu thông tin tin nhắn chào mừng custom không */
-    if (DATA_PAGE_SETTING?.welcome_message?.is_active) {
-      /** Lưu thông tin tin nhắn chào mừng */
+    // if (DATA_PAGE_SETTING?.welcome_message?.is_active) {
+    //   /** Lưu thông tin tin nhắn chào mừng */
+    //   setWelcomeMessage({
+    //     message:
+    //       DATA_PAGE_SETTING?.welcome_message?.source?.[I18N.language] ||
+    //       t('_welcome_message'),
+    //     delay: DATA_PAGE_SETTING?.welcome_message?.delay * 1000,
+    //     is_active: DATA_PAGE_SETTING?.welcome_message?.is_active,
+    //   })
+    // } else {
+    //   /** Lưu thông tin tin nhắn chào mừng mặc định*/
+    //   setWelcomeMessage({
+    //     message: t('_welcome_message'),
+    //     delay: 5000,
+    //     is_active: true,
+    //   })
+    // }
+    /** Trạng thái active tin nhắn chào mừng */
+    const IS_ACTIVE = DATA_PAGE_SETTING?.welcome_message?.is_active
+    /** Trạng thái Active */
+    if (IS_ACTIVE === true) {
+      /** Tin nhắn chào mừng custom */
       setWelcomeMessage({
         message:
           DATA_PAGE_SETTING?.welcome_message?.source?.[I18N.language] ||
           t('_welcome_message'),
-        delay: DATA_PAGE_SETTING?.welcome_message?.delay * 1000,
-        is_active: DATA_PAGE_SETTING?.welcome_message?.is_active,
+        delay: (DATA_PAGE_SETTING?.welcome_message?.delay ?? 5) * 1000,
+        is_active: true,
+      })
+    } else if (IS_ACTIVE === false) {
+      /** Tin nhắn chào mừng tắt (nhưng vẫn lưu state) */
+      setWelcomeMessage({
+        message:
+          DATA_PAGE_SETTING?.welcome_message?.source?.[I18N.language] ||
+          t('_welcome_message'),
+        delay: (DATA_PAGE_SETTING?.welcome_message?.delay ?? 5) * 1000,
+        is_active: false,
       })
     } else {
-      /** Lưu thông tin tin nhắn chào mừng mặc định*/
+      /** isActive là null hoặc undefined → dùng mặc định */
       setWelcomeMessage({
         message: t('_welcome_message'),
         delay: 5000,
         is_active: true,
       })
     }
+
     console.log(I18N.language)
     /** Lưu thông tin biểu mẫu */
     setWebForm({
@@ -609,7 +644,6 @@ function useChatApp({ show }: { show: boolean }) {
       !isEmpty(GLOBAL_DATA_FEEDBACK) ||
       !isEmpty(GLOBAL_DATA_ORDER)
 
-    console.log(IS_PREVIEWING_IMAGE, 'hahahah')
     /**
      * Xác định có tin nhắn chưa đọc hay không
      */

@@ -1,5 +1,5 @@
 import { Employee, Message } from '../type'
-import { debounce, isEmpty, keys } from 'lodash'
+import { debounce, isEmpty, keys, set } from 'lodash'
 import { fetchAPI, useAPI } from '@/api/api'
 import { getCookie, renderAvatarFromId, renderAvatarFromIdAgent } from '@/utils'
 import {
@@ -25,6 +25,7 @@ import {
   selectPageInfoAI,
   selectRefreshData,
   selectShowForm,
+  selectShowStaffNotAI,
   selectStatusAI,
   selectStatusPopup,
   selectStatusViewport,
@@ -205,23 +206,30 @@ const useDetailChat = ({
 
   /** is active cta */
   const IS_ACTIVE_CTA = useSelector(selectIsActiveCTAMessage)
+  /** is show staff not AI */
+  const IS_SHOW_STAFF_NOT_AI = useSelector(selectShowStaffNotAI)
 
   useEffect(() => {
-    /** Nếu list trạng thái thay đổi */
-    if (LIST_AI_RENDER_TEXT) {
-      /** Nếu list trạng thái hóa được kích hoạt */
-      if (LIST_AI_RENDER_TEXT?.is_active) {
-        /** Lấy dữ liệu phản hồi của AI */
-        const DATA_AI_RESPONDING = LIST_AI_RENDER_TEXT.data?.map((item) => {
-          /** Trả về dữ liệu theo ngôn ngữ */
-          return item?.source?.[LANGUAGE]
-        })
+    /** Nếu show staff thì k hiển thị trạng thái */
+    if (IS_SHOW_STAFF_NOT_AI) {
+      setStatusList([])
+    } else {
+      /** Nếu list trạng thái thay đổi */
+      if (LIST_AI_RENDER_TEXT) {
+        /** Nếu list trạng thái hóa được kích hoạt */
+        if (LIST_AI_RENDER_TEXT?.is_active) {
+          /** Lấy dữ liệu phản hồi của AI */
+          const DATA_AI_RESPONDING = LIST_AI_RENDER_TEXT.data?.map((item) => {
+            /** Trả về dữ liệu theo ngôn ngữ */
+            return item?.source?.[LANGUAGE]
+          })
 
-        /** Set list trạng thái */
-        setStatusList(DATA_AI_RESPONDING)
-      } else {
-        /** Cập nhật data mặc định */
-        setStatusList(STATUSES)
+          /** Set list trạng thái */
+          setStatusList(DATA_AI_RESPONDING)
+        } else {
+          /** Cập nhật data mặc định */
+          setStatusList(STATUSES)
+        }
       }
     }
   }, [LIST_AI_RENDER_TEXT, LANGUAGE])
