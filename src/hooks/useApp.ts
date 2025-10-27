@@ -529,48 +529,48 @@ export function useApp() {
          * Fix cứng với page_id 860086820907512 của khách cần hotfix
          * se Update lại
          */
-        if (STORED_PAGE_ID === '860086820907512') {
-          // if (STORED_PAGE_ID === '388339911461476') {
+        // if (STORED_PAGE_ID === '860086820907512') {
+        //   // if (STORED_PAGE_ID === '388339911461476') {
+        //   /** Lưu trạng thái logo trong store*/
+        //   dispatch(setOrgAllowLogo(true))
+        //   /** Lưu logo trong store */
+        //   dispatch(setPageLogo('./images/Logo_AIG.svg'))
+        //   /** Lưu logo black trong store */
+        //   dispatch(setPageLogoBlack('./images/AIG_white.png'))
+        //   // dispatch(setPageLogo(''))
+        // } else {
+        if (
+          page_setting?.button_icon_url?.current_url &&
+          page_setting?.button_icon_url?.current_url !== 'default_image'
+        ) {
           /** Lưu trạng thái logo trong store*/
           dispatch(setOrgAllowLogo(true))
-          /** Lưu logo trong store */
-          dispatch(setPageLogo('./images/Logo_AIG.svg'))
-          /** Lưu logo black trong store */
-          dispatch(setPageLogoBlack('./images/AIG_white.png'))
-          // dispatch(setPageLogo(''))
-        } else {
-          if (
-            page_setting?.button_icon_url?.current_url &&
-            page_setting?.button_icon_url?.current_url !== 'default_image'
-          ) {
-            /** Lưu trạng thái logo trong store*/
-            dispatch(setOrgAllowLogo(true))
-            /** App logo */
-            const APP_LOGO = page_setting?.button_icon_url?.current_url || null
-            /** Lưu logo vào store */
-            dispatch(setPageLogo(APP_LOGO))
-            /** is loading first time */
-            dispatch(setIsLoadingFirstTime(false))
-          }
+          /** App logo */
+          const APP_LOGO = page_setting?.button_icon_url?.current_url || null
+          /** Lưu logo vào store */
+          dispatch(setPageLogo(APP_LOGO))
           /** is loading first time */
           dispatch(setIsLoadingFirstTime(false))
-
-          /** Lấy data từ page setting, lấy thông tin từ page setting */
-          /** App avatar */
-          const APP_AVATAR_PAGE = page_setting?.avatar || null
-
-          /** Nếu có avatar */
-          if (APP_AVATAR_PAGE) {
-            /** Lưu trạng thái avatar trong store */
-            dispatch(setPageAllowAvatar(true))
-
-            /** Lưu avatar vào store */
-            dispatch(setPageLogoBlack(APP_AVATAR_PAGE))
-          } else {
-            /** Lưu trạng thái avatar trong store */
-            dispatch(setPageAllowAvatar(false))
-          }
         }
+        /** is loading first time */
+        dispatch(setIsLoadingFirstTime(false))
+
+        /** Lấy data từ page setting, lấy thông tin từ page setting */
+        /** App avatar */
+        const APP_AVATAR_PAGE = page_setting?.avatar || null
+
+        /** Nếu có avatar */
+        if (APP_AVATAR_PAGE) {
+          /** Lưu trạng thái avatar trong store */
+          dispatch(setPageAllowAvatar(true))
+
+          /** Lưu avatar vào store */
+          dispatch(setPageLogoBlack(APP_AVATAR_PAGE))
+        } else {
+          /** Lưu trạng thái avatar trong store */
+          dispatch(setPageAllowAvatar(false))
+        }
+        // }
         /** Kiểm tra trạng thái button effect */
         if (page_setting?.button_effect) {
           /** Lưu trạng thái button effect vào store */
