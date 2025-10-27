@@ -461,7 +461,9 @@ function useChatApp({ show }: { show: boolean }) {
       setEmbedPositionDetail({ bottom: BOTTOM, right: RIGHT, left: LEFT })
     )
     /** Hiển thị thông tin staff thay vì AI */
-    dispatch(setShowStaffNotAI(!!DATA_PAGE_SETTING?.show_staff_not_ai))
+    dispatch(
+      setShowStaffNotAI(!!DATA_PAGE_SETTING?.is_show_staff_instead_of_ai)
+    )
     // dispatch(setShowStaffNotAI(true))
 
     // /**
