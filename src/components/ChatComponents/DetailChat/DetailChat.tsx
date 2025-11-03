@@ -550,11 +550,11 @@ function DetailChat({
       // className={`flex flex-col w-full h-full ${
       //   AI_STATUS && 'bg-ai-bg'
       // }  relative `}
-      onMouseDown={handleMouseDown}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseLeave}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
+      // onMouseDown={handleMouseDown}
+      // onMouseUp={handleMouseUp}
+      // onMouseLeave={handleMouseLeave}
+      // onTouchStart={handleTouchStart}
+      // onTouchEnd={handleTouchEnd}
       className={`flex flex-col w-full h-full ${
         AI_STATUS && 'bg-ai-bg'
       } relative`}
