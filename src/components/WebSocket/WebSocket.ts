@@ -43,7 +43,7 @@ const sendIdentifyMessage = (
     /** Nếu chưa kết nối, thử lại sau một khoảng thời gian nhất định */
     console.log('WebSocket is not open yet. Retrying...')
     /** Thử lại sau 100ms nếu chưa kết nối */
-    setTimeout(() => sendIdentifyMessage(page_id, client_id, WS), 100)
+    setTimeout(() => sendIdentifyMessage(page_id, client_id, WS), 1000)
   }
 }
 

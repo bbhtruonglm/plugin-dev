@@ -271,11 +271,8 @@ export function useApp() {
       let parsed_data
       /** xử lý trycatch khi parse dữ liệu  */
       try {
-        console.log(data_embed_chat, 'nnnnnnnnn')
-
+        /** Gọi hàm save parse json để parse data */
         parsed_data = safeParseJSON(data_embed_chat)
-
-        console.log(parsed_data, 'nnnnn')
       } catch (err) {
         console.error('Invalid JSON:', err)
         parsed_data = {}
