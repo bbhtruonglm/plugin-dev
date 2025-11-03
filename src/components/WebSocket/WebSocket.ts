@@ -46,6 +46,38 @@ const sendIdentifyMessage = (
     setTimeout(() => sendIdentifyMessage(page_id, client_id, WS), 100)
   }
 }
+
+// ;(function () {
+//   if ((window as any).__ws_hooked__) return
+//   ;(window as any).__ws_hooked__ = true
+
+//   const OldWS = window.WebSocket
+//   ;(window as any).WebSocket = function (...args: any[]) {
+//     const ws = new OldWS(...(args as [string | URL, (string | string[])?]))
+//     console.log('🔌 [WS Created]', args[0])
+
+//     const oldSend = ws.send
+//     ws.send = function (data: any) {
+//       console.log('⬆️ [WS Send]', data)
+//       return oldSend.call(ws, data)
+//     }
+
+//     ws.addEventListener('message', (event) => {
+//       console.log('⬇️ [WS Recv]', event.data)
+//     })
+
+//     ws.addEventListener('error', (err) => {
+//       console.log('⚠️ [WS Error]', err)
+//     })
+
+//     ws.addEventListener('close', () => {
+//       console.log('❌ [WS Closed]')
+//     })
+
+//     return ws
+//   } as any
+// })()
+
 /**  Cấu hình websocket
  * - Kết nối tới WebSocket server
  * - Gọi tin nhắn khởi tạo socket

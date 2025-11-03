@@ -888,3 +888,42 @@ export function formatTimestamp(timestamp?: number | string): string {
     minute: '2-digit',
   })
 }
+
+/**
+ * Chuyển đổi giá trị bất kỳ sang object JSON một cách an toàn.
+ *
+ * @description
+ * Hàm này giúp tránh lỗi khi xử lý dữ liệu JSON không hợp lệ hoặc không phải dạng string/object.
+ * Thường được dùng khi đọc dữ liệu từ `localStorage`, API, hoặc các nguồn không đáng tin cậy.
+ *
+ * Quy tắc:
+ * - Nếu `input` là `null`, `undefined` hoặc falsy → trả về `{}`.
+ * - Nếu `input` là `object` → trả về chính `input`.
+ * - Nếu `input` là `string` → thử parse JSON, nếu lỗi → trả về `{}`.
+ * - Các kiểu khác (number, boolean, ...) → trả về `{}`.
+ *
+ * @param {any} input - Dữ liệu đầu vào cần parse.
+ * @returns {Record<string, any>} Kết quả JSON object an toàn, hoặc `{}` nếu không hợp lệ.
+ */
+export function safeParseJSON(input: any): Record<string, any> {
+  /** Nếu giá trị falsy (null, undefined, '', 0, ...) thì trả về object rỗng */
+  if (!input) return {}
+
+  /** Nếu là object hợp lệ → trả về luôn mà không cần parse */
+  if (typeof input === 'object') return input
+
+  /** Nếu là chuỗi → thử parse JSON */
+  if (typeof input === 'string') {
+    try {
+      /** Thử parse chuỗi JSON */
+      return JSON.parse(input)
+    } catch (e) {
+      /** Nếu chuỗi không hợp lệ → log lỗi và trả về object rỗng */
+      console.error('Invalid JSON string:', input)
+      return {}
+    }
+  }
+
+  /** Nếu là các kiểu dữ liệu khác (number, boolean, ...) → không parse, trả về object rỗng */
+  return {}
+}
