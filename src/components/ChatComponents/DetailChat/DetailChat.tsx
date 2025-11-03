@@ -12,10 +12,18 @@ import LoadingDots from '../../Loading/LoadingDot'
 import LoadingJumping from '../../Loading/LoadingJumping'
 import MessageBody from '../Body/MessageBody'
 import MessageComponent from '../MessageComponent/MessageComponent'
+import VConsole from 'vconsole'
 import { isEmpty } from 'lodash'
 import { selectCustomColor } from '@/stores/appSlice'
 import { t } from 'i18next'
 import useDetailChat from './useDetailChat'
+import { useRef } from 'react'
+
+declare global {
+  interface Window {
+    VConsole?: any
+  }
+}
 
 /** Chi tiết component chat */
 function DetailChat({
@@ -500,12 +508,72 @@ function DetailChat({
     updatedAt: '2025-09-03T10:33:08.610Z',
   }
 
+  const holdTimer = useRef<NodeJS.Timeout | null>(null)
+  const holdStart = useRef<number | null>(null)
+
+  /** Kích hoạt vConsole */
+  const activateVConsole = () => {
+    if (window.VConsole) {
+      console.log('🧩 vConsole already loaded')
+      return
+    }
+    const script = document.createElement('script')
+    script.src = 'https://unpkg.com/vconsole/dist/vconsole.min.js'
+    script.onload = () => {
+      new window.VConsole()
+      console.log('✅ vConsole enabled (via long press)')
+    }
+    document.body.appendChild(script)
+  }
+
+  /** Xử lý giữ chuột/touch 3s */
+  const handleMouseDown = () => {
+    holdStart.current = Date.now()
+    holdTimer.current = setTimeout(() => {
+      activateVConsole()
+    }, 3000)
+  }
+
+  const handleMouseUp = () => {
+    if (holdTimer.current) {
+      clearTimeout(holdTimer.current)
+      holdTimer.current = null
+    }
+  }
+
+  const handleMouseLeave = handleMouseUp
+  const handleTouchStart = handleMouseDown
+  const handleTouchEnd = handleMouseUp
+
   return (
     <div
+      // className={`flex flex-col w-full h-full ${
+      //   AI_STATUS && 'bg-ai-bg'
+      // }  relative `}
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseLeave}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
       className={`flex flex-col w-full h-full ${
         AI_STATUS && 'bg-ai-bg'
-      }  relative `}
+      } relative`}
     >
+      {/* <div
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+        onTouchStart={handleMouseDown}
+        onTouchEnd={handleMouseUp}
+        className="flex flex-col w-full h-full bg-slate-100 relative"
+      >
+        <div className="m-auto text-center p-8">
+          <h3>🧩 Hold chuột 3s để bật vConsole</h3>
+          <p className="text-gray-500 text-sm">
+            (Giữ nguyên trong vùng này, đừng di chuột ra ngoài)
+          </p>
+        </div>
+      </div> */}
       {/* header */}
       <div className={`${AI_STATUS ? 'hidden' : ''}`}>
         <ChatHeader
