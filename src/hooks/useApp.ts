@@ -142,7 +142,7 @@ export function useApp() {
           client?.public_profile?.fb_client_id
 
         /** Reset lại client_id */
-        localStorage.setItem(`client_id_${N_PAGE_ID}`, '')
+        // localStorage.setItem(`client_id_${N_PAGE_ID}`, '')
         /** Gửi sang SDK */
         window.parent.postMessage(
           {
@@ -288,6 +288,7 @@ export function useApp() {
 
       /**  Lưu client_id vào store*/
       dispatch(setGlobalClientId(client_id))
+      console.log('================================ client id', client_id)
 
       /** Lưu client_id vào localStorage */
       localStorage.setItem(`client_id_${page_id}`, client_id)
@@ -839,7 +840,7 @@ export function useApp() {
             CLIENT_INFO?.public_profile?.is_active_ai_agent
 
           console.log(CLIENT_INFO, 'CLIENT_INFO CHẠY VÀO ĐÂY')
-
+          /** Cạap nhật store current User id */
           dispatch(
             setCurrentUserId(CLIENT_INFO?.public_profile?.current_user_id || '')
           )

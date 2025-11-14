@@ -228,7 +228,7 @@ export function useChatClient(invalid_page_id_parent?: boolean) {
           },
           '*'
         )
-
+        console.log(NEW_CLIENT_ID, 'idddd ==================')
         /**
          * Lưu trạng thái mới init
          */
