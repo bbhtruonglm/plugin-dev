@@ -221,7 +221,7 @@ export function useApp() {
     /** Nếu co client_id */
     if (stored_client_id) {
       /** Lưu client_id */
-      dispatch(setGlobalClientId(stored_client_id))
+      // dispatch(setGlobalClientId(stored_client_id))
       /** Lấy thông tin client */
       // fetchClientData(stored_client_id, PAGE_ID)
     }
