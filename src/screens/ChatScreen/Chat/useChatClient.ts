@@ -9,6 +9,7 @@ import {
   setClientNameStore,
   setGlobalClientId,
   setStatusIsInit,
+  setTypingStatus,
   setUserInfo,
 } from '@/stores/appSlice'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -145,6 +146,8 @@ export function useChatClient(invalid_page_id_parent?: boolean) {
           console.log('⛔️ Bỏ qua vì request cũ:', value.client_id)
           return
         }
+        /** Tắt loading typing (trường hợp AI, thay đổi socket) */
+        dispatch(setTypingStatus(true))
         /** Set loading */
         setLoading(true)
         /**
