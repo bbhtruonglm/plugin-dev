@@ -147,7 +147,7 @@ export function useChatClient(invalid_page_id_parent?: boolean) {
           return
         }
         /** Tắt loading typing (trường hợp AI, thay đổi socket) */
-        dispatch(setTypingStatus(true))
+        dispatch(setTypingStatus(false))
         /** Set loading */
         setLoading(true)
         /**
