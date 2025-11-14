@@ -488,12 +488,12 @@ const useDetailChat = ({
             item.message_type !== 'system' && item.message_type !== 'note'
         )
         /** Nếu không trùng id client thì ghép, không thì gán lại = list data fetch */
-        // if (FILTER_RES?.[0].fb_client_id === LIST_MESSAGE?.[0].fb_client_id) {
-        // } else {
-        //   dispatch(setListMessage(FILTER_RES.reverse()))
-        // }
-        /** Lưu LIST_MESSAGE vào store */
-        dispatch(setListMessage([...FILTER_RES.reverse(), ...LIST_MESSAGE]))
+        if (FILTER_RES?.[0].fb_client_id === LIST_MESSAGE?.[0].fb_client_id) {
+          /** Lưu LIST_MESSAGE vào store */
+          dispatch(setListMessage([...FILTER_RES.reverse(), ...LIST_MESSAGE]))
+        } else {
+          dispatch(setListMessage([...FILTER_RES.reverse()]))
+        }
 
         /** Dùng request animation frame hoặc settimeout ( độ trễ 0ms) */
         requestAnimationFrame(() => {
