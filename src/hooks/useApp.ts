@@ -71,6 +71,7 @@ export function useApp() {
       window.location.pathname.includes('/ai-assistant') ||
       window.location.pathname.includes('/active-sdk')
     ) {
+      console.log('ai - assistant')
       try {
         /** Bật chế độ debug */
         WIDGET.debugOn()
@@ -96,6 +97,7 @@ export function useApp() {
    */
   const decodeClientData = async () => {
     WIDGET.onEvent(async (e: any, value: any) => {
+      console.log('widget on event decode client data')
       /**
        * Nếu là tin nhắn từ khách hàng thì gửi tin nhắn suggest
        * Tạm thời không dùng return tránh bị lỗi phần còn lại
@@ -175,9 +177,10 @@ export function useApp() {
    * @returns {Promise<Object>} - Dữ liệu khách hàng
    */
   const decodeInitClientData = async () => {
+    console.log('decode init client data')
     /** khai báo biến lưu trữ dữ liệu khách hàng + init dữ liệu lần đầu */
     let client = await WIDGET.getClientInfo()
-
+    console.log(client, 'clientttt')
     /** Trả về client */
     return client
   }
