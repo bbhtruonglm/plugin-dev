@@ -142,7 +142,7 @@ export function useApp() {
           client?.public_profile?.fb_client_id
 
         /** Reset lại client_id */
-        // localStorage.setItem(`client_id_${N_PAGE_ID}`, '')
+        localStorage.setItem(`client_id_${N_PAGE_ID}`, '')
         /** Gửi sang SDK */
         window.parent.postMessage(
           {

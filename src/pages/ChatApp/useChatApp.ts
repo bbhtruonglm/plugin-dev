@@ -514,22 +514,42 @@ function useChatApp({ show }: { show: boolean }) {
     // }
     /** Trạng thái active tin nhắn chào mừng */
     const IS_ACTIVE = DATA_PAGE_SETTING?.welcome_message?.is_active
+
+    /** Map ngôn ngữ từ I18N sang source key */
+    const LANGUAGE_MAP: Record<string, string> = {
+      vn: 'vi',
+      vi: 'vi',
+      en: 'en',
+      kr: 'kr',
+      ko: 'kr',
+      cn: 'cn',
+      zh: 'cn',
+      jp: 'jp',
+      ja: 'jp',
+      th: 'th',
+    }
+
+    /** Lấy key ngôn ngữ phù hợp */
+    const LANG_KEY = LANGUAGE_MAP[I18N.language] || I18N.language
+
+    /** Nội dung tin nhắn chào mừng */
+    const WELCOME_MESSAGE_CONTENT =
+      DATA_PAGE_SETTING?.welcome_message?.source?.[LANG_KEY] ||
+      DATA_PAGE_SETTING?.welcome_message?.source?.[I18N.language] ||
+      t('_welcome_message')
+
     /** Trạng thái Active */
     if (IS_ACTIVE === true) {
       /** Tin nhắn chào mừng custom */
       setWelcomeMessage({
-        message:
-          DATA_PAGE_SETTING?.welcome_message?.source?.[I18N.language] ||
-          t('_welcome_message'),
+        message: WELCOME_MESSAGE_CONTENT,
         delay: (DATA_PAGE_SETTING?.welcome_message?.delay ?? 5) * 1000,
         is_active: true,
       })
     } else if (IS_ACTIVE === false) {
       /** Tin nhắn chào mừng tắt (nhưng vẫn lưu state) */
       setWelcomeMessage({
-        message:
-          DATA_PAGE_SETTING?.welcome_message?.source?.[I18N.language] ||
-          t('_welcome_message'),
+        message: WELCOME_MESSAGE_CONTENT,
         delay: (DATA_PAGE_SETTING?.welcome_message?.delay ?? 5) * 1000,
         is_active: false,
       })
