@@ -98,6 +98,8 @@ interface ChatHeaderProps {
 interface InputProps {
   /** Hàm gửi tin nhắn */
   handleSend: (e: any) => void
+  /** Hàm upload file */
+  handleUpload?: (file: File) => void
   /** Trạng thái loading */
   loading: boolean
   /** Tin nhắn báo lỗi */
@@ -341,6 +343,8 @@ export interface MessageProps {
        */
       title?: string
     }[]
+    /** Status message */
+    status?: string
   }
 }
 /** ĐỊnh nghĩa cấu trúc dữ liệu audio */

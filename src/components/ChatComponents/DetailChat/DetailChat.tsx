@@ -78,6 +78,7 @@ function DetailChat({
     socket_quick_chat,
     setSocketQuickChat,
     handleSendMessage,
+    sendImageMessage,
   } = useDetailChat({
     user_id,
     onInitClient,
@@ -746,13 +747,6 @@ function DetailChat({
 
         <div ref={MESSAGE_END_REF} />
 
-        {/* Khi gửi tin nhắn sẽ hiển thị loading để call api */}
-        {loading && (
-          <div className="fixed bg-blue-300 bottom-[22%] left-[48%] p-2 rounded-full text-xs z-50">
-            <LoadingDots />
-          </div>
-        )}
-
         {/* Khi khởi tạo sẽ hiển thị loading này */}
         {loading_init && (
           <div className="fixed bg-red-300 bottom-[22%] left-[48%] p-2 rounded-full text-xs z-50">
@@ -816,7 +810,9 @@ function DetailChat({
           error_message={error_message}
           handleSend={(e: string) => {
             sendMessage(e)
-            setLoading(true)
+          }}
+          handleUpload={(file: File) => {
+            sendImageMessage(file)
           }}
           loading={loading}
           page_name={page_name}

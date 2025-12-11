@@ -43,6 +43,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import { t } from 'i18next'
 import { useTranslation } from 'react-i18next'
+import { LANGUAGE_MAP } from '@/utils/constants'
 
 const useDetailChat = ({
   user_id,
@@ -60,7 +61,7 @@ const useDetailChat = ({
   /** Ngôn ngữ */
   const { i18n: I18N } = useTranslation()
   /** Lấy ngôn ngữ */
-  const LANGUAGE = I18N.language
+  const LANGUAGE = LANGUAGE_MAP[I18N.language] || I18N.language
   /** Bắt vị trí end scroll ở bottom */
   const MESSAGE_END_REF = useRef<HTMLDivElement | null>(null)
   /** Bắt vị trí ref ở đầu tin nhắn */
@@ -677,10 +678,41 @@ const useDetailChat = ({
   const sendMessage = async (input: any) => {
     if (input.trim() === '') return
 
-    try {
-      /** Lấy ID người dùng */
-      const META_DATA_ID = CURRENT_USER_ID || user_id
+    /** Lấy ID người dùng */
+    const META_DATA_ID = CURRENT_USER_ID || user_id
 
+    /** Tạo ID tạm thời */
+    const TEMP_ID = `temp_${Date.now()}`
+
+    /** Tạo tin nhắn tạm thời (Optimistic UI) */
+    const TEMP_MESSAGE: any = {
+      _id: TEMP_ID,
+      fb_page_id: PAGE_ID,
+      fb_client_id: user_id || CURRENT_USER_ID || '',
+      platform_type: 'WEBSITE',
+      message_type: 'client',
+      message_text: input,
+      sender_id: CURRENT_USER_ID || user_id,
+      recipient_id: PAGE_ID,
+      time: new Date().toISOString(),
+      message_mid: TEMP_ID,
+      message_attachments: [],
+      message_metadata: META_DATA_ID
+        ? AI_STATUS
+          ? `__ai_agent__${META_DATA_ID}`
+          : `__user_normal__${META_DATA_ID}`
+        : '',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      __v: 0,
+      status: 'sending',
+    }
+
+    /** Hiển thị ngay tin nhắn tạm thời */
+    dispatch(setListMessage([...LIST_MESSAGE, TEMP_MESSAGE]))
+    scrollToBottom()
+
+    try {
       /** Khởi tạo body tin nhắn */
       const MESSAGE: Message = {
         page_id: PAGE_ID,
@@ -706,8 +738,75 @@ const useDetailChat = ({
       scrollToBottom()
     } catch (error) {
       console.error('Gửi tin nhắn thất bại:', error)
+      /** Cập nhật trạng thái lỗi cho tin nhắn tạm nếu cần (tùy chọn) */
     } finally {
       setLoading(false)
+    }
+  }
+
+  /** Hàm gửi tin nhắn ảnh */
+  const sendImageMessage = async (file: File) => {
+    if (!file) return
+
+    /** Lấy ID người dùng */
+    const META_DATA_ID = CURRENT_USER_ID || user_id
+
+    /** Tạo ID tạm thời */
+    const TEMP_ID = `temp_${Date.now()}`
+
+    /** Tạo URL preview */
+    const PREVIEW_URL = URL.createObjectURL(file)
+
+    /** Tạo tin nhắn tạm thời (Optimistic UI) */
+    const TEMP_MESSAGE: any = {
+      _id: TEMP_ID,
+      fb_page_id: PAGE_ID,
+      fb_client_id: user_id || CURRENT_USER_ID || '',
+      platform_type: 'WEBSITE',
+      message_type: 'client',
+      message_text: '',
+      sender_id: CURRENT_USER_ID || user_id,
+      recipient_id: PAGE_ID,
+      time: new Date().toISOString(),
+      message_mid: TEMP_ID,
+      message_attachments: [
+        {
+          type: 'image',
+          payload: { url: PREVIEW_URL },
+        },
+      ],
+      message_metadata: META_DATA_ID
+        ? AI_STATUS
+          ? `__ai_agent__${META_DATA_ID}`
+          : `__user_normal__${META_DATA_ID}`
+        : '',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      __v: 0,
+      status: 'sending',
+    }
+
+    /** Hiển thị ngay tin nhắn tạm thời */
+    dispatch(setListMessage([...LIST_MESSAGE, TEMP_MESSAGE]))
+    scrollToBottom()
+
+    try {
+      const FORM_DATA = new FormData()
+      if (META_DATA_ID) {
+        FORM_DATA.append('metadata', `__user_normal__${META_DATA_ID}`)
+      }
+      FORM_DATA.append('file', file)
+      FORM_DATA.append('page_id', PAGE_ID || '')
+      FORM_DATA.append('client_id', client_id || '')
+
+      await fetch(SEND_MESSAGE_API, {
+        method: 'POST',
+        body: FORM_DATA,
+      })
+
+      scrollToBottom()
+    } catch (error) {
+      console.error('Upload failed', error)
     }
   }
 
@@ -719,9 +818,46 @@ const useDetailChat = ({
      * Thì sẽ thêm vào store
      */
 
+    /**
+     * Trường hợp đang mở tab chat
+     * - Người dùng gửi tin nhắn đi
+     * - Page nhắn tin trả lời
+     * Thì sẽ thêm vào store
+     */
+
     if (keys(LATEST_MESSAGE).length !== 0 && !is_init) {
+      /** Copy danh sách hiện tại */
+      let NEW_LIST = [...LIST_MESSAGE]
+
+      /** Kiểm tra xem có tin nhắn tạm (đang gửi) nào trùng khớp không */
+      const tempIndex = NEW_LIST.findIndex(
+        (msg: any) =>
+          msg.status === 'sending' &&
+          msg.sender_id === LATEST_MESSAGE.sender_id &&
+          // Match text
+          ((msg.message_text &&
+            msg.message_text === LATEST_MESSAGE.message_text) ||
+            // OR Match image (if both have attachments)
+            (msg.message_attachments?.length > 0 &&
+              LATEST_MESSAGE.message_attachments?.length > 0 &&
+              !msg.message_text))
+      )
+
+      if (tempIndex !== -1) {
+        /** Nếu tìm thấy, thay thế tin nhắn tạm bằng tin nhắn thật từ socket */
+        NEW_LIST[tempIndex] = LATEST_MESSAGE
+      } else {
+        /** Nếu không, kiểm tra trùng lặp ID trước khi thêm */
+        const exists = NEW_LIST.some(
+          (msg: any) => msg._id === LATEST_MESSAGE._id
+        )
+        if (!exists) {
+          NEW_LIST.push(LATEST_MESSAGE)
+        }
+      }
+
       /** Lưu tin nhắn mới từ socket vào store */
-      dispatch(setListMessage([...LIST_MESSAGE, LATEST_MESSAGE]))
+      dispatch(setListMessage(NEW_LIST))
       setSkip(skip + 1)
 
       /** Nếu có tin nhắn từ websocket, scroll xuống cuối trang */
@@ -872,6 +1008,8 @@ const useDetailChat = ({
     socket_quick_chat,
     setSocketQuickChat,
     handleSendMessage,
+    handlePostback,
+    sendImageMessage,
   }
 }
 

@@ -18,6 +18,7 @@ export function useInputChat({
   page_name,
   setLoading,
   handleSend,
+  handleUpload,
   handleError,
   setIsShowKeyboard,
 }: {
@@ -25,6 +26,7 @@ export function useInputChat({
   page_name?: string
   setLoading: (val: boolean) => void
   handleSend: (val: string) => void
+  handleUpload?: (file: File) => void
   handleError?: (msg: string) => void
   setIsShowKeyboard?: (val: boolean) => void
 }) {
@@ -75,100 +77,49 @@ export function useInputChat({
    * @returns  void
    */
   const uploadFile = async (file: File | null) => {
-    /**
-     * Nếu file tồn tại
-     */
     if (file) {
-      /**
-       * Set loading
-       */
       setLoading(true)
-      /**
-       * Tạo form data
-       */
-      const FORM_DATA = new FormData()
 
-      /** Lấy ID người dùng */
+      // CHeck size
+      if (file.size > 1 * 1024 * 1024) {
+        handleError &&
+          handleError('Ảnh quá lớn, vui lòng chọn ảnh nhỏ hơn 1MB.')
+        setFile(null)
+        setPreviewUrl(null)
+        setLoading(false)
+        return
+      }
+
+      // Optimistic upload
+      if (handleUpload) {
+        handleUpload(file)
+        setFile(null)
+        setPreviewUrl(null)
+        setLoading(false)
+        return
+      }
+
+      const FORM_DATA = new FormData()
       const META_DATA_ID = CURRENT_USER_ID || client_id
-      /** Thêm metadata vào form data  */
       if (META_DATA_ID) {
         FORM_DATA.append('metadata', `__user_normal__${META_DATA_ID}`)
       }
-      /**
-       * Thêm file vào form data
-       */
       FORM_DATA.append('file', file)
-      /**
-       * Thêm page_id vào form data
-       */
       FORM_DATA.append('page_id', PAGE_ID)
-      /**
-       * Thêm client_id vào form data
-       */
       FORM_DATA.append('client_id', client_id)
 
-      /** Kiểm tra kích thước file */
-      if (file.size > 1 * 1024 * 1024) {
-        /** 1MB = 1 * 1024 * 1024 bytes */
-        /**
-         * Xử lý error
-         */
-        handleError &&
-          handleError('Ảnh quá lớn, vui lòng chọn ảnh nhỏ hơn 1MB.')
-        /**
-         * Reset file và preview_url
-         */
-        setFile(null)
-        /**
-         * Reset preview_url
-         */
-        setPreviewUrl(null)
-        /**
-         * Set loading
-         */
-        setLoading(false)
-        /**
-         * Return
-         */
-        return
-      }
       try {
-        /**
-         * Gửi tin nhắn đi
-         */
-        const RES = await fetch(SEND_MESSAGE_API, {
+        await fetch(SEND_MESSAGE_API, {
           method: 'POST',
           body: FORM_DATA,
         })
-
-        /**
-         * set loading
-         */
         setLoading(false)
-        /**
-         * Reset file
-         */
         setFile(null)
-        /**
-         * Reset preview_url
-         */
         setPreviewUrl(null)
       } catch (error) {
-        /** Gửi tin nhắn đi, reset các file
-         * Đoạn này cần check lại vì không có xử lý error
-         */
         handleError && handleError('Có lỗi xảy ra, vui lòng thử lại sau.')
-        /**
-         * Set loading
-         */
         setLoading(false)
-        /**
-         * Reset file
-         */
         setFile(null)
-        /**
-         * Reset preview_url
-         */
         setPreviewUrl(null)
       }
     }

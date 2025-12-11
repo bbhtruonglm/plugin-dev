@@ -9,6 +9,7 @@ import { useInputChat } from './useInputChat'
 
 function InputChat({
   handleSend,
+  handleUpload,
   loading,
   error_message,
   page_name,
@@ -46,6 +47,7 @@ function InputChat({
     page_name,
     setLoading,
     handleSend,
+    handleUpload,
     handleError,
     setIsShowKeyboard,
   })

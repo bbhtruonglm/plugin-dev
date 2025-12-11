@@ -14,6 +14,7 @@ import SendMessage from '@/components/HomeComponents/SendMessage'
 import UnreadMessage from '@/components/HomeComponents/UnreadMessage'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import { LANGUAGE_MAP } from '@/utils/constants'
 
 function Home({
   onNavigate,
@@ -26,7 +27,7 @@ function Home({
   const { t, i18n: I18N } = useTranslation()
 
   /** Lấy ngôn ngữ */
-  const LANGUAGE = I18N.language
+  const LANGUAGE = LANGUAGE_MAP[I18N.language] || I18N.language
 
   /** Client name */
   const CLIENT_NAME = useSelector(selectClientName)
@@ -39,7 +40,7 @@ function Home({
   /**
    * Lấy title và description từ source
    */
-  const { title, description } = source[I18N.language] || {}
+  const { title, description } = source?.[LANGUAGE] || {}
   /** Hàm dispatch */
   const dispatch = useDispatch()
 
@@ -61,6 +62,8 @@ function Home({
         .map((item) => item?.source?.[LANGUAGE] || item)
     )
   }, [LIST_CTA, LANGUAGE])
+
+  console.log('DATA_CTA', DATA_CTA)
 
   return (
     <div className="flex flex-col px-5 py-3 gap-y-5">
@@ -96,7 +99,7 @@ function Home({
       {!!social_link?.length && (
         <ChatOption
           social_link={social_link}
-          social_description={social_description[I18N.language]}
+          social_description={social_description?.[LANGUAGE]}
         />
       )}
       {/* FAQ */}

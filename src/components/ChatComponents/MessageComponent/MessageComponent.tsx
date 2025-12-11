@@ -95,7 +95,7 @@ const MessageComponent = ({ data }: MessageProps) => {
         data?.message_attachments?.payload?.template_type === 'receipt'
           ? 'rounded-2xl'
           : 'rounded-lg'
-      } ${CONTAINER_CLASS}`}
+      } ${CONTAINER_CLASS} ${data?.status === 'sending' ? 'opacity-50' : ''}`}
       // className={`flex flex-col transition-all duration-300 ease-out gap-y-4 rounded-lg group relative ${getMessageClasses(
       //   data?.message_type
       // )}`}
