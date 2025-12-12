@@ -63,8 +63,6 @@ function Home({
     )
   }, [LIST_CTA, LANGUAGE])
 
-  console.log('DATA_CTA', DATA_CTA)
-
   return (
     <div className="flex flex-col px-5 py-3 gap-y-5">
       {/* Greeting */}
