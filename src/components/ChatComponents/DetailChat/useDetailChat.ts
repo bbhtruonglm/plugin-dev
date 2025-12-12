@@ -830,10 +830,13 @@ const useDetailChat = ({
       let NEW_LIST = [...LIST_MESSAGE]
 
       /** Kiểm tra xem có tin nhắn tạm (đang gửi) nào trùng khớp không */
+      /** Kiểm tra xem có tin nhắn tạm (đang gửi) nào trùng khớp không */
       const tempIndex = NEW_LIST.findIndex(
         (msg: any) =>
           msg.status === 'sending' &&
-          msg.sender_id === LATEST_MESSAGE.sender_id &&
+          (msg.sender_id === LATEST_MESSAGE.sender_id ||
+            (msg.message_type === 'client' &&
+              LATEST_MESSAGE.message_type === 'client')) &&
           // Match text
           ((msg.message_text &&
             msg.message_text === LATEST_MESSAGE.message_text) ||

@@ -124,7 +124,16 @@ function useChatAppAction({
   }
 
   /** Hàm click vào trả lời */
-  const handleClickQuickChat = () => {
+  const handleClickQuickChat = (event?: any) => {
+    /**
+     * ANTI-EXTENSION: Kiểm tra event isTrusted
+     * Nếu không phải user thật click (isTrusted === false) thì chặn lại
+     */
+    if (event && event.isTrusted === false) {
+      console.warn('Blocked scripted click from extension')
+      return
+    }
+
     /** Khi click trả lời sẽ  reset hết data trong store */
     dispatch(setLatestMessageGlobal(null))
     /** Reset danh sách tin nhắn chưa đọc trong Store */
@@ -170,9 +179,17 @@ function useChatAppAction({
   }
 
   /** Hàm click vào tin nhắn chào */
-  const handleClickWelcomeMessage = () => {
+  const handleClickWelcomeMessage = (e: any) => {
+    /**
+     * ANTI-EXTENSION: Kiểm tra event isTrusted
+     * Nếu không phải user thật click (isTrusted === false) thì chặn lại
+     */
+    if (e && e.isTrusted === false) {
+      console.warn('Blocked scripted click from extension')
+      return
+    }
     /** Hàm click vào trả lời */
-    handleClickQuickChat()
+    handleClickQuickChat(e)
     /**
      * Khi click vào ẩn tin nhắn chào mừng,
      */
@@ -199,7 +216,21 @@ function useChatAppAction({
     setShowWelcomeMessage(false)
   }
 
-  const handleTriggerLogo = () => {
+  /**
+   * Xử lý sự kiện click logo
+   * @param {any} event - Event click
+   */
+  const handleTriggerLogo = (event?: any) => {
+    console.log(event, 'event')
+    /**
+     * ANTI-EXTENSION: Kiểm tra event isTrusted
+     * Nếu không phải user thật click (isTrusted === false) thì chặn lại
+     */
+    if (event && event.isTrusted === false) {
+      console.warn('Blocked scripted click from extension')
+      return
+    }
+
     setTimeout(() => {
       /**
        * Khi click vào

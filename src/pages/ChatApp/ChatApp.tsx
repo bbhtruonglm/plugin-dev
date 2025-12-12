@@ -399,7 +399,7 @@ const ChatApp = ({
               ? 'bg-slate-400 hover:bg-gray-500 text-white'
               : 'bg-white hover:bg-gray-100 text-slate-500'
           } shadow-lg justify-between w-full gap-x-2 rounded-xl h-16 px-3 py-3 cursor-pointer `}
-          onClick={() => handleClickWelcomeMessage()}
+          onClick={(e) => handleClickWelcomeMessage(e)}
         >
           <h4 className="text-sm line-clamp-2">{welcome_message?.message}</h4>
           {/* Nút đóng */}
@@ -413,17 +413,13 @@ const ChatApp = ({
       )}
       {/*  Nút trigger hiện thị bong bóng chat */}
       <button
-        onClick={() => handleTriggerLogo()}
+        onClick={(e) => handleTriggerLogo(e)}
         className={`absolute justify-center items-center bottom-4 ${
-          POSITION === 'bottom_left'
-            ? 'left-2'
-            : GLOBAL_PREVIEW_URL
-            ? 'right-5 bottom-5'
-            : 'right-2'
+          POSITION === 'bottom_left' ? 'left-2' : 'right-2'
         }  h-12 w-12 ${
           IS_CUSTOM_BACKGROUND ? 'bg-slate-400 text-white' : 'bg-white'
         } shadow-lg rounded-full  hover:scale-110 ${
-          AI_STATUS || IS_VIEW_SCREEN ? 'hidden' : ''
+          AI_STATUS || IS_VIEW_SCREEN || GLOBAL_PREVIEW_URL ? 'hidden' : ''
         }  ${
           !show
             ? ' flex z-30 '

@@ -729,9 +729,9 @@ function DetailChat({
               }
                   py-2 px-4 rounded-full bg-slate-300 w-fit`}
             >
-              <span className="text-xs text-slate-700">
+              {/* <span className="text-xs text-slate-700">
                 {status_list[status_index]}
-              </span>
+              </span> */}
 
               <div className="flex  ">
                 {/* <LoadingDots /> */}
