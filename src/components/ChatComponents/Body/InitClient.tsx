@@ -90,6 +90,7 @@ function InitClient({ resetData, onInitClient }: InitClientProps) {
   const BACKGROUND_COLOR = CUSTOM_COLOR?.primary_color || '#1e293b'
   /** Pre-fill nếu có dữ liệu từ store */
   useEffect(() => {
+    console.log('USER_INFO::', USER_INFO)
     /** Check nếu có dữ liệu từ store */
     if (!isEmpty(USER_INFO)) {
       /** Lưu form lỗi */

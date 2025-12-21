@@ -236,7 +236,7 @@ export function useApp() {
     /** @type {Object} PAYLOAD - Dữ liệu từ event */
     let PAYLOAD: any
 
-    // console.log('EVENT::', event)
+    console.log('EVENT::', event)
     try {
       /** Nếu event.data là string, cố gắng parse nó */
       PAYLOAD =
@@ -444,14 +444,53 @@ export function useApp() {
     }
   }
 
+  /** Xử lý message từ parent (Chat.vue) được forward
+   * @param {MessageEvent} event - Sự kiện tin nhắn từ parent
+   */
+  const handleParentMessage = (event: MessageEvent) => {
+    /** @type {Object} data - Dữ liệu từ event */
+    let data: any
+    /** Parse dữ liệu từ event */
+    try {
+      /** Nếu event.data là string, cố gắng parse nó */
+      data =
+        typeof event.data === 'string' ? JSON.parse(event.data) : event.data
+    } catch (e) {
+      /** Nếu parse thất bại thì return */
+      return
+    }
+
+    /** Nhận message từ parent-app (đã được Chat.vue forward) */
+    if (data?.from === 'parent-app') {
+      /** Log thông tin nhận được */
+      console.log('[IFRAME] Received from parent:', data)
+      /** Xử lý message ở đây... */
+    }
+  }
+
   useEffect(() => {
+    /** Setup message listener trước */
+    window.addEventListener('message', handleParentMessage)
     /** Thêm event listener cho thông điệp */
     window.addEventListener('message', handleMessage)
     /** Hàm giải mã dữ liệu khách hàng*/
     decodeClientData()
 
+    /** Gửi signal READY về parent để báo đã sẵn sàng nhận message */
+    window.parent.postMessage(
+      {
+        from: 'IFRAME_CHATBOT',
+        type: 'IFRAME_READY',
+      },
+      '*'
+    )
+    /** Log thông tin gửi signal */
+    console.log('[IFRAME] Sent IFRAME_READY signal to parent')
+
     /** Hàm cleanup */
     return () => {
+      /** Xóa event listener handleParentMessage */
+      window.removeEventListener('message', handleParentMessage)
       /** Xóa event listener */
       window.removeEventListener('message', handleMessage)
       /** Hàm giải má dữ liệu khách hàng */
