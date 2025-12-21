@@ -802,7 +802,6 @@ export function useApp() {
 
         /** Nếu chỉ cần mã ngôn ngữ chính (không có region) */
         const PRIMARY_LANGUAGE = BROWSER_LANGUAGE.split('-')[0]
-        console.log(PRIMARY_LANGUAGE) // Ví dụ: "vi", "en", "ja"
 
         console.log(PRIMARY_LANGUAGE, 'PRIMARY_LANGUAGE')
 
