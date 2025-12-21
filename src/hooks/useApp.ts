@@ -460,11 +460,52 @@ export function useApp() {
       return
     }
 
-    /** Nhận message từ parent-app (đã được Chat.vue forward) */
+    /** Kiểm tra thông tin từ app cha
+     * Trang chủ Retion hoặc BotBanHang
+     */
     if (data?.from === 'parent-app') {
-      /** Log thông tin nhận được */
-      console.log('[IFRAME] Received from parent:', data)
-      /** Xử lý message ở đây... */
+      console.log(
+        'Nhận tin nhắn từ app cha. Thông tin nhận được là:',
+        event.data
+      )
+      /**
+       * Nếu có action thì hiển thị popup
+       */
+      if (data?.action) {
+        /**
+         * Lưu kiểu type_consultation là true để hiển thị popup tư vấn
+         */
+        setTypeConsultation(true)
+        /** Lưu vào store */
+        dispatch(setConsultationGlobal(true))
+        /**
+         * Kiểm tra xem popup đã mở chưa
+         */
+        if (!is_show) {
+          /**
+           * Nếu mở chỉ reset tin nhắn mới nhất trong store
+           */
+          dispatch(setListMessage([]))
+          /**
+           *  Hiển thị popup
+           */
+          setShow(true)
+        }
+        return
+      }
+
+      /** Lưu thông tin user vào store
+       * Chỉ lưu thông tin nếu có giá trị
+       */
+      dispatch(
+        setUserInfo({
+          ...(data?.user_name && { user_name: data?.user_name }),
+          ...(data?.user_email && { user_email: data?.user_email }),
+          ...(data?.user_phone && { user_phone: data?.user_phone }),
+          ...(data?.client_id && { client_id: data?.client_id }),
+        })
+      )
+      dispatch(setFixedDataClient(true))
     }
   }
 
