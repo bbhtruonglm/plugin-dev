@@ -158,11 +158,22 @@ export function useChatClient(invalid_page_id_parent?: boolean) {
          * Tách phần khóa trên URL
          */
         const { __token, __isLatest, ...cleanedParams } = value
+        console.log('URL_CLIENT cleanedParams', cleanedParams)
+
+        /**
+         * Nếu không có page_id thì báo không có client_id và dừng lại
+         */
+        if (!cleanedParams.page_id) {
+          console.error('Không có client_id')
+          return
+        }
+
         /**
          * Tạo URLSearchParams
          */
         URL_CLIENT.search = new URLSearchParams(cleanedParams as any).toString()
 
+        console.log('URL_CLIENT', URL_CLIENT)
         // URL_CLIENT.search = new URLSearchParams(value as any).toString()
         /**
          * Lấy thống tin client
@@ -361,11 +372,21 @@ export function useChatClient(invalid_page_id_parent?: boolean) {
         setLoadingStaff(true)
         /** Lấy URL */
         const URL_READ = new URL(READ_CLIENT_INFO)
+        console.log('URL_READ', URL_READ)
+        /**
+         * Nếu không có page_id thì báo lỗi và dừng lại
+         */
+        if (!page_id) {
+          console.error('Không có page_id')
+          return
+        }
+
         /** Gán chuỗi truy vấn vào URL*/
         URL_READ.search = new URLSearchParams({
           client_id,
           page_id,
         } as any).toString()
+
         /** Lấy thông tin client */
         const RES = await fetchAPI(URL_READ.toString(), 'GET')
         /** Lưu tên client */

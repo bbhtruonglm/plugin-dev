@@ -1,0 +1,931 @@
+<!DOCTYPE html><html><head>
+      <title>README</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.css">
+      
+      
+      
+      
+      
+      <style>
+      code[class*=language-],pre[class*=language-]{color:#333;background:0 0;font-family:Consolas,"Liberation Mono",Menlo,Courier,monospace;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.4;-moz-tab-size:8;-o-tab-size:8;tab-size:8;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}pre[class*=language-]{padding:.8em;overflow:auto;border-radius:3px;background:#f5f5f5}:not(pre)>code[class*=language-]{padding:.1em;border-radius:.3em;white-space:normal;background:#f5f5f5}.token.blockquote,.token.comment{color:#969896}.token.cdata{color:#183691}.token.doctype,.token.macro.property,.token.punctuation,.token.variable{color:#333}.token.builtin,.token.important,.token.keyword,.token.operator,.token.rule{color:#a71d5d}.token.attr-value,.token.regex,.token.string,.token.url{color:#183691}.token.atrule,.token.boolean,.token.code,.token.command,.token.constant,.token.entity,.token.number,.token.property,.token.symbol{color:#0086b3}.token.prolog,.token.selector,.token.tag{color:#63a35c}.token.attr-name,.token.class,.token.class-name,.token.function,.token.id,.token.namespace,.token.pseudo-class,.token.pseudo-element,.token.url-reference .token.variable{color:#795da3}.token.entity{cursor:help}.token.title,.token.title .token.punctuation{font-weight:700;color:#1d3e81}.token.list{color:#ed6a43}.token.inserted{background-color:#eaffea;color:#55a532}.token.deleted{background-color:#ffecec;color:#bd2c00}.token.bold{font-weight:700}.token.italic{font-style:italic}.language-json .token.property{color:#183691}.language-markup .token.tag .token.punctuation{color:#333}.language-css .token.function,code.language-css{color:#0086b3}.language-yaml .token.atrule{color:#63a35c}code.language-yaml{color:#183691}.language-ruby .token.function{color:#333}.language-markdown .token.url{color:#795da3}.language-makefile .token.symbol{color:#795da3}.language-makefile .token.variable{color:#183691}.language-makefile .token.builtin{color:#0086b3}.language-bash .token.keyword{color:#0086b3}pre[data-line]{position:relative;padding:1em 0 1em 3em}pre[data-line] .line-highlight-wrapper{position:absolute;top:0;left:0;background-color:transparent;display:block;width:100%}pre[data-line] .line-highlight{position:absolute;left:0;right:0;padding:inherit 0;margin-top:1em;background:hsla(24,20%,50%,.08);background:linear-gradient(to right,hsla(24,20%,50%,.1) 70%,hsla(24,20%,50%,0));pointer-events:none;line-height:inherit;white-space:pre}pre[data-line] .line-highlight:before,pre[data-line] .line-highlight[data-end]:after{content:attr(data-start);position:absolute;top:.4em;left:.6em;min-width:1em;padding:0 .5em;background-color:hsla(24,20%,50%,.4);color:#f4f1ef;font:bold 65%/1.5 sans-serif;text-align:center;vertical-align:.3em;border-radius:999px;text-shadow:none;box-shadow:0 1px #fff}pre[data-line] .line-highlight[data-end]:after{content:attr(data-end);top:auto;bottom:.4em}html body{font-family:'Helvetica Neue',Helvetica,'Segoe UI',Arial,freesans,sans-serif;font-size:16px;line-height:1.6;color:#333;background-color:#fff;overflow:initial;box-sizing:border-box;word-wrap:break-word}html body>:first-child{margin-top:0}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{line-height:1.2;margin-top:1em;margin-bottom:16px;color:#000}html body h1{font-size:2.25em;font-weight:300;padding-bottom:.3em}html body h2{font-size:1.75em;font-weight:400;padding-bottom:.3em}html body h3{font-size:1.5em;font-weight:500}html body h4{font-size:1.25em;font-weight:600}html body h5{font-size:1.1em;font-weight:600}html body h6{font-size:1em;font-weight:600}html body h1,html body h2,html body h3,html body h4,html body h5{font-weight:600}html body h5{font-size:1em}html body h6{color:#5c5c5c}html body strong{color:#000}html body del{color:#5c5c5c}html body a:not([href]){color:inherit;text-decoration:none}html body a{color:#08c;text-decoration:none}html body a:hover{color:#00a3f5;text-decoration:none}html body img{max-width:100%}html body>p{margin-top:0;margin-bottom:16px;word-wrap:break-word}html body>ol,html body>ul{margin-bottom:16px}html body ol,html body ul{padding-left:2em}html body ol.no-list,html body ul.no-list{padding:0;list-style-type:none}html body ol ol,html body ol ul,html body ul ol,html body ul ul{margin-top:0;margin-bottom:0}html body li{margin-bottom:0}html body li.task-list-item{list-style:none}html body li>p{margin-top:0;margin-bottom:0}html body .task-list-item-checkbox{margin:0 .2em .25em -1.8em;vertical-align:middle}html body .task-list-item-checkbox:hover{cursor:pointer}html body blockquote{margin:16px 0;font-size:inherit;padding:0 15px;color:#5c5c5c;background-color:#f0f0f0;border-left:4px solid #d6d6d6}html body blockquote>:first-child{margin-top:0}html body blockquote>:last-child{margin-bottom:0}html body hr{height:4px;margin:32px 0;background-color:#d6d6d6;border:0 none}html body table{margin:10px 0 15px 0;border-collapse:collapse;border-spacing:0;display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all}html body table th{font-weight:700;color:#000}html body table td,html body table th{border:1px solid #d6d6d6;padding:6px 13px}html body dl{padding:0}html body dl dt{padding:0;margin-top:16px;font-size:1em;font-style:italic;font-weight:700}html body dl dd{padding:0 16px;margin-bottom:16px}html body code{font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:.85em;color:#000;background-color:#f0f0f0;border-radius:3px;padding:.2em 0}html body code::after,html body code::before{letter-spacing:-.2em;content:'\00a0'}html body pre>code{padding:0;margin:0;word-break:normal;white-space:pre;background:0 0;border:0}html body .highlight{margin-bottom:16px}html body .highlight pre,html body pre{padding:1em;overflow:auto;line-height:1.45;border:#d6d6d6;border-radius:3px}html body .highlight pre{margin-bottom:0;word-break:normal}html body pre code,html body pre tt{display:inline;max-width:initial;padding:0;margin:0;overflow:initial;line-height:inherit;word-wrap:normal;background-color:transparent;border:0}html body pre code:after,html body pre code:before,html body pre tt:after,html body pre tt:before{content:normal}html body blockquote,html body dl,html body ol,html body p,html body pre,html body ul{margin-top:0;margin-bottom:16px}html body kbd{color:#000;border:1px solid #d6d6d6;border-bottom:2px solid #c7c7c7;padding:2px 4px;background-color:#f0f0f0;border-radius:3px}@media print{html body{background-color:#fff}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{color:#000;page-break-after:avoid}html body blockquote{color:#5c5c5c}html body pre{page-break-inside:avoid}html body table{display:table}html body img{display:block;max-width:100%;max-height:100%}html body code,html body pre{word-wrap:break-word;white-space:pre}}.markdown-preview{width:100%;height:100%;box-sizing:border-box}.markdown-preview ul{list-style:disc}.markdown-preview ul ul{list-style:circle}.markdown-preview ul ul ul{list-style:square}.markdown-preview ol{list-style:decimal}.markdown-preview ol ol,.markdown-preview ul ol{list-style-type:lower-roman}.markdown-preview ol ol ol,.markdown-preview ol ul ol,.markdown-preview ul ol ol,.markdown-preview ul ul ol{list-style-type:lower-alpha}.markdown-preview .newpage,.markdown-preview .pagebreak{page-break-before:always}.markdown-preview pre.line-numbers{position:relative;padding-left:3.8em;counter-reset:linenumber}.markdown-preview pre.line-numbers>code{position:relative}.markdown-preview pre.line-numbers .line-numbers-rows{position:absolute;pointer-events:none;top:1em;font-size:100%;left:0;width:3em;letter-spacing:-1px;border-right:1px solid #999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.markdown-preview pre.line-numbers .line-numbers-rows>span{pointer-events:none;display:block;counter-increment:linenumber}.markdown-preview pre.line-numbers .line-numbers-rows>span:before{content:counter(linenumber);color:#999;display:block;padding-right:.8em;text-align:right}.markdown-preview .mathjax-exps .MathJax_Display{text-align:center!important}.markdown-preview:not([data-for=preview]) .code-chunk .code-chunk-btn-group{display:none}.markdown-preview:not([data-for=preview]) .code-chunk .status{display:none}.markdown-preview:not([data-for=preview]) .code-chunk .output-div{margin-bottom:16px}.markdown-preview .md-toc{padding:0}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link div,.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link p{display:inline}.markdown-preview .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}.scrollbar-style::-webkit-scrollbar{width:8px}.scrollbar-style::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}.scrollbar-style::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,.66);border:4px solid rgba(150,150,150,.66);background-clip:content-box}html body[for=html-export]:not([data-presentation-mode]){position:relative;width:100%;height:100%;top:0;left:0;margin:0;padding:0;overflow:auto}html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{position:relative;top:0;min-height:100vh}@media screen and (min-width:914px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{padding:2em calc(50% - 457px + 2em)}}@media screen and (max-width:914px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{font-size:14px!important;padding:1em}}@media print{html body[for=html-export]:not([data-presentation-mode]) #sidebar-toc-btn{display:none}}html body[for=html-export]:not([data-presentation-mode]) #sidebar-toc-btn{position:fixed;bottom:8px;left:8px;font-size:28px;cursor:pointer;color:inherit;z-index:99;width:32px;text-align:center;opacity:.4}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] #sidebar-toc-btn{opacity:1}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc{position:fixed;top:0;left:0;width:300px;height:100%;padding:32px 0 48px 0;font-size:14px;box-shadow:0 0 4px rgba(150,150,150,.33);box-sizing:border-box;overflow:auto;background-color:inherit}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar{width:8px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,.66);border:4px solid rgba(150,150,150,.66);background-clip:content-box}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc a{text-decoration:none}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc{padding:0 16px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link div,html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link p{display:inline}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{left:300px;width:calc(100% - 300px);padding:2em calc(50% - 457px - 300px / 2);margin:0;box-sizing:border-box}@media screen and (max-width:1274px){html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{width:100%}}html body[for=html-export]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .markdown-preview{left:50%;transform:translateX(-50%)}html body[for=html-export]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .md-sidebar-toc{display:none}
+/* Please visit the URL below for more information: */
+/*   https://shd101wyy.github.io/markdown-preview-enhanced/#/customize-css */
+
+      </style>
+      <!-- The content below will be included at the end of the <head> element. --><script type="text/javascript">
+  document.addEventListener("DOMContentLoaded", function () {
+    // your code here
+  });
+</script></head><body for="html-export">
+    
+    
+      <div class="crossnote markdown-preview  ">
+      
+<h1 id="bbh-chatbot-plugin">BBH Chatbot Plugin </h1>
+<h2 id="giới-thiệu">Giới thiệu </h2>
+<p><strong>BBH Chatbot Plugin</strong> là một ứng dụng React TypeScript được thiết kế để nhúng widget chatbox vào các <strong>website</strong>. Plugin này cung cấp giao diện chat thời gian thực giữa khách hàng (visitor) và doanh nghiệp thông qua nền tảng <strong>WEBSITE</strong>, đồng thời hỗ trợ tích hợp AI chatbot.</p>
+<blockquote>
+<p><strong>Lưu ý:</strong> Plugin này <strong>chỉ hoạt động trên nền tảng Website</strong>. Các nền tảng khác như Facebook Messenger, Zalo, WhatsApp,... chỉ xuất hiện dưới dạng <strong>liên kết nhanh (Social Links)</strong> trong giao diện Home để khách hàng có thể chuyển sang các kênh liên lạc khác của doanh nghiệp.</p>
+</blockquote>
+<h2 id="mục-lục">Mục lục </h2>
+<ul>
+<li><a href="#t%C3%ADnh-n%C4%83ng">Tính năng</a></li>
+<li><a href="#c%C3%B4ng-ngh%E1%BB%87-s%E1%BB%AD-d%E1%BB%A5ng">Công nghệ sử dụng</a></li>
+<li><a href="#c%E1%BA%A5u-tr%C3%BAc-d%E1%BB%B1-%C3%A1n">Cấu trúc dự án</a></li>
+<li><a href="#c%C3%A0i-%C4%91%E1%BA%B7t">Cài đặt</a></li>
+<li><a href="#c%E1%BA%A5u-h%C3%ACnh-m%C3%B4i-tr%C6%B0%E1%BB%9Dng">Cấu hình môi trường</a></li>
+<li><a href="#scripts">Scripts</a></li>
+<li><a href="#ki%E1%BA%BFn-tr%C3%BAc-%E1%BB%A9ng-d%E1%BB%A5ng">Kiến trúc ứng dụng</a></li>
+<li><a href="#api-endpoints">API Endpoints</a></li>
+<li><a href="#components-ch%C3%ADnh">Components chính</a></li>
+<li><a href="#hooks">Hooks</a></li>
+<li><a href="#state-management">State Management</a></li>
+<li><a href="#websocket">WebSocket</a></li>
+<li><a href="#%C4%91a-ng%C3%B4n-ng%E1%BB%AF">Đa ngôn ngữ</a></li>
+</ul>
+<hr>
+<h2 id="tính-năng">Tính năng </h2>
+<h3 id="-chat-realtime-trên-website">💬 Chat Realtime trên Website </h3>
+<ul>
+<li>Gửi/nhận tin nhắn văn bản theo thời gian thực qua WebSocket</li>
+<li>Hỗ trợ upload và gửi hình ảnh, video, audio, file đính kèm</li>
+<li>Hiển thị trạng thái typing (đang soạn tin)</li>
+<li>Đếm số tin nhắn chưa đọc</li>
+<li>Quick Chat popup hiển thị tin nhắn mới</li>
+</ul>
+<h3 id="-ai-chatbot">🤖 AI Chatbot </h3>
+<ul>
+<li>Tích hợp trợ lý ảo AI (AI Agent)</li>
+<li>Hỗ trợ câu hỏi thường gặp (FAQ / CTA Messages)</li>
+<li>Quick replies - gợi ý câu trả lời nhanh</li>
+<li>Hiển thị nguồn tham khảo từ LLM (llm_sources)</li>
+</ul>
+<h3 id="-giao-diện-tùy-chỉnh">🎨 Giao diện tùy chỉnh </h3>
+<ul>
+<li>Tùy chỉnh màu sắc chủ đạo (primary color, text color)</li>
+<li>Custom logo trang</li>
+<li>Tùy chỉnh vị trí hiển thị widget (bottom_right, bottom_left, etc.)</li>
+<li>Hiệu ứng nút trigger (button effect)</li>
+<li>Welcome message - tin nhắn chào mừng</li>
+<li>Custom background</li>
+</ul>
+<h3 id="-responsive">📱 Responsive </h3>
+<ul>
+<li>Hỗ trợ hiển thị trên Desktop và Mobile</li>
+<li>Chế độ view_screen cho full-screen (embed trong mobile app)</li>
+<li>Tự động điều chỉnh layout theo kích thước màn hình</li>
+</ul>
+<h3 id="-liên-kết-nhanh-social-links">🔗 Liên kết nhanh (Social Links) </h3>
+<p>Trên màn hình Home, khách hàng có thể bấm vào các liên kết để chuyển sang kênh liên lạc khác của doanh nghiệp:</p>
+<ul>
+<li>📘 Facebook / Messenger</li>
+<li>💬 Zalo</li>
+<li>📱 WhatsApp</li>
+<li>📷 Instagram</li>
+<li>✈️ Telegram</li>
+<li>🔗 Website khác</li>
+<li>📧 Email</li>
+<li>📞 Điện thoại</li>
+<li>Và nhiều nền tảng khác (TikTok, YouTube, Twitter, LinkedIn, Discord, Line, Viber,...)</li>
+</ul>
+<h3 id="-đa-ngôn-ngữ">🌍 Đa ngôn ngữ </h3>
+<p>Hỗ trợ 6 ngôn ngữ:</p>
+<ul>
+<li>🇻🇳 Tiếng Việt (vn)</li>
+<li>🇺🇸 Tiếng Anh (en)</li>
+<li>🇨🇳 Tiếng Trung (cn)</li>
+<li>🇯🇵 Tiếng Nhật (jp)</li>
+<li>🇰🇷 Tiếng Hàn (kr)</li>
+<li>🇹🇭 Tiếng Thái (th)</li>
+</ul>
+<h3 id="-template-messages">📨 Template Messages </h3>
+<p>Hỗ trợ hiển thị các loại tin nhắn template từ server:</p>
+<ul>
+<li>Generic Template (carousel với nhiều item)</li>
+<li>Button Template (tin nhắn với các nút bấm)</li>
+<li>Media Template (video, image với buttons)</li>
+<li>Coupon Template (mã giảm giá)</li>
+<li>Receipt Template (hóa đơn/đơn hàng)</li>
+<li>Customer Feedback Template (đánh giá)</li>
+</ul>
+<h3 id="-form-đăng-ký-khách-hàng">👤 Form đăng ký khách hàng </h3>
+<ul>
+<li>Form trước khi chat để thu thập thông tin khách hàng (tên, SĐT, email)</li>
+<li>Tùy chỉnh bật/tắt từng trường</li>
+<li>Validation theo cấu hình</li>
+</ul>
+<hr>
+<h2 id="công-nghệ-sử-dụng">Công nghệ sử dụng </h2>
+<table>
+<thead>
+<tr>
+<th>Công nghệ</th>
+<th>Phiên bản</th>
+<th>Mục đích</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>React</td>
+<td>^18.3.1</td>
+<td>UI Framework</td>
+</tr>
+<tr>
+<td>TypeScript</td>
+<td>^5.6.2</td>
+<td>Type Safety</td>
+</tr>
+<tr>
+<td>Vite</td>
+<td>^5.4.5</td>
+<td>Build Tool</td>
+</tr>
+<tr>
+<td>Redux Toolkit</td>
+<td>^2.2.7</td>
+<td>State Management</td>
+</tr>
+<tr>
+<td>TailwindCSS</td>
+<td>^3.4.11</td>
+<td>Styling</td>
+</tr>
+<tr>
+<td>React Router</td>
+<td>^6.26.2</td>
+<td>Routing</td>
+</tr>
+<tr>
+<td>i18next</td>
+<td>^23.15.1</td>
+<td>Internationalization</td>
+</tr>
+<tr>
+<td>Framer Motion</td>
+<td>^12.23.12</td>
+<td>Animations</td>
+</tr>
+<tr>
+<td>WebSocket</td>
+<td>Native</td>
+<td>Real-time Communication</td>
+</tr>
+<tr>
+<td>bbh-chatbox-widget-js-sdk</td>
+<td>^1.0.13</td>
+<td>Widget SDK</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="cấu-trúc-dự-án">Cấu trúc dự án </h2>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>chatbot-plugin/
+├── public/                    # Static assets
+├── src/
+│   ├── api/                   # API configuration &amp; endpoints
+│   │   ├── api.ts            # API utilities &amp; fetch functions
+│   │   ├── env/              # Environment configurations
+│   │   ├── index.ts          # API exports
+│   │   └── types.d.ts        # API types
+│   │
+│   ├── assets/               # Images, icons, SVGs
+│   │   └── Logo/             # Social platform logos
+│   │
+│   ├── components/           # Reusable components
+│   │   ├── ChatComponents/   # Chat-related components
+│   │   │   ├── Body/         # Chat body (InitClient, InputChat, MessageBody)
+│   │   │   ├── DetailChat/   # Chi tiết màn chat
+│   │   │   ├── Header/       # Chat header
+│   │   │   ├── MessageComponent/  # Render các loại tin nhắn
+│   │   │   ├── Modal/        # Modal components
+│   │   │   └── type.d.ts     # Component types
+│   │   │
+│   │   ├── HomeComponents/   # Home screen components
+│   │   │   ├── ChatOption.tsx    # Liên kết nhanh (Social Links)
+│   │   │   ├── FAQ.tsx           # Câu hỏi thường gặp
+│   │   │   ├── SendMessage.tsx   # Nút gửi tin nhắn
+│   │   │   └── UnreadMessage.tsx # Tin nhắn chưa đọc
+│   │   │
+│   │   ├── Container/        # Layout containers
+│   │   ├── Icon/             # Icon components
+│   │   ├── Loading/          # Loading indicators
+│   │   ├── WebSocket/        # WebSocket handler
+│   │   └── ...               # Other shared components
+│   │
+│   ├── hooks/                # Custom React hooks
+│   │   ├── useApp.ts         # Main app hook (init, postMessage)
+│   │   └── useChathandlers.ts # Chat action handlers
+│   │
+│   ├── lang/                 # Translation files
+│   │   ├── cn.ts             # Chinese
+│   │   ├── en.ts             # English
+│   │   ├── jp.ts             # Japanese
+│   │   ├── kr.ts             # Korean
+│   │   ├── th.ts             # Thai
+│   │   └── vn.ts             # Vietnamese
+│   │
+│   ├── pages/                # Page components
+│   │   ├── ChatApp/          # Main chat application
+│   │   │   ├── ChatApp.tsx   # Chat app component
+│   │   │   ├── useChatApp.ts # Chat app logic hook
+│   │   │   ├── useChatAppAction.ts # Chat actions
+│   │   │   └── components/   # Sub-components
+│   │   │       ├── Header.tsx        # Header popup
+│   │   │       ├── Menu.tsx          # Tab menu (Home/Message)
+│   │   │       ├── QuickChat.tsx     # Quick chat popup
+│   │   │       ├── TriggerButton.tsx # Nút mở chatbox
+│   │   │       ├── WelcomeMessage.tsx # Tin chào mừng
+│   │   │       ├── FeedbackModal.tsx  # Modal đánh giá
+│   │   │       └── OrderConfirmation.tsx # Xác nhận đơn
+│   │   │
+│   │   ├── ActiveSDK.tsx     # Trang kích hoạt SDK
+│   │   └── type.d.ts         # Page types
+│   │
+│   ├── screens/              # Screen components
+│   │   ├── AIScreen/         # AI assistant screens
+│   │   └── ChatScreen/       # Chat screens
+│   │       ├── Chat/         # Màn chat chính
+│   │       │   ├── Chat.tsx
+│   │       │   └── useChatClient.ts
+│   │       ├── Home.tsx      # Màn Home (greeting, FAQ, social links)
+│   │       └── type.d.ts
+│   │
+│   ├── stores/               # Redux store
+│   │   ├── appSlice.ts       # App state slice (reducers, selectors)
+│   │   ├── index.ts          # Store configuration
+│   │   └── type.d.ts         # State types
+│   │
+│   ├── utils/                # Utility functions
+│   │   ├── index.ts          # Helper functions
+│   │   ├── constants.ts      # Constants (LANGUAGE_MAP)
+│   │   └── type.ts           # Common types
+│   │
+│   ├── App.tsx               # Root component với Routes
+│   ├── App.css               # Global styles
+│   ├── i18n.ts               # i18n configuration
+│   └── index.tsx             # Entry point
+│
+├── .env                      # Development environment
+├── .env.production           # Production environment
+├── package.json              # Dependencies
+├── tailwind.config.js        # TailwindCSS config
+├── tsconfig.json             # TypeScript config
+├── vite.config.ts            # Vite config
+└── vercel.json               # Vercel deployment
+</code></pre><hr>
+<h2 id="cài-đặt">Cài đặt </h2>
+<h3 id="yêu-cầu">Yêu cầu </h3>
+<ul>
+<li>Node.js &gt;= 16.x</li>
+<li>pnpm &gt;= 8.x (khuyến nghị)</li>
+</ul>
+<h3 id="cài-đặt-dependencies">Cài đặt dependencies </h3>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token comment"># Sử dụng pnpm (khuyến nghị)</span>
+<span class="token function">pnpm</span> <span class="token function">install</span>
+
+<span class="token comment"># Hoặc npm</span>
+<span class="token function">npm</span> <span class="token function">install</span>
+
+<span class="token comment"># Hoặc yarn</span>
+<span class="token function">yarn</span> <span class="token function">install</span>
+</code></pre><hr>
+<h2 id="cấu-hình-môi-trường">Cấu hình môi trường </h2>
+<p>Tạo file <code>.env</code> với các biến sau:</p>
+<pre data-role="codeBlock" data-info="env" class="language-env env"><code># API Host - Backend server
+VITE_APP_BE_HOST=https://api.example.com
+
+# WebSocket Host - Realtime messaging
+VITE_APP_SOCKET_HOST=wss://socket.example.com
+
+# Image CDN
+VITE_IMAGE_HOST=https://images.example.com
+VITE_CDN=https://cdn.example.com
+
+# Widget Configuration
+VITE_ID_WIDGET=your-widget-id
+VITE_APP_URL=https://app.example.com
+VITE_WIDGET_URL=https://widget.example.com
+VITE_CHATBOT_URL=https://chatbot.example.com
+VITE_APP_V2_URL=https://app-v2.example.com
+
+# Domain cho trigger button
+VITE_DOMAIN_TRIGGER_BTN=example.com
+
+# Environment
+VITE_APP_ENV=development  # hoặc 'production'
+</code></pre><hr>
+<h2 id="scripts">Scripts </h2>
+<table>
+<thead>
+<tr>
+<th>Script</th>
+<th>Mô tả</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pnpm dev</code></td>
+<td>Chạy development server</td>
+</tr>
+<tr>
+<td><code>pnpm build</code></td>
+<td>Build production bundle</td>
+</tr>
+<tr>
+<td><code>pnpm preview</code></td>
+<td>Preview production build</td>
+</tr>
+<tr>
+<td><code>pnpm start:staging</code></td>
+<td>Chạy với staging environment</td>
+</tr>
+<tr>
+<td><code>pnpm start:prod</code></td>
+<td>Chạy với production environment</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="kiến-trúc-ứng-dụng">Kiến trúc ứng dụng </h2>
+<h3 id="cách-hoạt-động">Cách hoạt động </h3>
+<p>Plugin được embed vào website dưới dạng <strong>iframe</strong>. Giao tiếp giữa website cha (parent) và plugin thông qua <strong>postMessage API</strong>.</p>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>┌─────────────────────────────────────────────────────────┐
+│                    Parent Website                        │
+│                                                          │
+│   &lt;script src="bbh-widget.js"&gt;&lt;/script&gt;                 │
+│                                                          │
+│   ┌─────────────────────────────────────────────────┐   │
+│   │            postMessage (↑↓)                      │   │
+│   └─────────────────────────────────────────────────┘   │
+│                          ↕                               │
+│   ┌─────────────────────────────────────────────────┐   │
+│   │          BBH Chatbot Plugin (iframe)             │   │
+│   │                                                  │   │
+│   │   ┌────────────────────────────────────────┐    │   │
+│   │   │              useApp()                   │    │   │
+│   │   │  - Nhận page_id, client_id từ parent   │    │   │
+│   │   │  - Khởi tạo dữ liệu                     │    │   │
+│   │   │  - Lắng nghe postMessage                │    │   │
+│   │   └────────────────────────────────────────┘    │   │
+│   │                      ↓                           │   │
+│   │   ┌────────────────────────────────────────┐    │   │
+│   │   │           Redux Store                   │    │   │
+│   │   │  - page_id, client_id                   │    │   │
+│   │   │  - list_message, unread_count           │    │   │
+│   │   │  - UI states, settings                  │    │   │
+│   │   └────────────────────────────────────────┘    │   │
+│   │              ↓               ↓                   │   │
+│   │   ┌──────────────┐   ┌──────────────┐           │   │
+│   │   │  REST API    │   │  WebSocket   │           │   │
+│   │   │  (messages)  │   │  (realtime)  │           │   │
+│   │   └──────────────┘   └──────────────┘           │   │
+│   │              ↓               ↓                   │   │
+│   │   ┌────────────────────────────────────────┐    │   │
+│   │   │         Backend Server                  │    │   │
+│   │   └────────────────────────────────────────┘    │   │
+│   └─────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────┘
+</code></pre><h3 id="routes">Routes </h3>
+<table>
+<thead>
+<tr>
+<th>Route</th>
+<th>Component</th>
+<th>Mô tả</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/</code></td>
+<td><code>ChatApp</code></td>
+<td>Trang chat chính với 2 tab: Home &amp; Message</td>
+</tr>
+<tr>
+<td><code>/ai-assistant</code></td>
+<td><code>ChatApp</code></td>
+<td>Chế độ AI Assistant (không có tab Home)</td>
+</tr>
+<tr>
+<td><code>/view-screen</code></td>
+<td><code>ChatApp</code></td>
+<td>Chế độ full-screen (cho mobile app, web app)</td>
+</tr>
+<tr>
+<td><code>/active-sdk</code></td>
+<td><code>ActiveSDK</code></td>
+<td>Trang kích hoạt widget</td>
+</tr>
+</tbody>
+</table>
+<h3 id="luồng-khởi-tạo">Luồng khởi tạo </h3>
+<ol>
+<li><strong>Parent website</strong> load widget script và khởi tạo với <code>page_id</code></li>
+<li><strong>Widget</strong> tạo iframe và embed plugin</li>
+<li><strong>Plugin</strong> nhận <code>page_id</code> qua postMessage hoặc URL params</li>
+<li><strong>useApp</strong> hook gọi API lấy thông tin trang (settings, staff, AI config,...)</li>
+<li><strong>Nếu có <code>client_id</code></strong> đã lưu → load lịch sử chat</li>
+<li><strong>Nếu chưa có <code>client_id</code></strong> → hiển thị form đăng ký (nếu bật)</li>
+<li><strong>WebSocket</strong> kết nối để nhận tin nhắn realtime</li>
+</ol>
+<hr>
+<h2 id="api-endpoints">API Endpoints </h2>
+<h3 id="rest-apis">REST APIs </h3>
+<pre data-role="codeBlock" data-info="typescript" class="language-typescript typescript"><code><span class="token keyword keyword-const">const</span> <span class="token constant">API_END_POINTS</span> <span class="token operator">=</span> <span class="token punctuation">{</span>
+  <span class="token comment">// Đọc danh sách tin nhắn của cuộc hội thoại</span>
+  <span class="token constant">READ_MESSAGE_API</span><span class="token operator">:</span> <span class="token string">'/embed/message/read_message'</span><span class="token punctuation">,</span>
+
+  <span class="token comment">// Gửi tin nhắn (text, attachment)</span>
+  <span class="token constant">SEND_MESSAGE_API</span><span class="token operator">:</span> <span class="token string">'/embed/message/send_message'</span><span class="token punctuation">,</span>
+
+  <span class="token comment">// Khởi tạo/đăng ký client mới</span>
+  <span class="token constant">INIT_CLIENT_API</span><span class="token operator">:</span> <span class="token string">'/embed/conversation/init_identify'</span><span class="token punctuation">,</span>
+
+  <span class="token comment">// Đọc thông tin cấu hình trang (settings, staff, AI,...)</span>
+  <span class="token constant">READ_PAGE_INFO</span><span class="token operator">:</span> <span class="token string">'/embed/page/read_page'</span><span class="token punctuation">,</span>
+
+  <span class="token comment">// Đọc thông tin khách hàng</span>
+  <span class="token constant">READ_CLIENT_INFO</span><span class="token operator">:</span> <span class="token string">'/embed/conversation/read_client'</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span>
+</code></pre><h3 id="websocket-events">WebSocket Events </h3>
+<pre data-role="codeBlock" data-info="typescript" class="language-typescript typescript"><code><span class="token comment">// Gửi khi kết nối để xác thực</span>
+<span class="token punctuation">{</span>
+  page_id<span class="token operator">:</span> <span class="token builtin">string</span><span class="token punctuation">,</span>
+  client_id<span class="token operator">:</span> <span class="token builtin">string</span><span class="token punctuation">,</span>
+  event<span class="token operator">:</span> <span class="token string">'JOIN'</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// Nhận tin nhắn mới</span>
+<span class="token punctuation">{</span>
+  message<span class="token operator">?</span><span class="token operator">:</span> MessageInfo<span class="token punctuation">,</span>
+  sender_action<span class="token operator">?</span><span class="token operator">:</span> <span class="token string">'typing_on'</span> <span class="token operator">|</span> <span class="token string">'typing_off'</span><span class="token punctuation">,</span>
+  quick_replies<span class="token operator">?</span><span class="token operator">:</span> QuickReply<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span>
+</code></pre><hr>
+<h2 id="components-chính">Components chính </h2>
+<h3 id="chatapp">ChatApp </h3>
+<p>Component container chính của ứng dụng chat:</p>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>ChatApp
+├── Header          # Logo, thông tin trang, nút đóng
+├── Home            # Màn Home (greeting, FAQ, social links)
+├── ChatScreen      # Màn Chat (tin nhắn, input)
+├── Menu            # Tab navigation (Home/Message)
+├── QuickChat       # Popup tin nhắn nhanh
+├── WelcomeMessage  # Tin nhắn chào mừng
+├── TriggerButton   # Nút mở/đóng chatbox
+├── Modal           # Preview ảnh
+├── FeedbackModal   # Đánh giá
+└── OrderConfirmation # Xác nhận đơn hàng
+</code></pre><h3 id="home-screen">Home Screen </h3>
+<p>Màn hình chào mừng với các thành phần:</p>
+<ul>
+<li><strong>Greeting</strong>: Lời chào theo tên khách hàng</li>
+<li><strong>UnreadMessage</strong>: Hiển thị tin nhắn chưa đọc</li>
+<li><strong>SendMessage</strong>: Nút bắt đầu chat</li>
+<li><strong>ChatOption</strong>: Liên kết nhanh đến các kênh liên lạc khác (Social Links)</li>
+<li><strong>FAQ</strong>: Câu hỏi thường gặp (CTA Messages)</li>
+</ul>
+<h3 id="chatscreen--detailchat">ChatScreen / DetailChat </h3>
+<p>Màn hình chat chính:</p>
+<ul>
+<li><strong>ChatHeader</strong>: Header với thông tin trang/nhân viên</li>
+<li><strong>MessageBody</strong>: Render danh sách tin nhắn</li>
+<li><strong>MessageComponent</strong>: Render từng tin nhắn theo loại</li>
+<li><strong>InputChat</strong>: Input gửi tin nhắn + upload file</li>
+<li><strong>InitClient</strong>: Form đăng ký thông tin khách hàng</li>
+</ul>
+<h3 id="messagecomponent">MessageComponent </h3>
+<p>Render các loại tin nhắn:</p>
+<ul>
+<li>Text messages</li>
+<li>Image/Video/Audio attachments</li>
+<li>Template messages (Generic, Button, Media, Receipt, Coupon, Feedback)</li>
+<li>Reply messages (tin nhắn trả lời)</li>
+</ul>
+<h3 id="chatoption-social-links">ChatOption (Social Links) </h3>
+<p>Hiển thị danh sách liên kết nhanh để khách hàng chuyển sang kênh khác:</p>
+<pre data-role="codeBlock" data-info="typescript" class="language-typescript typescript"><code><span class="token comment">// Các loại social link được hỗ trợ</span>
+<span class="token keyword keyword-type">type</span> <span class="token class-name">SocialLinkType</span> <span class="token operator">=</span>
+  <span class="token operator">|</span> <span class="token string">'LINK_WEB'</span> <span class="token comment">// Website</span>
+  <span class="token operator">|</span> <span class="token string">'PHONE'</span> <span class="token comment">// Số điện thoại</span>
+  <span class="token operator">|</span> <span class="token string">'MAIL'</span> <span class="token comment">// Email</span>
+  <span class="token operator">|</span> <span class="token string">'FACEBOOK'</span> <span class="token comment">// Facebook page</span>
+  <span class="token operator">|</span> <span class="token string">'MESSENGER'</span> <span class="token comment">// Facebook Messenger</span>
+  <span class="token operator">|</span> <span class="token string">'INSTAGRAM'</span> <span class="token comment">// Instagram</span>
+  <span class="token operator">|</span> <span class="token string">'WHATSAPP'</span> <span class="token comment">// WhatsApp</span>
+  <span class="token operator">|</span> <span class="token string">'ZALO'</span> <span class="token comment">// Zalo</span>
+  <span class="token operator">|</span> <span class="token string">'TELEGRAM'</span> <span class="token comment">// Telegram</span>
+  <span class="token operator">|</span> <span class="token string">'TIKTOK'</span> <span class="token comment">// TikTok</span>
+  <span class="token operator">|</span> <span class="token string">'YOUTUBE'</span> <span class="token comment">// YouTube</span>
+  <span class="token operator">|</span> <span class="token string">'TWITTER'</span> <span class="token comment">// Twitter/X</span>
+  <span class="token operator">|</span> <span class="token string">'LINKEDIN'</span> <span class="token comment">// LinkedIn</span>
+  <span class="token operator">|</span> <span class="token string">'DISCORD'</span> <span class="token comment">// Discord</span>
+  <span class="token operator">|</span> <span class="token string">'LINE'</span> <span class="token comment">// Line</span>
+  <span class="token operator">|</span> <span class="token string">'VIBER'</span> <span class="token comment">// Viber</span>
+  <span class="token operator">|</span> <span class="token string">'THREADS'</span> <span class="token comment">// Threads</span>
+  <span class="token operator">|</span> <span class="token string">'REDDIT'</span> <span class="token comment">// Reddit</span>
+  <span class="token operator">|</span> <span class="token string">'PINTEREST'</span> <span class="token comment">// Pinterest</span>
+  <span class="token operator">|</span> <span class="token string">'GITHUB'</span> <span class="token comment">// GitHub</span>
+  <span class="token operator">|</span> <span class="token string">'TWITCH'</span> <span class="token comment">// Twitch</span>
+  <span class="token operator">|</span> <span class="token string">'VK'</span> <span class="token comment">// VK</span>
+  <span class="token operator">|</span> <span class="token string">'APP_STORE'</span> <span class="token comment">// App Store</span>
+  <span class="token operator">|</span> <span class="token string">'GOOGLE_PLAY_STORE'</span> <span class="token comment">// Google Play</span>
+</code></pre><hr>
+<h2 id="hooks">Hooks </h2>
+<h3 id="useapp">useApp </h3>
+<p>Hook chính khởi tạo và quản lý ứng dụng:</p>
+<pre data-role="codeBlock" data-info="typescript" class="language-typescript typescript"><code><span class="token keyword keyword-const">const</span> <span class="token punctuation">{</span>
+  <span class="token constant">PAGE_ID</span><span class="token punctuation">,</span> <span class="token comment">// ID trang</span>
+  stored_client_id<span class="token punctuation">,</span> <span class="token comment">// ID khách hàng (từ localStorage)</span>
+  is_show<span class="token punctuation">,</span> <span class="token comment">// Trạng thái hiển thị popup</span>
+  setShow<span class="token punctuation">,</span> <span class="token comment">// Toggle popup</span>
+  handleToggle<span class="token punctuation">,</span> <span class="token comment">// Xử lý toggle (PC mode)</span>
+  handleOff<span class="token punctuation">,</span> <span class="token comment">// Đóng popup (Mobile mode)</span>
+  type_consultation<span class="token punctuation">,</span> <span class="token comment">// Trạng thái tư vấn</span>
+  setTypeConsultation<span class="token punctuation">,</span> <span class="token comment">// Set trạng thái tư vấn</span>
+<span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token function">useApp</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">// Các function nội bộ:</span>
+<span class="token comment">// - fetchData(): Lấy thông tin trang từ API</span>
+<span class="token comment">// - decodeClientData(): Giải mã thông tin client từ params</span>
+<span class="token comment">// - handleMessage(): Xử lý postMessage từ parent website</span>
+<span class="token comment">// - fetchPageSetting(): Lấy cấu hình trang</span>
+<span class="token comment">// - fetchClientData(): Lấy thông tin khách hàng</span>
+</code></pre><h3 id="usechatapp">useChatApp </h3>
+<p>Hook xử lý logic màn chat:</p>
+<pre data-role="codeBlock" data-info="typescript" class="language-typescript typescript"><code><span class="token keyword keyword-const">const</span> <span class="token punctuation">{</span>
+  <span class="token comment">// States</span>
+  <span class="token constant">LIST_MESSAGE</span><span class="token punctuation">,</span>              <span class="token comment">// Danh sách tin nhắn</span>
+  <span class="token constant">LATEST_MESSAGE</span><span class="token punctuation">,</span>            <span class="token comment">// Tin nhắn mới nhất</span>
+  <span class="token constant">GLOBAL_UNREAD_MESSAGE_COUNT</span><span class="token punctuation">,</span> <span class="token comment">// Số tin chưa đọc</span>
+  current_tab<span class="token punctuation">,</span>               <span class="token comment">// Tab hiện tại (home/message)</span>
+
+  <span class="token comment">// Settings</span>
+  <span class="token constant">AI_STATUS</span><span class="token punctuation">,</span>                 <span class="token comment">// Có phải chế độ AI không</span>
+  <span class="token constant">IS_VIEW_SCREEN</span><span class="token punctuation">,</span>            <span class="token comment">// Có phải chế độ full-screen không</span>
+  <span class="token constant">POSITION</span><span class="token punctuation">,</span>                  <span class="token comment">// Vị trí widget</span>
+  <span class="token constant">CUSTOM_COLOR</span><span class="token punctuation">,</span>              <span class="token comment">// Màu tùy chỉnh</span>
+
+  <span class="token comment">// Staff info</span>
+  <span class="token constant">EMPLOYEE_LIST</span><span class="token punctuation">,</span>             <span class="token comment">// Danh sách nhân viên</span>
+  staff_list<span class="token punctuation">,</span>                <span class="token comment">// Thông tin staff</span>
+
+  <span class="token comment">// Social links</span>
+  social_link<span class="token punctuation">,</span>               <span class="token comment">// Danh sách liên kết nhanh</span>
+  social_description<span class="token punctuation">,</span>        <span class="token comment">// Mô tả cho social links</span>
+
+  <span class="token comment">// Functions</span>
+  <span class="token function">getContainerLayout</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>      <span class="token comment">// CSS layout theo trạng thái</span>
+  <span class="token function">getMainPopupLayout</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>      <span class="token comment">// CSS popup chính</span>
+  <span class="token function">getQuickchatLayout</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>      <span class="token comment">// CSS quick chat</span>
+  <span class="token function">handleCloseModal</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>        <span class="token comment">// Đóng modal</span>
+<span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token function">useChatApp</span><span class="token punctuation">(</span><span class="token punctuation">{</span> show <span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre><h3 id="usechathandlers">useChatHandlers </h3>
+<p>Hook xử lý các action:</p>
+<pre data-role="codeBlock" data-info="typescript" class="language-typescript typescript"><code><span class="token keyword keyword-const">const</span> <span class="token punctuation">{</span>
+  handleBtn<span class="token punctuation">,</span> <span class="token comment">// Xử lý click nút trigger</span>
+  setHideForMobile<span class="token punctuation">,</span> <span class="token comment">// Đóng popup trên mobile</span>
+<span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token function">useChatHandlers</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  is_show<span class="token punctuation">,</span>
+  setShow<span class="token punctuation">,</span>
+  handleToggle<span class="token punctuation">,</span>
+  handleOff<span class="token punctuation">,</span>
+  <span class="token constant">PAGE_ID</span><span class="token punctuation">,</span>
+  <span class="token constant">CLIENT_ID</span><span class="token punctuation">,</span>
+  setTypeConsultation<span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre><hr>
+<h2 id="state-management">State Management </h2>
+<h3 id="appstate">AppState </h3>
+<pre data-role="codeBlock" data-info="typescript" class="language-typescript typescript"><code><span class="token keyword keyword-interface">interface</span> <span class="token class-name">AppState</span> <span class="token punctuation">{</span>
+  <span class="token comment">// ===== Identity =====</span>
+  page_id<span class="token operator">:</span> <span class="token builtin">string</span> <span class="token comment">// ID trang (từ server)</span>
+  client_id<span class="token operator">:</span> <span class="token builtin">string</span> <span class="token comment">// ID khách hàng</span>
+
+  <span class="token comment">// ===== Messages =====</span>
+  list_message<span class="token operator">:</span> MessageInfo<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token comment">// Danh sách tin nhắn</span>
+  list_unread_message<span class="token operator">:</span> MessageInfo<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token comment">// Tin chưa đọc</span>
+  latest_message<span class="token operator">?</span><span class="token operator">:</span> MessageInfo <span class="token comment">// Tin nhắn mới nhất</span>
+  unread_count<span class="token operator">:</span> <span class="token builtin">number</span> <span class="token comment">// Số tin chưa đọc</span>
+
+  <span class="token comment">// ===== UI States =====</span>
+  show_popup<span class="token operator">:</span> <span class="token builtin">boolean</span> <span class="token comment">// Popup đang mở/đóng</span>
+  loading_global<span class="token operator">:</span> <span class="token builtin">boolean</span> <span class="token comment">// Loading toàn cục</span>
+  is_init<span class="token operator">:</span> <span class="token builtin">boolean</span> <span class="token comment">// Đã khởi tạo client (qua form)</span>
+  current_width<span class="token operator">:</span> <span class="token builtin">number</span> <span class="token comment">// Chiều rộng màn hình parent</span>
+  current_height<span class="token operator">:</span> <span class="token builtin">number</span> <span class="token comment">// Chiều cao màn hình</span>
+  preview_url<span class="token operator">?</span><span class="token operator">:</span> <span class="token builtin">string</span> <span class="token comment">// URL ảnh đang preview</span>
+
+  <span class="token comment">// ===== AI =====</span>
+  is_ai<span class="token operator">?</span><span class="token operator">:</span> <span class="token builtin">boolean</span> <span class="token comment">// Chế độ AI</span>
+  page_info_ai<span class="token operator">?</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token comment">// Thông tin AI agent</span>
+    ai_agent_id<span class="token operator">?</span><span class="token operator">:</span> <span class="token builtin">string</span>
+    is_active_ai_agent<span class="token operator">?</span><span class="token operator">:</span> <span class="token builtin">boolean</span>
+    current_staff_name<span class="token operator">?</span><span class="token operator">:</span> <span class="token builtin">string</span>
+  <span class="token punctuation">}</span>
+  typing_status<span class="token operator">?</span><span class="token operator">:</span> <span class="token builtin">boolean</span> <span class="token comment">// Trạng thái đang soạn tin</span>
+
+  <span class="token comment">// ===== Customization =====</span>
+  custom_color<span class="token operator">?</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token comment">// Màu tùy chỉnh</span>
+    primary_color<span class="token operator">?</span><span class="token operator">:</span> <span class="token builtin">string</span>
+    text_color<span class="token operator">?</span><span class="token operator">:</span> <span class="token builtin">string</span>
+  <span class="token punctuation">}</span>
+  embed_position<span class="token operator">?</span><span class="token operator">:</span> <span class="token builtin">string</span> <span class="token comment">// Vị trí widget</span>
+  embed_position_detail<span class="token operator">?</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token comment">// Chi tiết vị trí</span>
+    bottom<span class="token operator">?</span><span class="token operator">:</span> <span class="token builtin">number</span>
+    right<span class="token operator">?</span><span class="token operator">:</span> <span class="token builtin">number</span>
+    left<span class="token operator">?</span><span class="token operator">:</span> <span class="token builtin">number</span>
+  <span class="token punctuation">}</span>
+  is_custom_background<span class="token operator">?</span><span class="token operator">:</span> <span class="token builtin">boolean</span> <span class="token comment">// Có custom background</span>
+  button_effect<span class="token operator">?</span><span class="token operator">:</span> <span class="token builtin">boolean</span> <span class="token comment">// Hiệu ứng nút trigger</span>
+
+  <span class="token comment">// ===== Staff =====</span>
+  staff_list<span class="token operator">?</span><span class="token operator">:</span> EmployeeList <span class="token comment">// Danh sách nhân viên</span>
+  is_visible_staff<span class="token operator">?</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token comment">// Cấu hình hiển thị nhân viên</span>
+    is_active<span class="token operator">?</span><span class="token operator">:</span> <span class="token builtin">boolean</span>
+    allow_staffs<span class="token operator">?</span><span class="token operator">:</span> EmployeeList
+  <span class="token punctuation">}</span>
+
+  <span class="token comment">// ===== Features =====</span>
+  quick_chat<span class="token operator">?</span><span class="token operator">:</span> <span class="token builtin">any</span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token comment">// Quick chat data (từ socket)</span>
+  form_before_chat<span class="token operator">?</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token comment">// Form trước khi chat</span>
+    is_active<span class="token operator">:</span> <span class="token builtin">boolean</span>
+    data<span class="token operator">?</span><span class="token operator">:</span> FormData<span class="token punctuation">[</span><span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+  faq_question_cta<span class="token operator">?</span><span class="token operator">:</span> <span class="token constant">FAQ_QUESTION_CTA</span> <span class="token comment">// FAQ/CTA</span>
+  is_active_cta_message<span class="token operator">?</span><span class="token operator">:</span> <span class="token builtin">boolean</span>
+  is_visible_home_page<span class="token operator">?</span><span class="token operator">:</span> <span class="token builtin">boolean</span> <span class="token comment">// Hiển thị trang Home</span>
+  open_popup_when_access<span class="token operator">?</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token comment">// Tự động mở popup</span>
+    option<span class="token operator">?</span><span class="token operator">:</span> <span class="token builtin">string</span>
+    delay<span class="token operator">?</span><span class="token operator">:</span> <span class="token builtin">number</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token comment">// ===== Branding =====</span>
+  org_allow_logo<span class="token operator">?</span><span class="token operator">:</span> <span class="token builtin">boolean</span> <span class="token comment">// Cho phép custom logo</span>
+  logo_page_custom<span class="token operator">?</span><span class="token operator">:</span> <span class="token builtin">string</span> <span class="token comment">// Logo tùy chỉnh</span>
+  page_avatar<span class="token operator">?</span><span class="token operator">:</span> <span class="token builtin">string</span> <span class="token comment">// Avatar trang</span>
+
+  <span class="token comment">// ===== User Info =====</span>
+  user_info<span class="token operator">?</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    user_name<span class="token operator">:</span> <span class="token builtin">string</span>
+    user_phone<span class="token operator">:</span> <span class="token builtin">string</span>
+    user_email<span class="token operator">:</span> <span class="token builtin">string</span>
+    client_id<span class="token operator">:</span> <span class="token builtin">string</span>
+  <span class="token punctuation">}</span>
+  client_name_store<span class="token operator">?</span><span class="token operator">:</span> <span class="token builtin">string</span> <span class="token comment">// Tên khách hàng</span>
+<span class="token punctuation">}</span>
+</code></pre><h3 id="reducers-chính">Reducers chính </h3>
+<pre data-role="codeBlock" data-info="typescript" class="language-typescript typescript"><code><span class="token comment">// Lưu page_id</span>
+<span class="token function">setPageId</span><span class="token punctuation">(</span>state<span class="token punctuation">,</span> action<span class="token operator">:</span> PayloadAction<span class="token operator">&lt;</span><span class="token builtin">string</span><span class="token operator">&gt;</span><span class="token punctuation">)</span>
+
+<span class="token comment">// Lưu client_id</span>
+<span class="token function">setGlobalClientId</span><span class="token punctuation">(</span>state<span class="token punctuation">,</span> action<span class="token operator">:</span> PayloadAction<span class="token operator">&lt;</span><span class="token builtin">string</span><span class="token operator">&gt;</span><span class="token punctuation">)</span>
+
+<span class="token comment">// Cập nhật danh sách tin nhắn</span>
+<span class="token function">setListMessage</span><span class="token punctuation">(</span>state<span class="token punctuation">,</span> action<span class="token operator">:</span> PayloadAction<span class="token operator">&lt;</span>MessageInfo<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">&gt;</span><span class="token punctuation">)</span>
+
+<span class="token comment">// Thêm tin nhắn chưa đọc</span>
+<span class="token function">setListUnreadMessage</span><span class="token punctuation">(</span>state<span class="token punctuation">,</span> action<span class="token operator">:</span> PayloadAction<span class="token operator">&lt;</span>MessageInfo<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">&gt;</span><span class="token punctuation">)</span>
+
+<span class="token comment">// Cập nhật số tin chưa đọc</span>
+<span class="token function">setGlobalUnreadCount</span><span class="token punctuation">(</span>state<span class="token punctuation">,</span> action<span class="token operator">:</span> PayloadAction<span class="token operator">&lt;</span><span class="token builtin">number</span><span class="token operator">&gt;</span><span class="token punctuation">)</span>
+
+<span class="token comment">// Cập nhật trạng thái typing</span>
+<span class="token function">setTypingStatus</span><span class="token punctuation">(</span>state<span class="token punctuation">,</span> action<span class="token operator">:</span> PayloadAction<span class="token operator">&lt;</span><span class="token builtin">boolean</span><span class="token operator">&gt;</span><span class="token punctuation">)</span>
+
+<span class="token comment">// Lưu thông tin người dùng</span>
+<span class="token function">setUserInfo</span><span class="token punctuation">(</span>state<span class="token punctuation">,</span> action<span class="token operator">:</span> PayloadAction<span class="token operator">&lt;</span>UserInfo<span class="token operator">&gt;</span><span class="token punctuation">)</span>
+
+<span class="token comment">// Reset cuộc hội thoại</span>
+<span class="token function">resetConversation</span><span class="token punctuation">(</span>state<span class="token punctuation">)</span>
+</code></pre><hr>
+<h2 id="websocket">WebSocket </h2>
+<h3 id="kết-nối-và-xác-thực">Kết nối và xác thực </h3>
+<pre data-role="codeBlock" data-info="typescript" class="language-typescript typescript"><code><span class="token comment">// Khởi tạo WebSocket</span>
+<span class="token keyword keyword-const">const</span> <span class="token constant">WS</span> <span class="token operator">=</span> <span class="token keyword keyword-new">new</span> <span class="token class-name">WebSocket</span><span class="token punctuation">(</span><span class="token constant">SOCKET_API</span><span class="token punctuation">)</span>
+
+<span class="token comment">// Khi kết nối thành công</span>
+<span class="token constant">WS</span><span class="token punctuation">.</span><span class="token function-variable function">onopen</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  <span class="token comment">// Gửi tin nhắn JOIN để xác thực</span>
+  <span class="token constant">WS</span><span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span>
+    <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+      page_id<span class="token operator">:</span> page_id<span class="token punctuation">,</span>
+      client_id<span class="token operator">:</span> client_id<span class="token punctuation">,</span>
+      event<span class="token operator">:</span> <span class="token string">'JOIN'</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token punctuation">)</span>
+
+  <span class="token comment">// Ping mỗi 25 giây để giữ kết nối</span>
+  <span class="token function">setInterval</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token constant">WS</span><span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span><span class="token string">'ping'</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">25000</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre><h3 id="xử-lý-tin-nhắn">Xử lý tin nhắn </h3>
+<pre data-role="codeBlock" data-info="typescript" class="language-typescript typescript"><code><span class="token constant">WS</span><span class="token punctuation">.</span><span class="token function-variable function">onmessage</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">{</span> data <span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  <span class="token comment">// Bỏ qua pong</span>
+  <span class="token keyword keyword-if">if</span> <span class="token punctuation">(</span>data <span class="token operator">===</span> <span class="token string">'pong'</span><span class="token punctuation">)</span> <span class="token keyword keyword-return">return</span>
+
+  <span class="token keyword keyword-const">const</span> socket_data <span class="token operator">=</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span>
+
+  <span class="token comment">// Xử lý typing status</span>
+  <span class="token keyword keyword-if">if</span> <span class="token punctuation">(</span>socket_data<span class="token punctuation">.</span>sender_action <span class="token operator">===</span> <span class="token string">'typing_on'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">dispatch</span><span class="token punctuation">(</span><span class="token function">setTypingStatus</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword keyword-if">if</span> <span class="token punctuation">(</span>socket_data<span class="token punctuation">.</span>sender_action <span class="token operator">===</span> <span class="token string">'typing_off'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">dispatch</span><span class="token punctuation">(</span><span class="token function">setTypingStatus</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token comment">// Xử lý tin nhắn mới</span>
+  <span class="token keyword keyword-if">if</span> <span class="token punctuation">(</span>socket_data<span class="token punctuation">.</span>message<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// Nếu popup đóng hoặc đang ở tab Home</span>
+    <span class="token keyword keyword-if">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token constant">IS_SHOW</span> <span class="token operator">||</span> current_tab <span class="token operator">!==</span> <span class="token string">'message'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token function">dispatch</span><span class="token punctuation">(</span><span class="token function">setListUnreadMessage</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token operator">...</span>current<span class="token punctuation">,</span> message<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+      <span class="token function">dispatch</span><span class="token punctuation">(</span><span class="token function">setGlobalUnreadCount</span><span class="token punctuation">(</span>count <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+    <span class="token function">dispatch</span><span class="token punctuation">(</span><span class="token function">setLatestMessageGlobal</span><span class="token punctuation">(</span>message<span class="token punctuation">)</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token comment">// Xử lý quick replies</span>
+  <span class="token keyword keyword-if">if</span> <span class="token punctuation">(</span>socket_data<span class="token punctuation">.</span>quick_replies<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">dispatch</span><span class="token punctuation">(</span><span class="token function">setDataQuickChat</span><span class="token punctuation">(</span>socket_data<span class="token punctuation">.</span>quick_replies<span class="token punctuation">)</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre><h3 id="auto-reconnect">Auto-reconnect </h3>
+<pre data-role="codeBlock" data-info="typescript" class="language-typescript typescript"><code><span class="token constant">WS</span><span class="token punctuation">.</span><span class="token function-variable function">onclose</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  <span class="token comment">// Tự động kết nối lại sau 100ms (trừ khi force close)</span>
+  <span class="token keyword keyword-if">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>is_force_close_socket<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token function">onSocketFromChatboxServer</span><span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token operator">...</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">100</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre><hr>
+<h2 id="đa-ngôn-ngữ">Đa ngôn ngữ </h2>
+<h3 id="cấu-hình-i18n">Cấu hình i18n </h3>
+<pre data-role="codeBlock" data-info="typescript" class="language-typescript typescript"><code><span class="token comment">// src/i18n.ts</span>
+<span class="token keyword keyword-import">import</span> i18n <span class="token keyword keyword-from">from</span> <span class="token string">'i18next'</span>
+<span class="token keyword keyword-import">import</span> LanguageDetector <span class="token keyword keyword-from">from</span> <span class="token string">'i18next-browser-languagedetector'</span>
+
+i18n<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span>LanguageDetector<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  resources<span class="token operator">:</span> <span class="token punctuation">{</span>
+    vi<span class="token operator">:</span> <span class="token punctuation">{</span> translation<span class="token operator">:</span> vnTranslation <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    en<span class="token operator">:</span> <span class="token punctuation">{</span> translation<span class="token operator">:</span> enTranslation <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    cn<span class="token operator">:</span> <span class="token punctuation">{</span> translation<span class="token operator">:</span> cnTranslation <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    jp<span class="token operator">:</span> <span class="token punctuation">{</span> translation<span class="token operator">:</span> jpTranslation <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    kr<span class="token operator">:</span> <span class="token punctuation">{</span> translation<span class="token operator">:</span> krTranslation <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    th<span class="token operator">:</span> <span class="token punctuation">{</span> translation<span class="token operator">:</span> thTranslation <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  fallbackLng<span class="token operator">:</span> <span class="token string">'vi'</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre><h3 id="sử-dụng-trong-component">Sử dụng trong component </h3>
+<pre data-role="codeBlock" data-info="typescript" class="language-typescript typescript"><code><span class="token keyword keyword-import">import</span> <span class="token punctuation">{</span> useTranslation <span class="token punctuation">}</span> <span class="token keyword keyword-from">from</span> <span class="token string">'react-i18next'</span>
+
+<span class="token keyword keyword-function">function</span> <span class="token function">MyComponent</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword keyword-const">const</span> <span class="token punctuation">{</span> t<span class="token punctuation">,</span> i18n <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token function">useTranslation</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+  <span class="token keyword keyword-return">return</span> <span class="token punctuation">(</span>
+    <span class="token operator">&lt;</span>div<span class="token operator">&gt;</span>
+      <span class="token operator">&lt;</span>h1<span class="token operator">&gt;</span><span class="token punctuation">{</span><span class="token function">t</span><span class="token punctuation">(</span><span class="token string">'welcome'</span><span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token operator">&lt;</span><span class="token operator">/</span>h1<span class="token operator">&gt;</span>
+      <span class="token operator">&lt;</span>button<span class="token operator">&gt;</span><span class="token punctuation">{</span><span class="token function">t</span><span class="token punctuation">(</span><span class="token string">'send'</span><span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token operator">&lt;</span><span class="token operator">/</span>button<span class="token operator">&gt;</span>
+      <span class="token operator">&lt;</span>p<span class="token operator">&gt;</span><span class="token punctuation">{</span><span class="token function">t</span><span class="token punctuation">(</span><span class="token string">'errorMessage'</span><span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token operator">&lt;</span><span class="token operator">/</span>p<span class="token operator">&gt;</span>
+    <span class="token operator">&lt;</span><span class="token operator">/</span>div<span class="token operator">&gt;</span>
+  <span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre><h3 id="language-mapping">Language mapping </h3>
+<pre data-role="codeBlock" data-info="typescript" class="language-typescript typescript"><code><span class="token comment">// Mapping locale code -&gt; tên dùng trong API</span>
+<span class="token keyword keyword-const">const</span> <span class="token constant">LANGUAGE_MAP</span><span class="token operator">:</span> Record<span class="token operator">&lt;</span><span class="token builtin">string</span><span class="token punctuation">,</span> <span class="token builtin">string</span><span class="token operator">&gt;</span> <span class="token operator">=</span> <span class="token punctuation">{</span>
+  vi<span class="token operator">:</span> <span class="token string">'vi'</span><span class="token punctuation">,</span>
+  en<span class="token operator">:</span> <span class="token string">'en'</span><span class="token punctuation">,</span>
+  cn<span class="token operator">:</span> <span class="token string">'zh'</span><span class="token punctuation">,</span>
+  jp<span class="token operator">:</span> <span class="token string">'ja'</span><span class="token punctuation">,</span>
+  kr<span class="token operator">:</span> <span class="token string">'ko'</span><span class="token punctuation">,</span>
+  th<span class="token operator">:</span> <span class="token string">'th'</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span>
+</code></pre><hr>
+<h2 id="các-types-quan-trọng">Các Types quan trọng </h2>
+<h3 id="messageinfo">MessageInfo </h3>
+<pre data-role="codeBlock" data-info="typescript" class="language-typescript typescript"><code><span class="token keyword keyword-interface">interface</span> <span class="token class-name">MessageInfo</span> <span class="token punctuation">{</span>
+  _id<span class="token operator">:</span> <span class="token builtin">string</span>
+  fb_page_id<span class="token operator">:</span> <span class="token builtin">string</span>
+  fb_client_id<span class="token operator">:</span> <span class="token builtin">string</span>
+  message_type<span class="token operator">:</span> <span class="token string">'page'</span> <span class="token operator">|</span> <span class="token string">'client'</span> <span class="token operator">|</span> <span class="token string">'system'</span> <span class="token operator">|</span> <span class="token string">'note'</span> <span class="token operator">|</span> <span class="token string">'activity'</span>
+  message_text<span class="token operator">?</span><span class="token operator">:</span> <span class="token builtin">string</span>
+  message_attachments<span class="token operator">?</span><span class="token operator">:</span> AttachmentInfo<span class="token punctuation">[</span><span class="token punctuation">]</span>
+  time<span class="token operator">:</span> <span class="token builtin">string</span>
+  message_mid<span class="token operator">?</span><span class="token operator">:</span> <span class="token builtin">string</span>
+  platform_type<span class="token operator">?</span><span class="token operator">:</span> <span class="token string">'WEBSITE'</span>
+  llm_sources<span class="token operator">?</span><span class="token operator">:</span> <span class="token punctuation">{</span> link<span class="token operator">?</span><span class="token operator">:</span> <span class="token builtin">string</span><span class="token punctuation">;</span> title<span class="token operator">?</span><span class="token operator">:</span> <span class="token builtin">string</span> <span class="token punctuation">}</span><span class="token punctuation">[</span><span class="token punctuation">]</span>
+  snap_replay_message<span class="token operator">?</span><span class="token operator">:</span> MessageInfo <span class="token comment">// Tin nhắn được reply</span>
+  sender_action<span class="token operator">?</span><span class="token operator">:</span> <span class="token string">'typing_on'</span> <span class="token operator">|</span> <span class="token string">'typing_off'</span>
+<span class="token punctuation">}</span>
+</code></pre><h3 id="attachmentinfo">AttachmentInfo </h3>
+<pre data-role="codeBlock" data-info="typescript" class="language-typescript typescript"><code><span class="token keyword keyword-interface">interface</span> <span class="token class-name">AttachmentInfo</span> <span class="token punctuation">{</span>
+  type<span class="token operator">?</span><span class="token operator">:</span> <span class="token string">'image'</span> <span class="token operator">|</span> <span class="token string">'video'</span> <span class="token operator">|</span> <span class="token string">'audio'</span> <span class="token operator">|</span> <span class="token string">'file'</span> <span class="token operator">|</span> <span class="token string">'template'</span> <span class="token operator">|</span> <span class="token string">'fallback'</span>
+  url<span class="token operator">?</span><span class="token operator">:</span> <span class="token builtin">string</span>
+  title<span class="token operator">?</span><span class="token operator">:</span> <span class="token builtin">string</span>
+  payload<span class="token operator">?</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    url<span class="token operator">?</span><span class="token operator">:</span> <span class="token builtin">string</span>
+    template_type<span class="token operator">?</span><span class="token operator">:</span>
+      <span class="token operator">|</span> <span class="token string">'button'</span>
+      <span class="token operator">|</span> <span class="token string">'generic'</span>
+      <span class="token operator">|</span> <span class="token string">'media'</span>
+      <span class="token operator">|</span> <span class="token string">'receipt'</span>
+      <span class="token operator">|</span> <span class="token string">'coupon'</span>
+      <span class="token operator">|</span> <span class="token string">'customer_feedback'</span>
+    elements<span class="token operator">?</span><span class="token operator">:</span> AttachmentPayload<span class="token punctuation">[</span><span class="token punctuation">]</span>
+    buttons<span class="token operator">?</span><span class="token operator">:</span> ChatbotButton<span class="token punctuation">[</span><span class="token punctuation">]</span>
+    title<span class="token operator">?</span><span class="token operator">:</span> <span class="token builtin">string</span>
+    subtitle<span class="token operator">?</span><span class="token operator">:</span> <span class="token builtin">string</span>
+    <span class="token comment">// ... các field khác tùy template</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre><h3 id="chatbotbutton">ChatbotButton </h3>
+<pre data-role="codeBlock" data-info="typescript" class="language-typescript typescript"><code><span class="token keyword keyword-interface">interface</span> <span class="token class-name">ChatbotButton</span> <span class="token punctuation">{</span>
+  type<span class="token operator">?</span><span class="token operator">:</span>
+    <span class="token operator">|</span> <span class="token string">'postback'</span>
+    <span class="token operator">|</span> <span class="token string">'web_url'</span>
+    <span class="token operator">|</span> <span class="token string">'phone_number'</span>
+    <span class="token operator">|</span> <span class="token string">'bbh_place_order'</span>
+    <span class="token operator">|</span> <span class="token string">'bbh_create_transaction'</span>
+    <span class="token operator">|</span> <span class="token string">'bbh_schedule_appointment'</span>
+  title<span class="token operator">?</span><span class="token operator">:</span> <span class="token builtin">string</span>
+  payload<span class="token operator">?</span><span class="token operator">:</span> <span class="token builtin">string</span> <span class="token comment">// Cho postback</span>
+  url<span class="token operator">?</span><span class="token operator">:</span> <span class="token builtin">string</span> <span class="token comment">// Cho web_url</span>
+<span class="token punctuation">}</span>
+</code></pre><hr>
+<h2 id="deployment">Deployment </h2>
+<h3 id="vercel">Vercel </h3>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token comment"># Build production</span>
+<span class="token function">pnpm</span> build
+
+<span class="token comment"># Deploy</span>
+vercel <span class="token parameter variable">--prod</span>
+</code></pre><h3 id="manual-deploy">Manual Deploy </h3>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token comment"># Build</span>
+<span class="token function">pnpm</span> build:prod
+
+<span class="token comment"># Output trong thư mục dist/</span>
+<span class="token comment"># Upload dist/ lên server của bạn</span>
+</code></pre><hr>
+<h2 id="troubleshooting">Troubleshooting </h2>
+<h3 id="lỗi-websocket-không-kết-nối">Lỗi WebSocket không kết nối </h3>
+<ul>
+<li>Kiểm tra URL WebSocket trong environment (<code>VITE_APP_SOCKET_HOST</code>)</li>
+<li>Đảm bảo server WebSocket đang chạy</li>
+<li>Kiểm tra CORS policy</li>
+<li>Xem console log: "WebSocket Connected!" hoặc "WebSocket Disconnected"</li>
+</ul>
+<h3 id="tin-nhắn-không-hiển-thị-realtime">Tin nhắn không hiển thị realtime </h3>
+<ul>
+<li>Kiểm tra WebSocket connection trong browser DevTools → Network → WS</li>
+<li>Xác minh <code>page_id</code> và <code>client_id</code> đúng</li>
+<li>Kiểm tra socket event 'JOIN' đã được gửi (xem console)</li>
+<li>Đảm bảo nhận được message trong onmessage handler</li>
+</ul>
+<h3 id="postmessage-không-hoạt-động">PostMessage không hoạt động </h3>
+<ul>
+<li>Đảm bảo iframe được embed đúng cách</li>
+<li>Kiểm tra origin của parent website</li>
+<li>Xem console log để debug message events</li>
+<li>Kiểm tra handler <code>handleMessage</code> trong useApp</li>
+</ul>
+<h3 id="form-không-hiển-thị">Form không hiển thị </h3>
+<ul>
+<li>Kiểm tra cấu hình <code>form_before_chat</code> từ server</li>
+<li>Đảm bảo <code>is_active: true</code></li>
+<li>Kiểm tra đã có <code>client_id</code> trong localStorage chưa</li>
+</ul>
+<h3 id="ai-không-phản-hồi">AI không phản hồi </h3>
+<ul>
+<li>Kiểm tra <code>is_active_ai_agent</code> trong settings</li>
+<li>Xác minh <code>ai_agent_id</code> hợp lệ</li>
+<li>Kiểm tra console có lỗi gì không</li>
+</ul>
+<hr>
+<h2 id="contributing">Contributing </h2>
+<ol>
+<li>Fork repository</li>
+<li>Tạo branch feature mới (<code>git checkout -b feature/amazing-feature</code>)</li>
+<li>Commit changes (<code>git commit -m 'Add some amazing feature'</code>)</li>
+<li>Push lên branch (<code>git push origin feature/amazing-feature</code>)</li>
+<li>Tạo Pull Request</li>
+</ol>
+<hr>
+<h2 id="license">License </h2>
+<p>© 2024 BBH Chatbot. All rights reserved.</p>
+
+      </div>
+      
+      
+    
+    
+    
+    
+    
+    
+  
+    </body></html>

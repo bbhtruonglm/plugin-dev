@@ -2,6 +2,7 @@ import { letterToColorCode, nameToLetter } from '@/utils'
 
 import MessageComponent from '../MessageComponent/MessageComponent'
 import React from 'react'
+import LogoRetion from '@/assets/Logo_retion_embed.png'
 
 /**
  * Props của MessageBody
@@ -43,10 +44,7 @@ const MessageBody = React.memo(
         {item?.message_type === 'page' && (
           <div className="flex mask-rounded-oval bg-transparent w-6 h-6 items-center justify-center">
             <img
-              src={
-                checkStaffExist(item?.message_metadata) ||
-                './images/Logo_retion_embed.png'
-              }
+              src={checkStaffExist(item?.message_metadata) || LogoRetion}
               className="w-6 h-6 mask-rounded-oval"
               alt=""
             />

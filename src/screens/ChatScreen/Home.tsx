@@ -44,23 +44,24 @@ function Home({
   /** Hàm dispatch */
   const dispatch = useDispatch()
 
-  /** Tin nhắn mới nhất*/
+  /** Tin nhắn mới nhất từ Redux store */
   const LATEST_MESSAGE = useSelector(selectLatestMessage)
-  /** IS ACTIVE CTA */
+
+  /** Trạng thái active của CTA message */
   const IS_ACTIVE_CTA = useSelector(selectIsActiveCTAMessage)
-  /** LIST CTA */
+
+  /** Danh sách CTA message từ Redux store */
   const LIST_CTA = useSelector(selectListCTAMessage)
-  /** Dữ liệu CTA */
+
+  /** Dữ liệu CTA đã được lọc và map theo ngôn ngữ */
   const DATA_CTA = useMemo(() => {
+    // Kiểm tra nếu không có data thì return mảng rỗng
     if (!LIST_CTA?.data) return []
 
-    return (
-      LIST_CTA.data
-        /** Lọc những item đang active */
-        .filter((item) => item?.is_active)
-        /** Lấy dữ liệu theo ngôn ngữ, fallback về item gốc nếu không có */
-        .map((item) => item?.source?.[LANGUAGE] || item)
-    )
+    // Lọc những item đang active và map theo ngôn ngữ hiện tại
+    return LIST_CTA.data
+      .filter((item) => item?.is_active) // Lọc những item đang active
+      .map((item) => item?.source?.[LANGUAGE] || item) // Lấy dữ liệu theo ngôn ngữ, fallback về item gốc nếu không có
   }, [LIST_CTA, LANGUAGE])
 
   return (
