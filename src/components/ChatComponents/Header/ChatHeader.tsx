@@ -1,4 +1,5 @@
 import 'react-loading-skeleton/dist/skeleton.css' // Đảm bảo CSS được import
+import LogoRetionWhite from '@/assets/Logo_retion_white.png'
 
 import {
   selectCurrentWidth,
@@ -280,11 +281,17 @@ function ChatHeader({
               </div>
               <div className="flex items-center py-3 justify-center h-[72px] w-full">
                 <div className="flex h-12 justify-center">
-                  {SHOW_SUPPORT_STAFF?.is_active ? (
-                    <OnlineStaff
-                      data={employee_list}
-                      size="medium"
-                    />
+                  {SHOW_SUPPORT_STAFF?.is_active &&
+                  (employee_list?.filter(
+                    (staff) =>
+                      SHOW_SUPPORT_STAFF?.allow_staffs?.[staff.user_id] === true
+                  )?.length || 0) > 0 ? (
+                    <div>
+                      <OnlineStaff
+                        data={employee_list}
+                        size="medium"
+                      />
+                    </div>
                   ) : (
                     <div>
                       {(() => {
@@ -292,11 +299,10 @@ function ChatHeader({
                         const LOGO_SRC = renderLogo(
                           ORG_ALLOW_AVATAR,
                           LOGO_PAGE_CUSTOM_BLACK,
-                          './images/Logo_retion_white.png'
+                          LogoRetionWhite
                         )
                         /** Nếu logo source === logo mặc định */
-                        const IS_DEFAULT_LOGO =
-                          LOGO_SRC === './images/Logo_retion_white.png'
+                        const IS_DEFAULT_LOGO = LOGO_SRC === LogoRetionWhite
                         return (
                           <img
                             src={LOGO_SRC + `?v=${Date.now()}`}

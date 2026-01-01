@@ -85,7 +85,9 @@ export function useApp() {
 
         // Load WIDGET với hoặc không có DATA_WIDGET
         if (DATA_WIDGET && DATA_WIDGET.APP?.trim())
+          // Load WIDGET với DATA_WIDGET
           WIDGET.load(ID_WIDGET, DATA_WIDGET)
+        // Load WIDGET không có DATA_WIDGET
         else WIDGET.load(ID_WIDGET)
       } catch (error) {
         console.error('Lỗi khi giải mã token:', error)
@@ -122,7 +124,7 @@ export function useApp() {
       /** Lấy thông tin khách hàng mới từ WIDGET */
       let client_info = await WIDGET.getClientInfo()
 
-      console.log('CHẠY VÀO ĐÂY USER_INFO hàm decode', client_info)
+      // console.log('CHẠY VÀO ĐÂY USER_INFO hàm decode', client_info)
 
       /** PAGE_ID mới từ ai_agent_id */
       const N_PAGE_ID = client_info?.public_profile?.ai_agent_id
@@ -161,7 +163,7 @@ export function useApp() {
         '*'
       )
 
-      console.log('CHẠY VÀO ĐÂY USER_INFO hàm refresh', client_info)
+      // console.log('CHẠY VÀO ĐÂY USER_INFO hàm refresh', client_info)
 
       // Cập nhật thông tin user với client_id mới
       dispatch(
@@ -185,7 +187,7 @@ export function useApp() {
     /** Lấy thông tin khách hàng từ WIDGET */
     let client_info = await WIDGET.getClientInfo()
 
-    console.log(client_info, 'clientttt')
+    // console.log(client_info, 'clientttt')
 
     // Trả về thông tin khách hàng
     return client_info
@@ -290,7 +292,7 @@ export function useApp() {
 
       // Lưu client_id vào store và localStorage
       dispatch(setGlobalClientId(CLIENT_ID))
-      console.log('================================ client id', CLIENT_ID)
+      // Lưu client_id vào localStorage
       localStorage.setItem(`client_id_${PAGE_ID}`, CLIENT_ID)
     }
 
@@ -555,7 +557,7 @@ export function useApp() {
               break
           }
 
-          console.log(auto_open_init, 'auto_open_init')
+          // console.log(auto_open_init, 'auto_open_init')
 
           // Mở popup sau delay nếu setting cho phép
           setTimeout(() => {
@@ -758,6 +760,7 @@ export function useApp() {
           console.log('Language changed to::', LOCALE)
         } else {
           console.log(embed_locale, 'embeddd')
+          // Lấy ngôn ngữ từ WIDGET
           await i18next.changeLanguage(embed_locale)
           console.log('Language changed to::', embed_locale)
         }
@@ -793,7 +796,7 @@ export function useApp() {
             CLIENT_INFO?.public_profile?.page_id +
             '__' +
             CLIENT_INFO?.public_profile?.fb_client_id
-          console.log(NEW_CLIENT_ID, 'newclientid')
+          // console.log(NEW_CLIENT_ID, 'newclientid')
 
           /** Dữ liệu khách hàng */
           const DATA_CLIENT = {
