@@ -82,7 +82,7 @@ function ChatHeader({
    * Trạng thái hiện thị home page
    */
   useEffect(() => {
-    /** Hiện thị trang chủ */
+    // Hiện trang chủ
     setIsShowHome(IS_SHOW_HOME || false)
   }, [IS_SHOW_HOME])
   /** CUSTOM color */
