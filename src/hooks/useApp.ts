@@ -749,8 +749,8 @@ export function useApp() {
             embed_locale = DEFAULT_LANGUAGE || DEFAULT_LANGUAGE_CONFIG
             break
         }
-        /**Check trường hợp AI */
-        if (IS_AI) {
+        /**Check trường hợp AI hoặc View Screen */
+        if (IS_AI || IS_VIEW_SCREEN) {
           /** Lấy ngôn ngữ của LOCALE_PARAMS */
           const LOCALE = IS_VALID_LOCALE
             ? LOCALE_PARAMS
