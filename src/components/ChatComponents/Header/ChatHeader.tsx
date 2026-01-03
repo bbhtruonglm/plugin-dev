@@ -191,16 +191,12 @@ function ChatHeader({
             <div className="flex justify-between items-center w-full gap-x-2">
               <div className="flex gap-2 items-center flex-1 overflow-hidden">
                 {is_show_home && !IS_VIEW_SCREEN ? (
-                  // <BackArrow
-                  //   className="w-7 h-7 cursor-pointer"
-                  //   onClick={() => onCancel()}
-                  // />
                   <ChevronLeftIcon
                     className="size-7 cursor-pointer text-white"
                     onClick={() => onCancel()}
                   />
                 ) : (
-                  <div className="w-7 h-7"></div>
+                  <div className=""></div>
                 )}
 
                 <div className="flex flex-col overflow-hidden flex-1">
