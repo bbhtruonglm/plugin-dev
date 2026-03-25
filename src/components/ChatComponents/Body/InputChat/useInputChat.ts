@@ -1,5 +1,6 @@
 import {
   selectAiMessageAutoSend,
+  selectClientName,
   selectCurrentUserId,
   selectPageId,
   selectPageInfoAI,
@@ -12,6 +13,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useEffect, useRef, useState } from 'react'
 
 import { useAPI } from '@/api/api'
+import { t } from 'i18next'
 
 export function useInputChat({
   client_id,
@@ -60,6 +62,8 @@ export function useInputChat({
   const AI_MESSAGE_AUTO_SEND = useSelector(selectAiMessageAutoSend)
   /** User hiện tại */
   const CURRENT_USER_ID = useSelector(selectCurrentUserId)
+  /** Lấy tên khách hàng từ store */
+  const CLIENT_NAME = useSelector(selectClientName)
   /** END POINT gửi tin nhắn */
   const { SEND_MESSAGE_API } = useAPI()
   /**
@@ -76,21 +80,33 @@ export function useInputChat({
    * @param file  File | null
    * @returns  void
    */
+  /** Giới hạn dung lượng file tối đa (1MB) */
+  const MAX_FILE_SIZE = 1 * 1024 * 1024
+
+  /**
+   * Thực hiện tải tệp tin lên máy chủ.
+   * Tại sao: Cần gửi tệp tin từ khách hàng lên hệ thống để hiển thị trong hội thoại và lưu trữ.
+   * @param {File | null} file - Đối tượng tệp tin cần tải lên
+   */
   const uploadFile = async (file: File | null) => {
+    // Kiểm tra sự tồn tại của tệp tin trước khi xử lý
     if (file) {
+      // Hiển thị trạng thái đang tải lên
       setLoading(true)
 
-      // CHeck size
-      if (file.size > 1 * 1024 * 1024) {
+      // Kiểm tra dung lượng file để đảm bảo hiệu suất hệ thống
+      if (file.size > MAX_FILE_SIZE) {
+        // Gửi thông báo lỗi cho người dùng nếu file vượt quá giới hạn
         handleError &&
-          handleError('Ảnh quá lớn, vui lòng chọn ảnh nhỏ hơn 1MB.')
+          handleError(t('file_too_large') || 'Ảnh quá lớn, vui lòng chọn ảnh nhỏ hơn 1MB.')
+        // Dọn dẹp trạng thái tệp tin và dừng xử lý
         setFile(null)
         setPreviewUrl(null)
         setLoading(false)
         return
       }
 
-      // Optimistic upload
+      // Xử lý tải lên theo phương thức Optimistic nếu có hàm handleUpload được cung cấp
       if (handleUpload) {
         handleUpload(file)
         setFile(null)
@@ -99,25 +115,37 @@ export function useInputChat({
         return
       }
 
+      /** Chuẩn bị dữ liệu FormData để gửi yêu cầu lên API */
       const FORM_DATA = new FormData()
+      /** Xác định ID định danh để gắn vào metadata của tin nhắn */
       const META_DATA_ID = CURRENT_USER_ID || client_id
+
+      // Đính kèm thông tin metadata nếu có đầy đủ định danh
       if (META_DATA_ID) {
-        FORM_DATA.append('metadata', `__user_normal__${META_DATA_ID}`)
+        FORM_DATA.append(
+          'metadata',
+          `__${CLIENT_NAME || t('anonymous')}__${META_DATA_ID}`,
+        )
       }
+      // Bổ sung các thông tin tệp tin và ID cần thiết vào FormData
       FORM_DATA.append('file', file)
       FORM_DATA.append('page_id', PAGE_ID)
       FORM_DATA.append('client_id', client_id)
 
       try {
+        // Thực hiện gửi yêu cầu POST đến máy chủ thông qua fetch
         await fetch(SEND_MESSAGE_API, {
           method: 'POST',
           body: FORM_DATA,
         })
+        // Cập nhật trạng thái sau khi tải lên thành công
         setLoading(false)
         setFile(null)
         setPreviewUrl(null)
-      } catch (error) {
-        handleError && handleError('Có lỗi xảy ra, vui lòng thử lại sau.')
+      } catch (e) {
+        // Xử lý ngoại lệ trong trường hợp quá trình tải lên gặp lỗi
+        handleError && handleError(t('upload_failed') || 'Có lỗi xảy ra, vui lòng thử lại sau.')
+        // Đảm bảo tắt loading và dọn dẹp trạng thái tệp tin
         setLoading(false)
         setFile(null)
         setPreviewUrl(null)

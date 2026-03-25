@@ -123,7 +123,11 @@
 
 import { BtnType, Message } from '../../../type'
 import { fetchAPI, useAPI } from '@/api/api'
-import { selectGlobalClientId, selectPageId } from '@/stores/appSlice'
+import {
+  selectClientName,
+  selectGlobalClientId,
+  selectPageId,
+} from '@/stores/appSlice'
 
 import { t } from 'i18next'
 import { useSelector } from 'react-redux'
@@ -136,6 +140,8 @@ const MessageButtonTemplate = ({ data }: any) => {
   const USER_ID = useSelector(selectGlobalClientId)
   /** Page id từ store */
   const PAGE_ID = useSelector(selectPageId)
+  /** Lấy tên khách hàng từ store */
+  const CLIENT_NAME = useSelector(selectClientName)
   /** Trạng thái hiển thị  */
   const [show_full, setShowFull] = useState(false)
 
@@ -157,7 +163,7 @@ const MessageButtonTemplate = ({ data }: any) => {
    */
   const handlePostback = async (
     message_id: string | undefined,
-    button_idx: number
+    button_idx: number,
   ) => {
     /** payload gửi lại, khi click btn */
     const PAYLOAD = {
@@ -191,7 +197,9 @@ const MessageButtonTemplate = ({ data }: any) => {
       client_id: USER_ID,
       text,
       user_id: USER_ID,
-      ...(META_DATA_ID && { metadata: `__user_normal__${META_DATA_ID}` }),
+      ...(META_DATA_ID && {
+        metadata: `__${CLIENT_NAME || t('anonymous')}__${META_DATA_ID}`,
+      }),
       is_disable_ai: true,
     }
     /** Gửi tin nhắn */

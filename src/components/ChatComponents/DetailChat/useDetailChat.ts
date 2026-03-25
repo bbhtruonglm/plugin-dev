@@ -37,8 +37,16 @@ import {
   setOnClickCTA,
   setRefreshData,
   setTypingStatus,
+  selectClientName,
 } from '@/stores/appSlice'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { t } from 'i18next'
@@ -88,6 +96,9 @@ const useDetailChat = ({
 
   /** is onClick CTA */
   const ON_CLICK_CTA = useSelector(selectOnClickCTA)
+
+  /** Lấy tên khách hàng từ store */
+  const CLIENT_NAME = useSelector(selectClientName)
 
   /** Lấy Api từ hooks api */
   const { DOMAIN_TRIGGER_BTN } = useAPI()
@@ -173,7 +184,7 @@ const useDetailChat = ({
    */
   const STATUSES = useMemo(
     () => [t('ai_thinking'), t('ai_still_thinking'), t('ai_already_thinking')],
-    [LANGUAGE]
+    [LANGUAGE],
   )
 
   /** list trạng thái ai message */
@@ -378,7 +389,7 @@ const useDetailChat = ({
    * State lưu user_id trong localStorage
    */
   const [local_user_id, setLocalUserId] = useState<string | null | undefined>(
-    undefined
+    undefined,
   )
 
   /** Bước 1: Lấy user_id từ localStorage */
@@ -429,96 +440,107 @@ const useDetailChat = ({
   ])
 
   /** Hàm gọi API để lấy tin nhắn */
-  const fetchMessage = async (client_id?: string) => {
-    /** Đang loading hoặc không có thêm bản ghi sẽ không fetch data nữa */
-    if (loading_more || !has_more) return
-    /** Lấy vị trí scroll hiện tại, nếu k có thì return */
-    const CONTAINER = MESSAGE_CONTAINER_REF.current
+  const fetchMessage = useCallback(
+    async (client_id?: string) => {
+      /** Đang loading hoặc không có thêm bản ghi sẽ không fetch data nữa */
+      if (loading_more || !has_more) return
+      /** Lấy vị trí scroll hiện tại, nếu k có thì return */
+      const CONTAINER = MESSAGE_CONTAINER_REF.current
 
-    /** Nếu không co REF thi return */
-    if (!CONTAINER) return
+      /** Nếu không co REF thi return */
+      if (!CONTAINER) return
 
-    /** Lưu vị trí scroll */
-    const SCROLL_POSITION = CONTAINER.scrollHeight - CONTAINER.scrollTop
-
-    /** set loading_more = true để không call liên tục */
-
-    try {
-      if (AI_STATUS) {
-        /** Lấy data */
-        // dispatch(setLoadingGlobal(true))
-      }
-      /** Set loading more */
-      setLoadingMore(true)
-      /** Tạo đối tượng URL từ string */
-      const URL_READ = new URL(READ_MESSAGE_API)
-
-      /** setup params */
-      const PARAMS = {
-        page_id: PAGE_ID,
-        client_id: client_id,
-        limit: LIMIT.toString(),
-        // skip: skip.toString(),
-        /** Lấy giá trị từ ref */
-        skip: SKIP_REF.current.toString(),
-      }
-
-      /** Thêm params vào URL */
-      URL_READ.search = new URLSearchParams(PARAMS as any).toString()
-      /** Kết quả trả về */
-      let result = []
+      /** set loading_more = true để không call liên tục */
 
       try {
+        if (AI_STATUS) {
+          /** Lấy data */
+          // dispatch(setLoadingGlobal(true))
+        }
+        /** Set loading more */
+        setLoadingMore(true)
+
+        /** Tạo đối tượng URL từ string */
+        const URL_READ = new URL(READ_MESSAGE_API)
+
+        /** Calculate valid count excluding sending messages */
+        const VALID_COUNT = LIST_MESSAGE.filter(
+          (msg: any) => msg.status !== 'sending',
+        ).length
+
+        /** setup params */
+        const PARAMS = {
+          page_id: PAGE_ID,
+          client_id: client_id,
+          limit: LIMIT.toString(),
+          skip: VALID_COUNT.toString(),
+        }
+
+        /** Thêm params vào URL */
+        URL_READ.search = new URLSearchParams(PARAMS as any).toString()
         /** Kết quả trả về */
-        result = await fetchAPI(URL_READ.toString(), 'GET')
+        let result = []
 
-        /** Lưu kết quả trả về */
-        const RESULT = await result
-        /** Nếu data trả về = LIMIT thì còn tin nhắn cũ */
-        if (RESULT.data.length === LIMIT) {
-          /** Cập nhật ref mà không gây re-render */
-          SKIP_REF.current += RESULT.data.length
+        try {
+          /** Kết quả trả về */
+          result = await fetchAPI(URL_READ.toString(), 'GET')
 
-          /** set call api se skip bn ban ghi */
-          setSkip(skip + RESULT.data.length)
-        }
+          /** Lưu kết quả trả về */
+          const RESULT = await result
 
-        /** Loại bỏ những tin nhắn từ hệ thống và tin nhắn dạng note */
-        const FILTER_RES = RESULT?.data.filter(
-          (item: any) =>
-            item.message_type !== 'system' && item.message_type !== 'note'
-        )
-        /** Nếu không trùng id client thì ghép, không thì gán lại = list data fetch */
-        if (FILTER_RES?.[0]?.fb_client_id === LIST_MESSAGE?.[0]?.fb_client_id) {
-          /** Lưu LIST_MESSAGE vào store */
-          dispatch(setListMessage([...FILTER_RES.reverse(), ...LIST_MESSAGE]))
-        } else {
-          dispatch(setListMessage([...FILTER_RES.reverse()]))
-        }
+          /** Loại bỏ những tin nhắn từ hệ thống và tin nhắn dạng note */
+          const FILTER_RES = RESULT?.data.filter(
+            (item: any) =>
+              item.message_type !== 'system' && item.message_type !== 'note',
+          )
 
-        /** Dùng request animation frame hoặc settimeout ( độ trễ 0ms) */
-        requestAnimationFrame(() => {
-          if (CONTAINER) {
-            /** Kiểm tra lại container trước khi sử dụng */
-            CONTAINER.scrollTop = CONTAINER.scrollHeight - SCROLL_POSITION
+          if (FILTER_RES.length > 0) {
+            /** Nếu không trùng id client thì ghép, không thì gán lại = list data fetch */
+            if (
+              FILTER_RES?.[0]?.fb_client_id === LIST_MESSAGE?.[0]?.fb_client_id
+            ) {
+              /** Lưu LIST_MESSAGE vào store */
+              dispatch(
+                setListMessage([...FILTER_RES.reverse(), ...LIST_MESSAGE]),
+              )
+            } else {
+              dispatch(setListMessage([...FILTER_RES.reverse()]))
+            }
+            /**
+             * flex-col-reverse: Browser's native scroll anchoring should maintain
+             * scroll position automatically when items are added to the visual top
+             */
           }
-        })
-        /** Nếu data trả về < LIMIT thì đã hết tin nhắn cũ */
-        /** Nếu load trên limit bản ghi thì hasmore == false */
-        if (RESULT.data.length !== LIMIT) {
-          /** k còn data nữa */
+
+          /** Nếu data trả về < LIMIT thì đã hết tin nhắn cũ */
+          /** Nếu load trên limit bản ghi thì hasmore == false */
+          if (RESULT.data.length < LIMIT) {
+            /** k còn data nữa */
+            setHasMore(false)
+          }
+        } catch (error) {
+          console.log('Error:', error)
           setHasMore(false)
+        } finally {
+          /** Tắt loading */
+          dispatch(setLoadingGlobal(false))
+          setLoadingMore(false)
         }
       } catch (error) {
-        console.log('Error:', error)
       } finally {
-        /** Tắt loading */
-        dispatch(setLoadingGlobal(false))
       }
-    } catch (error) {
-    } finally {
-    }
-  }
+    },
+    [
+      loading_more,
+      has_more,
+      AI_STATUS,
+      READ_MESSAGE_API,
+      PAGE_ID,
+      LIMIT,
+      LIST_MESSAGE,
+      dispatch,
+    ],
+  )
 
   /**
    * Hàm debounce xử lý scroll
@@ -535,7 +557,7 @@ const useDetailChat = ({
         /**
          * Set loading more về false
          */
-        setLoadingMore(false)
+        // setLoadingMore(false)
       }
     }, 200)
     /** Nếu la ai trên */
@@ -555,48 +577,71 @@ const useDetailChat = ({
   }, [LIST_MESSAGE, AI_STATUS])
 
   /** Function kéo xuống dưới cùng */
-  const scrollToBottom = () => {
+  const scrollToBottom = useCallback(() => {
     /** Cuộn xuống dưới cùng */
-    MESSAGE_END_REF.current?.scrollIntoView({ behavior: 'smooth' })
-  }
+    // MESSAGE_END_REF.current?.scrollIntoView({ behavior: 'smooth' })
+    MESSAGE_CONTAINER_REF.current?.scrollTo({
+      top: MESSAGE_CONTAINER_REF.current.scrollHeight,
+      behavior: 'smooth',
+    })
+  }, [])
+
   /** Fuction thực thi khi có hành động scroll */
   const handleScroll = useCallback(() => {
     /** Tạo ref nhận event trong message */
     const CONTAINER = MESSAGE_CONTAINER_REF.current
     /** Nếu không có REF thì bỏ qua */
     if (!CONTAINER) return
-    /** Tính toàn vị trí top */
 
-    /** Scroll lên top ( Theo vị trí tính toán) thì load thêm data cũ */
-    if (CONTAINER.scrollTop <= 342 && !loading_more && has_more) {
-      /**
-       * Nếu có client id thì mới fetch data
-       */
+    /**
+     * flex-col-reverse scroll behavior:
+     * - scrollTop = 0 → Visual BOTTOM (newest messages)
+     * - scrollTop = negative values → User scrolled UP (older messages)
+     * - Minimum scrollTop = -(scrollHeight - clientHeight)
+     */
+    const MIN_SCROLL_TOP = -(CONTAINER.scrollHeight - CONTAINER.clientHeight)
+
+    /** Scroll lên top thì load thêm data cũ
+     *  scrollTop rất âm = user đang ở gần visual top (oldest)
+     */
+    if (
+      CONTAINER.scrollTop <= MIN_SCROLL_TOP + 342 &&
+      !loading_more &&
+      has_more
+    ) {
       if (CLIENT_ID_GLOBAL) {
         fetchMessage(CLIENT_ID_GLOBAL)
         console.log('FETCH MESSAGE handle Scroll')
       }
     }
-    /**  vị trí bottom*/
-    const AT_BOTTOM =
-      CONTAINER.scrollTop + CONTAINER.clientHeight >= CONTAINER.scrollHeight - 1
+
+    /** Vị trí bottom (visual bottom = newest messages)
+     *  scrollTop gần 0 = user đang ở visual bottom
+     */
+    const AT_BOTTOM = CONTAINER.scrollTop >= -10
+
     /** Lưu vị trí bottom */
     setScrollAtBottom(AT_BOTTOM)
-    /** Set Hiển thị nút btn jump */
+
+    /** Set Hiển thị nút btn jump
+     *  Hiển thị khi KHÔNG ở bottom (scrollTop < -10)
+     */
     setShowJumpButton(!AT_BOTTOM)
   }, [fetchMessage, loading_more, has_more, CLIENT_ID_GLOBAL])
+
   /**
    * Hàm debounce xử lý scroll
    */
   const DEBOUNCED_SCROLL = useCallback(debounce(handleScroll, 200), [
     handleScroll,
   ])
+
   /**
-   * Hàm debounce xử lý scroll
+   * Hàm debounce xử lý scroll to bottom
    */
   const DEBOUNCED_SCROLL_TO_BOTTOM = useCallback(
     debounce(scrollToBottom, 200),
-    [scrollToBottom]
+    [scrollToBottom],
   )
   useEffect(() => {
     /* Sử dụng debounce để xử lý scroll */
@@ -700,7 +745,7 @@ const useDetailChat = ({
       message_metadata: META_DATA_ID
         ? AI_STATUS
           ? `__ai_agent__${META_DATA_ID}`
-          : `__user_normal__${META_DATA_ID}`
+          : `__${CLIENT_NAME || t('anonymous')}__${META_DATA_ID}`
         : '',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -722,7 +767,7 @@ const useDetailChat = ({
         ...(META_DATA_ID && {
           metadata: AI_STATUS
             ? `__ai_agent__${META_DATA_ID}`
-            : `__user_normal__${META_DATA_ID}`,
+            : `__${CLIENT_NAME || t('anonymous')}__${META_DATA_ID}`,
         }),
       }
       /** Gọi api gửi tin nhắn */
@@ -778,7 +823,7 @@ const useDetailChat = ({
       message_metadata: META_DATA_ID
         ? AI_STATUS
           ? `__ai_agent__${META_DATA_ID}`
-          : `__user_normal__${META_DATA_ID}`
+          : `__${CLIENT_NAME || t('anonymous')}__${META_DATA_ID}`
         : '',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -793,7 +838,10 @@ const useDetailChat = ({
     try {
       const FORM_DATA = new FormData()
       if (META_DATA_ID) {
-        FORM_DATA.append('metadata', `__user_normal__${META_DATA_ID}`)
+        FORM_DATA.append(
+          'metadata',
+          `__${CLIENT_NAME || t('anonymous')}__${META_DATA_ID}`,
+        )
       }
       FORM_DATA.append('file', file)
       FORM_DATA.append('page_id', PAGE_ID || '')
@@ -843,7 +891,7 @@ const useDetailChat = ({
             // OR Match image (if both have attachments)
             (msg.message_attachments?.length > 0 &&
               LATEST_MESSAGE.message_attachments?.length > 0 &&
-              !msg.message_text))
+              !msg.message_text)),
       )
 
       if (tempIndex !== -1) {
@@ -852,7 +900,7 @@ const useDetailChat = ({
       } else {
         /** Nếu không, kiểm tra trùng lặp ID trước khi thêm */
         const exists = NEW_LIST.some(
-          (msg: any) => msg._id === LATEST_MESSAGE._id
+          (msg: any) => msg._id === LATEST_MESSAGE._id,
         )
         if (!exists) {
           NEW_LIST.push(LATEST_MESSAGE)
@@ -908,7 +956,7 @@ const useDetailChat = ({
       /** Trả về link */
       return STAFF_AVATAR
     },
-    [employee_list, IS_PAGE_AVATAR, PAGE_AVATAR]
+    [employee_list, IS_PAGE_AVATAR, PAGE_AVATAR],
   )
   /** Hàm kiểm tra nhân sự có tồn tại không
    * @string id: Nhan vao id của nhân sự
@@ -921,7 +969,7 @@ const useDetailChat = ({
       /** Trả về link */
       return STAFF_AVATAR
     },
-    [employee_list, IS_PAGE_AVATAR, PAGE_AVATAR]
+    [employee_list, IS_PAGE_AVATAR, PAGE_AVATAR],
   )
 
   /** Hàm gửi tin nhắn
@@ -935,7 +983,7 @@ const useDetailChat = ({
     handlePostback(
       payload?.message_mid,
       payload?.button_index,
-      payload?.flow_id
+      payload?.flow_id,
     )
     /** Reset state */
     setSocketQuickChat([])
@@ -943,7 +991,7 @@ const useDetailChat = ({
     /** reset storage */
     localStorage.setItem(
       `data_quick_chat__${PAGE_ID}__${user_id}`,
-      JSON.stringify([])
+      JSON.stringify([]),
     )
     /** reset store */
     dispatch(setDataQuickChat([]))
@@ -953,7 +1001,7 @@ const useDetailChat = ({
   const handlePostback = async (
     message_id: string | undefined,
     button_idx: number,
-    flow_id?: string
+    flow_id?: string,
   ) => {
     /**Payload */
     const PAYLOAD = {

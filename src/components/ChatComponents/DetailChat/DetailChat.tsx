@@ -434,122 +434,31 @@ function DetailChat({
       {/* body - nơi hiển thị tin nhắn */}
       <div
         ref={MESSAGE_CONTAINER_REF}
-        className={`px-5 py-3 gap-4 overflow-y-auto scrollbar-thin scrollbar-webkit flex flex-col relative ${
+        className={`px-5 py-3 gap-4 overflow-y-auto scrollbar-thin scrollbar-webkit flex flex-col-reverse relative ${
           AI_STATUS ? 'mt-0 mb-16' : user_id ? 'my-16' : 'mt-44'
         } `}
+        style={{ overflowAnchor: 'auto' }}
       >
-        {/* Loading khi tải thêm tin nhắn */}
-        {user_id && loading_more && (
-          <div className="fixed bg-white-300 top-[12%] left-[48%] p-2 rounded-full text-xs z-50">
-            <Loading />
-          </div>
-        )}
+        {/* Element đánh dấu vị trí cuộn cuối cùng (Bottom Visual - Start of JSX) */}
+        <div ref={MESSAGE_END_REF} />
 
-        {/* Hiển thị lỗi kết nối nếu không có user_id và có error_message */}
-        {!user_id && error_message && !loading_more && (
-          <h4 className="flex justify-center font-semibold text-red-600 whitespace-pre-line">
-            {error_message}
-          </h4>
-        )}
-
-        {/* Form nhập thông tin khách hàng nếu chưa có user_id và không phải AI */}
-        {!AI_STATUS && !user_id && !error_message && (
-          <div className="flex flex-col gap-2 ">
-            <InitClient
-              resetData={invalid_page_id}
-              onInitClient={(e: any) => {
-                /** set loading state */
-                setLoadingInit(true)
-                /** Gọi callback init client */
-                onInitClient({ ...e, page_id: PAGE_ID })
-              }}
-            />
-            {/* Nếu page id không hợp lệ */}
-            {invalid_page_id && (
-              <h4 className="flex justify-center font-semibold text-red-600">
-                {t('invalid_page_id')}
-              </h4>
-            )}
-          </div>
-        )}
-
-        {/* Các thông báo lỗi liên quan đến AI agent */}
-        {AI_STATUS &&
-          invalid_page_id === true &&
-          is_loaded &&
-          IS_ACTIVE_AGENT_AI === true && (
-            <h4 className="flex justify-center font-semibold text-red-600">
-              {t('invalid_virtual_assistant')}
-            </h4>
-          )}
-        {AI_STATUS && NO_AI_ID && (
-          <h4 className="flex justify-center font-semibold text-red-600">
-            {t('no_virtual_assistant')}
-          </h4>
-        )}
-        {AI_STATUS && is_loaded && IS_ACTIVE_AGENT_AI === false && (
-          <h4 className="flex justify-center font-semibold text-red-600">
-            {t('inactive_virtual_assistant')}
-          </h4>
-        )}
-
-        {/* Hiển thị Phần chào mừng với AI khi chưa có tin nhắn */}
-        {AI_STATUS &&
-          LIST_MESSAGE.length == 0 &&
-          user_id &&
-          !LOADING_GLOBAL &&
-          check_no_message_ai && (
-            <div className="flex flex-col items-center gap-2.5">
-              <img
-                src="./images/assistant_bot.svg"
-                alt=""
-              />
-              <div className="flex flex-col items-center gap-1">
-                <h4 className="text-sm font-medium flex">
-                  {CLIENT_INFO?.current_staff_name
-                    ? t('_hi') + CLIENT_INFO?.current_staff_name
-                    : t('_hi_')}
-                  , {t('_im_your_virtual_assistant')}
-                </h4>
-                <div>
-                  <h4 className="text-xs text-slate-500 text-center">
-                    {t('_how_can_i_help_you')}
-                  </h4>
-                  <h4 className="text-xs text-slate-500 text-center">
-                    {t('asking_anything')}
-                  </h4>
-                </div>
+        {/* Hiển thị trạng thái đang soạn tin (typing...) - Above Ref (Visual Bottom) */}
+        <div>
+          {TYPING_STATUS && (
+            <div
+              className={`text-lg font-semibold flex items-center ${
+                isEmpty(status_list) ? '' : 'gap-x-2'
+              }
+                  py-2 px-4 rounded-full bg-slate-300 w-fit mb-2`}
+            >
+              <div className="flex  ">
+                <LoadingJumping />
               </div>
             </div>
           )}
-
-        {/* Render danh sách tin nhắn */}
-        {user_id &&
-          !LOADING_GLOBAL &&
-          LIST_MESSAGE &&
-          LIST_MESSAGE.map((item: any, index: number) => (
-            <div
-              className="flex flex-col"
-              key={index}
-            >
-              <MessageBody
-                item={item}
-                checkStaffExist={CheckStaffExist}
-                client_name={client_name}
-                checkAgentExist={CheckStaffExistAgent}
-              />
-            </div>
-          ))}
-
-        <div>
-          {/* Demo các message component (đang comment) */}
-          {/* <MessageComponent data={MESSAGE_DATA} />
-          <MessageComponent data={MESSAGE_DATA2} /> */}
-          {/* <MessageComponent data={MESSAGE_DATA4} />
-          <MessageComponent data={MESSAGE_DATA5} /> */}
         </div>
 
-        {/* Render danh sách câu hỏi nhanh (Quick chat) nếu không phải chế độ AI */}
+        {/* Render danh sách câu hỏi nhanh (Quick chat) - Above Typing */}
         {!AI_STATUS && (
           <div className="flex flex-wrap gap-2 w-full">
             {socket_quick_chat.map((item: any, index: number) => (
@@ -575,28 +484,120 @@ function DetailChat({
           </div>
         )}
 
-        {/* Hiển thị trạng thái đang soạn tin (typing...) */}
         <div>
-          {TYPING_STATUS && (
+          {/* Demo các message component (đang comment) */}
+          {/* <MessageComponent data={MESSAGE_DATA} />
+          <MessageComponent data={MESSAGE_DATA2} /> */}
+          {/* <MessageComponent data={MESSAGE_DATA4} />
+          <MessageComponent data={MESSAGE_DATA5} /> */}
+        </div>
+
+        {/* Render danh sách tin nhắn - Reversed for col-reverse */}
+        {user_id &&
+          !LOADING_GLOBAL &&
+          LIST_MESSAGE &&
+          [...LIST_MESSAGE].reverse().map((item: any, index: number) => (
             <div
-              className={`text-lg font-semibold flex items-center ${
-                isEmpty(status_list) ? '' : 'gap-x-2'
-              }
-                  py-2 px-4 rounded-full bg-slate-300 w-fit`}
+              className={`flex flex-col ${item.sender_id === user_id ? 'items-end' : 'items-start'}`}
+              key={item._id || item.message_mid || index}
             >
-              <div className="flex  ">
-                <LoadingJumping />
+              <MessageBody
+                message_item={item}
+                checkStaffExist={CheckStaffExist}
+                client_name={client_name}
+                checkAgentExist={CheckStaffExistAgent}
+              />
+            </div>
+          ))}
+
+        {/* Hiển thị Phần chào mừng với AI khi chưa có tin nhắn */}
+        {AI_STATUS &&
+          LIST_MESSAGE.length == 0 &&
+          user_id &&
+          !LOADING_GLOBAL &&
+          check_no_message_ai && (
+            <div className="flex flex-col items-center gap-2.5 my-auto">
+              <img
+                src="./images/assistant_bot.svg"
+                alt=""
+              />
+              <div className="flex flex-col items-center gap-1">
+                <h4 className="text-sm font-medium flex">
+                  {CLIENT_INFO?.current_staff_name
+                    ? t('_hi') + CLIENT_INFO?.current_staff_name
+                    : t('_hi_')}
+                  , {t('_im_your_virtual_assistant')}
+                </h4>
+                <div>
+                  <h4 className="text-xs text-slate-500 text-center">
+                    {t('_how_can_i_help_you')}
+                  </h4>
+                  <h4 className="text-xs text-slate-500 text-center">
+                    {t('asking_anything')}
+                  </h4>
+                </div>
               </div>
             </div>
           )}
-        </div>
 
-        {/* Element đánh dấu vị trí cuộn cuối cùng */}
-        <div ref={MESSAGE_END_REF} />
+        {/* Các thông báo lỗi liên quan đến AI agent */}
+        {AI_STATUS &&
+          invalid_page_id === true &&
+          is_loaded &&
+          IS_ACTIVE_AGENT_AI === true && (
+            <h4 className="flex justify-center font-semibold text-red-600">
+              {t('invalid_virtual_assistant')}
+            </h4>
+          )}
+        {AI_STATUS && NO_AI_ID && (
+          <h4 className="flex justify-center font-semibold text-red-600">
+            {t('no_virtual_assistant')}
+          </h4>
+        )}
+        {AI_STATUS && is_loaded && IS_ACTIVE_AGENT_AI === false && (
+          <h4 className="flex justify-center font-semibold text-red-600">
+            {t('inactive_virtual_assistant')}
+          </h4>
+        )}
+
+        {/* Form nhập thông tin khách hàng nếu chưa có user_id và không phải AI */}
+        {!AI_STATUS && !user_id && !error_message && (
+          <div className="flex flex-col gap-2 ">
+            <InitClient
+              resetData={invalid_page_id}
+              onInitClient={(e: any) => {
+                /** set loading state */
+                setLoadingInit(true)
+                /** Gọi callback init client */
+                onInitClient({ ...e, page_id: PAGE_ID })
+              }}
+            />
+            {/* Nếu page id không hợp lệ */}
+            {invalid_page_id && (
+              <h4 className="flex justify-center font-semibold text-red-600">
+                {t('invalid_page_id')}
+              </h4>
+            )}
+          </div>
+        )}
+
+        {/* Hiển thị lỗi kết nối */}
+        {!user_id && error_message && !loading_more && (
+          <h4 className="flex justify-center font-semibold text-red-600 whitespace-pre-line">
+            {error_message}
+          </h4>
+        )}
+
+        {/* Loading khi tải thêm tin nhắn - Visual Top (End of JSX) */}
+        {/* {user_id && loading_more && (
+          <div className="w-full flex justify-center py-2">
+            <LoadingDots />
+          </div>
+        )} */}
 
         {/* Loading khi khởi tạo chat */}
         {loading_init && (
-          <div className="fixed bg-red-300 bottom-[22%] left-[48%] p-2 rounded-full text-xs z-50">
+          <div className="fixed bg-gray-100 top-[50%] left-[50%] transform -translate-x-1/2 -translate-y-1/2 p-2 rounded-lg text-xs z-50 shadow-md">
             <LoadingDots />
           </div>
         )}

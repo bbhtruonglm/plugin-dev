@@ -96,21 +96,23 @@ export const vn = {
 
     show_more: 'Xem thêm',
     show_less: 'Thu gọn',
-    order_confirmation: 'Order confirmation',
+    order_confirmation: 'Xác nhận đơn hàng',
 
     items: 'sản phẩm',
 
     deliver_to: 'Giao đến',
 
-    order_title: 'Order confirmation',
+    order_title: 'Thông tin đơn hàng',
 
-    _items: 'Items',
-    ordered_on: 'Ordered on',
-    paid_with: 'Paid with',
-    summary: 'Summary',
-    total: 'Total',
-    sub_total: 'Subtotal',
-    delivery: 'Delivery',
-    estimated_tax: 'Estimated tax',
+    _items: 'Sản phẩm',
+    ordered_on: 'Đặt ngày',
+    paid_with: 'Thanh toán qua',
+    summary: 'Tổng quan',
+    total: 'Tổng cộng',
+    sub_total: 'Tạm tính',
+    delivery: 'Vận chuyển',
+    estimated_tax: 'Thuế dự tính',
+    download_file: 'Tải file',
+    document_label: 'Tài liệu',
   },
 }
