@@ -640,8 +640,8 @@ export function useApp() {
         /** Cài đặt trang */
         let page_setting = {} as any
 
-        // Nếu có page_id thì gọi API lấy cài đặt trang
-        if (STORED_PAGE_ID)
+        // Nếu có page_id và không phải luồng test-ai-ui thì gọi API lấy cài đặt trang
+        if (STORED_PAGE_ID && !IS_TEST_AI_UI)
           page_setting = await fetchPageSetting(STORED_PAGE_ID)
 
         // Lưu cài đặt trang vào store
