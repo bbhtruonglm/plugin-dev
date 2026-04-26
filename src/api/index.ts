@@ -12,6 +12,7 @@ export const ENV = {
   /** Domain & Widget */
   DOMAIN: import.meta.env.VITE_HOST_DOMAIN,
   ID_WIDGET: import.meta.env.VITE_HOST_ID_WIDGET,
+  ID_WIDGET_TEST_AI: import.meta.env.VITE_HOST_ID_WIDGET_TEST_AI,
   DOMAIN_TRIGGER_BTN: import.meta.env.VITE_HOST_DOMAIN_TRIGGER_BTN,
 
   /** API URLs */

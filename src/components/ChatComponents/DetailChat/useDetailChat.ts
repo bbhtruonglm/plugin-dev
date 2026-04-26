@@ -1,7 +1,12 @@
 import { Employee, Message } from '../type'
 import { debounce, isEmpty, keys, set } from 'lodash'
 import { fetchAPI, useAPI } from '@/api/api'
-import { getCookie, renderAvatarFromId, renderAvatarFromIdAgent } from '@/utils'
+import {
+  getClientStorageKey,
+  getCookie,
+  renderAvatarFromId,
+  renderAvatarFromIdAgent,
+} from '@/utils'
 import {
   selectActiveAiAgent,
   selectAiId,
@@ -167,10 +172,10 @@ const useDetailChat = ({
   /**
    * CLIENT_ID
    */
-  let client_id = localStorage.getItem(`client_id_${PAGE_ID}`)
+  let client_id = localStorage.getItem(getClientStorageKey(PAGE_ID))
   /** 2. Nếu localStorage không có → thử lấy từ cookie */
   if (!client_id) {
-    client_id = getCookie(`client_id_${PAGE_ID}`)
+    client_id = getCookie(getClientStorageKey(PAGE_ID))
   }
 
   /**
@@ -326,6 +331,8 @@ const useDetailChat = ({
 
   /** List tin nhắn được lấy từ store */
   const LIST_MESSAGE = useSelector(selectListMessage)
+  /** Ref luôn giữ danh sách tin nhắn mới nhất để tránh stale closure khi gửi nhiều câu liên tiếp */
+  const LIST_MESSAGE_REF = useRef(LIST_MESSAGE)
 
   /** Số tin nhắn chưa đọc lấy trong STORE */
   const GLOBAL_UNREAD_COUNT = useSelector(selectGlobalUnreadCount)
@@ -335,6 +342,12 @@ const useDetailChat = ({
 
   /** Loading global */
   const LOADING_GLOBAL = useSelector(selectLoadingGlobal)
+  /**
+   * Lưu danh sách tin nhắn vào ref
+   */
+  useEffect(() => {
+    LIST_MESSAGE_REF.current = LIST_MESSAGE
+  }, [LIST_MESSAGE])
 
   /**
    * Data client info
@@ -397,11 +410,11 @@ const useDetailChat = ({
     /** Khi user_id khóng null*/
     if (PAGE_ID === undefined) return
     /** Lấy user_id trong localStorage */
-    let stored_client_id = localStorage.getItem(`client_id_${PAGE_ID}`)
+    let stored_client_id = localStorage.getItem(getClientStorageKey(PAGE_ID))
 
     /** Nếu k có lcient id thì lấy trong cookie */
     if (!stored_client_id) {
-      stored_client_id = getCookie(`client_id_${PAGE_ID}`)
+      stored_client_id = getCookie(getClientStorageKey(PAGE_ID))
     }
 
     /** Lưu user_id */
@@ -753,11 +766,14 @@ const useDetailChat = ({
       status: 'sending',
     }
 
-    /** Hiển thị ngay tin nhắn tạm thời */
-    dispatch(setListMessage([...LIST_MESSAGE, TEMP_MESSAGE]))
+    // Hiển thị ngay tin nhắn tạm thời
+    dispatch(setListMessage([...LIST_MESSAGE_REF.current, TEMP_MESSAGE]))
+    // Scroll xuống bottom
     scrollToBottom()
 
     try {
+      // Set loading
+      setLoading(true)
       /** Khởi tạo body tin nhắn */
       const MESSAGE: Message = {
         page_id: PAGE_ID,
@@ -771,19 +787,19 @@ const useDetailChat = ({
         }),
       }
       /** Gọi api gửi tin nhắn */
-      await fetchAPI(SEND_MESSAGE_API, 'POST', MESSAGE)
-      /**
-       * Trường hợp là AI Agent thì mới set Trạng thái typing true sau khi gửi
-       */
+      const RESULT = await fetchAPI(SEND_MESSAGE_API, 'POST', MESSAGE)
+      // Trường hợp là AI Agent thì mới set Trạng thái typing true sau khi gửi
       if (AI_STATUS) {
         dispatch(setTypingStatus(true))
       }
 
-      /** Gửi tin nhắn thành công, scroll xuống cuối trang */
+      // Gửi tin nhắn thành công, scroll xuống cuối trang
       scrollToBottom()
+      return RESULT
     } catch (error) {
       console.error('Gửi tin nhắn thất bại:', error)
-      /** Cập nhật trạng thái lỗi cho tin nhắn tạm nếu cần (tùy chọn) */
+      // Cập nhật trạng thái lỗi cho tin nhắn tạm nếu cần (tùy chọn)
+      throw error
     } finally {
       setLoading(false)
     }
@@ -832,21 +848,26 @@ const useDetailChat = ({
     }
 
     /** Hiển thị ngay tin nhắn tạm thời */
-    dispatch(setListMessage([...LIST_MESSAGE, TEMP_MESSAGE]))
+    dispatch(setListMessage([...LIST_MESSAGE_REF.current, TEMP_MESSAGE]))
     scrollToBottom()
 
     try {
+      /** Tạo form data */
       const FORM_DATA = new FormData()
+      // Thêm metadata vào form data
       if (META_DATA_ID) {
         FORM_DATA.append(
           'metadata',
           `__${CLIENT_NAME || t('anonymous')}__${META_DATA_ID}`,
         )
       }
+      // Thêm file vào form data
       FORM_DATA.append('file', file)
+      // Thêm page_id vào form data
       FORM_DATA.append('page_id', PAGE_ID || '')
+      // Thêm client_id vào form data
       FORM_DATA.append('client_id', client_id || '')
-
+      // Gọi api gửi tin nhắn
       await fetch(SEND_MESSAGE_API, {
         method: 'POST',
         body: FORM_DATA,

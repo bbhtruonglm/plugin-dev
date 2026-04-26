@@ -5,11 +5,14 @@ import {
 import { fetchAPI, useAPI } from '@/api/api'
 import { get, isEmpty, map, values } from 'lodash'
 import {
+  getClientStorageKey,
   getCookie,
+  getLastTimeCloseKey,
   hasAttachmentOfType,
   postMessageToParent,
   renderAvatarFromId,
   renderPosition,
+  getQuickChatStatusKey,
   saveQuickChatCount,
   saveQuickChatLatestMessage,
 } from '@/utils'
@@ -229,11 +232,11 @@ function useChatApp({ show }: { show: boolean }) {
   /** Trạng thái đóng mở QUICK_CHAT
    * Mặc định mở app là true, lưu vào localStorage = show_quick_chat
    */
-  const SHOW_QUICK_CHAT = localStorage.getItem(`status_quick_chat__${PAGE_ID}`)
+  const SHOW_QUICK_CHAT = localStorage.getItem(getQuickChatStatusKey(PAGE_ID))
 
   /** Thời gian đóng QUICK_CHAT gần nhất */
   const LAST_TIME_CLOSE_QUICK_CHAT = localStorage.getItem(
-    `last_time_close__${PAGE_ID}`
+    getLastTimeCloseKey(PAGE_ID)
   )
   /** Tạo REF cho giá trị SHOW_QUICK_CHAT */
   const REF_SHOW_QUICK_CHAT = useRef(SHOW_QUICK_CHAT)
@@ -253,10 +256,10 @@ function useChatApp({ show }: { show: boolean }) {
   const GLOBAL_CLIENT_ID = useSelector(selectGlobalClientId)
 
   /** Lấy client_id từ localStorage*/
-  let stored_client_id = localStorage.getItem(`client_id_${PAGE_ID}`)
+  let stored_client_id = localStorage.getItem(getClientStorageKey(PAGE_ID))
   /** Lấy client_id từ cookie */
   if (!stored_client_id) {
-    stored_client_id = getCookie(`client_id_${PAGE_ID}`)
+    stored_client_id = getCookie(getClientStorageKey(PAGE_ID))
   }
 
   /** Tin nhắn chào mừng  */

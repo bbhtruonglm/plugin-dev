@@ -15,7 +15,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { getCookie } from '@/utils'
+import { getClientStorageKey, getCookie, getDataEmbedChatKey } from '@/utils'
 
 /**
  * Kiểu dữ liệu khởi tạo input
@@ -100,10 +100,10 @@ export function useChatClient(invalid_page_id_parent?: boolean) {
   /** Lấy client_id từ localStorage (nếu có) theo page_id */
   let stored_client_id =
     typeof window !== 'undefined'
-      ? localStorage.getItem(`client_id_${PAGE_ID}`) ?? ''
+      ? localStorage.getItem(getClientStorageKey(PAGE_ID)) ?? ''
       : ''
   if (!stored_client_id) {
-    stored_client_id = getCookie(`client_id_${PAGE_ID}`) || ''
+    stored_client_id = getCookie(getClientStorageKey(PAGE_ID)) || ''
   }
   /** Handle invalid page_id */
   useEffect(() => {
@@ -192,14 +192,14 @@ export function useChatClient(invalid_page_id_parent?: boolean) {
         /** Nếu code là 403 */
         if (RESULT.code === 403) {
           /** Xóa client_id trong localStorage */
-          localStorage.setItem(`client_id_${PAGE_ID}`, '')
+          localStorage.setItem(getClientStorageKey(PAGE_ID), '')
 
           /** Gửi sang SDK , do lỗi nên lưu là rỗng */
           window.parent.postMessage(
             {
               from: 'BBH-EMBED-IFRAME',
               type: 'CLIENT_ID',
-              key: `data_embed_chat_${PAGE_ID}`,
+              key: getDataEmbedChatKey(PAGE_ID),
               data_embed_chat: {
                 client_id: '',
                 page_id: PAGE_ID,
@@ -225,13 +225,13 @@ export function useChatClient(invalid_page_id_parent?: boolean) {
         /**
          * Lưu client_id mới vào localStorage
          */
-        localStorage.setItem(`client_id_${PAGE_ID}`, NEW_CLIENT_ID)
+        localStorage.setItem(getClientStorageKey(PAGE_ID), NEW_CLIENT_ID)
         /** Gửi sang SDK */
         window.parent.postMessage(
           {
             from: 'BBH-EMBED-IFRAME',
             type: 'CLIENT_ID',
-            key: `data_embed_chat_${PAGE_ID}`,
+            key: getDataEmbedChatKey(PAGE_ID),
             data_embed_chat: {
               client_id: NEW_CLIENT_ID,
               page_id: PAGE_ID,

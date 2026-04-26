@@ -1,6 +1,9 @@
 import { fetchAPI, useAPI } from '../api/api'
 import {
+  getClientStorageKey,
   getCookie,
+  getDataEmbedChatKey,
+  getQuickChatStatusKey,
   parsedString,
   postMessageToParent,
   safeParseJSON,
@@ -59,11 +62,140 @@ import WIDGET from 'bbh-chatbox-widget-js-sdk'
 import i18next from 'i18next'
 
 export function useApp() {
+  /** Đường dẫn hiện tại */
+  const PATHNAME = window.location.pathname
+  /** Kiểm tra route test AI UI mới */
+  const IS_TEST_AI_UI_PAGE = PATHNAME.includes('/test-ai-ui')
+  /** Kiểm tra route test AI */
+  const IS_TEST_AI_PAGE =
+    PATHNAME.includes('/test-ai') && !IS_TEST_AI_UI_PAGE
+  /** Kiểm tra route active sdk riêng cho test AI */
+  const IS_TEST_AI_ACTIVE_SDK_PAGE = PATHNAME.includes('/active-sdk-test-ai')
+  /** Kiểm tra context test AI */
+  const IS_TEST_AI_CONTEXT = IS_TEST_AI_PAGE || IS_TEST_AI_ACTIVE_SDK_PAGE
+
   /**
    * @type {Object} API - API lấy thông tin khách hàng
    * @type {string} READ_CLIENT_INFO - URL API lấy thông tin khách hàng
    */
-  const { READ_CLIENT_INFO, READ_PAGE_INFO, ID_WIDGET, DATA_WIDGET } = useAPI()
+  const {
+    READ_CLIENT_INFO,
+    READ_PAGE_INFO,
+    ID_WIDGET,
+    ID_WIDGET_TEST_AI,
+    DATA_WIDGET,
+  } = useAPI()
+
+  /** Secret key widget theo route hiện tại */
+  const CURRENT_WIDGET_ID =
+    IS_TEST_AI_CONTEXT && ID_WIDGET_TEST_AI?.trim()
+      ? ID_WIDGET_TEST_AI
+      : ID_WIDGET
+
+  /**
+   * Dựng client_id cho riêng luồng test AI theo format page_id__fb_client_id.
+   */
+  const buildAiClientId = (public_profile?: any) => {
+    const PAGE_ID = public_profile?.page_id || ''
+    /** Lấy current_user_id từ public_profile */
+    const CURRENT_USER_ID = public_profile?.current_user_id || ''
+    // Kiểm tra xem có page_id và current_user_id không
+    if (!PAGE_ID || !CURRENT_USER_ID) return ''
+    // Trả về client_id
+    return `${PAGE_ID}__${CURRENT_USER_ID}`
+  }
+
+  /**
+   * Áp dụng chung toàn bộ bootstrap cho luồng AI/test-ai.
+   */
+  const APPLY_AI_FLOW = ({
+    public_profile,
+    use_ai_client_id = false,
+    extra_page_info,
+    use_init_identify = false,
+    init_identify_client_id,
+  }: {
+    public_profile?: any
+    use_ai_client_id?: boolean
+    extra_page_info?: Record<string, any>
+    use_init_identify?: boolean
+    init_identify_client_id?: string
+  }) => {
+    const IS_ACTIVE_AGENT_AI = public_profile?.is_active_ai_agent
+
+    dispatch(setCurrentUserId(public_profile?.current_user_id || ''))
+
+    if (!IS_ACTIVE_AGENT_AI) {
+      dispatch(setActiveAiAgent(false))
+      return null
+    }
+
+    dispatch(setActiveAiAgent(true))
+
+    const NEW_CLIENT_ID = use_ai_client_id
+      ? buildAiClientId(public_profile)
+      : `${public_profile?.page_id || ''}__${public_profile?.fb_client_id || ''}`
+    /** Seed client_id để gọi init_identify khi cần */
+    const INIT_IDENTIFY_CLIENT_ID =
+      init_identify_client_id ||
+      public_profile?.current_user_id ||
+      public_profile?.fb_client_id ||
+      ''
+    /** client_id đưa vào store tùy theo luồng bootstrap */
+    const EFFECTIVE_CLIENT_ID = use_init_identify
+      ? INIT_IDENTIFY_CLIENT_ID
+      : NEW_CLIENT_ID
+
+    dispatch(
+      setPageInfoAI({
+        ai_agent_id: public_profile?.ai_agent_id || null,
+        page_id: public_profile?.page_id || '',
+        fb_client_id: public_profile?.fb_client_id || '',
+        page_name: public_profile?.page_name || '',
+        current_staff_name: public_profile?.current_staff_name || '',
+        is_active_ai_agent: public_profile?.is_active_ai_agent || false,
+        ...(extra_page_info || {}),
+      })
+    )
+
+    dispatch(setRefreshData(true))
+
+    if (EFFECTIVE_CLIENT_ID) {
+      dispatch(
+        setUserInfo({
+          user_name: '',
+          user_email: '',
+          user_phone: '',
+          client_id: EFFECTIVE_CLIENT_ID,
+        })
+      )
+    }
+
+    if (use_init_identify) {
+      dispatch(setGlobalClientId(''))
+      localStorage.removeItem(getClientStorageKey(public_profile?.ai_agent_id))
+    } else if (NEW_CLIENT_ID) {
+      dispatch(setGlobalClientId(NEW_CLIENT_ID))
+      localStorage.setItem(
+        getClientStorageKey(public_profile?.ai_agent_id),
+        NEW_CLIENT_ID
+      )
+    }
+
+    const STORED_AI_PAGE_ID = public_profile?.ai_agent_id || null
+
+    if (!STORED_AI_PAGE_ID) {
+      dispatch(setNoAiId(true))
+    } else {
+      dispatch(setNoAiId(false))
+      dispatch(setPageId(STORED_AI_PAGE_ID || ''))
+    }
+
+    return {
+      client_id: NEW_CLIENT_ID,
+      page_id: STORED_AI_PAGE_ID,
+    }
+  }
 
   /**
    * Load WIDGET khi component mount
@@ -71,9 +203,13 @@ export function useApp() {
    */
   useEffect(() => {
     /** Kiểm tra xem có phải trang AI Assistant hoặc Active SDK không */
+    const CURRENT_PATHNAME = window.location.pathname
     const IS_AI_ASSISTANT_PAGE =
-      window.location.pathname.includes('/ai-assistant') ||
-      window.location.pathname.includes('/active-sdk')
+      CURRENT_PATHNAME.includes('/ai-assistant') ||
+      (CURRENT_PATHNAME.includes('/test-ai') &&
+        !CURRENT_PATHNAME.includes('/test-ai-ui')) ||
+      CURRENT_PATHNAME.includes('/active-sdk') ||
+      CURRENT_PATHNAME.includes('/active-sdk-test-ai')
 
     // Nếu là trang AI Assistant hoặc Active SDK
     if (IS_AI_ASSISTANT_PAGE) {
@@ -86,9 +222,9 @@ export function useApp() {
         // Load WIDGET với hoặc không có DATA_WIDGET
         if (DATA_WIDGET && DATA_WIDGET.APP?.trim())
           // Load WIDGET với DATA_WIDGET
-          WIDGET.load(ID_WIDGET, DATA_WIDGET)
+          WIDGET.load(CURRENT_WIDGET_ID, DATA_WIDGET)
         // Load WIDGET không có DATA_WIDGET
-        else WIDGET.load(ID_WIDGET)
+        else WIDGET.load(CURRENT_WIDGET_ID)
       } catch (error) {
         console.error('Lỗi khi giải mã token:', error)
       }
@@ -140,21 +276,22 @@ export function useApp() {
         return
       }
 
-      /** ID khách hàng mới (format: page_id__fb_client_id) */
-      const N_CLIENT_ID =
-        client_info?.public_profile?.page_id +
-        '__' +
-        client_info?.public_profile?.fb_client_id
+      /** ID khách hàng mới */
+      const N_CLIENT_ID = IS_TEST_AI_CONTEXT
+        ? buildAiClientId(client_info?.public_profile)
+        : client_info?.public_profile?.page_id +
+          '__' +
+          client_info?.public_profile?.fb_client_id
 
       // Reset client_id trong localStorage
-      localStorage.setItem(`client_id_${N_PAGE_ID}`, '')
+      localStorage.setItem(getClientStorageKey(N_PAGE_ID), '')
 
       // Gửi thông tin client_id sang SDK qua postMessage
       window.parent.postMessage(
         {
           from: 'BBH-EMBED-IFRAME',
           type: 'CLIENT_ID',
-          key: `data_embed_chat_${N_PAGE_ID}`,
+          key: getDataEmbedChatKey(N_PAGE_ID),
           data_embed_chat: {
             page_id: N_PAGE_ID,
             client_id: N_CLIENT_ID,
@@ -207,10 +344,10 @@ export function useApp() {
   /** Page_id được lưu trong Store */
   const PAGE_ID = useSelector(selectPageId)
   /** Client_id được lưu trong localStorage theo Page_id */
-  let stored_client_id = localStorage.getItem(`client_id_${PAGE_ID}`)
+  let stored_client_id = localStorage.getItem(getClientStorageKey(PAGE_ID))
   /** Nếu không có client_id trong localStorage thì lấy từ cookies */
   if (!stored_client_id) {
-    stored_client_id = getCookie(`client_id_${PAGE_ID}`)
+    stored_client_id = getCookie(getClientStorageKey(PAGE_ID))
   }
   /** data_quick_chat */
   let data_quick_chat = localStorage.getItem(
@@ -265,6 +402,7 @@ export function useApp() {
       from,
       action,
       type,
+      key,
       locale,
       reset_conversation,
       reset_page_id,
@@ -285,7 +423,10 @@ export function useApp() {
       }
 
       /** Page ID từ parsed data */
-      const PAGE_ID = parsed_data.page_id || null
+      const PAGE_ID_FROM_MESSAGE = parsed_data.page_id || null
+      const EXPECTED_DATA_EMBED_CHAT_KEY =
+        getDataEmbedChatKey(PAGE_ID_FROM_MESSAGE)
+      if (key && EXPECTED_DATA_EMBED_CHAT_KEY !== key) return
       /** Client ID từ parsed data */
       const CLIENT_ID =
         parsed_data.client_id || parsed_data['client-id'] || null
@@ -293,7 +434,7 @@ export function useApp() {
       // Lưu client_id vào store và localStorage
       dispatch(setGlobalClientId(CLIENT_ID))
       // Lưu client_id vào localStorage
-      localStorage.setItem(`client_id_${PAGE_ID}`, CLIENT_ID)
+      localStorage.setItem(getClientStorageKey(PAGE_ID_FROM_MESSAGE), CLIENT_ID)
     }
 
     // Xử lý tin nhắn từ CHATBOX
@@ -349,7 +490,7 @@ export function useApp() {
       // Xử lý reset conversation
       if (reset_conversation) {
         // Xóa client_id trong localStorage
-        localStorage?.removeItem(`client_id_${reset_page_id}`)
+        localStorage?.removeItem(getClientStorageKey(reset_page_id))
         // Reset conversation trong store
         dispatch(resetConversation())
         // Reset tên client
@@ -457,9 +598,22 @@ export function useApp() {
 
         /** Page ID từ URL params */
         const STORED_PAGE_ID = URL_PARENT.searchParams.get('page_id') || null
+        /** Client ID riêng cho route test-ai-ui */
+        const STORED_TEST_AI_UI_CLIENT_ID =
+          URL_PARENT.searchParams.get('_client_id') ||
+          URL_PARENT.searchParams.get('client_id') ||
+          null
+        /** Version model riêng cho route test-ai-ui */
+        const STORED_TEST_AI_UI_VER =
+          URL_PARENT.searchParams.get('ver') || null
 
         /** Kiểm tra có phải trang AI Assistant không */
-        const IS_AI = URL_PARENT?.pathname.includes('ai-assistant')
+        const IS_AI =
+          URL_PARENT?.pathname.includes('ai-assistant') ||
+          (URL_PARENT?.pathname.includes('test-ai') &&
+            !URL_PARENT?.pathname.includes('test-ai-ui'))
+        /** Kiểm tra route test AI UI mới */
+        const IS_TEST_AI_UI = URL_PARENT?.pathname.includes('test-ai-ui')
         /** Kiểm tra có phải view screen không */
         const IS_VIEW_SCREEN = URL_PARENT?.pathname.includes('view-screen')
 
@@ -470,18 +624,18 @@ export function useApp() {
               from: 'BBH-EMBED-IFRAME',
               is_view_screen: true,
               status: 'READY',
-              key: `data_embed_chat_${STORED_PAGE_ID}`,
+              key: getDataEmbedChatKey(STORED_PAGE_ID),
             },
             '*'
           )
         }
 
         // Lưu trạng thái AI và view screen vào store
-        dispatch(setStatusIsAI(IS_AI))
+        dispatch(setStatusIsAI(IS_AI || IS_TEST_AI_UI))
         dispatch(setIsViewScreen(IS_VIEW_SCREEN))
 
         // Nếu là AI hoặc view screen thì tự động mở popup
-        setShow(IS_AI || IS_VIEW_SCREEN)
+        setShow(IS_AI || IS_TEST_AI_UI || IS_VIEW_SCREEN)
 
         /** Cài đặt trang */
         let page_setting = {} as any
@@ -529,7 +683,7 @@ export function useApp() {
           dispatch(setCustomColor(page_setting?.custom_color))
 
         // Xử lý auto open popup (chỉ khi không phải AI và view screen)
-        if (!IS_AI && !IS_VIEW_SCREEN) {
+        if (!IS_AI && !IS_TEST_AI_UI && !IS_VIEW_SCREEN) {
           /** Cài đặt mở popup tự động */
           const OPEN_POPUP_SETTING = page_setting?.open_popup_when_access
           /** Kiểm tra có phải mobile không */
@@ -566,7 +720,7 @@ export function useApp() {
         }
 
         /** Trạng thái không phải AI */
-        if (!IS_AI) {
+        if (!IS_AI && !IS_TEST_AI_UI) {
           /** Lưu cài đặt background từ setting */
           const CUSTOM_BACKGROUND = page_setting?.custom_background || false
           /** Lưu cài đặt background vào store */
@@ -750,7 +904,7 @@ export function useApp() {
             break
         }
         /**Check trường hợp AI hoặc View Screen */
-        if (IS_AI || IS_VIEW_SCREEN) {
+        if (IS_AI || IS_TEST_AI_UI || IS_VIEW_SCREEN) {
           /** Lấy ngôn ngữ của LOCALE_PARAMS */
           const LOCALE = IS_VALID_LOCALE
             ? LOCALE_PARAMS
@@ -768,82 +922,31 @@ export function useApp() {
         if (IS_AI) {
           /** Sử dụng await để lấy dữ liệu CLIENT_INFO */
           const CLIENT_INFO = await decodeInitClientData()
-          /** Trạng thái active AI agent */
-          const IS_ACTIVE_AGENT_AI =
-            CLIENT_INFO?.public_profile?.is_active_ai_agent
 
           console.log(CLIENT_INFO, 'CLIENT_INFO CHẠY VÀO ĐÂY')
-          /** Cạap nhật store current User id */
-          dispatch(
-            setCurrentUserId(CLIENT_INFO?.public_profile?.current_user_id || '')
-          )
-
-          /** Nếu khách hàng khóa AI agent thì khóa AI agent */
-          if (!IS_ACTIVE_AGENT_AI) {
-            /** Lưu vào Store */
-            dispatch(setActiveAiAgent(false))
-            return null
-          }
-          /**
-           * Trạng thái active AI agent
-           */
-          dispatch(setActiveAiAgent(true))
-          console.log(IS_ACTIVE_AGENT_AI, 'is_active_agent_ai')
-          /**
-           * New CLIENT ID
-           */
-          const NEW_CLIENT_ID =
-            CLIENT_INFO?.public_profile?.page_id +
-            '__' +
-            CLIENT_INFO?.public_profile?.fb_client_id
-          // console.log(NEW_CLIENT_ID, 'newclientid')
-
-          /** Dữ liệu khách hàng */
-          const DATA_CLIENT = {
-            ai_agent_id: CLIENT_INFO?.public_profile?.ai_agent_id || null,
-            page_id: CLIENT_INFO?.public_profile?.page_id || '',
-            fb_client_id: CLIENT_INFO?.public_profile?.fb_client_id || '',
-            page_name: CLIENT_INFO?.public_profile?.page_name || '',
-            current_staff_name:
-              CLIENT_INFO?.public_profile?.current_staff_name || '',
-            is_active_ai_agent:
-              CLIENT_INFO?.public_profile?.is_active_ai_agent || false,
-          }
-
-          /** Lưu thông tin khách hàng vào store */
-          dispatch(setPageInfoAI(DATA_CLIENT))
-
-          /** Lưu refresh data */
-          dispatch(setRefreshData(true))
-          /**
-           * Nếu có client_id mới thì lưu vào store
-           */
-          if (NEW_CLIENT_ID) {
-            dispatch(
-              setUserInfo({
-                user_name: '',
-                user_email: '',
-                user_phone: '',
-                client_id: NEW_CLIENT_ID,
-              })
-            )
-          }
-          /** Lấy page_id */
-          const STORED_PAGE_ID =
-            CLIENT_INFO?.public_profile?.ai_agent_id || null
-
-          /**
-           * Nếu không có page_id thì setNoAiId(true  )
-           */
-          if (!STORED_PAGE_ID) {
-            dispatch(setNoAiId(true))
-          } else {
-            dispatch(setNoAiId(false))
-            dispatch(setPageId(STORED_PAGE_ID || ''))
-          }
-          /**
-           * Lưu page_id vào store
-           */
+          APPLY_AI_FLOW({
+            public_profile: CLIENT_INFO?.public_profile,
+            use_ai_client_id: IS_TEST_AI_CONTEXT,
+          })
+        } else if (IS_TEST_AI_UI) {
+          /** test-ai-ui lấy seed từ params, sau đó phải đi qua init_identify để tạo client_id thật */
+          APPLY_AI_FLOW({
+            public_profile: {
+              ai_agent_id: STORED_PAGE_ID || null,
+              page_id: STORED_PAGE_ID || '',
+              fb_client_id: STORED_TEST_AI_UI_CLIENT_ID || '',
+              page_name: page_setting?.page_name || '',
+              current_staff_name: '',
+              current_user_id: STORED_TEST_AI_UI_CLIENT_ID || '',
+              is_active_ai_agent: true,
+            },
+            use_ai_client_id: true,
+            use_init_identify: true,
+            init_identify_client_id: STORED_TEST_AI_UI_CLIENT_ID || '',
+            extra_page_info: {
+              ver: STORED_TEST_AI_UI_VER || '',
+            },
+          })
         } else {
           /** Lấy page_id */
           const STORED_PAGE_ID = URL_PARENT.searchParams.get('page_id') || null
@@ -884,12 +987,13 @@ export function useApp() {
            * Lấy client_id từ localStorage
            */
           let stored_client_id = localStorage.getItem(
-            `client_id_${STORED_PAGE_ID}`
+            getClientStorageKey(STORED_PAGE_ID)
           )
 
           /** Nếu không cố client_id thì lưu client_id trong cookie */
           if (!stored_client_id) {
-            stored_client_id = getCookie(`client_id_${PAGE_ID}`) || ''
+            stored_client_id =
+              getCookie(getClientStorageKey(STORED_PAGE_ID)) || ''
           }
 
           /** Trường hợp KHông phải chat AI thì lưu client_id vào store*/
@@ -911,7 +1015,7 @@ export function useApp() {
           /** Lưu trạng thái hiển thị popup */
 
           localStorage.setItem(
-            `status_quick_chat__${STORED_PAGE_ID}`,
+            getQuickChatStatusKey(STORED_PAGE_ID),
             'show_quick_chat'
           )
           /**

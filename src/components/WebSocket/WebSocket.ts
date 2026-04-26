@@ -1,4 +1,5 @@
 import {
+  getQuickChatStatusKey,
   checkTimeTillNow,
   saveQuickChatCount,
   saveQuickChatLatestMessage,
@@ -258,7 +259,7 @@ export function onSocketFromChatboxServer({
             /** Đổi trạng thái QuICK_CHAT thành 'show_quick_chat' */
             /** Bật show QUICK_CHAT lên */
             localStorage.setItem(
-              `status_quick_chat__${page_id}`,
+              getQuickChatStatusKey(page_id),
               'show_quick_chat'
             )
           }

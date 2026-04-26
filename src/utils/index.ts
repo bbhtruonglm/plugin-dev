@@ -434,12 +434,57 @@ export const postMessageToParentAllowedDomains = (list_domains?: string[]) => {
   )
 }
 
+/** Kiểm tra route test-ai-ui hiện tại */
+export const isTestAiUiRoute = () => {
+  if (typeof window === 'undefined') return false
+  return window.location.pathname.includes('/test-ai-ui')
+}
+
+/** Lấy seed client_id từ URL hiện tại cho từng iframe test-ai-ui */
+export const getTestAiUiSeedClientId = () => {
+  if (typeof window === 'undefined') return ''
+  const SEARCH_PARAMS = new URLSearchParams(window.location.search)
+  return (
+    SEARCH_PARAMS.get('_client_id') ||
+    SEARCH_PARAMS.get('client_id') ||
+    ''
+  )
+}
+
+/** Tạo scope riêng cho từng iframe trên route test-ai-ui */
+export const getEmbedScopeKey = (page_id?: string | null) => {
+  const NORMALIZED_PAGE_ID = page_id || ''
+  if (!NORMALIZED_PAGE_ID) return ''
+  if (!isTestAiUiRoute()) return NORMALIZED_PAGE_ID
+
+  const TEST_AI_UI_SEED_CLIENT_ID = getTestAiUiSeedClientId()
+  return TEST_AI_UI_SEED_CLIENT_ID
+    ? `${NORMALIZED_PAGE_ID}__${TEST_AI_UI_SEED_CLIENT_ID}`
+    : NORMALIZED_PAGE_ID
+}
+
+/** Key lưu client_id theo scope iframe hiện tại */
+export const getClientStorageKey = (page_id?: string | null) =>
+  `client_id_${getEmbedScopeKey(page_id)}`
+
+/** Key đồng bộ client_id sang parent theo scope iframe hiện tại */
+export const getDataEmbedChatKey = (page_id?: string | null) =>
+  `data_embed_chat_${getEmbedScopeKey(page_id)}`
+
+/** Key lưu trạng thái quick chat theo scope iframe hiện tại */
+export const getQuickChatStatusKey = (page_id?: string | null) =>
+  `status_quick_chat__${getEmbedScopeKey(page_id)}`
+
+/** Key lưu thời điểm đóng popup theo scope iframe hiện tại */
+export const getLastTimeCloseKey = (page_id?: string | null) =>
+  `last_time_close__${getEmbedScopeKey(page_id)}`
+
 /** Thêm thời gian đóng popup vào localStorage
  * @param {string} page_id: Nhận với page_id
  */
 export const saveTimeClosePopup = (page_id: string) => {
   /** Lưu vào thời gian đóng popup */
-  localStorage.setItem(`last_time_close__${page_id}`, Date.now().toString())
+  localStorage.setItem(getLastTimeCloseKey(page_id), Date.now().toString())
 }
 
 /** Lưu thông tin quickchat count vào localStorage

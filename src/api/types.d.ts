@@ -5,6 +5,7 @@ type IEnv = {
   VITE_HOST_DOMAIN: string
   VITE_HOST_CDN: string
   VITE_HOST_ID_WIDGET: string
+  VITE_HOST_ID_WIDGET_TEST_AI: string
   VITE_HOST_DOMAIN_TRIGGER_BTN: string
   VITE_HOST_APP_URL: string
   VITE_HOST_WIDGET_URL: string

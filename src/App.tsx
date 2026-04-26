@@ -4,6 +4,7 @@ import './i18n'
 import { Route, Routes } from 'react-router-dom'
 
 import ActiveSDK from './pages/ActiveSDK'
+import ActiveSDKTestAI from './pages/ActiveSDKTestAI'
 import ChatApp from './pages/ChatApp/ChatApp'
 import { useApp } from './hooks/useApp'
 import { useChatHandlers } from './hooks/useChathandlers'
@@ -60,6 +61,28 @@ function App() {
           }
         />
         <Route
+          path="/test-ai"
+          element={
+            <ChatApp
+              handleBtn={(e) => handleBtn(e, false)}
+              show={is_show}
+              setHideForMobile={() => setHideForMobile(false)}
+              consultation={false}
+            />
+          }
+        />
+        <Route
+          path="/test-ai-ui"
+          element={
+            <ChatApp
+              handleBtn={(e) => handleBtn(e, false)}
+              show={is_show}
+              setHideForMobile={() => setHideForMobile(false)}
+              consultation={false}
+            />
+          }
+        />
+        <Route
           path="/view-screen"
           element={
             <ChatApp
@@ -73,6 +96,10 @@ function App() {
         <Route
           path="/active-sdk"
           element={<ActiveSDK />}
+        />
+        <Route
+          path="/active-sdk-test-ai"
+          element={<ActiveSDKTestAI />}
         />
       </Routes>
     </div>

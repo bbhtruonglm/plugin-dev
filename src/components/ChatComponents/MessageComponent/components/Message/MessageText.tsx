@@ -38,6 +38,11 @@ const MessageText = ({
   data: MessageProps['data']
   AI_STATUS?: boolean
 }) => {
+  /** Ẩn action thêm vào chat ở trang test AI */
+  const PATHNAME = window.location.pathname
+  const IS_TEST_AI =
+    PATHNAME.includes('/test-ai') || PATHNAME.includes('/test-ai-ui')
+
   /**
    *  Hàm format text với link
    * @param text - Nội dung tin nhắn
@@ -108,7 +113,7 @@ const MessageText = ({
             formatTextWithLinks(data?.message_text)
           )}
         </div>
-        {AI_STATUS && data?.message_type !== 'client' && (
+        {AI_STATUS && data?.message_type !== 'client' && !IS_TEST_AI && (
           <div className="flex flex-col gap-y-2">
             <div
               onClick={() => {

@@ -108,5 +108,24 @@ export const en = {
     estimated_tax: 'Estimated tax',
     download_file: 'Download file',
     document_label: 'Document',
+
+    test: 'Test',
+    running: 'Running',
+    updated_at: 'Updated',
+    change_test_scenario: 'Choose again',
+    test_scenario_label: 'Choose a test scenario',
+    test_scenario_hint:
+      'Select a scenario before starting the automated test flow.',
+    test_scenario_loading: 'Loading scenarios...',
+    test_scenario_loading_detail: 'Loading scenario...',
+    test_scenario_empty: 'No scenarios available for testing.',
+    test_scenario_missing_token:
+      'Missing access token to load the scenario list.',
+    test_scenario_load_failed: 'Unable to load the scenario list.',
+    test_scenario_detail_load_failed: 'Unable to load the scenario details.',
+    test_scenario_detail_empty: 'This scenario has no test content yet.',
+    test_scenario_empty_description: 'Scenario is ready for testing',
+    test_scenario_steps_count: '{{count}} step(s)',
+    test_scenario_untitled: 'Untitled scenario',
   },
 }

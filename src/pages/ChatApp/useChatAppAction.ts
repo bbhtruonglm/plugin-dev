@@ -1,4 +1,8 @@
-import { postMessageToParent, saveTimeClosePopup } from '@/utils'
+import {
+  getQuickChatStatusKey,
+  postMessageToParent,
+  saveTimeClosePopup,
+} from '@/utils'
 import {
   setGlobalUnreadCount,
   setLatestMessageGlobal,
@@ -164,7 +168,7 @@ function useChatAppAction({
     /** Lưu tin nhắn mới nhất trong localStorage */
     saveQuickChatLatestMessage(PAGE_ID, CLIENT_STORED, null)
     /** Lưu trạng thái màn chat */
-    localStorage.setItem(`status_quick_chat__${PAGE_ID}`, 'hide_quick_chat')
+    localStorage.setItem(getQuickChatStatusKey(PAGE_ID), 'hide_quick_chat')
     /** Post message */
     postMessageToParent(
       false,

@@ -114,5 +114,23 @@ export const vn = {
     estimated_tax: 'Thuế dự tính',
     download_file: 'Tải file',
     document_label: 'Tài liệu',
+
+    test: 'Kiểm thử',
+    running: 'Đang chạy',
+    updated_at: 'Cập nhật',
+    change_test_scenario: 'Chọn lại kịch bản',
+    test_scenario_label: 'Chọn kịch bản kiểm thử',
+    test_scenario_hint: 'Chọn một kịch bản trước khi bắt đầu chạy luồng test tự động.',
+    test_scenario_loading: 'Đang tải danh sách kịch bản...',
+    test_scenario_loading_detail: 'Đang tải kịch bản...',
+    test_scenario_empty: 'Chưa có kịch bản nào để kiểm thử.',
+    test_scenario_missing_token:
+      'Thiếu access token để tải danh sách kịch bản.',
+    test_scenario_load_failed: 'Không thể tải danh sách kịch bản.',
+    test_scenario_detail_load_failed: 'Không thể tải chi tiết kịch bản.',
+    test_scenario_detail_empty: 'Kịch bản này chưa có nội dung để kiểm thử.',
+    test_scenario_empty_description: 'Kịch bản sẵn sàng để kiểm thử',
+    test_scenario_steps_count: '{{count}} bước',
+    test_scenario_untitled: 'Kịch bản chưa đặt tên',
   },
 }

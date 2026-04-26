@@ -8,9 +8,11 @@ export const API_END_POINTS = {
     INIT_CLIENT_API: `${ENV.APP_BE_HOST}/embed/conversation/init_identify`,
     READ_PAGE_INFO: `${ENV.APP_BE_HOST}/embed/page/read_page`,
     READ_CLIENT_INFO: `${ENV.APP_BE_HOST}/embed/conversation/read_client`,
+    READ_FLOW_API: 'https://chatbot-api.botbanhang.vn/app/flow/read_flow',
     IMAGE: ENV.IMAGE_HOST,
     IMAGE_CDN: ENV.CDN,
     ID_WIDGET: ENV.ID_WIDGET,
+    ID_WIDGET_TEST_AI: ENV.ID_WIDGET_TEST_AI,
     DATA_WIDGET: {
       APP: ENV.APP_URL,
       WIDGET: ENV.WIDGET_URL,
@@ -26,9 +28,11 @@ export const API_END_POINTS = {
     INIT_CLIENT_API: `${ENV.APP_BE_HOST}/embed/conversation/init_identify`,
     READ_PAGE_INFO: `${ENV.APP_BE_HOST}/embed/page/read_page`,
     READ_CLIENT_INFO: `${ENV.APP_BE_HOST}/embed/conversation/read_client`,
+    READ_FLOW_API: 'https://chatbot-api.botbanhang.vn/app/flow/read_flow',
     IMAGE: ENV.IMAGE_HOST,
     IMAGE_CDN: ENV.CDN,
     ID_WIDGET: ENV.ID_WIDGET,
+    ID_WIDGET_TEST_AI: ENV.ID_WIDGET_TEST_AI,
     DATA_WIDGET: {
       APP: ENV.APP_URL,
       WIDGET: ENV.WIDGET_URL,
@@ -52,11 +56,21 @@ export const useAPI = () => {
 /**
  * Hàm gọi API chung
  */
-export const fetchAPI = async (url: string, method: string, body?: any) => {
+export const fetchAPI = async (
+  url: string,
+  method: string,
+  body?: any,
+  options?: {
+    headers?: Record<string, string>
+  }
+) => {
   /** Response */
   const RESPONSE = await fetch(url, {
     method,
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      ...(options?.headers || {}),
+    },
     body: body ? JSON.stringify(body) : undefined,
   })
   /** Trả về response json */
