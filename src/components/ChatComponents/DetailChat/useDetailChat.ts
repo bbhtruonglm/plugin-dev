@@ -88,6 +88,9 @@ const useDetailChat = ({
     'Bảng giá',
     'Thông tin Khuyến mãi',
   ]
+  /** Kiểm tra route test-ai-ui để tắt auto scroll */
+  const IS_TEST_AI_UI_ROUTE = window.location.pathname.includes('/test-ai-ui')
+
   /** Global client ID */
   const CLIENT_ID_GLOBAL = useSelector(selectGlobalClientId)
 
@@ -591,13 +594,15 @@ const useDetailChat = ({
 
   /** Function kéo xuống dưới cùng */
   const scrollToBottom = useCallback(() => {
+    // Bỏ qua auto scroll cho route test-ai-ui để giữ nguyên vị trí cuộn
+    if (IS_TEST_AI_UI_ROUTE) return
     /** Cuộn xuống dưới cùng */
     // MESSAGE_END_REF.current?.scrollIntoView({ behavior: 'smooth' })
     MESSAGE_CONTAINER_REF.current?.scrollTo({
       top: MESSAGE_CONTAINER_REF.current.scrollHeight,
       behavior: 'smooth',
     })
-  }, [])
+  }, [IS_TEST_AI_UI_ROUTE])
 
   /** Fuction thực thi khi có hành động scroll */
   const handleScroll = useCallback(() => {

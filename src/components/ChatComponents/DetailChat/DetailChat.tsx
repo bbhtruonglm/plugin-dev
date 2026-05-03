@@ -688,7 +688,7 @@ function DetailChat({
       <div
         ref={MESSAGE_CONTAINER_REF}
         className={`px-5 py-3 gap-4 overflow-y-auto scrollbar-thin scrollbar-webkit flex flex-col-reverse relative ${
-          AI_STATUS ? 'mt-0 mb-16' : user_id ? 'my-16' : 'mt-44'
+          AI_STATUS ? (IS_TEST_AI_UI ? 'mt-0 mb-0' : 'mt-0 mb-16') : user_id ? 'my-16' : 'mt-44'
         } `}
         style={{ overflowAnchor: 'auto' }}
       >
@@ -1094,10 +1094,10 @@ function DetailChat({
             SetErrorUpload(e)
           }}
         />
-      ) : (
-        // UI thay thế nếu chưa khởi tạo khách hàng hoặc đang chạy kiểm AI tự động
+      ) : !IS_TEST_AI_UI ? (
+        // UI thay thế nếu chưa khởi tạo khách hàng hoặc đang chạy kiểm AI tự động (chỉ cho test-ai)
         <InputChatNoUI />
-      )}
+      ) : null}
     </div>
   )
 }
