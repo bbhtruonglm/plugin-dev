@@ -500,6 +500,9 @@ function DetailChat({
 
       const scenarios = is_custom_run ? scenarios_to_run : [selected_test_scenario!]
 
+      // Delay 2s trước khi gửi tin nhắn đầu tiên để đảm bảo UI/Hệ thống sẵn sàng
+      await new Promise((resolve) => setTimeout(resolve, 2000))
+
       // Duyệt qua từng câu hỏi trong danh sách kịch bản
       for (const scenario of scenarios) {
         for (const question of scenario.questions) {
