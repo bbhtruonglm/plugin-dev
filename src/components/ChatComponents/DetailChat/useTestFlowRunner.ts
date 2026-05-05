@@ -31,6 +31,28 @@ const DONE_LLM_EVENT_NAME = 'done_llm'
 /** Thời gian chờ 1 giây trước khi tự gửi câu hỏi tiếp theo */
 const NEXT_TEST_QUESTION_DELAY_MS = 1000
 
+const EXTRACT_QUESTIONS_FROM_FLOW_DETAIL = (flow_detail: any) => {
+  const flow_actions = Array.isArray(flow_detail?.flow_list_action)
+    ? flow_detail.flow_list_action
+    : []
+
+  const action_texts = flow_actions
+    .map((action: any) => action?.action_text)
+    .filter((text: any) => typeof text === 'string')
+    .map((text: string) => text.trim())
+    .filter(Boolean)
+
+  if (action_texts.length === 0) {
+    return []
+  }
+
+  if (action_texts[0] === '/reset') {
+    return action_texts
+  }
+
+  return ['/reset', ...action_texts]
+}
+
 /**
  * Điều phối luồng chạy scenario cho cả test-ai và test-ai-ui
  */
@@ -401,6 +423,34 @@ function useTestFlowRunner({
       return null
     }
 
+    const EXTRACT_QUESTIONS_FROM_CANDIDATE = (candidate: any): string[] => {
+      if (!candidate || typeof candidate !== 'object') return []
+
+      const DIRECT_QUESTIONS = Array.isArray(candidate?.questions)
+        ? candidate.questions
+        : Array.isArray(candidate?.payload?.questions)
+        ? candidate.payload.questions
+        : Array.isArray(candidate?.data?.questions)
+        ? candidate.data.questions
+        : []
+
+      const NORMALIZED_DIRECT_QUESTIONS = DIRECT_QUESTIONS.filter(
+        (question: any) => typeof question === 'string'
+      )
+        .map((question: string) => question.trim())
+        .filter(Boolean)
+
+      if (NORMALIZED_DIRECT_QUESTIONS.length > 0) {
+        return NORMALIZED_DIRECT_QUESTIONS
+      }
+
+      return EXTRACT_QUESTIONS_FROM_FLOW_DETAIL(
+        candidate?.flow_detail ||
+          candidate?.payload?.flow_detail ||
+          candidate?.data?.flow_detail
+      )
+    }
+
     const EXTRACT_SCENARIOS_FROM_CANDIDATE = (candidate: any): any[] => {
       if (!candidate || typeof candidate !== 'object') return []
       if (Array.isArray(candidate)) {
@@ -430,19 +480,38 @@ function useTestFlowRunner({
         return direct_scenarios
       }
 
+      const questions = EXTRACT_QUESTIONS_FROM_CANDIDATE(candidate)
+
       if (candidate?.scenario && typeof candidate.scenario === 'object') {
-        return [candidate.scenario]
+        const scenario_questions = EXTRACT_QUESTIONS_FROM_CANDIDATE(
+          candidate.scenario
+        )
+
+        if (scenario_questions.length > 0) {
+          return [
+            {
+              ...candidate.scenario,
+              questions: scenario_questions,
+            },
+          ]
+        }
       }
 
-      if (Array.isArray(candidate?.questions)) {
+      if (questions.length > 0) {
         return [
           {
             title:
               candidate?.title ||
               candidate?.name ||
               candidate?.scenario_name ||
+              candidate?.flow_name ||
+              candidate?.flow_detail?.flow_name ||
               t('test_scenario_untitled'),
-            questions: candidate.questions,
+            questions,
+            flow_detail:
+              candidate?.flow_detail ||
+              candidate?.payload?.flow_detail ||
+              candidate?.data?.flow_detail,
           },
         ]
       }
@@ -533,6 +602,10 @@ function useTestFlowRunner({
         )
         pending_test_flow_ref.current = resolved_scenarios
         void TRY_START_PENDING_TEST_FLOW()
+      } else {
+        console.log('[test-ai-ui] RUN_AI payload has no runnable questions', {
+          run_payload,
+        })
       }
     }
 

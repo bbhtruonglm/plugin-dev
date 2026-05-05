@@ -820,6 +820,35 @@ function DetailChat({
       return null
     }
 
+    /** Hàm lấy danh sách câu hỏi từ payload candidate */
+    const EXTRACT_QUESTIONS_FROM_CANDIDATE = (candidate: any): string[] => {
+      if (!candidate || typeof candidate !== 'object') return []
+
+      const DIRECT_QUESTIONS = Array.isArray(candidate?.questions)
+        ? candidate.questions
+        : Array.isArray(candidate?.payload?.questions)
+        ? candidate.payload.questions
+        : Array.isArray(candidate?.data?.questions)
+        ? candidate.data.questions
+        : []
+
+      const NORMALIZED_DIRECT_QUESTIONS = DIRECT_QUESTIONS.filter(
+        (question: any) => typeof question === 'string'
+      )
+        .map((question: string) => question.trim())
+        .filter(Boolean)
+
+      if (NORMALIZED_DIRECT_QUESTIONS.length > 0) {
+        return NORMALIZED_DIRECT_QUESTIONS
+      }
+
+      return EXTRACT_QUESTIONS_FROM_FLOW_DETAIL(
+        candidate?.flow_detail ||
+          candidate?.payload?.flow_detail ||
+          candidate?.data?.flow_detail
+      )
+    }
+
     /** Hàm lấy danh sách kịch bản từ dữ liệu event */
     const EXTRACT_SCENARIOS_FROM_CANDIDATE = (candidate: any): any[] => {
       // Nếu dữ liệu không phải là object hoặc array thì return array rỗng
@@ -852,21 +881,41 @@ function DetailChat({
       if (direct_scenarios.length > 0) {
         return direct_scenarios
       }
-      // Nếu có kịch bản thì return kịch bản đó
+
+      const questions = EXTRACT_QUESTIONS_FROM_CANDIDATE(candidate)
+
+      // Nếu có kịch bản thì chỉ dùng khi kịch bản đó có câu hỏi hợp lệ
       if (candidate?.scenario && typeof candidate.scenario === 'object') {
-        return [candidate.scenario]
+        const scenario_questions = EXTRACT_QUESTIONS_FROM_CANDIDATE(
+          candidate.scenario
+        )
+
+        if (scenario_questions.length > 0) {
+          return [
+            {
+              ...candidate.scenario,
+              questions: scenario_questions,
+            },
+          ]
+        }
       }
 
       // Nếu có câu hỏi thì return câu hỏi đó
-      if (Array.isArray(candidate?.questions)) {
+      if (questions.length > 0) {
         return [
           {
             title:
               candidate?.title ||
               candidate?.name ||
               candidate?.scenario_name ||
+              candidate?.flow_name ||
+              candidate?.flow_detail?.flow_name ||
               t('test_scenario_untitled'),
-            questions: candidate.questions,
+            questions,
+            flow_detail:
+              candidate?.flow_detail ||
+              candidate?.payload?.flow_detail ||
+              candidate?.data?.flow_detail,
           },
         ]
       }
@@ -956,6 +1005,10 @@ function DetailChat({
         console.log('[test-ai-ui] resolved scenarios from RUN_AI', resolved_scenarios)
         pending_test_flow_ref.current = resolved_scenarios
         void TRY_START_PENDING_TEST_FLOW()
+      } else {
+        console.log('[test-ai-ui] RUN_AI payload has no runnable questions', {
+          run_payload,
+        })
       }
     }
     // Hàm xử lý khi nhận được window message
