@@ -147,13 +147,29 @@ export function onSocketFromChatboxServer({
       /**dữ liệu tin nhắn mới */
       message?: MessageInfo
       /** Trạng thái của người gửi*/
-      sender_action?: 'typing_on' | 'typing_off'
+      sender_action?: 'typing_on' | 'typing_off' | 'done_llm'
+      /** Tên event top-level từ socket */
+      event?: string
+      /** Tên action top-level từ socket */
+      action?: string
+      /** Tên type top-level từ socket */
+      type?: string
+      /** Tên name top-level từ socket */
+      name?: string
       /** Data socket */
       data_socket_quick_chat?: any
       /** Client id */
       client_id?: string
       /** page id */
       page_id?: string
+      /** Payload lồng nếu socket trả event trong payload */
+      payload?: {
+        event?: string
+        action?: string
+        type?: string
+        name?: string
+        [key: string]: any
+      }
       /** Quick replies */
       quick_replies?: {
         /** Content type */
@@ -175,6 +191,31 @@ export function onSocketFromChatboxServer({
     if (!size(socket_data)) return
     /** Lấy tin nhắn từ socket */
     let { message, sender_action, quick_replies } = socket_data
+    /** Chuẩn hóa tên event từ socket */
+    const SOCKET_EVENT_NAME =
+      socket_data?.sender_action ||
+      socket_data?.event ||
+      socket_data?.action ||
+      socket_data?.type ||
+      socket_data?.name ||
+      socket_data?.payload?.event ||
+      socket_data?.payload?.action ||
+      socket_data?.payload?.type ||
+      socket_data?.payload?.name
+    // Gửi thông diệp báo đã xong event đến các nơi cần xử lý
+    if (SOCKET_EVENT_NAME === 'done_llm') {
+      console.log('[socket] receive done_llm', socket_data)
+      window.dispatchEvent(
+        new CustomEvent('done_llm', {
+          detail: {
+            source: 'socket',
+            client_id: socket_data?.client_id || client_id || undefined,
+            page_id: socket_data?.page_id || page_id || undefined,
+            socket_data,
+          },
+        })
+      )
+    }
 
     // console.log(sender_action, 'socket data')
     /** Nếu có trạng thái typing */

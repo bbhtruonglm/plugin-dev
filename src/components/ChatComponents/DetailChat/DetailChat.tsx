@@ -37,9 +37,49 @@ type TestScenario = {
   updated_at?: string
 }
 
+/** Mỗi câu hỏi được đưa vào hàng đợi chạy test trên giao diện test-ai-ui */
+type TestFlowQueueItem = {
+  /** Mã kịch bản chứa câu hỏi */
+  scenario_id: string
+  /** Tên kịch bản chứa câu hỏi */
+  scenario_title: string
+  /** Nội dung câu hỏi sẽ gửi */
+  question: string
+}
+
+/** Trạng thái hàng đợi test AI UI */
+type TestFlowQueueState = {
+  /** Danh sách câu hỏi đã được làm phẳng từ các kịch bản */
+  items: TestFlowQueueItem[]
+  /** page_id của phiên test hiện tại */
+  page_id?: string
+  /** client_id của phiên test hiện tại */
+  client_id?: string
+  /** Vị trí câu hỏi tiếp theo cần gửi */
+  next_index: number
+  /** Đánh dấu đang chờ done_llm sau khi gửi một câu hỏi */
+  awaiting_done_llm: boolean
+  /** Đánh dấu lượt gửi hiện tại vẫn đang trong quá trình request */
+  is_sending_question: boolean
+  /** Ghi nhận done_llm đến sớm hơn lúc request gửi hoàn tất */
+  pending_done_llm: boolean
+}
+
 declare global {
   interface Window {
     VConsole?: any
+  }
+
+  interface WindowEventMap {
+    done_llm: CustomEvent<{
+      source?: string
+      client_id?: string
+      page_id?: string
+      scenario_id?: string
+      scenario_title?: string
+      question?: string
+      socket_data?: any
+    }>
   }
 }
 
@@ -49,6 +89,10 @@ const MIN_TEST_WAIT_MS = 5000
 const MAX_TEST_WAIT_MS = 10000
 /** Thời gian chờ AI phản hồi tối đa (60 giây) trước khi timeout */
 const AI_RESPONSE_TIMEOUT_MS = 60000
+/** Tên event done_llm được phát từ tầng socket cho giao diện test-ai-ui */
+const DONE_LLM_EVENT_NAME = 'done_llm'
+/** Thời gian chờ 1 giây trước khi tự gửi câu hỏi tiếp theo */
+const NEXT_TEST_QUESTION_DELAY_MS = 1000
 /** Thời gian giữ chuột để kích hoạt vConsole (3 giây) */
 const VCONSOLE_HOLD_THRESHOLD_MS = 3000
 
@@ -403,6 +447,177 @@ function DetailChat({
   const wait_for_typing_off_resolver_ref = useRef<(() => void) | null>(null)
   /** ID của timer an toàn để tránh treo Promise khi socket mất hub */
   const wait_for_typing_off_timeout_ref = useRef<number | null>(null)
+  /** Lưu hàng đợi đang chạy cho giao diện test-ai-ui */
+  const running_test_flow_queue_ref = useRef<TestFlowQueueState | null>(null)
+  /** Lưu danh sách kịch bản chờ chạy khi iframe chưa sẵn sàng */
+  const pending_test_flow_ref = useRef<TestScenario[] | null>(null)
+  /** Timer delay 1 giây trước khi gửi câu tiếp theo */
+  const next_test_question_timeout_ref = useRef<number | null>(null)
+  /** Đồng bộ loading mới nhất vào ref để tránh closure cũ trong timer */
+  const loading_ref = useRef(loading)
+  /** Đồng bộ user_id mới nhất vào ref để tránh closure cũ trong timer */
+  const user_id_ref = useRef(user_id)
+
+  /** Đồng bộ lại trạng thái loading hiện tại */
+  useEffect(() => {
+    loading_ref.current = loading
+  }, [loading])
+
+  /** Đồng bộ lại user_id hiện tại */
+  useEffect(() => {
+    user_id_ref.current = user_id
+  }, [user_id])
+
+  /** Xóa timer chờ gửi câu hỏi tiếp theo */
+  const CLEAR_NEXT_TEST_QUESTION_TIMEOUT = () => {
+    if (next_test_question_timeout_ref.current) {
+      window.clearTimeout(next_test_question_timeout_ref.current)
+      next_test_question_timeout_ref.current = null
+    }
+  }
+
+  /** Gửi tín hiệu hoàn tất scenario lên app cha đang nhúng iframe */
+  const POST_DONE_SCENARIOS_TO_PARENT = () => {
+    console.log('[test-ai-ui] postMessage to parent: Done_scenerios')
+    window.parent.postMessage(
+      {
+        from: 'BBH-EMBED-IFRAME',
+        type: 'DONE_SCENERIOS',
+        event: 'DONE_SCENERIOS',
+        name: 'DONE_SCENERIOS',
+      },
+      '*'
+    )
+  }
+
+  /**
+   * Chuyển danh sách kịch bản thành một hàng đợi câu hỏi tuyến tính
+   * @param {TestScenario[]} scenarios - Danh sách kịch bản cần chạy
+   * @returns {TestFlowQueueItem[]} - Hàng đợi câu hỏi
+   */
+  const BUILD_TEST_FLOW_QUEUE_ITEMS = (scenarios: TestScenario[]) => {
+    const queue_items = scenarios.flatMap((scenario) =>
+      (scenario.questions || [])
+        .filter((question) => typeof question === 'string')
+        .map((question) => question.trim())
+        .filter(Boolean)
+        .map((question) => ({
+          scenario_id: scenario.id,
+          scenario_title: scenario.title,
+          question,
+        }))
+    )
+    console.log('[test-ai-ui] build queue items', {
+      scenario_count: scenarios.length,
+      queue_count: queue_items.length,
+      queue_items,
+    })
+    return queue_items
+  }
+
+  /** Kết thúc phiên chạy test-ai-ui và gửi thông báo hoàn tất cho app cha */
+  const FINISH_TEST_AI_UI_FLOW = () => {
+    console.log('[test-ai-ui] finish flow')
+    CLEAR_NEXT_TEST_QUESTION_TIMEOUT()
+    running_test_flow_queue_ref.current = null
+    pending_test_flow_ref.current = null
+    setIsRunningTestFlow(false)
+    POST_DONE_SCENARIOS_TO_PARENT()
+  }
+
+  /** Hẹn gửi câu hỏi tiếp theo sau 1 giây khi nhận done_llm */
+  const SCHEDULE_NEXT_TEST_AI_UI_QUESTION = () => {
+    const active_queue = running_test_flow_queue_ref.current
+    console.log('[test-ai-ui] schedule next question', {
+      delay_ms: NEXT_TEST_QUESTION_DELAY_MS,
+      next_index: active_queue?.next_index,
+      total: active_queue?.items.length,
+    })
+    CLEAR_NEXT_TEST_QUESTION_TIMEOUT()
+    next_test_question_timeout_ref.current = window.setTimeout(() => {
+      void SEND_NEXT_TEST_AI_UI_QUESTION()
+    }, NEXT_TEST_QUESTION_DELAY_MS)
+  }
+
+  /** Gửi câu hỏi kế tiếp trong hàng đợi test-ai-ui */
+  const SEND_NEXT_TEST_AI_UI_QUESTION = async () => {
+    const active_queue = running_test_flow_queue_ref.current
+
+    // Không làm gì nếu hiện tại không có hàng đợi đang chạy
+    if (!active_queue) {
+      return
+    }
+
+    // Nếu hàng đợi đã hết câu hỏi thì kết thúc phiên test
+    if (active_queue.next_index >= active_queue.items.length) {
+      FINISH_TEST_AI_UI_FLOW()
+      return
+    }
+
+    // Nếu phiên chat chưa sẵn sàng thì giữ hàng đợi lại để thử tiếp
+    if (!user_id_ref.current || loading_ref.current) {
+      console.log('[test-ai-ui] chat not ready, reschedule send', {
+        has_user_id: Boolean(user_id_ref.current),
+        loading: loading_ref.current,
+      })
+      SCHEDULE_NEXT_TEST_AI_UI_QUESTION()
+      return
+    }
+
+    // Lấy câu hỏi tiếp theo trong hàng đợi
+    const next_item = active_queue.items[active_queue.next_index]
+
+    try {
+      // Đánh dấu bắt đầu một lượt gửi để chịu được trường hợp done_llm về sớm
+      active_queue.awaiting_done_llm = true
+      active_queue.is_sending_question = true
+      active_queue.pending_done_llm = false
+      console.log('[test-ai-ui] send next question', {
+        current_index: active_queue.next_index,
+        total: active_queue.items.length,
+        scenario_id: next_item.scenario_id,
+        scenario_title: next_item.scenario_title,
+        question: next_item.question,
+      })
+      // Gửi câu hỏi kế tiếp lên server chat
+      await SendMessage(next_item.question)
+      // Dời con trỏ sang câu hỏi kế tiếp
+      active_queue.next_index += 1
+      // Đánh dấu request gửi đã xong
+      active_queue.is_sending_question = false
+      console.log('[test-ai-ui] question sent, waiting done_llm', {
+        next_index: active_queue.next_index,
+        total: active_queue.items.length,
+        pending_done_llm: active_queue.pending_done_llm,
+      })
+
+      // Nếu done_llm đã tới trong lúc request gửi còn đang pending thì xử lý ngay
+      if (active_queue.pending_done_llm) {
+        console.log('[test-ai-ui] consume early done_llm after send completes', {
+          next_index: active_queue.next_index,
+          total: active_queue.items.length,
+        })
+        active_queue.pending_done_llm = false
+        active_queue.awaiting_done_llm = false
+
+        if (active_queue.next_index >= active_queue.items.length) {
+          FINISH_TEST_AI_UI_FLOW()
+          return
+        }
+
+        SCHEDULE_NEXT_TEST_AI_UI_QUESTION()
+      }
+    } catch (error) {
+      // Nếu gửi lỗi thì dừng flow để tránh bắn sai chuỗi scenario
+      console.error('Gửi câu hỏi test-ai-ui thất bại:', error)
+      active_queue.awaiting_done_llm = false
+      active_queue.is_sending_question = false
+      active_queue.pending_done_llm = false
+      CLEAR_NEXT_TEST_QUESTION_TIMEOUT()
+      running_test_flow_queue_ref.current = null
+      setIsRunningTestFlow(false)
+    }
+  }
 
   /** Lắng nghe biến TYPING_STATUS từ Socket để điều phối luồng test tự động */
   useEffect(() => {
@@ -443,6 +658,8 @@ function DetailChat({
         // Thực hiện xóa sạch timer
         window.clearTimeout(wait_for_typing_off_timeout_ref.current)
       }
+      // Dọn sạch timer của flow test-ai-ui nếu còn
+      CLEAR_NEXT_TEST_QUESTION_TIMEOUT()
     }
   }, [])
 
@@ -481,24 +698,58 @@ function DetailChat({
    * Khởi chạy quy trình gửi tự động các câu hỏi trong kịch bản lựa chọn
    */
   const handleStartTestFlow = async (scenarios_to_run?: TestScenario[] | any) => {
-    const is_custom_run = Array.isArray(scenarios_to_run) && scenarios_to_run.length > 0;
-    
+    const is_custom_run =
+      Array.isArray(scenarios_to_run) && scenarios_to_run.length > 0
+
     // Kiểm tra các ràng buộc trước khi bắt đầu luồng test tự động
     if (
       is_running_test_flow ||
       !user_id ||
       loading ||
-      (!is_custom_run && (is_loading_test_scenario_detail || !selected_test_scenario || selected_test_scenario.questions.length === 0))
+      (!is_custom_run &&
+        (is_loading_test_scenario_detail ||
+          !selected_test_scenario ||
+          selected_test_scenario.questions.length === 0))
     ) {
       // Nếu trạng thái không cho phép hoặc dữ liệu thiếu thì thoát
+      return
+    }
+
+    const scenarios = is_custom_run ? scenarios_to_run : [selected_test_scenario!]
+
+    // Riêng test-ai-ui sẽ chạy theo cơ chế chờ done_llm thực tế từ socket
+    if (IS_TEST_AI_UI) {
+      console.log('[test-ai-ui] start flow', {
+        is_custom_run,
+        scenarios,
+      })
+      const queue_items = BUILD_TEST_FLOW_QUEUE_ITEMS(scenarios)
+
+      // Không chạy nếu không có câu hỏi hợp lệ
+      if (queue_items.length === 0) {
+        console.log('[test-ai-ui] skip start flow because queue is empty')
+        return
+      }
+
+      // Làm sạch queue cũ trước khi khởi động đợt mới
+      CLEAR_NEXT_TEST_QUESTION_TIMEOUT()
+      running_test_flow_queue_ref.current = {
+        items: queue_items,
+        page_id: PAGE_ID || undefined,
+        client_id: CLIENT_ID || user_id || undefined,
+        next_index: 0,
+        awaiting_done_llm: false,
+        is_sending_question: false,
+        pending_done_llm: false,
+      }
+      setIsRunningTestFlow(true)
+      SCHEDULE_NEXT_TEST_AI_UI_QUESTION()
       return
     }
 
     try {
       // Đánh dấu trạng thái đang chạy test để khóa UI
       setIsRunningTestFlow(true)
-
-      const scenarios = is_custom_run ? scenarios_to_run : [selected_test_scenario!]
 
       // Delay 2s trước khi gửi tin nhắn đầu tiên để đảm bảo UI/Hệ thống sẵn sàng
       await new Promise((resolve) => setTimeout(resolve, 2000))
@@ -525,35 +776,155 @@ function DetailChat({
     }
   }
 
+  /** 
+   * Trích xuất payload từ event
+   * @param event_data Dữ liệu event
+   * @returns Payload đã được chuẩn hóa
+   */
   const EXTRACT_RUN_AI_PAYLOAD = (event_data: any) => {
+    /** Tạo biến chứa dữ liệu event đã được chuẩn hóa */
     let normalized_data = event_data
     try {
+      // Nếu dữ liệu event là string thì parse thành JSON
       normalized_data = typeof event_data === 'string' ? JSON.parse(event_data) : event_data
     } catch (error) {
+      // Nếu dữ liệu event không phải là JSON thì giữ nguyên
       normalized_data = event_data
     }
-    const event_type = normalized_data?.type || normalized_data?.action || normalized_data?.event || normalized_data?.name || normalized_data?.payload?.type || normalized_data?.payload?.action || normalized_data?.payload?.event
-    if (event_type !== 'RUN_AI') return null
-    const payload_candidates = [normalized_data?.payload?.payload, normalized_data?.payload, normalized_data?.data, normalized_data]
-    const payload = payload_candidates.find((candidate) => candidate && typeof candidate === 'object' && !Array.isArray(candidate)) || {}
-    const scenarios = [payload?.scenarios, payload?.scenario_list, payload?.list_scenarios, payload?.flow_list, payload?.list, normalized_data?.scenarios, normalized_data?.scenario_list, normalized_data?.list].find(Array.isArray) || (payload?.scenario ? [payload.scenario] : undefined) || (Array.isArray(payload?.questions) ? [{ title: payload?.title || payload?.name || t('test_scenario_untitled'), questions: payload.questions }] : undefined) || []
+    // Hàm lấy loại event từ dữ liệu event
+    const GET_EVENT_TYPE = (candidate: any): string | undefined => {
+      if (!candidate || typeof candidate !== 'object') return undefined
+      return (
+        candidate?.type ||
+        candidate?.action ||
+        candidate?.event ||
+        candidate?.name ||
+        candidate?.payload?.type ||
+        candidate?.payload?.action ||
+        candidate?.payload?.event ||
+        candidate?.payload?.name ||
+        candidate?.data?.type ||
+        candidate?.data?.action ||
+        candidate?.data?.event ||
+        candidate?.data?.name
+      )
+    }
+    /** Tạo biến chứa loại event */
+    const event_type = GET_EVENT_TYPE(normalized_data)
+    /** Kiểm tra nếu loại event không phải là RUN_AI thì log ra console và return null */
+    if (event_type !== 'RUN_AI') {
+      console.log('[test-ai-ui] ignore message because event_type is not RUN_AI', {
+        event_type,
+        normalized_data,
+      })
+      return null
+    }
+
+    /** Hàm lấy danh sách kịch bản từ dữ liệu event */
+    const EXTRACT_SCENARIOS_FROM_CANDIDATE = (candidate: any): any[] => {
+      // Nếu dữ liệu không phải là object hoặc array thì return array rỗng
+      if (!candidate || typeof candidate !== 'object') return []
+      // Nếu dữ liệu là array thì return array
+      if (Array.isArray(candidate)) {
+        return candidate
+      }
+
+      // Tạo biến chứa danh sách kịch bản trực tiếp
+      const direct_scenarios =
+        [
+          candidate?.scenarios,
+          candidate?.scenario_list,
+          candidate?.list_scenarios,
+          candidate?.flow_list,
+          candidate?.list,
+          candidate?.data?.scenarios,
+          candidate?.data?.scenario_list,
+          candidate?.data?.list_scenarios,
+          candidate?.data?.flow_list,
+          candidate?.data?.list,
+          candidate?.payload?.scenarios,
+          candidate?.payload?.scenario_list,
+          candidate?.payload?.list_scenarios,
+          candidate?.payload?.flow_list,
+          candidate?.payload?.list,
+        ].find(Array.isArray) || []
+      // Nếu có danh sách kịch bản trực tiếp thì return danh sách kịch bản đó
+      if (direct_scenarios.length > 0) {
+        return direct_scenarios
+      }
+      // Nếu có kịch bản thì return kịch bản đó
+      if (candidate?.scenario && typeof candidate.scenario === 'object') {
+        return [candidate.scenario]
+      }
+
+      // Nếu có câu hỏi thì return câu hỏi đó
+      if (Array.isArray(candidate?.questions)) {
+        return [
+          {
+            title:
+              candidate?.title ||
+              candidate?.name ||
+              candidate?.scenario_name ||
+              t('test_scenario_untitled'),
+            questions: candidate.questions,
+          },
+        ]
+      }
+
+      return []
+    }
+    /** Tạo biến chứa payload candidates */
+    const payload_candidates = [
+      normalized_data?.payload?.payload,
+      normalized_data?.payload?.data,
+      normalized_data?.payload,
+      normalized_data?.data?.payload,
+      normalized_data?.data,
+      normalized_data,
+    ]
+    /** Tạo biến chứa payload */
+    const payload =
+      payload_candidates.find(
+        (candidate) => candidate && typeof candidate === 'object' && !Array.isArray(candidate)
+      ) || {}
+    /** Tạo biến chứa danh sách kịch bản */
+    const scenarios =
+      payload_candidates
+        .map(EXTRACT_SCENARIOS_FROM_CANDIDATE)
+        .find((candidate) => Array.isArray(candidate) && candidate.length > 0) || []
+
+    console.log('[test-ai-ui] extract RUN_AI payload', {
+      raw_event_data: event_data,
+      normalized_data,
+      payload,
+      scenarios,
+    })
     return { scenarios }
   }
-
-  const pending_test_flow_ref = useRef<TestScenario[] | null>(null)
-
+  /** Hàm thử bắt đầu chạy test flow */
   const TRY_START_PENDING_TEST_FLOW = async () => {
+    // Nếu đang chạy test flow hoặc không có user_id hoặc loading thì return
     if (is_running_test_flow || !user_id || loading) return
+    /** Lấy pending test flow */
     const pending_test_flow = pending_test_flow_ref.current
+    // Nếu pending test flow không có thì return
     if (!pending_test_flow || !Array.isArray(pending_test_flow) || pending_test_flow.length === 0) return
+    // Log pending test flow
+    console.log('[test-ai-ui] start pending flow', {
+      pending_test_flow,
+    })
+    // Set pending test flow null
     pending_test_flow_ref.current = null
+    // Xử lý bắt đầu chạy test flow 
     await handleStartTestFlow(pending_test_flow)
   }
 
   useEffect(() => {
+    // Nếu k phải case test AI thì bỏ qua
     if (!IS_TEST_AI_UI) return
-
+    /** Hàm xử lý khi nhận được RUN_AI event */
     const HANDLE_RUN_AI_EVENT = async (incoming_data: any) => {
+      console.log('[test-ai-ui] receive RUN_AI message', incoming_data)
       const run_payload = EXTRACT_RUN_AI_PAYLOAD(incoming_data)
       if (!run_payload) return
 
@@ -574,6 +945,7 @@ function DetailChat({
       }
 
       if (resolved_scenarios.length > 0) {
+        console.log('[test-ai-ui] resolved scenarios from RUN_AI', resolved_scenarios)
         pending_test_flow_ref.current = resolved_scenarios
         void TRY_START_PENDING_TEST_FLOW()
       }
@@ -586,6 +958,82 @@ function DetailChat({
     window.addEventListener('message', HANDLE_WINDOW_MESSAGE)
     return () => window.removeEventListener('message', HANDLE_WINDOW_MESSAGE)
   }, [IS_TEST_AI_UI, user_id, loading])
+
+  useEffect(() => {
+    if (!IS_TEST_AI_UI) return
+
+    const HANDLE_DONE_LLM_EVENT = (event: CustomEvent) => {
+      const active_queue = running_test_flow_queue_ref.current
+      const EVENT_PAGE_ID = event?.detail?.page_id
+      const EVENT_CLIENT_ID = event?.detail?.client_id
+
+      // Bỏ qua nếu hiện tại không có flow test đang chạy
+      if (!active_queue) {
+        console.log('[test-ai-ui] ignore done_llm because no awaiting queue', {
+          detail: event?.detail,
+        })
+        return
+      }
+
+      // Chỉ nhận done_llm của đúng phiên test hiện tại, tránh ăn nhầm luồng khách khác
+      if (
+        (active_queue.page_id && EVENT_PAGE_ID && active_queue.page_id !== EVENT_PAGE_ID) ||
+        (active_queue.client_id &&
+          EVENT_CLIENT_ID &&
+          active_queue.client_id !== EVENT_CLIENT_ID)
+      ) {
+        console.log('[test-ai-ui] ignore done_llm because session mismatch', {
+          expected_page_id: active_queue.page_id,
+          expected_client_id: active_queue.client_id,
+          event_page_id: EVENT_PAGE_ID,
+          event_client_id: EVENT_CLIENT_ID,
+        })
+        return
+      }
+
+      // Nếu done_llm đến sớm lúc request gửi còn đang pending thì giữ lại để consume sau
+      if (active_queue.is_sending_question) {
+        active_queue.pending_done_llm = true
+        console.log('[test-ai-ui] receive done_llm while sending, mark pending', {
+          detail: event?.detail,
+          next_index: active_queue.next_index,
+          total: active_queue.items.length,
+        })
+        return
+      }
+
+      // Nếu queue không chờ done_llm thì bỏ qua để tránh chạy lố
+      if (!active_queue.awaiting_done_llm) {
+        console.log('[test-ai-ui] ignore done_llm because queue is not awaiting', {
+          detail: event?.detail,
+          next_index: active_queue.next_index,
+          total: active_queue.items.length,
+        })
+        return
+      }
+
+      console.log('[test-ai-ui] receive done_llm', {
+        detail: event?.detail,
+        next_index: active_queue.next_index,
+        total: active_queue.items.length,
+      })
+      // Đánh dấu đã nhận done_llm
+      active_queue.awaiting_done_llm = false
+
+      // Nếu đây là câu cuối cùng thì báo hoàn tất cho app cha
+      if (active_queue.next_index >= active_queue.items.length) {
+        FINISH_TEST_AI_UI_FLOW()
+        return
+      }
+
+      // Nếu còn câu hỏi phía sau thì gửi tiếp sau 1 giây
+      SCHEDULE_NEXT_TEST_AI_UI_QUESTION()
+    }
+
+    window.addEventListener(DONE_LLM_EVENT_NAME, HANDLE_DONE_LLM_EVENT)
+    return () =>
+      window.removeEventListener(DONE_LLM_EVENT_NAME, HANDLE_DONE_LLM_EVENT)
+  }, [IS_TEST_AI_UI])
 
   useEffect(() => {
     void TRY_START_PENDING_TEST_FLOW()

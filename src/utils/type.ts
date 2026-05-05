@@ -102,7 +102,7 @@ export interface MessageInfo {
   /**
    * Trạng thái typing
    */
-  sender_action: 'typing_on' | 'typing_off'
+  sender_action: 'typing_on' | 'typing_off' | 'done_llm'
 }
 
 /**dữ liệu 1 file */
