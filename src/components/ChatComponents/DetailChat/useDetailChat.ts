@@ -365,6 +365,54 @@ const useDetailChat = ({
   /** Trạng thái AI_STATUS */
   const AI_STATUS = useSelector(selectStatusAI)
 
+  /**
+   * Resolve định danh hiện tại từ store, prop, localStorage và URL.
+   * Mục tiêu là tránh gửi payload rỗng khi iframe bị remount hoặc state chưa đồng bộ kịp.
+   */
+  const getResolvedIdentifiers = useCallback(() => {
+    if (!IS_TEST_AI_UI_ROUTE) {
+      return {
+        page_id: PAGE_ID || '',
+        client_id: user_id || CURRENT_USER_ID || '',
+      }
+    }
+
+    const SEARCH_PARAMS =
+      typeof window !== 'undefined'
+        ? new URLSearchParams(window.location.search)
+        : null
+
+    const URL_PAGE_ID = SEARCH_PARAMS?.get('page_id') || ''
+    const RESOLVED_PAGE_ID =
+      PAGE_ID || (CLIENT_INFO as any)?.page_id || URL_PAGE_ID || ''
+
+    let STORED_CLIENT_ID = ''
+
+    if (RESOLVED_PAGE_ID && typeof window !== 'undefined') {
+      STORED_CLIENT_ID =
+        localStorage.getItem(getClientStorageKey(RESOLVED_PAGE_ID)) || ''
+
+      if (!STORED_CLIENT_ID) {
+        STORED_CLIENT_ID = getCookie(getClientStorageKey(RESOLVED_PAGE_ID)) || ''
+      }
+    }
+
+    const RESOLVED_CLIENT_ID =
+      user_id || CURRENT_USER_ID || CLIENT_ID_GLOBAL || STORED_CLIENT_ID || ''
+
+    return {
+      page_id: RESOLVED_PAGE_ID,
+      client_id: RESOLVED_CLIENT_ID,
+    }
+  }, [
+    IS_TEST_AI_UI_ROUTE,
+    PAGE_ID,
+    CLIENT_INFO,
+    user_id,
+    CURRENT_USER_ID,
+    CLIENT_ID_GLOBAL,
+  ])
+
   /** Số bản ghi hiển thị trong 1 trang */
   const LIMIT = 20
 
@@ -741,8 +789,23 @@ const useDetailChat = ({
   const sendMessage = async (input: any) => {
     if (input.trim() === '') return
 
+    const { page_id: RESOLVED_PAGE_ID, client_id: RESOLVED_CLIENT_ID } =
+      getResolvedIdentifiers()
+
+    if (!RESOLVED_PAGE_ID || !RESOLVED_CLIENT_ID) {
+      console.error('[sendMessage] Missing page_id/client_id', {
+        PAGE_ID,
+        user_id,
+        CURRENT_USER_ID,
+        CLIENT_ID_GLOBAL,
+        resolved_page_id: RESOLVED_PAGE_ID,
+        resolved_client_id: RESOLVED_CLIENT_ID,
+      })
+      return
+    }
+
     /** Lấy ID người dùng */
-    const META_DATA_ID = CURRENT_USER_ID || user_id
+    const META_DATA_ID = CURRENT_USER_ID || RESOLVED_CLIENT_ID
 
     /** Tạo ID tạm thời */
     const TEMP_ID = `temp_${Date.now()}`
@@ -750,13 +813,13 @@ const useDetailChat = ({
     /** Tạo tin nhắn tạm thời (Optimistic UI) */
     const TEMP_MESSAGE: any = {
       _id: TEMP_ID,
-      fb_page_id: PAGE_ID,
-      fb_client_id: user_id || CURRENT_USER_ID || '',
+      fb_page_id: RESOLVED_PAGE_ID,
+      fb_client_id: RESOLVED_CLIENT_ID,
       platform_type: 'WEBSITE',
       message_type: 'client',
       message_text: input,
-      sender_id: CURRENT_USER_ID || user_id,
-      recipient_id: PAGE_ID,
+      sender_id: CURRENT_USER_ID || RESOLVED_CLIENT_ID,
+      recipient_id: RESOLVED_PAGE_ID,
       time: new Date().toISOString(),
       message_mid: TEMP_ID,
       message_attachments: [],
@@ -781,8 +844,8 @@ const useDetailChat = ({
       setLoading(true)
       /** Khởi tạo body tin nhắn */
       const MESSAGE: Message = {
-        page_id: PAGE_ID,
-        client_id: user_id || CURRENT_USER_ID || '',
+        page_id: RESOLVED_PAGE_ID,
+        client_id: RESOLVED_CLIENT_ID,
         text: input,
         user_id: CURRENT_USER_ID,
         ...(META_DATA_ID && {
@@ -814,8 +877,23 @@ const useDetailChat = ({
   const sendImageMessage = async (file: File) => {
     if (!file) return
 
+    const { page_id: RESOLVED_PAGE_ID, client_id: RESOLVED_CLIENT_ID } =
+      getResolvedIdentifiers()
+
+    if (!RESOLVED_PAGE_ID || !RESOLVED_CLIENT_ID) {
+      console.error('[sendImageMessage] Missing page_id/client_id', {
+        PAGE_ID,
+        user_id,
+        CURRENT_USER_ID,
+        CLIENT_ID_GLOBAL,
+        resolved_page_id: RESOLVED_PAGE_ID,
+        resolved_client_id: RESOLVED_CLIENT_ID,
+      })
+      return
+    }
+
     /** Lấy ID người dùng */
-    const META_DATA_ID = CURRENT_USER_ID || user_id
+    const META_DATA_ID = CURRENT_USER_ID || RESOLVED_CLIENT_ID
 
     /** Tạo ID tạm thời */
     const TEMP_ID = `temp_${Date.now()}`
@@ -826,13 +904,13 @@ const useDetailChat = ({
     /** Tạo tin nhắn tạm thời (Optimistic UI) */
     const TEMP_MESSAGE: any = {
       _id: TEMP_ID,
-      fb_page_id: PAGE_ID,
-      fb_client_id: user_id || CURRENT_USER_ID || '',
+      fb_page_id: RESOLVED_PAGE_ID,
+      fb_client_id: RESOLVED_CLIENT_ID,
       platform_type: 'WEBSITE',
       message_type: 'client',
       message_text: '',
-      sender_id: CURRENT_USER_ID || user_id,
-      recipient_id: PAGE_ID,
+      sender_id: CURRENT_USER_ID || RESOLVED_CLIENT_ID,
+      recipient_id: RESOLVED_PAGE_ID,
       time: new Date().toISOString(),
       message_mid: TEMP_ID,
       message_attachments: [
@@ -869,9 +947,9 @@ const useDetailChat = ({
       // Thêm file vào form data
       FORM_DATA.append('file', file)
       // Thêm page_id vào form data
-      FORM_DATA.append('page_id', PAGE_ID || '')
+      FORM_DATA.append('page_id', RESOLVED_PAGE_ID)
       // Thêm client_id vào form data
-      FORM_DATA.append('client_id', client_id || '')
+      FORM_DATA.append('client_id', RESOLVED_CLIENT_ID)
       // Gọi api gửi tin nhắn
       await fetch(SEND_MESSAGE_API, {
         method: 'POST',
@@ -1029,11 +1107,14 @@ const useDetailChat = ({
     button_idx: number,
     flow_id?: string,
   ) => {
+    const { page_id: RESOLVED_PAGE_ID, client_id: RESOLVED_CLIENT_ID } =
+      getResolvedIdentifiers()
+
     /**Payload */
     const PAYLOAD = {
       message_id: message_id,
-      client_id: USER_ID,
-      page_id: PAGE_ID,
+      client_id: RESOLVED_CLIENT_ID || USER_ID,
+      page_id: RESOLVED_PAGE_ID,
       button_index: button_idx,
       flow_id: flow_id,
     }

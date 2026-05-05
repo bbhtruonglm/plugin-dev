@@ -44,6 +44,9 @@ export type INIT_INPUT = {
 }
 
 export function useChatClient(invalid_page_id_parent?: boolean) {
+  /** Chỉ áp dụng fallback riêng cho route test-ai-ui */
+  const IS_TEST_AI_UI_ROUTE = window.location.pathname.includes('/test-ai-ui')
+
   /** Hook dispatch để gửi action lên Redux */
   const dispatch = useDispatch()
 
@@ -130,6 +133,17 @@ export function useChatClient(invalid_page_id_parent?: boolean) {
     /** Nếu có client_id thì mới gọi hàm đọc data khách hàng*/
     if (client_id) fetchClientData(client_id, PAGE_ID)
   }, [client_id])
+
+  /** Đồng bộ local state theo Redux để tránh lệch trạng thái sau khi parent/storage cập nhật chậm */
+  useEffect(() => {
+    if (
+      IS_TEST_AI_UI_ROUTE &&
+      GLOBAL_CLIENT_ID &&
+      GLOBAL_CLIENT_ID !== client_id
+    ) {
+      setClientId(GLOBAL_CLIENT_ID)
+    }
+  }, [IS_TEST_AI_UI_ROUTE, GLOBAL_CLIENT_ID, client_id])
 
   /** Token */
   const LATEST_TOKEN = useRef<symbol | null>(null)
