@@ -925,15 +925,22 @@ function DetailChat({
     /** Hàm xử lý khi nhận được RUN_AI event */
     const HANDLE_RUN_AI_EVENT = async (incoming_data: any) => {
       console.log('[test-ai-ui] receive RUN_AI message', incoming_data)
+      /** Lấy payload từ event */
       const run_payload = EXTRACT_RUN_AI_PAYLOAD(incoming_data)
+      // Nếu payload không có thì return
       if (!run_payload) return
-
+      /** Tạo biến chứa danh sách kịch bản */
       const resolved_scenarios: TestScenario[] = []
+      // Duyệt qua danh sách kịch bản 
       for (let index = 0; index < run_payload.scenarios.length; index++) {
         const item = run_payload.scenarios[index]
+        // Kiểm tra nếu item là object
         if (item && typeof item === 'object') {
+          // Lấy danh sách câu hỏi
           const questions = item.questions || []
+          // Kiểm tra nếu danh sách câu hỏi có câu trả lời
           if (questions.length > 0) {
+            // Thêm danh sách câu hỏi vào resolved_scenarios
             resolved_scenarios.push({
               id: `scenario-${index}`,
               title: item.title || `Test ${index + 1}`,
@@ -944,24 +951,27 @@ function DetailChat({
         }
       }
 
+      // Nếu có danh sách kịch bản thì log ra console và set pending test flow
       if (resolved_scenarios.length > 0) {
         console.log('[test-ai-ui] resolved scenarios from RUN_AI', resolved_scenarios)
         pending_test_flow_ref.current = resolved_scenarios
         void TRY_START_PENDING_TEST_FLOW()
       }
     }
-
+    // Hàm xử lý khi nhận được window message
     const HANDLE_WINDOW_MESSAGE = (event: MessageEvent) => {
       void HANDLE_RUN_AI_EVENT(event.data)
     }
-
+    // Thêm window message event listener
     window.addEventListener('message', HANDLE_WINDOW_MESSAGE)
+    // Xóa window message event listener
     return () => window.removeEventListener('message', HANDLE_WINDOW_MESSAGE)
   }, [IS_TEST_AI_UI, user_id, loading])
 
   useEffect(() => {
+    // Nếu k phải case test AI thì bỏ qua
     if (!IS_TEST_AI_UI) return
-
+    // Hàm xử lý khi nhận được done LLM event
     const HANDLE_DONE_LLM_EVENT = (event: CustomEvent) => {
       const active_queue = running_test_flow_queue_ref.current
       const EVENT_PAGE_ID = event?.detail?.page_id
