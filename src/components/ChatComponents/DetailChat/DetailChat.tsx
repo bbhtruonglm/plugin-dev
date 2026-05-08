@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { fetchAPI, useAPI } from '@/api/api'
 import ChatHeader from '../Header/ChatHeader'
 import { ChatScreenProps } from '../type'
-import { ChevronDownIcon } from '@heroicons/react/24/solid'
+import { ChevronDownIcon, SparklesIcon } from '@heroicons/react/24/solid'
 import { ReactComponent as Close } from '@/assets/close.svg'
 import InitClient from '../Body/InitClient'
 import InputChat from '../Body/InputChat/InputChat'
@@ -16,7 +16,7 @@ import MessageComponent from '../MessageComponent/MessageComponent'
 import WIDGET from 'bbh-chatbox-widget-js-sdk'
 import VConsole from 'vconsole'
 import { isEmpty } from 'lodash'
-import { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, Fragment } from 'react'
 import { selectCustomColor } from '@/stores/appSlice'
 import { t } from 'i18next'
 import useDetailChat from './useDetailChat'
@@ -239,6 +239,17 @@ function DetailChat({
 
     // Nối các phần bằng dấu chấm ở giữa hoặc trả về chuỗi mặc định
     return description_parts.join(' • ') || t('test_scenario_empty_description')
+  }
+
+  /**
+   * Hàm định dạng số lượng token có dấu chấm ngăn cách hàng nghìn (ví dụ: 1.000)
+   * Tại sao: Để số lượng token lớn hiển thị trực quan và dễ đọc hơn trên giao diện
+   * @param {number} value - Số lượng token đầu vào
+   * @returns {string} - Chuỗi token đã được định dạng
+   */
+  function formatTokenCount(value: number) {
+    // Sử dụng Intl.NumberFormat với locale vi-VN để lấy format chuẩn 1.000, 10.000
+    return new Intl.NumberFormat('vi-VN').format(value)
   }
 
   /**
@@ -1260,17 +1271,31 @@ function DetailChat({
           !LOADING_GLOBAL &&
           LIST_MESSAGE &&
           [...LIST_MESSAGE].reverse().map((item: any, index: number) => (
-            <div
-              className={`flex flex-col ${item.sender_id === user_id ? 'items-end' : 'items-start'}`}
-              key={item._id || item.message_mid || index}
-            >
-              <MessageBody
-                message_item={item}
-                checkStaffExist={CheckStaffExist}
-                client_name={client_name}
-                checkAgentExist={CheckStaffExistAgent}
-              />
-            </div>
+            <Fragment key={item._id || item.message_mid || index}>
+              <div
+                className={`flex flex-col ${item.sender_id === user_id ? 'items-end' : 'items-start'} relative`}
+              >
+                <MessageBody
+                  message_item={item}
+                  checkStaffExist={CheckStaffExist}
+                  client_name={client_name}
+                  checkAgentExist={CheckStaffExistAgent}
+                />
+                {/* Kiểm tra nếu là giao diện test-ai-ui và tin nhắn của page (What) để hiển thị thông tin token (Why) */}
+                {IS_TEST_AI_UI && item?.message_type === 'page' && (
+                  <div className="absolute -bottom-2 left-8 text-[10px] text-slate-400 font-medium bg-white/80 px-1 rounded shadow-sm z-10 flex items-center gap-0.5">
+                    {formatTokenCount(item?.llm_token || 0)}
+                    <SparklesIcon className="w-3 h-3 text-slate-400" />
+                  </div>
+                )}
+              </div>
+              {/* Kiểm tra giao diện test-ai-ui, tin nhắn là /reset (What) và không phải tin nhắn đầu tiên (index < LIST_MESSAGE.length - 1) để tránh hiện phân cách dư thừa ở đầu (Why) */}
+              {IS_TEST_AI_UI && item?.message_text?.trim() === '/reset' && index < LIST_MESSAGE.length - 1 && (
+                <div className="w-full my-4 select-none flex items-center justify-center opacity-50">
+                  <div className="w-full border-t-[3px] border-dashed border-slate-400"></div>
+                </div>
+              )}
+            </Fragment>
           ))}
 
         {/* Giao diện chào mừng khi bắt đầu phiên trò chuyện với AI lần đầu */}
